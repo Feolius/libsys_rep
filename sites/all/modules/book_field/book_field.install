@@ -1,0 +1,31 @@
+<?php
+
+function book_field_field_schema($field) {
+    $columns = array(
+        'fid' => array(
+            'description' => 'The file id for file containing book.',
+            'type' => 'int',
+            'not null' => FALSE,
+            'unsigned' => TRUE,
+        ),
+        'create_swf' => array(
+            'description' => 'The period machine name',
+            'type' => 'int',
+        ),
+    );
+    $indexes = array(
+        'fid' => array('fid'),
+        'create_swf' => array('create_swf'),
+    );
+    $foreign_keys = array(
+        'fid' => array(
+            'table' => 'file_managed',
+            'columns' => array('fid' => 'fid'),
+        ),
+    );
+    return array(
+        'columns' => $columns,
+        'indexes' => $indexes,
+        'foreign_keys' => $foreign_keys,
+    );
+}

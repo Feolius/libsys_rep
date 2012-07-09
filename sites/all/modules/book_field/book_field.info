@@ -1,0 +1,9 @@
+name = Book field
+description = "Provides a field for uploading books with different extensions."
+package = Book field
+core = 7.x
+dependencies[] = file
+
+
+
+

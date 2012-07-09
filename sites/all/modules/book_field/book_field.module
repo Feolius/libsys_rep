@@ -1,0 +1,170 @@
+<?php
+
+/**
+ * Implements hook_field_info().
+ */
+function book_field_field_info() {
+    return array(
+        'book_field' => array(
+            'label' => t('Book'),
+            'description' => t('Provides an field for uploading books.'),
+            'default_widget' => 'book_field_widget',
+            'default_formatter' => 'book_field_formatter',
+        ),
+    );
+}
+
+/**
+ * Implements hook_field_validate().
+ */
+function book_field_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
+    global $user;
+    foreach ($items as $delta => $item) {
+        $file = file_load($item['fid']);
+        $uri = $file->uri;
+        $fid = $file->fid;
+        $file_name = $file->filename;
+        $arr = explode('.', $file_name);
+        $arr_length = count($arr);
+        $file_name = "";
+            for ($i = 0; $i < ($arr_length - 1); $i++) {
+                $file_name = $file_name . $arr[$i];
+            }
+        $path = drupal_realpath($uri);
+        $temp_path = file_directory_temp() . '/';
+        $real_file_name = str_replace($temp_path, "", $path);
+        if ($item['create_swf'] != 0) {
+            $uri = $file->uri;
+            $arr = explode('.', $real_file_name);
+            $arr_length = count($arr);
+            $real_file_name = "";
+            for ($i = 0; $i < ($arr_length - 1); $i++) {
+                $real_file_name = $real_file_name . $arr[$i];
+            }
+            $command = "pdf2swf " . $path . " -o " . $temp_path . $real_file_name . ".swf -f -T 9 -t -s storeallcharacters";
+            $result = exec($command);
+
+            if (strstr($result, "ERROR")) {
+                $error = $result;
+            }
+            if (empty($error)) {
+                
+                $file = (object) array(
+                            'fid' => $fid,
+                            'uid' => $user->uid,
+                            'uri' => "temporary://" . $real_file_name . ".swf",
+                            'filename' => $file_name . ".swf",
+                            'filemime' => "application/x-shockwave-flash",
+                            'status' => 1,
+                            'filesize' => filesize($temp_path . $real_file_name . ".swf"),
+                );                
+                file_save($file);                
+                $file = file_move($file, file_default_scheme() . '://' . $real_file_name . ".swf");
+                $file->filename = $file_name . ".swf";                
+                file_save($file);                 
+                
+                
+               
+            } else {                
+                $errors[$field['field_name']][$langcode][$delta][] = array(
+                    'error' => "convert_error",
+                    'message' => "Can't convert file to swf. Log remessage:" . $error,
+                );
+            }
+        } else {
+            $file->status = FILE_STATUS_PERMANENT;
+            
+            $file = file_move($file, file_default_scheme() . '://' . $file_name);            
+            
+            
+        }
+    }
+}
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function book_field_field_widget_info() {
+    return array(
+        'book_field_widget' => array(
+            'label' => t('Custom widget'),
+            'field types' => array('book_field'),
+        ),
+    );
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function book_field_field_formatter_info() {
+    return array(
+        'book_field_formatter' => array(
+            'label' => t('Custom formatter'),
+            'field types' => array('book_field'),
+        ),
+    );
+}
+
+/**
+ * Implements hook_field_widget_error().
+ */
+function book_field_field_widget_error($element, $error, $form, &$form_state) {
+    switch ($error['error']) {
+        case 'convert_error':
+            form_error($element, $error['message']);
+            break;
+    }
+}
+
+/**
+ * Implements hook_field_widget_form().
+ */
+function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+    $widget = $instance['widget'];
+    switch ($widget['type']) {
+        case 'book_field_widget':
+            $element['fid'] = array(
+                '#title' => t('Upload book'),
+                '#description' => 'Book uploading',
+                '#type' => 'managed_file',
+                '#upload_validators' => array(
+                    'file_validate_extensions' => array('pdf swf'),
+                    // Pass the maximum file size in bytes
+                    'file_validate_size' => array(5 * 1024 * 1024),
+                ),
+            );
+            $element['create_swf'] = array(
+                '#title' => t('Convert to SWF'),
+                '#type' => 'checkbox',
+            );
+            break;
+    }
+    return $element;
+}
+
+/**
+ * Implements hook_field_is_empty().
+ */
+function book_field_field_is_empty($item, $field) {
+    return empty($item['fid']);
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function book_field_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+    $element = array();
+    if ($display['type'] == 'book_field_formatter') {
+        foreach ($items as $delta => $item) {
+            $file = file_load($item['fid']);
+            var_dump($file);
+            
+            $element[$delta] = array(
+                '#theme' => 'file_link',
+                '#file' => $file,
+            );
+        }
+    }
+    return $element;
+}
+
