@@ -1,0 +1,48 @@
+<?php
+
+function collection_layout_block_info() {
+    $blocks = array();
+    $blocks['files_filter_block'] = array(
+        'info' => t('Block for filters'),
+        'cache' => DRUPAL_NO_CACHE,
+    );
+    return $blocks;
+}
+
+function collection_layout_menu() {
+    $items['collection'] = array(
+        'title' => 'Collection',
+        'access callback' => TRUE,
+        'page callback' => 'collection_layout_page_callback',
+        'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+
+function is_filter($arg){
+    $filters = array('document_type', 'collection', 'category', 'group', 'data');
+    return in_array($arg, $filters);
+}
+
+function collection_layout_page_callback() {
+//    $view = views_get_view('collection_view');
+    
+    /*foreach ($_GET as $key => $val)
+        if(is_filter($key))
+            $_SESSION[$key] = $val;
+        
+    foreach ($_SESSION as $key => $val){
+        if(is_filter($key))
+            $view->set_exposed_input(array('identifier' => $key, 'value' => $val));
+    }*/
+    
+  //  $view->set_exposed_input(array('identifier' => 'field_files_category_tid', 'value' => '14'));
+    
+    //$view->set_display('page');
+    $result = views_embed_view('collection_view', 'page', '23');//$view->render();
+    return $result;
+}
+
+function collection_layout_block_view() {
+    
+}

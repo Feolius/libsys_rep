@@ -1,0 +1,4 @@
+name = Collection Layout
+package = Adventist DL
+core = 7.x
+files[] = collection_layout.module
