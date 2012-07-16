@@ -69,7 +69,6 @@ class views_handler_field_taxonomy extends views_handler_field {
     if (!empty($this->options['convert_spaces'])) {
       $data = str_replace(' ', '-', $data);
     }
-
     return $data;
   }
 
