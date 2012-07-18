@@ -1,40 +1,96 @@
 <?php
 
 /**
- * Implements hook_field_info().
+ * Implements hook_element_info().
  */
-function book_field_field_info() {
-    return array(
-        'book_field' => array(
-            'label' => t('Book'),
-            'description' => t('Provides an field for uploading books.'),
-            'default_widget' => 'book_field_widget',
-            'default_formatter' => 'book_field_formatter',
+function book_field_element_info() {
+    $file_path = drupal_get_path('module', 'file');
+    $types['managed_book'] = array(
+        '#input' => TRUE,
+        '#process' => array('book_field_managed_book_process'),
+        '#value_callback' => 'book_field_managed_book_value',
+        '#element_validate' => array('book_field_managed_book_validate'),
+        '#pre_render' => array('book_field_managed_book_pre_render'),
+        '#theme' => 'file_managed_file',
+        '#theme_wrappers' => array('form_element'),
+        '#progress_indicator' => 'throbber',
+        '#progress_message' => NULL,
+        '#upload_validators' => array(),
+        '#upload_location' => NULL,
+        '#size' => 22,
+        '#extended' => FALSE,
+        '#attached' => array(
+            'css' => array($file_path . '/file.css'),
+            'js' => array($file_path . '/file.js'),
         ),
     );
+    return $types;
 }
 
 /**
- * Implements hook_field_validate().
+ * Menu callback for upload progress.
+ *
+ * @param $key
+ *   The unique key for this upload process.
  */
-function book_field_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
+function book_field_ajax_progress($key) {
+    $progress = array(
+        'message' => t('Starting upload...'),
+        'percentage' => -1,
+    );
+    $status = uploadprogress_get_info($key);
+    if (isset($status['bytes_uploaded']) && !empty($status['bytes_total'])) {
+        $progress['message'] = t('Uploading... (@current of @total)', array('@current' => format_size($status['bytes_uploaded']), '@total' => format_size($status['bytes_total'])));
+        $progress['percentage'] = round(100 * $status['bytes_uploaded'] / $status['bytes_total']);
+    }
+
+    drupal_json_output($progress);
+}
+
+/**
+ * The #value_callback for a managed_book type element.
+ */
+function book_field_managed_book_value(&$element, $input = FALSE, $form_state = NULL) {
+    $fid = 0;
+    $fid_swf = 0;
     global $user;
-    foreach ($items as $delta => $item) {
-        $file = file_load($item['fid']);
-        $uri = $file->uri;
-        $fid = $file->fid;
-        $file_name = $file->filename;
-        $arr = explode('.', $file_name);
-        $arr_length = count($arr);
-        $file_name = "";
+    // Find the current value of this field from the form state.
+    $form_state_fid = $form_state['values'];
+    foreach ($element['#parents'] as $parent) {
+        $form_state_fid = isset($form_state_fid[$parent]) ? $form_state_fid[$parent] : 0;
+    }
+
+    if ($element['#extended'] && isset($form_state_fid['fid'])) {
+        $fid = $form_state_fid['fid'];
+    } elseif (is_numeric($form_state_fid)) {
+        $fid = $form_state_fid;
+    }
+
+    // Process any input and save new uploads.
+    if ($input !== FALSE) {
+        // Uploads take priority over all other values.
+        if ($file = file_managed_file_save_upload($element)) {
+            $fid = $file->fid;
+        } else {
+            // Load file if the FID has changed to confirm it exists.
+            if (isset($input['fid']) && $file = file_load($input['fid'])) {
+                $fid = $file->fid;
+            }
+        }
+        //Conversion to swf
+
+        if (isset($form_state['input']['field_book']['und'][0]['create_swf']) && $form_state['input']['field_book']['und'][0]['create_swf'] == '1') {
+            $uri = $file->uri;
+            $file_name = $file->filename;
+            $arr = explode('.', $file_name);
+            $arr_length = count($arr);
+            $file_name = "";
             for ($i = 0; $i < ($arr_length - 1); $i++) {
                 $file_name = $file_name . $arr[$i];
             }
-        $path = drupal_realpath($uri);
-        $temp_path = file_directory_temp() . '/';
-        $real_file_name = str_replace($temp_path, "", $path);
-        if ($item['create_swf'] != 0) {
-            $uri = $file->uri;
+            $path = drupal_realpath($uri);
+            $temp_path = file_directory_temp() . '/';
+            $real_file_name = str_replace($temp_path, "", $path);
             $arr = explode('.', $real_file_name);
             $arr_length = count($arr);
             $real_file_name = "";
@@ -43,42 +99,181 @@ function book_field_field_validate($entity_type, $entity, $field, $instance, $la
             }
             $command = "pdf2swf " . $path . " -o " . $temp_path . $real_file_name . ".swf -f -T 9 -t -s storeallcharacters";
             $result = exec($command);
+            $uri_swf = "temporary://" . $real_file_name . ".swf";
+            $file = new stdClass();
+            $file->uid = $user->uid;
+            $file->status = 0;
+            $file->filename = $file_name . ".swf";
+            $file->uri = "temporary://" . $real_file_name . ".swf";
+            $file->filemime = "application/x-shockwave-flash";
+            $file->filesize = filesize($temp_path . $real_file_name . ".swf");
 
-            if (strstr($result, "ERROR")) {
-                $error = $result;
+            $result = db_query('SELECT fid FROM {file_managed} WHERE uri = :uri', array(
+                ':uri' => $file->uri
+                    ));
+            $a = $result->fetchAll();
+
+            if ($a == NULL) {
+                $file_swf = file_save($file);
+                $fid_swf = $file_swf->fid;
+            } else {
+                $file_swf = file_load($a[0]->fid);
+                $fid_swf = $file_swf->fid;
             }
-            if (empty($error)) {
-                
-                $file = (object) array(
-                            'fid' => $fid,
-                            'uid' => $user->uid,
-                            'uri' => "temporary://" . $real_file_name . ".swf",
-                            'filename' => $file_name . ".swf",
-                            'filemime' => "application/x-shockwave-flash",
-                            'status' => 1,
-                            'filesize' => filesize($temp_path . $real_file_name . ".swf"),
-                );                
-                file_save($file);                
-                $file = file_move($file, file_default_scheme() . '://' . $real_file_name . ".swf");
-                $file->filename = $file_name . ".swf";                
-                file_save($file);                 
-                
-                
-               
-            } else {                
-                $errors[$field['field_name']][$langcode][$delta][] = array(
-                    'error' => "convert_error",
-                    'message' => "Can't convert file to swf. Log remessage:" . $error,
-                );
-            }
-        } else {
-            $file->status = FILE_STATUS_PERMANENT;
-            
-            $file = file_move($file, file_default_scheme() . '://' . $file_name);            
-            
-            
         }
     }
+    $return['fid'] = $fid;
+    $return['fid_swf'] = $fid_swf;
+    return $return;
+}
+
+function book_field_managed_book_process($element, &$form_state, $form) {
+    $fid = 0;
+    $fid_swf = 0;
+    if (isset($element['#value']['fid'])) {
+        $fid = $element['#value']['fid'];
+    }
+    if (isset($element['#value']['fid_swf'])) {
+        $fid_swf = $element['#value']['fid_swf'];
+    }
+    $element['#file_swf'] = $fid_swf ? file_load($fid_swf) : FALSE;
+    $element['#file'] = $fid ? file_load($fid) : FALSE;
+
+    $element['#tree'] = TRUE;
+    $ajax_settings = array(
+        'path' => 'file/ajax/' . implode('/', $element['#array_parents']) . '/' . $form['form_build_id']['#value'],
+        'wrapper' => $element['#id'] . '-ajax-wrapper',
+        'effect' => 'fade',
+        'progress' => array(
+            'type' => $element['#progress_indicator'],
+            'message' => $element['#progress_message'],
+        ),
+    );
+    // Set up the buttons first since we need to check if they were clicked.
+    $element['upload_button'] = array(
+        '#name' => implode('_', $element['#parents']) . '_upload_button',
+        '#type' => 'submit',
+        '#value' => t('Upload'),
+        '#validate' => array(),
+        '#submit' => array('book_field_managed_book_submit'),
+        '#limit_validation_errors' => array($element['#parents']),
+        '#ajax' => $ajax_settings,
+        '#weight' => -5,
+    );
+
+    // Force the progress indicator for the remove button to be either 'none' or
+    // 'throbber', even if the upload button is using something else.
+    $ajax_settings['progress']['type'] = 'throbber';
+    $ajax_settings['progress']['message'] = NULL;
+    $ajax_settings['effect'] = 'none';
+    $element['remove_button'] = array(
+        '#name' => implode('_', $element['#parents']) . '_remove_button',
+        '#type' => 'submit',
+        '#value' => t('Remove'),
+        '#validate' => array(),
+        '#submit' => array('book_field_managed_book_submit'),
+        '#limit_validation_errors' => array($element['#parents']),
+        '#ajax' => $ajax_settings,
+        '#weight' => -5,
+    );
+
+    $element['fid'] = array(
+        '#type' => 'hidden',
+        '#value' => $fid,
+    );
+    $element['fid_swf'] = array(
+        '#type' => 'hidden',
+        '#value' => $fid_swf,
+    );
+
+    // The file upload field itself.
+    $element['upload'] = array(
+        '#name' => 'files[' . implode('_', $element['#parents']) . ']',
+        '#type' => 'file',
+        '#title' => t('Choose a file'),
+        '#title_display' => 'invisible',
+        '#size' => $element['#size'],
+        '#theme_wrappers' => array(),
+        '#weight' => -10,
+    );
+
+    if ($element['#file_swf']) {
+        $element['filename'] = array(
+            '#type' => 'markup',
+            '#markup' => theme('file_link', array('file' => $element['#file_swf'])) . ' ',
+            '#weight' => -10,
+        );
+    } elseif ($element['#file']) {
+
+        $element['filename'] = array(
+            '#type' => 'markup',
+            '#markup' => theme('file_link', array('file' => $element['#file'])) . ' ',
+            '#weight' => -10,
+        );
+    }
+
+    // Add the extension list to the page as JavaScript settings.
+    if (isset($element['#upload_validators']['file_validate_extensions'][0])) {
+        $extension_list = implode(',', array_filter(explode(' ', $element['#upload_validators']['file_validate_extensions'][0])));
+        $element['upload']['#attached']['js'] = array(
+            array(
+                'type' => 'setting',
+                'data' => array('file' => array('elements' => array('#' . $element['#id'] . '-upload' => $extension_list)))
+            )
+        );
+    }
+
+    // Prefix and suffix used for Ajax replacement.
+    $element['#prefix'] = '<div id="' . $element['#id'] . '-ajax-wrapper">';
+    $element['#suffix'] = '</div>';
+    return $element;
+}
+
+function book_field_managed_book_submit($form, &$form_state) {
+    $parents = $form_state['triggering_element']['#array_parents'];
+    $button_key = array_pop($parents);
+    $element = drupal_array_get_nested_value($form, $parents);
+    if ($button_key == 'remove_button') {
+        if ($element['#file'] && $element['#file']->status == 0) {
+            file_delete($element['#file']);
+        }
+        if ($element['#file_swf'] && $element['#file_swf']->status == 0) {
+            file_delete($element['#file_swf']);
+        }
+        $values_element = $element['#extended'] ? $element['fid'] : $element;
+        form_set_value($values_element, NULL, $form_state);
+        drupal_array_set_nested_value($form_state['input'], $values_element['#parents'], NULL);
+    }
+    $form_state['rebuild'] = TRUE;
+}
+
+function book_field_managed_book_pre_render($element) {
+    // If we already have a file, we don't want to show the upload controls.
+    if (!empty($element['#value']['fid'])) {
+        $element['upload']['#access'] = FALSE;
+        $element['upload_button']['#access'] = FALSE;
+    }
+    // If we don't already have a file, there is nothing to remove.
+    else {
+        $element['remove_button']['#access'] = FALSE;
+    }
+
+
+    return $element;
+}
+
+/**
+ * Implements hook_field_info().
+ */
+function book_field_field_info() {
+    return array(
+        'book_field' => array(
+            'label' => t('Book'),
+            'description' => t('Prosvides an field for uploading books.'),
+            'default_widget' => 'book_field_widget',
+            'default_formatter' => 'book_field_formatter',
+        ),
+    );
 }
 
 /**
@@ -106,29 +301,19 @@ function book_field_field_formatter_info() {
 }
 
 /**
- * Implements hook_field_widget_error().
- */
-function book_field_field_widget_error($element, $error, $form, &$form_state) {
-    switch ($error['error']) {
-        case 'convert_error':
-            form_error($element, $error['message']);
-            break;
-    }
-}
-
-/**
  * Implements hook_field_widget_form().
  */
 function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+
     $widget = $instance['widget'];
     switch ($widget['type']) {
         case 'book_field_widget':
-            $element['fid'] = array(
+            $element['fids'] = array(
                 '#title' => t('Upload book'),
                 '#description' => 'Book uploading',
-                '#type' => 'managed_file',
+                '#type' => 'managed_book',
                 '#upload_validators' => array(
-                    'file_validate_extensions' => array('pdf swf'),
+                    'file_validate_extensions' => array('pdf swf txt'),
                     // Pass the maximum file size in bytes
                     'file_validate_size' => array(5 * 1024 * 1024),
                 ),
@@ -136,17 +321,54 @@ function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $
             $element['create_swf'] = array(
                 '#title' => t('Convert to SWF'),
                 '#type' => 'checkbox',
+                '#default_value' => 0,
             );
-            break;
+            $element['fid'] = array(
+                '#type' => 'hidden',
+                '#value_callback' => 'book_field_widget_fid_value',
+            );
+            $element['fid_swf'] = array(
+                '#type' => 'hidden',
+                '#value_callback' => 'book_field_widget_fid_swf_value',
+            );
+            return $element;
     }
-    return $element;
+}
+
+function book_field_widget_fid_value(&$element, $input = FALSE, $form_state) {
+    $return = '0';
+    if (isset($form_state['input']['field_book']['und'][0]['fids']['fid'])) {
+        $return = $form_state['input']['field_book']['und'][0]['fids']['fid'];
+    }
+    return $return;
+}
+
+function book_field_widget_fid_swf_value(&$element, $input = FALSE, $form_state) {
+    $return = '0';
+    if (isset($form_state['input']['field_book']['und'][0]['fids']['fid_swf'])) {
+        $return = $form_state['input']['field_book']['und'][0]['fids']['fid_swf'];
+    }
+    return $return;
 }
 
 /**
- * Implements hook_field_is_empty().
+ * An #element_validate callback for the managed_book element.
  */
-function book_field_field_is_empty($item, $field) {
-    return empty($item['fid']);
+function book_field_managed_book_validate(&$element, &$form_state) {
+    $clicked_button = end($form_state['triggering_element']['#parents']);
+    if ($clicked_button != 'remove_button' && !empty($element['fid']['#value'])) {
+        if ($element['fid']['#value']) {
+            $file = file_load($element['fid']['#value']);
+            if ($file->status == FILE_STATUS_PERMANENT) {
+                $references = file_usage_list($file);
+                if (empty($references)) {
+                    form_error($element, t('The file used in the !name field may not be referenced.', array('!name' => $element['#title'])));
+                }
+            }
+        } else {
+            form_error($element, t('The file referenced by the !name field does not exist.', array('!name' => $element['#title'])));
+        }
+    }
 }
 
 /**
@@ -156,9 +378,11 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
     $element = array();
     if ($display['type'] == 'book_field_formatter') {
         foreach ($items as $delta => $item) {
-            $file = file_load($item['fid']);
-            var_dump($file);
-            
+            if (isset($item['fid_swf']) && $item['fid_swf'] != '0') {
+                $file = file_load($item['fid_swf']);
+            } elseif (isset($item['fid'])) {
+                $file = file_load($item['fid']);
+            }
             $element[$delta] = array(
                 '#theme' => 'file_link',
                 '#file' => $file,
@@ -168,3 +392,55 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
     return $element;
 }
 
+/**
+ * Implements hook_field_is_empty().
+ */
+function book_field_field_is_empty($item, $field) {
+    return empty($item['fids']);
+}
+
+/**
+ * Implements hook_field_presave().
+ */
+function book_field_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items) {
+    // Make sure that each file which will be saved with this object has a
+    // permanent status, so that it will not be removed when temporary files are
+    // cleaned up.
+    foreach ($items as $item) {
+        if (isset($item['fid_swf']) && $item['fid_swf'] != 0) {
+            $file = file_load($item['fid_swf']);
+            if (!$file->status) {
+                $file->status = FILE_STATUS_PERMANENT;
+                file_save($file);
+            }
+        }
+        if (isset($item['fid']) && $item['fid'] != 0) {
+            $file = file_load($item['fid']);
+            if (!$file->status) {
+                $file->status = FILE_STATUS_PERMANENT;
+                file_save($file);
+            }
+        }
+    }
+}
+
+/**
+ * Implements hook_field_validate().
+ */
+function book_field_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
+    foreach ($items as $delta => $item) {
+        if ($item['fid'] == '0') {
+            $errors[$field['field_name']][$langcode][$delta][] = array(
+                'error' => 'File is abscent',
+                'message' => t('Please upload file'),
+            );
+        }
+    }    
+}
+
+/**
+ * Implements hook_field_widget_error().
+ */
+function hook_field_widget_error($element, $error, $form, &$form_state) {
+    form_error($element, $error['message']);
+}

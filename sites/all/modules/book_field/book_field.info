@@ -4,6 +4,3 @@ package = Book field
 core = 7.x
 dependencies[] = file
 
-
-
-
