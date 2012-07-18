@@ -33,14 +33,15 @@ function set_filter_value($fid, $val) {
 
 function add_filter_value($fid, $val) {
     if ($fid == 'date') {
-        if (isset($val['year']))
-            if (isset($_SESSION['collection_layout'][$fid]['year']))
+        if (isset($val['year'])){
+            if (isset($_SESSION['collection_layout'][$fid]['year'])){
                 if ($_SESSION['collection_layout'][$fid]['year'] == $val['year'])
                     unset($_SESSION['collection_layout'][$fid]['year']);
                 else
                     $_SESSION['collection_layout'][$fid]['year'] = $val['year'];
-            else
+            }else
                 $_SESSION['collection_layout'][$fid]['year'] = $val['year'];
+        }
         if (isset($val['min']) && isset($val['max'])) {
             $_SESSION['collection_layout'][$fid]['min'] = $val['min'];
             $_SESSION['collection_layout'][$fid]['max'] = $val['max'];
@@ -109,7 +110,10 @@ function get_term_name($tid) {
 }
 
 function collection_layout_page_callback() {
-    unset($_SESSION['collection_layout']['date']);
+    if (!isset($_SESSION['collection_layout']['date']['min']))
+        $_SESSION['collection_layout']['date']['min'] = 1000;
+    if (!isset($_SESSION['collection_layout']['date']['max']))
+        $_SESSION['collection_layout']['date']['max'] = 2050;
     foreach ($_GET as $key => $value) {
         if (is_filter($key))
             add_filter_value($key, $value);
@@ -135,36 +139,47 @@ function collection_layout_page_callback() {
 }
 
 function collection_layout_block_view() {
-    $result = '<h2>Refine</h2>';
+    if (!isset($_SESSION['collection_layout']['date']['min']))
+        $_SESSION['collection_layout']['date']['min'] = 1000;
+    if (!isset($_SESSION['collection_layout']['date']['max']))
+        $_SESSION['collection_layout']['date']['max'] = 2050;
+    drupal_add_library('system', 'ui.slider');
+    drupal_add_js(array('collection_layout' => array(
+            'date_min' => $_SESSION['collection_layout']['date']['min'],
+            'date_max' => $_SESSION['collection_layout']['date']['max'],
+            )), 'setting');
+    $result = '<h2>Publication date</h2>';
+    $result .= '<div id="slider-date-range"></div>';
     $filter_list = get_filter_list();
     if ($filter_list)
-        foreach ($filter_list as $fid => $val) {
-            if ($fid != 'date')
-                if (is_array($val))
-                    foreach ($val as $tid) {
-                        $result .= '<div class="' . $fid . '_' . $tid . '">';
-                        $result .= l(get_filter_human_name($fid) . ': ' . get_term_name($tid) . '[X]', 'collection', array(
-                            'query' => array(
-                                $fid => $tid
-                                )));
-                        $result .= '</div>';
-                    } else {
-                    $result .= '<div class="' . $fid . '_' . $val . '">';
-                    $result .= l(get_filter_human_name($fid) . ': ' . get_term_name($val) . '[X]', 'collection', array(
+        $result .= '<h2>Refine</h2>';
+    foreach ($filter_list as $fid => $val) {
+        if ($fid != 'date')
+            if (is_array($val))
+                foreach ($val as $tid) {
+                    $result .= '<div class="' . $fid . '_' . $tid . '">';
+                    $result .= l(get_filter_human_name($fid) . ': ' . get_term_name($tid) . '[X]', 'collection', array(
                         'query' => array(
-                            $fid => $val
+                            $fid => $tid
                             )));
                     $result .= '</div>';
-                } else
-            if (isset($val['year'])) {
-                $result .= '<div class="' . $fid . '_' . $val['year'] . '">';
-                $result .= l($val['year'] . '[X]', 'collection', array(
+                } else {
+                $result .= '<div class="' . $fid . '_' . $val . '">';
+                $result .= l(get_filter_human_name($fid) . ': ' . get_term_name($val) . '[X]', 'collection', array(
                     'query' => array(
-                        'date[year]' => $val['year']
+                        $fid => $val
                         )));
                 $result .= '</div>';
-            }
+            } else
+        if (isset($val['year'])) {
+            $result .= '<div class="' . $fid . '_' . $val['year'] . '">';
+            $result .= l($val['year'] . '[X]', 'collection', array(
+                'query' => array(
+                    'date[year]' => $val['year']
+                    )));
+            $result .= '</div>';
         }
+    }
 
     $date = get_filter_value('date');
     $date_range_filter_string = isset($date['min']) ? "{$date['min']}--{$date['max']}" : 'all';
@@ -235,8 +250,8 @@ function collection_layout_field_formatter_view($entity_type, $entity, $field, $
             break;
         case 'colletion_layout_title_link' :
             foreach ($items as $delta => $item) {
-                /*var_dump($entity);
-                exit;*/
+                /* var_dump($entity);
+                  exit; */
             }
             break;
     }
