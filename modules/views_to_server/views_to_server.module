@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the views to server feature.
+ */
+
+include_once 'views_to_server.features.inc';

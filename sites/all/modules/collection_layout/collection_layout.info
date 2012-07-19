@@ -4,3 +4,5 @@ core = 7.x
 files[] = collection_layout.module
 files[] = collection_layout_handler_field_taxonomy.inc
 scripts[] = js/date_slider.js
+scripts[] = m-dropdown.js
+scripts[] = m-radio.js
