@@ -471,7 +471,7 @@ function _book_field_file_move($file) {
 /**
  * Implements hook_field_validate().
  */
-function book_field_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
+/*function book_field_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
     foreach ($items as $delta => $item) {
         if ($item['fid'] == '0') {
             $errors[$field['field_name']][$langcode][$delta][] = array(
@@ -480,7 +480,7 @@ function book_field_field_validate($entity_type, $entity, $field, $instance, $la
             );
         }
     }
-}
+}*/
 
 /**
  * Implements hook_field_widget_error().
