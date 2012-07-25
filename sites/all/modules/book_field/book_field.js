@@ -2,7 +2,7 @@
     $(function(){
         var path = Drupal.settings.book_field.path;    
         var fp = new FlexPaperViewer(	
-            'FlexPaperViewer',
+            '/sites/all/modules/book_field/FlexPaperViewer',
             'viewerPlaceHolder', {
                 config : {
                     SwfFile : path,

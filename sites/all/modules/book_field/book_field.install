@@ -39,7 +39,7 @@ function book_field_field_schema($field) {
 /**
  * Implements hook_schema().
  */
-/*function book_field_schema() {
+function book_field_schema() {
     $schema['progress'] = array(
         'description' => 'This table contain information about conversion progress.',
         'fields' => array(
@@ -55,4 +55,4 @@ function book_field_field_schema($field) {
         ),
     );
     return $schema;
-}*/
+}

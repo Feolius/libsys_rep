@@ -13,7 +13,7 @@ function book_field_element_info() {
         '#pre_render' => array('book_field_managed_book_pre_render'),
         '#theme' => 'file_managed_file',
         '#theme_wrappers' => array('form_element'),
-        '#progress_indicator' => 'throbber',
+        '#progress_indicator' => 'bar',
         '#progress_message' => NULL,
         '#upload_validators' => array(),
         '#upload_location' => NULL,
@@ -28,23 +28,85 @@ function book_field_element_info() {
 }
 
 /**
+ * Implements hook_menu().
+ */
+function book_field_menu() {
+    $items = array();
+    $items['book_field/progress'] = array(
+        'page callback' => 'book_field_ajax_progress',
+        'access arguments' => array('access content'),
+        'theme callback' => 'ajax_base_page_theme',
+        'type' => MENU_CALLBACK,
+    );
+
+    return $items;
+}
+
+/**
  * Menu callback for upload progress.
  *
  * @param $key
  *   The unique key for this upload process.
  */
 function book_field_ajax_progress($key) {
-    $progress = array(
-        'message' => t('Starting upload...'),
-        'percentage' => -1,
-    );
-    $status = uploadprogress_get_info($key);
-    if (isset($status['bytes_uploaded']) && !empty($status['bytes_total'])) {
-        $progress['message'] = t('Uploading... (@current of @total)', array('@current' => format_size($status['bytes_uploaded']), '@total' => format_size($status['bytes_total'])));
-        $progress['percentage'] = round(100 * $status['bytes_uploaded'] / $status['bytes_total']);
+    $key = explode('_', $key);
+    $upload_key = $key[0];
+    $progress_key = $key[1];
+    $result = db_query('SELECT progress FROM {progress} WHERE pid = :pid', array(
+        ':pid' => $progress_key
+            ));
+    $a = $result->fetchAll();
+    if ($a == NULL) {
+        $progress = array(
+            'message' => t('Starting upload...'),
+            'percentage' => -1,
+        );
+        $status = uploadprogress_get_info($upload_key);
+        if (isset($status['bytes_uploaded']) && !empty($status['bytes_total'])) {
+            $progress['message'] = t('Uploading... (@current of @total)', array('@current' => format_size($status['bytes_uploaded']), '@total' => format_size($status['bytes_total'])));
+            $progress['percentage'] = round(100 * $status['bytes_uploaded'] / $status['bytes_total']);
+        }
+    } else {
+        if ($a[0]->progress == -1) {
+            $progress = array(
+                'message' => t('Preparing conversion...'),
+                'percentage' => 0,
+            );
+        } else {
+            $status = ($a[0]->progress);
+            $status = explode('/', $status);
+            $current_page = $status[0];
+            $last_page = $status[1];
+            $progress['message'] = t('Converting... (@current of @total)', array('@current' => $current_page, '@total' => $last_page));
+            $progress['percentage'] = round(100 * $current_page / $last_page);
+        }
     }
 
     drupal_json_output($progress);
+}
+
+/*
+ * Count number of pages in PDF file
+ */
+
+function getNumPagesPdf($filepath) {
+    $fp = @fopen(preg_replace("/\[(.*?)\]/i", "", $filepath), "r");
+    $max = 0;
+    while (!feof($fp)) {
+        $line = fgets($fp, 255);
+        if (preg_match('/\/Count [0-9]+/', $line, $matches)) {
+            preg_match('/[0-9]+/', $matches[0], $matches2);
+            if ($max < $matches2[0])
+                $max = $matches2[0];
+        }
+    }
+    fclose($fp);
+    if ($max == 0) {
+        $im = new imagick($filepath);
+        $max = $im->getNumberImages();
+    }
+
+    return $max;
 }
 
 /**
@@ -67,78 +129,104 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
     }
 
     // Process any input and save new uploads.
-    if (!empty($input)) {        
-            // Uploads take priority over all other values.
-            if ($file = file_managed_file_save_upload($element)) {
+    if (!empty($input)) {
+        // Uploads take priority over all other values.
+        if ($file = file_managed_file_save_upload($element)) {
+            $fid = $file->fid;
+        } else {
+            // Load file if the FID has changed to confirm it exists.
+            if (isset($input['fid']) && $file = file_load($input['fid'])) {
                 $fid = $file->fid;
-            } else {
-                // Load file if the FID has changed to confirm it exists.
-                if (isset($input['fid']) && $file = file_load($input['fid'])) {
-                    $fid = $file->fid;
-                }
             }
-            //Conversion to swf
-            if (isset($form_state['input']['field_book']['und'][0]['create_swf']) && $form_state['input']['field_book']['und'][0]['create_swf'] == '1') {
-                if ($input['fid_swf'] == 0) {
-                    $uri = $file->uri;
-                    $file_name = $file->filename;
-                    $arr = explode('.', $file_name);
-                    $arr_length = count($arr);
-                    $file_name = "";
-                    for ($i = 0; $i < ($arr_length - 1); $i++) {
-                        $file_name = $file_name . $arr[$i];
-                    }
-                    $path = drupal_realpath($uri);
-                    $temp_path = file_directory_temp() . '/';
-                    $real_file_name = str_replace($temp_path, "", $path);
-                    $arr = explode('.', $real_file_name);
-                    $arr_length = count($arr);
-                    $real_file_name = "";
-                    for ($i = 0; $i < ($arr_length - 1); $i++) {
-                        $real_file_name = $real_file_name . $arr[$i];
-                    }
+        }
+        //Conversion to swf
+        if (isset($form_state['input']['field_book']['und'][0]['create_swf']) && $form_state['input']['field_book']['und'][0]['create_swf'] == '1') {
+            if ($input['fid_swf'] == 0) {
+                $uri = $file->uri;
+                $file_name = $file->filename;
+                $arr = explode('.', $file_name);
+                $arr_length = count($arr);
+                $file_name = "";
+                for ($i = 0; $i < ($arr_length - 1); $i++) {
+                    $file_name = $file_name . $arr[$i];
+                }
+                $path = drupal_realpath($uri);
+                $temp_path = file_directory_temp() . '/';
+                $real_file_name = str_replace($temp_path, "", $path);
+                $arr = explode('.', $real_file_name);
+                $arr_length = count($arr);
+                $real_file_name = "";
+                for ($i = 0; $i < ($arr_length - 1); $i++) {
+                    $real_file_name = $real_file_name . $arr[$i];
+                }
+                $swf_uri = "temporary://" . $real_file_name . ".swf";
+                $result = db_query('SELECT fid FROM {file_managed} WHERE uri = :uri', array(
+                    ':uri' => $swf_uri
+                        ));
+                $a = $result->fetchAll();
+                if ($a == NULL) {
+                    $record = array('pid' => $input['CONVERSION_IDENTIFIER'], 'progress' => '-1');
+                    drupal_write_record('progress', $record);
                     $command = "pdf2swf '" . $path . "' -o '" . $temp_path . $real_file_name . ".swf' -f -T 9 -t -s storeallcharacters";
-                    $result = exec($command);
+                    $numberOfPages = getNumPagesPdf($path);
+                    $handle = popen($command, 'r');
+                    while (!feof($handle)) {
+                        sleep(2);
+                        $read = fread($handle, 2096);
+                        $pattern = "/page \d+/";
+                        $result = preg_match_all($pattern, $read, $matches);
+                        $length = count($matches[0]);
+                        $pattern = "/\d+/";
+                        if ($length > 1) {
+                            $result = preg_match_all($pattern, $matches[0][$length - 2], $match);
+                            $record = array('pid' => $input['CONVERSION_IDENTIFIER'], 'progress' => $match[0][0] . '/' . $numberOfPages);
+                            drupal_write_record('progress', $record, 'pid');
+                        } elseif ($length == 1) {
+                            $result = preg_match_all($pattern, $matches[0][$length - 1], $match);
+                            $record = array('pid' => $input['CONVERSION_IDENTIFIER'], 'progress' => $match[0][0] . '/' . $numberOfPages);
+                            drupal_write_record('progress', $record, 'pid');
+                        }
+                    }
+                    pclose($handle);
                     $uri_swf = "temporary://" . $real_file_name . ".swf";
                     $file = new stdClass();
                     $file->uid = $user->uid;
                     $file->status = 0;
                     $file->filename = $file_name . ".swf";
-                    $file->uri = "temporary://" . $real_file_name . ".swf";
+                    $file->uri = $swf_uri;
                     $file->filemime = "application/x-shockwave-flash";
                     $file->filesize = filesize($temp_path . $real_file_name . ".swf");
-                    /*     $file_path = drupal_realpath($file->uri);
-                      if (!file_exists($file_path)) {
-                      form_error($element, "Error in covertation process");
-                      } else {
-                      $file_swf = file_save($file);
-                      $fid_swf = $file_swf->fid;
-                      }
-                      }else{
-                      $fid_swf = $input['fid_swf'];
-                      } */
-
-
-                    $result = db_query('SELECT fid FROM {file_managed} WHERE uri = :uri', array(
-                        ':uri' => $file->uri
-                            ));
-                    $a = $result->fetchAll();
-
-                    if ($a == NULL) {
-                        $file_path = drupal_realpath($file->uri);
-                        if (!file_exists($file_path)) {
-                            form_error($element, "Error in covertation process");
-                        } else {
-                            $file_swf = file_save($file);
-                            $fid_swf = $file_swf->fid;
-                        }
+                    $file_path = drupal_realpath($file->uri);
+                    if (!file_exists($file_path)) {
+                        form_error($element, "Error in covertation process");
                     } else {
-                        $file_swf = file_load($a[0]->fid);
+                        $file_swf = file_save($file);
                         $fid_swf = $file_swf->fid;
                     }
                 } else {
-                    $fid_swf = $input['fid_swf'];
-                }            
+                    $file_swf = file_load($a[0]->fid);
+                    $fid_swf = $file_swf->fid;
+                }
+
+                /*     $file_path = drupal_realpath($file->uri);
+                  if (!file_exists($file_path)) {
+                  form_error($element, "Error in covertation process");
+                  } else {
+                  $file_swf = file_save($file);
+                  $fid_swf = $file_swf->fid;
+                  }
+                  }else{
+                  $fid_swf = $input['fid_swf'];
+                  } */
+
+
+                $result = db_query('SELECT fid FROM {file_managed} WHERE uri = :uri', array(
+                    ':uri' => $file->uri
+                        ));
+                $a = $result->fetchAll();
+            } else {
+                $fid_swf = $input['fid_swf'];
+            }
         }
     }
     $return['fid'] = $fid;
@@ -158,6 +246,7 @@ function book_field_managed_book_process($element, &$form_state, $form) {
     if (isset($element['#value']['fid_swf'])) {
         $fid_swf = $element['#value']['fid_swf'];
     }
+    $element['#progress_indicator'] = 'bar';
     $element['#file_swf'] = $fid_swf ? file_load($fid_swf) : FALSE;
     $element['#file'] = $fid ? file_load($fid) : FALSE;
 
@@ -208,6 +297,21 @@ function book_field_managed_book_process($element, &$form_state, $form) {
         '#type' => 'hidden',
         '#value' => $fid_swf,
     );
+    $upload_progress_key = mt_rand();
+    $conversion_progress_key = mt_rand();
+    $element['UPLOAD_IDENTIFIER'] = array(
+        '#type' => 'hidden',
+        '#value' => $upload_progress_key,
+        '#attributes' => array('class' => array('file-progress')),
+        // Uploadprogress extension requires this field to be at the top of the
+        // form.
+        '#weight' => -20,
+    );
+    $element['CONVERSION_IDENTIFIER'] = array(
+        '#type' => 'hidden',
+        '#value' => $conversion_progress_key,
+    );
+    $element['upload_button']['#ajax']['progress']['path'] = 'book_field/progress/' . $upload_progress_key . '_' . $conversion_progress_key;
 
     // The file upload field itself.
     $element['upload'] = array(
@@ -471,16 +575,16 @@ function _book_field_file_move($file) {
 /**
  * Implements hook_field_validate().
  */
-/*function book_field_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
-    foreach ($items as $delta => $item) {
-        if ($item['fid'] == '0') {
-            $errors[$field['field_name']][$langcode][$delta][] = array(
-                'error' => 'File is abscent',
-                'message' => t('Please upload file'),
-            );
-        }
-    }
-}*/
+/* function book_field_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
+  foreach ($items as $delta => $item) {
+  if ($item['fid'] == '0') {
+  $errors[$field['field_name']][$langcode][$delta][] = array(
+  'error' => 'File is abscent',
+  'message' => t('Please upload file'),
+  );
+  }
+  }
+  } */
 
 /**
  * Implements hook_field_widget_error().
