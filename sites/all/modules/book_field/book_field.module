@@ -232,8 +232,7 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
             }
         }
     }
-    $return['fid'] = $fid;
-    //dpm(debug_backtrace());
+    $return['fid'] = $fid; 
 
     $return['fid_swf'] = $fid_swf;
     return $return;
@@ -444,7 +443,7 @@ function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $
                 '#description' => 'Book uploading',
                 '#type' => 'managed_book',
                 '#upload_validators' => array(
-                    'file_validate_extensions' => array('pdf swf txt'),
+                    'file_validate_extensions' => array('pdf'),
                     // Pass the maximum file size in bytes
                     'file_validate_size' => array(5 * 1024 * 1024),
                 ),
@@ -508,16 +507,15 @@ function book_field_managed_book_validate(&$element, &$form_state) {
 function book_field_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
     $element = array();
     if ($display['type'] == 'book_field_formatter') {
-        foreach ($items as $delta => $item) {
-
-            if (isset($item['fid_swf']) && $item['fid_swf'] != '0') {
-                $file = file_load($item['fid_swf']);
+        foreach ($items as $delta => $item) {           
+            if (isset($item['fid_swf']) && $item['fid_swf'] != '0') {                
+                $file = file_load($item['fid_swf']);                 
                 $module_path = drupal_get_path('module', 'book_field');
-                $uri = $file->uri;
+                $uri = $file->uri;                 
                 $path = drupal_realpath($uri);
                 $drupal_folder = realpath('.');
                 $relative_path = str_replace($drupal_folder, "", $path);
-                drupal_add_js(array('book_field' => array('path' => $relative_path)), 'setting');
+                drupal_add_js(array('book_field' => array('paths' => array($relative_path))), 'setting');
                 $element[$delta] = array(
                     '#attached' => array(
                         'css' => array($module_path . '/book_field.css'),
@@ -610,5 +608,5 @@ function book_field_theme() {
 function theme_book_field_flexpaper_view($variables) {
     $file = (object) $variables['file'];
 
-    return '<p id="viewerPlaceHolder">Document loading..</p>';
+    return '<p class = "viewerPlaceHolder">Document loading..</p>';
 }
