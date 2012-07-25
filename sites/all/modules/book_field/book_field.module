@@ -202,7 +202,10 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
                     } else {
                         $file_swf = file_save($file);
                         $fid_swf = $file_swf->fid;
-                    }
+                    }                    
+                    $delete = db_delete('progress')
+                            ->condition('pid', $input['CONVERSION_IDENTIFIER'])
+                            ->execute();
                 } else {
                     $file_swf = file_load($a[0]->fid);
                     $fid_swf = $file_swf->fid;
