@@ -1,0 +1,8 @@
+<?php
+/*
+ * Implements hook_install()
+ */
+function book_field_search_install(){
+    db_query("UPDATE {system} SET weight = 88 WHERE name = 'book_field_search'");
+}
+

@@ -1,0 +1,86 @@
+<?PHP
+
+/**
+ *   Indexer for the userhook_apachesolr_entity_info_alter entities for the Apachesolr module.
+ */
+
+function book_field_apachesolr_entity_info_alter(&$entity_info) { 
+  $entity_info['file']['reindex callback'] = 'book_field_solr_reindex';    
+}
+
+
+
+/**
+ * Reindexing callback for ApacheSolr, for book_field entities.
+ */
+function book_field_solr_reindex() {  
+  module_load_include('inc', 'apachesolr_attachments', 'apachesolr_attachments.index');  
+  $indexer_table = apachesolr_get_indexer_table('file');
+  $transaction = db_transaction();
+  $env_id = apachesolr_default_environment();
+  try {
+    // Clean the table
+    db_delete($indexer_table)
+      ->condition('entity_type', 'file')
+      ->isNull('body')
+      ->execute();
+    $files = _book_field_get_all_files();
+    // If we do not have files, return success
+    if (empty($files)) {
+      return TRUE;
+    }
+    // Loop over all the files and add them to our indexing table
+    foreach ($files as $parent_entity_type => $parent_entities) {
+      foreach ($parent_entities as $parent_entity_info) {
+        // Fake our file class
+        $file = new stdClass();
+        foreach ($parent_entity_info->extraFields as $key => $value) {
+           if (strpos($key, '_fid')) {
+            $file->fid = $parent_entity_info->extraFields->$key;           
+          }
+        }
+        list ($parent_entity_id) = entity_extract_ids($parent_entity_type, $parent_entity_info);
+        apachesolr_attachments_add_file_usage($file, $parent_entity_type, $parent_entity_id);
+      }
+    }
+  }
+  catch (Exception $e) {
+    $transaction->rollback();
+    drupal_set_message($e->getMessage(), 'error');
+    watchdog_exception('Apache Solr Attachments', $e);
+    return FALSE;
+  }
+  return TRUE;
+}
+/**
+ * Fetches all files linked to nodes created by fields from the file module
+ * regardless of the widget
+ * @return type
+ */
+function _book_field_get_all_files() {
+  $results = array();
+  $fields = field_info_field_by_ids(); 
+  foreach ($fields as $field_id => $field_info) {
+    if ($field_info['type'] == 'book_field' || $field_info['type'] == 'file') {
+      foreach ($field_info['bundles'] as $entity_type => $bundles) {
+        $entity_info = entity_get_info($entity_type);
+        // If this entity type is not indexable, ignore this and move on to the
+        // next one
+        if (empty($entity_info['apachesolr']['indexable'])) {
+          continue;
+        }
+
+        $query = new ApachesolrAttachmentsEntityFieldQuery();
+        $results_query = $query
+          ->entityCondition('entity_type', $entity_type)
+          ->fieldCondition($field_info['field_name'])
+          // Fetch all file ids related to the entities
+          ->addExtraField($field_info['field_name'], 'fid', 'fid')
+          ->execute();
+        $results = array_merge_recursive($results, $results_query);
+
+      }
+    }
+  }
+  return $results;
+}
