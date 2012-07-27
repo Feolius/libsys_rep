@@ -1,0 +1,447 @@
+<?php
+
+function collection_layout_block_info() {
+    $blocks = array();
+    $blocks['files_filter_block'] = array(
+        'info' => t('Block for filters'),
+        'cache' => DRUPAL_NO_CACHE,
+    );
+    return $blocks;
+}
+
+function collection_layout_menu() {
+    $items = array();
+    $items['collection'] = array(
+        'title' => 'Collection',
+        'access callback' => TRUE,
+        'page callback' => 'collection_layout_collection_page_callback',
+        'type' => MENU_CALLBACK,
+    );
+    $items['node-page'] = array(
+        'title' => 'Collection',
+        'access callback' => TRUE,
+        'page callback' => 'collection_layout_node_page_callback',
+        'type' => MENU_CALLBACK,
+    );
+    $items['timeline-json'] = array(
+        'access callback' => TRUE,
+        'page callback' => 'collection_layout_timeline_json_callback',
+        'type' => MENU_CALLBACK,
+    );
+    $items['timeline-frame'] = array(
+        'title' => 'asdasdasdsd',
+        'access callback' => TRUE,
+        'page callback' => 'collection_layout_timeline_frame_callback',
+        'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+
+function get_filters_list() {
+    return array('document_type', 'collection', 'category', 'group', 'date', 'creator', 'view_type');
+}
+
+function is_filter($arg) {
+    return in_array($arg, get_filters_list());
+}
+
+function set_filter_value($fid, $val) {
+    $_SESSION['collection_layout'][$fid][] = $val;
+    $_SESSION['collection_layout']['flag'] = 1;
+}
+
+function add_filter_value($fid, $val) {
+    if ($fid == 'date') {
+        if (isset($val['year'])) {
+            if (isset($_SESSION['collection_layout'][$fid]['year'])) {
+                if ($_SESSION['collection_layout'][$fid]['year'] == $val['year'])
+                    unset($_SESSION['collection_layout'][$fid]['year']);
+                else
+                    $_SESSION['collection_layout'][$fid]['year'] = $val['year'];
+            }else
+                $_SESSION['collection_layout'][$fid]['year'] = $val['year'];
+            $_SESSION['collection_layout']['flag'] = 1;
+        }
+        if (isset($val['min']) && isset($val['max'])) {
+            $_SESSION['collection_layout'][$fid]['min'] = $val['min'];
+            $_SESSION['collection_layout'][$fid]['max'] = $val['max'];
+            $_SESSION['collection_layout']['flag'] = 1;
+        }
+        return;
+    }
+    if ($fid == 'view_type') {
+        $_SESSION['collection_layout']['view_type'] = $val;
+        return;
+    }
+    if (isset($_SESSION['collection_layout'][$fid]))
+        if (!in_array($val, $_SESSION['collection_layout'][$fid])) {
+            set_filter_value($fid, $val);
+        } else
+            remove_filter_value($fid, $val);
+    else
+        set_filter_value($fid, $val);
+}
+
+function remove_filter_value($fid, $val) {
+    if (in_array($val, $_SESSION['collection_layout'][$fid]))
+        foreach ($_SESSION['collection_layout'][$fid] as $key => $value) {
+            if ($val == $value) {
+                unset($_SESSION['collection_layout'][$fid][$key]);
+                $_SESSION['collection_layout']['flag'] = 1;
+            }
+        }
+}
+
+function get_filter_value($fid) {
+    if (is_filter($fid))
+        if (isset($_SESSION['collection_layout'][$fid]))
+            return $_SESSION['collection_layout'][$fid];
+        else
+            return false;
+}
+
+function get_filter_list() {
+    $list = array();
+    if (isset($_SESSION['collection_layout']))
+        foreach ($_SESSION['collection_layout'] as $key => $value) {
+            if (is_filter($key))
+                $list[$key] = $value;
+        }
+    return empty($list) ? false : $list;
+}
+
+function get_filter_human_name($fid) {
+    switch ($fid) {
+        case 'document_type' :
+            return 'Document type';
+        case 'collection' :
+            return 'Collection';
+        case 'category' :
+            return 'Category';
+        case 'group' :
+            return 'Groupe';
+        case 'data' :
+            return '';
+        default :
+            return false;
+    }
+}
+
+function get_term_name($tid) {
+    return $term_name = db_select('taxonomy_term_data', 't')
+                    ->fields('t', array('name'))
+                    ->condition('tid', $tid)
+                    ->execute()
+                    ->fetchObject()
+            ->name;
+}
+
+function collection_layout_collection_page_callback() {
+    if (!isset($_SESSION['collection_layout']['date']['min']))
+        $_SESSION['collection_layout']['date']['min'] = 1000;
+    if (!isset($_SESSION['collection_layout']['date']['max']))
+        $_SESSION['collection_layout']['date']['max'] = 2050;
+    foreach ($_GET as $key => $value) {
+        if (is_filter($key))
+            add_filter_value($key, $value);
+    }
+    $doc_type = get_filter_value('document_type');
+    $doc_type_filter_string = $doc_type ? implode('+', $doc_type) : 'all';
+
+    $collection = get_filter_value('collection');
+    $collection_filter_string = $collection ? implode('+', $collection) : 'all';
+
+    $category = get_filter_value('category');
+    $category_filter_string = $category ? implode('+', $category) : 'all';
+
+    $group = get_filter_value('group');
+    $group_filter_string = $group ? implode('+', $group) : 'all';
+
+    $date = get_filter_value('date');
+    $date_range_filter_string = isset($date['min']) ? "{$date['min']}--{$date['max']}" : 'all';
+    $date_filter_string = isset($date['year']) ? $date['year'] : 'all';
+
+    $view_type = get_filter_value('view_type');
+
+    $display = '';
+    switch ($view_type) {
+        case 1:
+            $display = 'list';
+            break;
+        case 2:
+            $display = 'condensed_list';
+            break;
+        case 3:
+            $display = 'grid';
+            break;
+        case 4:
+            $display = 'timeline';
+            break;
+        default :
+            $display = 'list';
+    }
+    $result = views_embed_view('collection_view', $display, $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string);
+
+    return $result;
+}
+
+function collection_layout_block_view() {
+    if (!isset($_SESSION['collection_layout']['date']['min']))
+        $_SESSION['collection_layout']['date']['min'] = 1000;
+    if (!isset($_SESSION['collection_layout']['date']['max']))
+        $_SESSION['collection_layout']['date']['max'] = 2050;
+    drupal_add_library('system', 'ui.slider');
+    drupal_add_js(array('collection_layout' => array(
+            'date_min' => $_SESSION['collection_layout']['date']['min'],
+            'date_max' => $_SESSION['collection_layout']['date']['max'],
+            )), 'setting');
+
+    $result = '<h2>Browsing</h2>';
+
+    $result .= '<div class="view_type_1">' . l('List browsing', 'collection', array(
+                'query' => array(
+                    'view_type' => '1'
+                    ))) . '</div>';
+    $result .= '<div class="view_type_1">' . l('Condensed list browsing', 'collection', array(
+                'query' => array(
+                    'view_type' => '2'
+                    ))) . '</div>';
+    $result .= '<div class="view_type_1">' . l('Grid browsing', 'collection', array(
+                'query' => array(
+                    'view_type' => '3'
+                    ))) . '</div>';
+    $result .= '<div class="view_type_1">' . l('Timeline browsing', 'collection', array(
+                'query' => array(
+                    'view_type' => '4'
+                    ))) . '</div>';
+
+    $result .= '<h2>Publication date</h2>';
+    $result .= '<div id="slider-date-range"></div>';
+    $filter_list = get_filter_list();
+    if ($filter_list)
+        $result .= '<h2>Refine</h2>';
+    foreach ($filter_list as $fid => $val) {
+        if ($fid != 'date') {
+            if ($fid != 'view_type')
+                if (is_array($val))
+                    foreach ($val as $tid) {
+                        $result .= '<div class="' . $fid . '_' . $tid . '">';
+                        $result .= l(get_filter_human_name($fid) . ': ' . get_term_name($tid) . '[X]', 'collection', array(
+                            'query' => array(
+                                $fid => $tid
+                                )));
+                        $result .= '</div>';
+                    } else {
+                    $result .= '<div class="' . $fid . '_' . $val . '">';
+                    $result .= l(get_filter_human_name($fid) . ': ' . get_term_name($val) . '[X]', 'collection', array(
+                        'query' => array(
+                            $fid => $val
+                            )));
+                    $result .= '</div>';
+                }
+        } else
+        if (isset($val['year'])) {
+            $result .= '<div class="' . $fid . '_' . $val['year'] . '">';
+            $result .= l($val['year'] . '[X]', 'collection', array(
+                'query' => array(
+                    'date[year]' => $val['year']
+                    )));
+            $result .= '</div>';
+        }
+    }
+
+    $date = get_filter_value('date');
+    $date_range_filter_string = isset($date['min']) ? "{$date['min']}--{$date['max']}" : 'all';
+    $date_filter_string = isset($date['year']) ? $date['year'] : 'all';
+    $doc_type = get_filter_value('document_type');
+    $doc_type_filter_string = $doc_type ? implode('+', $doc_type) : 'all';
+    $category = get_filter_value('category');
+    $category_filter_string = $category ? implode('+', $category) : 'all';
+    $collection = get_filter_value('collection');
+    $collection_filter_string = $collection ? implode('+', $collection) : 'all';
+    $group = get_filter_value('group');
+    $group_filter_string = $group ? implode('+', $group) : 'all';
+
+    $result .= '<h2>Document type</h2>';
+    $result .= views_embed_view('document_type_views', 'page', $date_range_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string);
+
+    $result .= '<h2>Category</h2>';
+    $result .= views_embed_view('category_view', 'page', $date_range_filter_string, $doc_type_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string);
+
+    $result .= '<h2>Collection</h2>';
+    $result .= views_embed_view('collection_view_taxonomy', 'page', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $group_filter_string, $date_filter_string);
+
+    $result .= '<h2>Groupe</h2>';
+    $result .= views_embed_view('groupe_view', 'page', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $date_filter_string);
+
+    $result .= '<h2>Publication date</h2>';
+    $result .= views_embed_view('collection_view', 'block_1', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string);
+
+    $block = array(
+        'subject' => t(''),
+        'content' => $result,
+    );
+    return $block;
+}
+
+function collection_layout_field_formatter_info() {
+    return array(
+        'collection_layout_date_link' => array(
+            'label' => t('Collection Layout Date Link'),
+            'field types' => array('date', 'datestamp', 'datetime'),
+        ),
+        'colletion_layout_title_link' => array(
+            'label' => t('Collection Layout Title Link'),
+            'field types' => array('text'),
+        ),
+    );
+}
+
+function collection_layout_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+    $element = array();
+    switch ($display['type']) {
+        case 'collection_layout_date_link':
+            foreach ($items as $delta => $item) {
+                $year = explode('-', $item['value']);
+                $year = $year[0];
+                $element[$delta] = array(
+                    '#type' => 'markup',
+                    '#markup' => l($year, 'collection', array(
+                        'query' => array(
+                            'date[year]' => $year
+                        )
+                    ))
+                );
+            }
+            break;
+        case 'colletion_layout_title_link' :
+            foreach ($items as $delta => $item) {
+                $element[$delta] = array(
+                    '#type' => 'markup',
+                    '#markup' => '<h2>' . l($item['value'], 'node-page', array(
+                        'query' => array(
+                            'nid' => $entity->nid
+                        )
+                    )) . '</h2>'
+                );
+            }
+            break;
+    }
+    return $element;
+}
+
+function collection_layout_views_api() {
+    return array(
+        'api' => 3,
+    );
+}
+
+function collection_layout_node_page_callback() {
+
+    drupal_add_css(drupal_get_path('module', 'collection_layout') . '/css/msft-metro-buttons.css');
+    drupal_add_css(drupal_get_path('module', 'collection_layout') . '/cmmb.css');
+    if (isset($_SESSION['collection_layout']['flag']) && $_SESSION['collection_layout']['flag']) {
+        unset($_SESSION['collection_layout']['view_result']);
+        $_SESSION['collection_layout']['flag'] = 0;
+    }
+
+    if (isset($_GET['nid']))
+        $_SESSION['collection_layout']['nid'] = $_GET['nid'];
+
+    $doc_type = get_filter_value('document_type');
+    $doc_type_filter_string = $doc_type ? implode('+', $doc_type) : 'all';
+
+    $collection = get_filter_value('collection');
+    $collection_filter_string = $collection ? implode('+', $collection) : 'all';
+
+    $category = get_filter_value('category');
+    $category_filter_string = $category ? implode('+', $category) : 'all';
+
+    $group = get_filter_value('group');
+    $group_filter_string = $group ? implode('+', $group) : 'all';
+
+    $date = get_filter_value('date');
+    $date_range_filter_string = isset($date['min']) ? "{$date['min']}--{$date['max']}" : 'all';
+    $date_filter_string = isset($date['year']) ? $date['year'] : 'all';
+
+    $result = views_embed_view('node_view', 'page', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string);
+
+    views_embed_view('timeline_json_view', 'block_1', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string);
+
+    $result .= '<iframe src="timeline-frame" style="width:100%; height:400px; border:1px solid #e0e0e0"></iframe>';
+
+    for ($i = 0; $i < count($_SESSION['collection_layout']['view_result']); $i++) {
+        if ($_SESSION['collection_layout']['nid'] == $_SESSION['collection_layout']['view_result'][$i]->nid) {
+            if ($i != 0)
+                $result .= '<div>' . l('', 'node-page', array(
+                            'query' => array('nid' => $_SESSION['collection_layout']['view_result'][$i - 1]->nid),
+                            'attributes' => array('class' => array('m-icon-big-swapleft'))
+                        )) . '</div>';
+            if ($i != count($_SESSION['collection_layout']['view_result']) - 1)
+                $result.= '<div>' . l('', 'node-page', array(
+                            'query' => array('nid' => $_SESSION['collection_layout']['view_result'][$i + 1]->nid),
+                            'attributes' => array('class' => array('m-icon-big-swapright'))
+                        )) . '</div>';
+        }
+    }
+
+    return $result;
+}
+
+function collection_layout_timeline_frame_callback() {
+    $curr_i = 0;
+
+    foreach ($_SESSION['collection_layout']['json']['nid'] as $nid)
+        if ($nid == $_SESSION['collection_layout']['nid'])
+            break;
+        else
+            $curr_i++;
+
+    echo
+    '<html>
+        <body>
+            <div id="timeline-embed"></div>
+            <script type="text/javascript">
+                var timeline_config = {
+                    width: 	"100%",
+                    height: "100%",
+                    source: \'/timeline-json\',
+                    start_at_slide:' . $curr_i . ' 
+            }
+            </script>
+            <script type="text/javascript" src="/sites/all/modules/collection_layout/timeline/compiled/js/timeline-embed.js"></script>
+        </body>
+    </html>';
+
+    exit;
+}
+
+function collection_layout_timeline_json_callback() {
+
+    $date = array();
+
+    for ($i = 0; $i < count($_SESSION['collection_layout']['json']['date']); $i++) {
+        $asset = new stdClass();
+        $asset->media = $_SESSION['collection_layout']['json']['image_url'][$i];
+        $asset->credit = "";
+        $asset->caption = "";
+
+        $item = new stdClass();
+        $item->headline = $_SESSION['collection_layout']['json']['title'][$i];
+        $item->startDate = $_SESSION['collection_layout']['json']['date'][$i];
+        $item->text = $_SESSION['collection_layout']['json']['text'][$i];
+        $item->asset = $asset;
+        $date[] = $item;
+    }
+
+    $json_class = new stdClass();
+    $json_class->timeline = new stdClass();
+    $json_class->timeline->headline = "";
+    $json_class->timeline->type = "default";
+    $json_class->timeline->startDate = "1000";
+    $json_class->timeline->text = "";
+    $json_class->timeline->date = $date;
+
+    echo drupal_json_output($json_class);
+    exit;
+}

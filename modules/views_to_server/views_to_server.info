@@ -1,7 +1,8 @@
 name = views to server
 core = 7.x
 package = Features
-version = 7.x-1.0
+php = 5.2.4
+version = 7.x-1.3
 project = views_to_server
 dependencies[] = ctools
 dependencies[] = views
@@ -12,3 +13,5 @@ features[views_view][] = collection_view
 features[views_view][] = collection_view_taxonomy
 features[views_view][] = document_type_views
 features[views_view][] = groupe_view
+features[views_view][] = node_view
+features[views_view][] = timeline_json_view
