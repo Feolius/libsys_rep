@@ -38,7 +38,7 @@ function collection_layout_menu() {
 }
 
 function get_filters_list() {
-    return array('document_type', 'collection', 'category', 'group', 'date', 'creator');
+    return array('document_type', 'collection', 'category', 'group', 'date', 'creator', 'view_type');
 }
 
 function is_filter($arg) {
@@ -67,6 +67,10 @@ function add_filter_value($fid, $val) {
             $_SESSION['collection_layout'][$fid]['max'] = $val['max'];
             $_SESSION['collection_layout']['flag'] = 1;
         }
+        return;
+    }
+    if ($fid == 'view_type') {
+        $_SESSION['collection_layout']['view_type'] = $val;
         return;
     }
     if (isset($_SESSION['collection_layout'][$fid]))
@@ -156,7 +160,27 @@ function collection_layout_collection_page_callback() {
     $date = get_filter_value('date');
     $date_range_filter_string = isset($date['min']) ? "{$date['min']}--{$date['max']}" : 'all';
     $date_filter_string = isset($date['year']) ? $date['year'] : 'all';
-    $result = views_embed_view('collection_view', 'page', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string);
+
+    $view_type = get_filter_value('view_type');
+
+    $display = '';
+    switch ($view_type) {
+        case 1:
+            $display = 'list';
+            break;
+        case 2:
+            $display = 'condensed_list';
+            break;
+        case 3:
+            $display = 'grid';
+            break;
+        case 4:
+            $display = 'timeline';
+            break;
+        default :
+            $display = 'list';
+    }
+    $result = views_embed_view('collection_view', $display, $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string);
 
     return $result;
 }
@@ -171,29 +195,51 @@ function collection_layout_block_view() {
             'date_min' => $_SESSION['collection_layout']['date']['min'],
             'date_max' => $_SESSION['collection_layout']['date']['max'],
             )), 'setting');
-    $result = '<h2>Publication date</h2>';
+
+    $result = '<h2>Browsing</h2>';
+
+    $result .= '<div class="view_type_1">' . l('List browsing', 'collection', array(
+                'query' => array(
+                    'view_type' => '1'
+                    ))) . '</div>';
+    $result .= '<div class="view_type_1">' . l('Condensed list browsing', 'collection', array(
+                'query' => array(
+                    'view_type' => '2'
+                    ))) . '</div>';
+    $result .= '<div class="view_type_1">' . l('Grid browsing', 'collection', array(
+                'query' => array(
+                    'view_type' => '3'
+                    ))) . '</div>';
+    $result .= '<div class="view_type_1">' . l('Timeline browsing', 'collection', array(
+                'query' => array(
+                    'view_type' => '4'
+                    ))) . '</div>';
+
+    $result .= '<h2>Publication date</h2>';
     $result .= '<div id="slider-date-range"></div>';
     $filter_list = get_filter_list();
     if ($filter_list)
         $result .= '<h2>Refine</h2>';
     foreach ($filter_list as $fid => $val) {
-        if ($fid != 'date')
-            if (is_array($val))
-                foreach ($val as $tid) {
-                    $result .= '<div class="' . $fid . '_' . $tid . '">';
-                    $result .= l(get_filter_human_name($fid) . ': ' . get_term_name($tid) . '[X]', 'collection', array(
+        if ($fid != 'date') {
+            if ($fid != 'view_type')
+                if (is_array($val))
+                    foreach ($val as $tid) {
+                        $result .= '<div class="' . $fid . '_' . $tid . '">';
+                        $result .= l(get_filter_human_name($fid) . ': ' . get_term_name($tid) . '[X]', 'collection', array(
+                            'query' => array(
+                                $fid => $tid
+                                )));
+                        $result .= '</div>';
+                    } else {
+                    $result .= '<div class="' . $fid . '_' . $val . '">';
+                    $result .= l(get_filter_human_name($fid) . ': ' . get_term_name($val) . '[X]', 'collection', array(
                         'query' => array(
-                            $fid => $tid
+                            $fid => $val
                             )));
                     $result .= '</div>';
-                } else {
-                $result .= '<div class="' . $fid . '_' . $val . '">';
-                $result .= l(get_filter_human_name($fid) . ': ' . get_term_name($val) . '[X]', 'collection', array(
-                    'query' => array(
-                        $fid => $val
-                        )));
-                $result .= '</div>';
-            } else
+                }
+        } else
         if (isset($val['year'])) {
             $result .= '<div class="' . $fid . '_' . $val['year'] . '">';
             $result .= l($val['year'] . '[X]', 'collection', array(
@@ -251,9 +297,6 @@ function collection_layout_field_formatter_info() {
     );
 }
 
-/**
- * Implements hook_field_formatter_view().
- */
 function collection_layout_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
     $element = array();
     switch ($display['type']) {
@@ -347,15 +390,15 @@ function collection_layout_node_page_callback() {
 
 function collection_layout_timeline_frame_callback() {
     $curr_i = 0;
-    
+
     foreach ($_SESSION['collection_layout']['json']['nid'] as $nid)
         if ($nid == $_SESSION['collection_layout']['nid'])
             break;
         else
             $curr_i++;
-        
-    echo 
-   '<html>
+
+    echo
+    '<html>
         <body>
             <div id="timeline-embed"></div>
             <script type="text/javascript">
@@ -369,7 +412,7 @@ function collection_layout_timeline_frame_callback() {
             <script type="text/javascript" src="/sites/all/modules/collection_layout/timeline/compiled/js/timeline-embed.js"></script>
         </body>
     </html>';
-    
+
     exit;
 }
 

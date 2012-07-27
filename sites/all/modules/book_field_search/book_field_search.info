@@ -1,0 +1,8 @@
+name = Book field search
+description = "Provides apache solr searching for book field."
+package = Book field
+core = 7.x
+dependencies[] = book_field
+dependencies[] = apachesolr
+dependencies[] = apachesolr_attachments
+

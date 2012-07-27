@@ -8,17 +8,15 @@ function collection_layout_views_data_alter(&$data) {
 }
 
 function collection_layout_views_pre_render(&$view) {
-    
     if ($view->name == 'node_view' && $view->current_display == 'page' && isset($_SESSION['collection_layout']['nid'])) {
         if (!isset($_SESSION['collection_layout']['view_result']))
             $_SESSION['collection_layout']['view_result'] = $view->result;
         $tmp = array();
-        foreach ($_SESSION['collection_layout']['view_result'] as $row) {
+        foreach ($_SESSION['collection_layout']['view_result'] as $row) 
             if ($row->nid == $_SESSION['collection_layout']['nid']) {
                 $tmp[] = $row;
                 break;
             }
-        }
         $view->result = $tmp;
     }
     if($view->name == 'timeline_json_view' && $view->current_display == 'block_1'){
