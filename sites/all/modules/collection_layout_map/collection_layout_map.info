@@ -1,0 +1,10 @@
+name = Collection layout map
+core = 7.x
+package = Features
+version = 7.x-1.0
+project = collection_layout_map
+dependencies[] = ctools
+dependencies[] = openlayers
+features[ctools][] = openlayers:openlayers_maps:1
+features[features_api][] = api:1
+features[openlayers_maps][] = collection_layout_map

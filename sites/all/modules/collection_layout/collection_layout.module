@@ -176,11 +176,14 @@ function collection_layout_collection_page_callback() {
             break;
         case 4:
             $display = 'timeline';
+            views_embed_view('timeline_json_view', 'block_1', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string);
             break;
         default :
             $display = 'list';
     }
-    $result = views_embed_view('collection_view', $display, $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string);
+
+    $result = $display != 'timeline' ? views_embed_view('collection_view', $display, $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string) :
+            '<iframe src="timeline-frame" style="width:100%; height:600px; border:1px solid #e0e0e0"></iframe>';
 
     return $result;
 }
@@ -191,6 +194,7 @@ function collection_layout_block_view() {
     if (!isset($_SESSION['collection_layout']['date']['max']))
         $_SESSION['collection_layout']['date']['max'] = 2050;
     drupal_add_library('system', 'ui.slider');
+    drupal_add_js(drupal_get_path('module', 'collection_layout') . '/js/date_slider.js');
     drupal_add_js(array('collection_layout' => array(
             'date_min' => $_SESSION['collection_layout']['date']['min'],
             'date_max' => $_SESSION['collection_layout']['date']['max'],
@@ -390,12 +394,12 @@ function collection_layout_node_page_callback() {
 
 function collection_layout_timeline_frame_callback() {
     $curr_i = 0;
-
-    foreach ($_SESSION['collection_layout']['json']['nid'] as $nid)
-        if ($nid == $_SESSION['collection_layout']['nid'])
-            break;
-        else
-            $curr_i++;
+    if (get_filter_value('view_type') != '4')
+        foreach ($_SESSION['collection_layout']['json']['nid'] as $nid)
+            if ($nid == $_SESSION['collection_layout']['nid'])
+                break;
+            else
+                $curr_i++;
 
     echo
     '<html>

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Collection layout map feature.
+ */
+
+include_once 'collection_layout_map.features.inc';
