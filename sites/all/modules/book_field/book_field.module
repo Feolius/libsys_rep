@@ -138,9 +138,9 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
             if (isset($input['fid']) && $file = file_load($input['fid'])) {
                 $fid = $file->fid;
             }
-        }
+        }        
         //Conversion to swf
-        if (isset($form_state['input']['field_book']['und'][0]['create_swf']) && $form_state['input']['field_book']['und'][0]['create_swf'] == '1') {
+        if (isset($form_state['input'][$element['#parents'][0]]['und'][0]['create_swf']) && $form_state['input'][$element['#parents'][0]]['und'][0]['create_swf'] == '1') {
             if ($input['fid_swf'] == 0) {
                 $uri = $file->uri;
                 $file_name = $file->filename;
@@ -202,7 +202,7 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
                     } else {
                         $file_swf = file_save($file);
                         $fid_swf = $file_swf->fid;
-                    }                    
+                    }
                     $delete = db_delete('progress')
                             ->condition('pid', $input['CONVERSION_IDENTIFIER'])
                             ->execute();
@@ -232,7 +232,7 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
             }
         }
     }
-    $return['fid'] = $fid; 
+    $return['fid'] = $fid;
 
     $return['fid_swf'] = $fid_swf;
     return $return;
@@ -251,8 +251,6 @@ function book_field_managed_book_process($element, &$form_state, $form) {
     $element['#progress_indicator'] = 'bar';
     $element['#file_swf'] = $fid_swf ? file_load($fid_swf) : FALSE;
     $element['#file'] = $fid ? file_load($fid) : FALSE;
-
-
     $element['#tree'] = TRUE;
     $ajax_settings = array(
         'path' => 'file/ajax/' . implode('/', $element['#array_parents']) . '/' . $form['form_build_id']['#value'],
@@ -326,7 +324,7 @@ function book_field_managed_book_process($element, &$form_state, $form) {
         '#weight' => -10,
     );
 
-    if ($element['#file_swf']) {
+    if ($element['#file_swf']) {        
         $element['filename'] = array(
             '#type' => 'markup',
             '#markup' => theme('file_link', array('file' => $element['#file_swf'])) . ' ',
@@ -340,7 +338,6 @@ function book_field_managed_book_process($element, &$form_state, $form) {
             '#weight' => -10,
         );
     }
-
     // Add the extension list to the page as JavaScript settings.
     if (isset($element['#upload_validators']['file_validate_extensions'][0])) {
         $extension_list = implode(',', array_filter(explode(' ', $element['#upload_validators']['file_validate_extensions'][0])));
@@ -351,7 +348,7 @@ function book_field_managed_book_process($element, &$form_state, $form) {
             )
         );
     }
-
+     
     // Prefix and suffix used for Ajax replacement.
     $element['#prefix'] = '<div id="' . $element['#id'] . '-ajax-wrapper">';
     $element['#suffix'] = '</div>';
@@ -467,16 +464,16 @@ function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $
 
 function book_field_widget_fid_value(&$element, $input = FALSE, $form_state) {
     $return = '0';
-    if (isset($form_state['input']['field_book']['und'][0]['fids']['fid'])) {
-        $return = $form_state['input']['field_book']['und'][0]['fids']['fid'];
+    if (isset($form_state['input'][$element['#parents'][0]]['und'][0]['fids']['fid'])) {
+        $return = $form_state['input'][$element['#parents'][0]]['und'][0]['fids']['fid'];
     }
     return $return;
 }
 
 function book_field_widget_fid_swf_value(&$element, $input = FALSE, $form_state) {
-    $return = '0';
-    if (isset($form_state['input']['field_book']['und'][0]['fids']['fid_swf'])) {
-        $return = $form_state['input']['field_book']['und'][0]['fids']['fid_swf'];
+    $return = '0';    
+    if (isset($form_state['input'][$element['#parents'][0]]['und'][0]['fids']['fid_swf'])) {
+        $return = $form_state['input'][$element['#parents'][0]]['und'][0]['fids']['fid_swf'];
     }
     return $return;
 }
@@ -508,10 +505,10 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
     $element = array();
     if ($display['type'] == 'book_field_formatter') {
         foreach ($items as $delta => $item) {           
-            if (isset($item['fid_swf']) && $item['fid_swf'] != '0') {                
-                $file = file_load($item['fid_swf']);                 
+            if (isset($item['fid_swf']) && $item['fid_swf'] != '0') {
+                $file = file_load($item['fid_swf']);                
                 $module_path = drupal_get_path('module', 'book_field');
-                $uri = $file->uri;                 
+                $uri = $file->uri;
                 $path = drupal_realpath($uri);
                 $drupal_folder = realpath('.');
                 $relative_path = str_replace($drupal_folder, "", $path);
@@ -526,6 +523,7 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
                 );
             } elseif (isset($item['fid'])) {
                 $file = file_load($item['fid']);
+
                 $element[$delta] = array(
                     '#theme' => 'file_link',
                     '#file' => $file,
