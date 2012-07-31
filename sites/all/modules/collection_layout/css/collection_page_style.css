@@ -1,0 +1,46 @@
+root { 
+    display: block;
+}
+
+.collection_layout_term_label {
+    float: left;
+    margin-right: 10px;
+}
+
+.views-field-field-files-image {
+    float: left;
+    width: 190px;
+    text-align: center;
+    border: 1px solid rgb(255, 255, 255);
+    background: rgb(253, 253, 253);
+    padding-top: 10px;
+    padding-bottom: 10px;
+     -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.collection_layout_node{
+    margin-left: 225px;
+}
+
+.collection_layout_grid_cell .views-field-field-files-image{
+    float: none;
+    border: none;
+    height: 140px;
+}
+
+.collection_layout_grid_cell_shell{
+    width: 32%;
+    float: left;
+    border: 1px solid rgb(206, 206, 206);
+    margin: 2px;
+
+}
+
+.collection_layout_grid_cell {
+    background: rgb(253, 253, 253);
+    width: auto;
+    height: 185px;
+    text-align: center;
+}

@@ -137,10 +137,12 @@ function get_term_name($tid) {
 }
 
 function collection_layout_collection_page_callback() {
+    drupal_add_css(drupal_get_path('module', 'collection_layout') . '/css/collection_page_style.css');
     if (!isset($_SESSION['collection_layout']['date']['min']))
         $_SESSION['collection_layout']['date']['min'] = 1000;
     if (!isset($_SESSION['collection_layout']['date']['max']))
         $_SESSION['collection_layout']['date']['max'] = 2050;
+    
     foreach ($_GET as $key => $value) {
         if (is_filter($key))
             add_filter_value($key, $value);
@@ -188,7 +190,18 @@ function collection_layout_collection_page_callback() {
     return $result;
 }
 
-function collection_layout_block_view() {
+function collection_layout_contents($which_block) {
+  switch ($which_block) {
+    case 'files_filter_block':
+        $elements = array();
+        $elements[''];
+        return $elements;
+    default :
+        return;
+  }
+}
+
+function collection_layout_block_view($delta = '') {
     if (!isset($_SESSION['collection_layout']['date']['min']))
         $_SESSION['collection_layout']['date']['min'] = 1000;
     if (!isset($_SESSION['collection_layout']['date']['max']))
@@ -199,61 +212,34 @@ function collection_layout_block_view() {
             'date_min' => $_SESSION['collection_layout']['date']['min'],
             'date_max' => $_SESSION['collection_layout']['date']['max'],
             )), 'setting');
-
-    $result = '<h2>Browsing</h2>';
-
-    $result .= '<div class="view_type_1">' . l('List browsing', 'collection', array(
-                'query' => array(
-                    'view_type' => '1'
-                    ))) . '</div>';
-    $result .= '<div class="view_type_1">' . l('Condensed list browsing', 'collection', array(
-                'query' => array(
-                    'view_type' => '2'
-                    ))) . '</div>';
-    $result .= '<div class="view_type_1">' . l('Grid browsing', 'collection', array(
-                'query' => array(
-                    'view_type' => '3'
-                    ))) . '</div>';
-    $result .= '<div class="view_type_1">' . l('Timeline browsing', 'collection', array(
-                'query' => array(
-                    'view_type' => '4'
-                    ))) . '</div>';
-
-    $result .= '<h2>Publication date</h2>';
-    $result .= '<div id="slider-date-range"></div>';
+    
+    $refine = array();
     $filter_list = get_filter_list();
-    if ($filter_list)
-        $result .= '<h2>Refine</h2>';
+   
     foreach ($filter_list as $fid => $val) {
         if ($fid != 'date') {
             if ($fid != 'view_type')
                 if (is_array($val))
                     foreach ($val as $tid) {
-                        $result .= '<div class="' . $fid . '_' . $tid . '">';
-                        $result .= l(get_filter_human_name($fid) . ': ' . get_term_name($tid) . '[X]', 'collection', array(
+                        $refine[$fid] = l(get_filter_human_name($fid) . ': ' . get_term_name($tid) . '[X]', 'collection', array(
                             'query' => array(
                                 $fid => $tid
                                 )));
-                        $result .= '</div>';
                     } else {
-                    $result .= '<div class="' . $fid . '_' . $val . '">';
-                    $result .= l(get_filter_human_name($fid) . ': ' . get_term_name($val) . '[X]', 'collection', array(
+                    $refine[$fid] = l(get_filter_human_name($fid) . ': ' . get_term_name($val) . '[X]', 'collection', array(
                         'query' => array(
                             $fid => $val
                             )));
-                    $result .= '</div>';
                 }
         } else
         if (isset($val['year'])) {
-            $result .= '<div class="' . $fid . '_' . $val['year'] . '">';
-            $result .= l($val['year'] . '[X]', 'collection', array(
+            $refine[$fid] = l($val['year'] . '[X]', 'collection', array(
                 'query' => array(
                     'date[year]' => $val['year']
                     )));
-            $result .= '</div>';
         }
     }
-
+    
     $date = get_filter_value('date');
     $date_range_filter_string = isset($date['min']) ? "{$date['min']}--{$date['max']}" : 'all';
     $date_filter_string = isset($date['year']) ? $date['year'] : 'all';
@@ -266,24 +252,53 @@ function collection_layout_block_view() {
     $group = get_filter_value('group');
     $group_filter_string = $group ? implode('+', $group) : 'all';
 
-    $result .= '<h2>Document type</h2>';
-    $result .= views_embed_view('document_type_views', 'page', $date_range_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string);
-
-    $result .= '<h2>Category</h2>';
-    $result .= views_embed_view('category_view', 'page', $date_range_filter_string, $doc_type_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string);
-
-    $result .= '<h2>Collection</h2>';
-    $result .= views_embed_view('collection_view_taxonomy', 'page', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $group_filter_string, $date_filter_string);
-
-    $result .= '<h2>Groupe</h2>';
-    $result .= views_embed_view('groupe_view', 'page', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $date_filter_string);
-
-    $result .= '<h2>Publication date</h2>';
-    $result .= views_embed_view('collection_view', 'block_1', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string);
-
+    $filters = array( 
+        'documen_type' => array(
+            '#title' => t('Document type'),
+            '#content' => views_embed_view('document_type_views', 'page', $date_range_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string)
+        ),
+        'category' => array(
+            '#title' => t('Category'),
+            '#content' => views_embed_view('category_view', 'page', $date_range_filter_string, $doc_type_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string)
+        ),
+        'collection' => array(
+            '#title' => t('Collection'),
+            '#content' => views_embed_view('collection_view_taxonomy', 'page', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $group_filter_string, $date_filter_string)
+        ),
+        'groupe' => array(
+            '#title' => t('Groupe'),
+            '#content' => views_embed_view('groupe_view', 'page', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $date_filter_string)
+        ),
+        'publication_date' => array(
+            '#title' => t('Publication Date'),
+            '#content' => views_embed_view('collection_view', 'filter_date', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string)
+        )
+    );
+    
+    $content = array(
+        'browsing' => array(
+            '#title' => t('Browsing'),
+            '#content' => array(
+                l(t('List browsing'), 'collection', array('query' => array('view_type' => '1'))),
+                l(t('Condensed list browsing'), 'collection', array('query' => array('view_type' => '2'))),
+                l(t('Grid browsing'), 'collection', array('query' => array('view_type' => '3'))),
+                l(t('Timeline browsing'), 'collection', array('query' => array('view_type' => '4'))),
+            )
+        ),
+        'publication_date_range' => array(
+            '#title' => t('Publication date'),
+            '#content' => '<div id="slider-date-range"></div>'
+        ),
+        'refine' => array(
+            '#title' => t('Refine'),
+            '#content' => $refine
+        ),
+        'filters' => $filters
+    );
+    
     $block = array(
         'subject' => t(''),
-        'content' => $result,
+        'content' => theme('filter_block', array('element' => $content))
     );
     return $block;
 }
@@ -298,6 +313,10 @@ function collection_layout_field_formatter_info() {
             'label' => t('Collection Layout Title Link'),
             'field types' => array('text'),
         ),
+        'colletion_layout_title_link_small' => array(
+            'label' => t('Collection Layout Title Link Small'),
+            'field types' => array('text'),
+        ),
     );
 }
 
@@ -308,13 +327,14 @@ function collection_layout_field_formatter_view($entity_type, $entity, $field, $
             foreach ($items as $delta => $item) {
                 $year = explode('-', $item['value']);
                 $year = $year[0];
+                $filter_list = get_filter_list();
                 $element[$delta] = array(
                     '#type' => 'markup',
-                    '#markup' => l($year, 'collection', array(
+                    '#markup' => '<span>' . l($year, 'collection', array(
                         'query' => array(
                             'date[year]' => $year
                         )
-                    ))
+                    )) . '</span>'
                 );
             }
             break;
@@ -327,6 +347,18 @@ function collection_layout_field_formatter_view($entity_type, $entity, $field, $
                             'nid' => $entity->nid
                         )
                     )) . '</h2>'
+                );
+            }
+            break;
+        case 'colletion_layout_title_link_small' :
+            foreach ($items as $delta => $item) {
+                $element[$delta] = array(
+                    '#type' => 'markup',
+                    '#markup' => l($item['value'], 'node-page', array(
+                        'query' => array(
+                            'nid' => $entity->nid
+                        )
+                    ))
                 );
             }
             break;
@@ -448,4 +480,42 @@ function collection_layout_timeline_json_callback() {
 
     echo drupal_json_output($json_class);
     exit;
+}
+
+function collection_layout_theme(){
+    return array(
+        'filter_block' => array(
+            'render element' => 'element',
+        )
+    );
+}
+
+function theme_filter_block($variables){
+    drupal_add_css(drupal_get_path('module', 'collection_layout') . '/css/filter_block.css');
+    
+    extract($variables);
+    
+    $output = '<div id="conten_layout_filter_block">';
+    $output .= '<h2>' . $element['browsing']['#title'] . '</h2>';
+    $output .= '<div class="collection_layout_sub_content">';
+    foreach($element['browsing']['#content'] as $link){
+        $output .= '<div><span>' . $link . '</span></div>';
+    }
+    $output .= '</div>';
+    $output .= '<h2>' . $element['publication_date_range']['#title'] . '</h2>';
+    $output .= '<div id="collection_layout_date_range_slider">' . $element['publication_date_range']['#content'] . '</div>';
+    $output .= '<h2>' . $element['refine']['#title'] . '</h2>';
+    $output .= '<div class="collection_layout_sub_content">';
+    foreach($element['refine']['#content'] as $link){
+        $output .= '<div><span>' . $link . '</span></div>';
+    }
+    $output .= '</div>';
+    
+    foreach($element['filters'] as $filter){
+        $output .= '<h2>' . $filter['#title'] . '</h2>';
+        $output .= '<div class="collection_layout_sub_content">' . $filter['#content'] . '</div>';
+    }
+    
+    $output .= '</div>';
+    return $output;
 }

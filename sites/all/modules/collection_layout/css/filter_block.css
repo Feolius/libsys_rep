@@ -1,0 +1,13 @@
+
+root { 
+    display: block;
+}
+
+.collection_layout_sub_content {
+    padding-left: 20px;
+    padding-bottom: 20px;
+}
+
+#collection_layout_date_range_slider{
+    padding-bottom: 20px;
+}

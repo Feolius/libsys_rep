@@ -30,7 +30,7 @@ function collection_layout_views_pre_render(&$view) {
         foreach ($view->result as $row) {
             $tmp = explode('-', $row->field_field_files_date[0]['raw']['value']);
             $_SESSION['collection_layout']['json']['date'][] = $tmp[0];
-            $_SESSION['collection_layout']['json']['title'][] = $row->_field_data['nid']['entity']->title;//'<h2>' .  . '</h2>';
+            $_SESSION['collection_layout']['json']['title'][] = $row->_field_data['nid']['entity']->title;
             $_SESSION['collection_layout']['json']['text'][] = l('read more', 'node-page', 
                     array('query' => array('nid' => $row->nid), 'attributes' => array('target' => '_parent')));
             $_SESSION['collection_layout']['json']['image_url'][] = image_style_url('thumbnail', $row->field_field_files_image[0]['raw']['uri']);
