@@ -138,7 +138,7 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
             if (isset($input['fid']) && $file = file_load($input['fid'])) {
                 $fid = $file->fid;
             }
-        }        
+        }
         //Conversion to swf
         if (isset($form_state['input'][$element['#parents'][0]]['und'][0]['create_swf']) && $form_state['input'][$element['#parents'][0]]['und'][0]['create_swf'] == '1') {
             if ($input['fid_swf'] == 0) {
@@ -324,7 +324,7 @@ function book_field_managed_book_process($element, &$form_state, $form) {
         '#weight' => -10,
     );
 
-    if ($element['#file_swf']) {        
+    if ($element['#file_swf']) {
         $element['filename'] = array(
             '#type' => 'markup',
             '#markup' => theme('file_link', array('file' => $element['#file_swf'])) . ' ',
@@ -348,7 +348,7 @@ function book_field_managed_book_process($element, &$form_state, $form) {
             )
         );
     }
-     
+
     // Prefix and suffix used for Ajax replacement.
     $element['#prefix'] = '<div id="' . $element['#id'] . '-ajax-wrapper">';
     $element['#suffix'] = '</div>';
@@ -421,7 +421,11 @@ function book_field_field_widget_info() {
 function book_field_field_formatter_info() {
     return array(
         'book_field_formatter' => array(
-            'label' => t('Custom formatter'),
+            'label' => t('Flexpaper formatter'),
+            'field types' => array('book_field'),
+        ),
+        'book_field_google_doc_formatter' => array(
+            'label' => t('Google Doc Viewer formatter'),
             'field types' => array('book_field'),
         ),
     );
@@ -471,7 +475,7 @@ function book_field_widget_fid_value(&$element, $input = FALSE, $form_state) {
 }
 
 function book_field_widget_fid_swf_value(&$element, $input = FALSE, $form_state) {
-    $return = '0';    
+    $return = '0';
     if (isset($form_state['input'][$element['#parents'][0]]['und'][0]['fids']['fid_swf'])) {
         $return = $form_state['input'][$element['#parents'][0]]['und'][0]['fids']['fid_swf'];
     }
@@ -504,16 +508,16 @@ function book_field_managed_book_validate(&$element, &$form_state) {
 function book_field_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
     $element = array();
     if ($display['type'] == 'book_field_formatter') {
-        foreach ($items as $delta => $item) {           
+        foreach ($items as $delta => $item) {
             if (isset($item['fid_swf']) && $item['fid_swf'] != '0') {
-                $file = file_load($item['fid_swf']);                
+                $file = file_load($item['fid_swf']);
                 $module_path = drupal_get_path('module', 'book_field');
                 $uri = $file->uri;
                 $path = drupal_realpath($uri);
                 $drupal_folder = realpath('.');
                 $relative_path = str_replace($drupal_folder, "", $path);
                 drupal_add_js(array('book_field' => array('paths' => array($relative_path))), 'setting');
-                if(isset($_GET['search'])){
+                if (isset($_GET['search'])) {
                     drupal_add_js(array('book_field' => array('search' => array($_GET['search']))), 'setting');
                 }
                 $element[$delta] = array(
@@ -526,12 +530,20 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
                 );
             } elseif (isset($item['fid'])) {
                 $file = file_load($item['fid']);
-
                 $element[$delta] = array(
                     '#theme' => 'file_link',
                     '#file' => $file,
                 );
             }
+        }
+    }
+    if ($display['type'] == 'book_field_google_doc_formatter') {
+        foreach ($items as $delta => $item) {
+            $file = file_load($item['fid']);
+            $element[$delta] = array(
+                '#theme' => 'book_field_google_doc_view',
+                '#file' => $file,
+            );
         }
     }
     return $element;
@@ -575,20 +587,6 @@ function _book_field_file_move($file) {
 }
 
 /**
- * Implements hook_field_validate().
- */
-/* function book_field_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
-  foreach ($items as $delta => $item) {
-  if ($item['fid'] == '0') {
-  $errors[$field['field_name']][$langcode][$delta][] = array(
-  'error' => 'File is abscent',
-  'message' => t('Please upload file'),
-  );
-  }
-  }
-  } */
-
-/**
  * Implements hook_field_widget_error().
  */
 function hook_field_widget_error($element, $error, $form, &$form_state) {
@@ -603,9 +601,25 @@ function book_field_theme() {
         'book_field_flexpaper_view' => array(
             'variables' => array('file' => NULL, 'icon_directory' => NULL),
         ),
+        'book_field_google_doc_view' => array(
+            'variables' => array('file' => NULL, 'icon_directory' => NULL),
+        ),
     );
 }
 
+/**
+ * Theme function for the googledoc formatter.
+ */
+function theme_book_field_google_doc_view($variables) {
+    $file = (object) $variables['file'];
+    $url = file_create_url($file->uri);
+    dpm($url);
+    return '<iframe src="https://docs.google.com/viewer?url=' . $url . '&embedded=true" style="width:720px; height:500px;" frameborder="0"></iframe>';
+}
+
+/**
+ * Theme function for the flexpaper formatter.
+ */
 function theme_book_field_flexpaper_view($variables) {
     $file = (object) $variables['file'];
 
