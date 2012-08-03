@@ -513,6 +513,9 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
                 $drupal_folder = realpath('.');
                 $relative_path = str_replace($drupal_folder, "", $path);
                 drupal_add_js(array('book_field' => array('paths' => array($relative_path))), 'setting');
+                if(isset($_GET['search'])){
+                    drupal_add_js(array('book_field' => array('search' => array($_GET['search']))), 'setting');
+                }
                 $element[$delta] = array(
                     '#attached' => array(
                         'css' => array($module_path . '/book_field.css'),

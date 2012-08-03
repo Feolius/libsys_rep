@@ -1,86 +1,380 @@
 <?PHP
 
 /**
- *   Indexer for the userhook_apachesolr_entity_info_alter entities for the Apachesolr module.
+ * Implements hook_entity_info().
  */
+function book_field_search_entity_info() {
+    $return = array(
+        'lib_book' => array(
+            'label' => t('Book for libsys'),
+            'description' => t('An entity type used by book_field_search module to provide search for custom fielf book_field.'),
+            'base table' => 'lib_book',
+            'entity keys' => array(
+                'id' => 'lib_book_id',
+                'bundle' => 'bundle',
+                'fid' => 'fid',
+            ),
+            'bundle keys' => array(
+                'bundle' => 'bundle',
+            ),
+            //'entity class' => 'EntityClass',
+            // 'controller class' => 'EntityAPIController',
+            // Make use the class' label() and uri() implementation by default.
+            // 'label callback' => 'entity_class_label',
+            //'uri callback' => 'entity_class_uri',
+            'module' => 'book_field_search',
+            'bundles' => array(
+                'pdf' => array(
+                    'label' => t('PDF'),
+                )
+            ),
+        ),
+    );
 
-function book_field_apachesolr_entity_info_alter(&$entity_info) { 
-  $entity_info['file']['reindex callback'] = 'book_field_solr_reindex';    
+
+    return $return;
+}
+/**
+ * @file
+ *   Indexer for the hook_apachesolr_entity_info_alter entities for the book_field_search module.
+ */
+function book_field_apachesolr_entity_info_alter(&$entity_info) {
+    $entity_info['lib_book']['indexable'] = TRUE;
+    $entity_info['lib_book']['status callback'][] = 'book_field_search_status_callback';
+    $entity_info['lib_book']['document callback'][] = 'book_field_search_solr_document';
+    $entity_info['lib_book']['reindex callback'] = 'book_field_search_solr_reindex';
+    $entity_info['lib_book']['index_table'] = 'apachesolr_index_entities_lib_book';
+    $entity_info['lib_book']['result callback'] = 'book_field_search_file_result';
 }
 
+/**
+ * Status callback for the files. Files should never be removed from the table.
+ * See apachesolr_attachments_apachesolr_exclude() for exclusion of items
+ * @param type $entity_id
+ * @param type $entity_type
+ * @return type
+ */
+function book_field_search_status_callback($entity_id, $entity_type) {
+    $entity = entity_load($entity_type, array($entity_id));
 
+    $file = file_load($entity[$entity_id]->fid);
+    if (apachesolr_attachments_allowed_mime($file->filemime) == FALSE) {
+        // Set status to 0 and remove from the index
+        return FALSE;
+    }
+
+    // Check if the entity status is active
+    if ($file->status != 1) {
+        // Set status to 0 and remove from the index
+        return FALSE;
+    }
+    // Keep status at 1
+    return TRUE;
+}
 
 /**
  * Reindexing callback for ApacheSolr, for book_field entities.
  */
-function book_field_solr_reindex() {  
-  module_load_include('inc', 'apachesolr_attachments', 'apachesolr_attachments.index');  
-  $indexer_table = apachesolr_get_indexer_table('file');
-  $transaction = db_transaction();
-  $env_id = apachesolr_default_environment();
-  try {
-    // Clean the table
-    db_delete($indexer_table)
-      ->condition('entity_type', 'file')
-      ->isNull('body')
-      ->execute();
-    $files = _book_field_get_all_files();
-    // If we do not have files, return success
-    if (empty($files)) {
-      return TRUE;
-    }
-    // Loop over all the files and add them to our indexing table
-    foreach ($files as $parent_entity_type => $parent_entities) {
-      foreach ($parent_entities as $parent_entity_info) {
-        // Fake our file class
-        $file = new stdClass();
-        foreach ($parent_entity_info->extraFields as $key => $value) {
-           if (strpos($key, '_fid')) {
-            $file->fid = $parent_entity_info->extraFields->$key;           
-          }
+function book_field_search_solr_reindex() {
+    module_load_include('inc', 'apachesolr_attachments', 'apachesolr_attachments.index');
+    $indexer_table = apachesolr_get_indexer_table('lib_book');
+    $transaction = db_transaction();
+    $env_id = apachesolr_default_environment();
+    try {
+        // Clean the table
+        db_delete($indexer_table)
+                ->condition('entity_type', 'lib_book')
+                ->isNull('body')
+                ->execute();
+        db_delete('lib_book')
+                ->execute();
+        $files = _book_field_search_get_all_files();
+        // If we do not have files, return success
+        if (empty($files)) {
+            return TRUE;
         }
-        list ($parent_entity_id) = entity_extract_ids($parent_entity_type, $parent_entity_info);
-        apachesolr_attachments_add_file_usage($file, $parent_entity_type, $parent_entity_id);
-      }
+        // Loop over all the files and add them to our indexing table
+        foreach ($files as $parent_entity_type => $parent_entities) {
+            foreach ($parent_entities as $parent_entity_info) {
+                // Fake our file class
+                $file = new stdClass();
+                foreach ($parent_entity_info->extraFields as $key => $value) {
+                    if (strpos($key, '_fid')) {
+                        $file->fid = $parent_entity_info->extraFields->$key;
+                    }
+                }
+                list ($parent_entity_id) = entity_extract_ids($parent_entity_type, $parent_entity_info);
+                book_field_search_add_file_usage($file, $parent_entity_type, $parent_entity_id);
+            }
+        }
+    } catch (Exception $e) {
+        $transaction->rollback();
+        drupal_set_message($e->getMessage(), 'error');
+        watchdog_exception('Apache Solr Attachments', $e);
+        return FALSE;
     }
-  }
-  catch (Exception $e) {
-    $transaction->rollback();
-    drupal_set_message($e->getMessage(), 'error');
-    watchdog_exception('Apache Solr Attachments', $e);
-    return FALSE;
-  }
-  return TRUE;
+    return TRUE;
 }
+
+function book_field_search_add_file_usage(stdClass $stub_file, $parent_entity_type, $parent_entity_id) {
+    // Only add this file type if the parent entity type can be indexed.
+    // Example : node is mostly indexed but media module is not. So
+    // exclude all media entities from being added
+    $entity_info = entity_get_info($parent_entity_type);
+    if (!empty($entity_info['apachesolr']['indexable'])) {
+        // We do have to load the file, because there is no way to get the
+        // bundle type, and media adds many bundles, so fixing this here
+        $file = file_load($stub_file->fid);
+        $indexer_table = apachesolr_get_indexer_table('lib_book');
+        // For non-media files there is no such thing as a defined type/bundle
+        // Define it here, so we can have a seamless integration between media and
+        // non-media
+        if (empty($file->type)) {
+            $file->type = 'application';
+        }
+        $lib_book_id = db_insert('lib_book')
+                ->fields(array(
+                    'bundle' => 'pdf',
+                    'fid' => $file->fid,
+                ))
+                ->execute();
+        $result = entity_load('lib_book', array($lib_book_id), array(), TRUE);
+        db_merge($indexer_table)
+                ->key(array(
+                    'entity_type' => 'lib_book',
+                    'entity_id' => $lib_book_id,
+                    'parent_entity_type' => $parent_entity_type,
+                    'parent_entity_id' => $parent_entity_id,
+                ))
+                ->fields(array(
+                    'bundle' => 'pdf',
+                    'status' => $file->status,
+                    'changed' => REQUEST_TIME,
+                ))->execute();
+    }
+}
+
+/**
+ * Implenents hook_apachesolr_ENTITY_TYPE_exclude().
+ *
+ * This is invoked for each lib_book entity that is being inspected to be added to the
+ * index. if any module returns TRUE, the entity is skipped for indexing.
+ *
+ * @param integer $entity_id
+ * @param integer $row
+ *   A complete set of data from the indexing table.
+ * @param string $env_id
+ * @return boolean
+ */
+function book_field_search_apachesolr_lib_book_exclude($entity_id, $row, $env_id) {
+    module_load_include('inc', 'apachesolr_attachments', 'apachesolr_attachments.index');
+    // Make sure we have a boolean value.
+    // Anything different from 1 becomes zero
+    if (!$entity_id || !$row->parent_entity_id) {
+        // Exclude
+        return TRUE;
+    }
+    // Check if the parent entity is excluded
+    $parent_entity_id = $row->parent_entity_id;
+    $parent_entity_type = $row->parent_entity_type;
+    $exclude = apachesolr_attachments_is_parent_excluded($entity_id, 'lib_book', $parent_entity_id, $parent_entity_type, $env_id);
+    if ($exclude) {
+        // Exclude
+        return TRUE;
+    }
+    // Do not exclude
+    return FALSE;
+}
+
 /**
  * Fetches all files linked to nodes created by fields from the file module
  * regardless of the widget
  * @return type
  */
-function _book_field_get_all_files() {
-  $results = array();
-  $fields = field_info_field_by_ids(); 
-  foreach ($fields as $field_id => $field_info) {
-    if ($field_info['type'] == 'book_field' || $field_info['type'] == 'file') {
-      foreach ($field_info['bundles'] as $entity_type => $bundles) {
-        $entity_info = entity_get_info($entity_type);
-        // If this entity type is not indexable, ignore this and move on to the
-        // next one
-        if (empty($entity_info['apachesolr']['indexable'])) {
-          continue;
+function _book_field_search_get_all_files() {
+    $results = array();
+    $fields = field_info_field_by_ids();
+    foreach ($fields as $field_id => $field_info) {
+        if ($field_info['type'] == 'book_field') {
+            foreach ($field_info['bundles'] as $entity_type => $bundles) {
+                $entity_info = entity_get_info($entity_type);
+                // If this entity type is not indexable, ignore this and move on to the
+                // next one
+                if (empty($entity_info['apachesolr']['indexable'])) {
+                    continue;
+                }
+
+                $query = new ApachesolrAttachmentsEntityFieldQuery();
+                $results_query = $query
+                        ->entityCondition('entity_type', $entity_type)
+                        ->fieldCondition($field_info['field_name'])
+                        // Fetch all file ids related to the entities
+                        ->addExtraField($field_info['field_name'], 'fid', 'fid')
+                        ->execute();
+                $results = array_merge_recursive($results, $results_query);
+            }
+        }
+    }
+    return $results;
+}
+
+/**
+ * Builds the file-specific information for a Solr document.
+ *
+ * @param ApacheSolrDocument $document
+ *   The Solr document we are building up.
+ * @param stdClass $entity
+ *   The entity we are indexing.
+ * @param string $entity_type
+ *   The type of entity we're dealing with.
+ */
+function book_field_search_solr_document(ApacheSolrDocument $document, $lib_book, $entity_type, $env_id) {
+    global $base_url;
+    module_load_include('inc', 'apachesolr_attachments', 'apachesolr_attachments.index');
+    $documents = array();
+    $table = apachesolr_get_indexer_table('lib_book');
+    $file = file_load($lib_book->fid);
+
+    // Text is saved in the index table. Will be used by the node indexing if
+    // available.
+    $text = apachesolr_attachments_get_attachment_text($file);
+    // If we don't have extracted text we should stop our process here
+
+    if (empty($text)) {
+        return $documents;
+    }
+
+    // Get the list of parents that we should index from the indexing table
+    $parents = db_select($table, 'aie')
+            ->fields('aie')
+            ->condition('entity_type', 'lib_book')
+            ->condition('entity_id', $lib_book->lib_book_id)
+            ->execute();
+
+    foreach ($parents as $parent) {
+        // load the parent entity and reset cache
+        $parent_entities = entity_load($parent->parent_entity_type, array($parent->parent_entity_id), NULL, TRUE);
+        $parent_entity = reset($parent_entities);
+        // Skip invalid entities
+        if (empty($parent_entity)) {
+            continue;
         }
 
-        $query = new ApachesolrAttachmentsEntityFieldQuery();
-        $results_query = $query
-          ->entityCondition('entity_type', $entity_type)
-          ->fieldCondition($field_info['field_name'])
-          // Fetch all file ids related to the entities
-          ->addExtraField($field_info['field_name'], 'fid', 'fid')
-          ->execute();
-        $results = array_merge_recursive($results, $results_query);
+        // Retrieve the parent entity id and bundle
+        list($parent_entity_id, $parent_entity_vid, $parent_entity_bundle) = entity_extract_ids($parent->parent_entity_type, $parent_entity);
+        $parent_entity_type = $parent->parent_entity_type;
+        // Get a clone of the bare minimum document
+        $filedocument = clone $document;
 
-      }
+        //Get the callback array to add stuff to the document
+        $callbacks = apachesolr_entity_get_callback($parent_entity_type, 'document callback');
+        // Skip invalid entity types
+        if (empty($callbacks)) {
+            continue;
+        }
+
+        $build_documents = array();
+        foreach ($callbacks as $callback) {
+            // Call a type-specific callback to add stuff to the document.
+            $build_documents = array_merge($build_documents, $callback($filedocument, $parent_entity, $parent_entity_type, $env_id));
+        }
+
+        // Take the top document from the stack
+        $filedocument = reset($build_documents);
+        // Build our separate document and overwrite basic information
+        if ($parent_entity_type == 'node') {
+            $parent_entity = node_load($parent_entity_id);
+        } else {
+            continue;
+        }
+        $filedocument->id = apachesolr_document_id($lib_book->lib_book_id . '-' . $parent_entity_type . '-' . $parent_entity_id, $entity_type);
+
+        $filedocument->url = $base_url . "/node/" . $parent_entity_id;
+        // A path is not a requirement of an entity        
+
+        $filedocument->path = $base_url . "/node/" . $parent_entity_id;
+        $filedocument->parent_entity_id = $parent_entity_id;
+        
+        // Add extra info to our document
+        $filedocument->label = apachesolr_clean_text($parent_entity->title);
+        $filedocument->content = apachesolr_clean_text($file->filename) . ' ' . $text;
+
+        $filedocument->ds_created = apachesolr_date_iso($file->timestamp);
+        $filedocument->ds_changed = $filedocument->ds_created;
+
+        $filedocument->created = apachesolr_date_iso($file->timestamp);
+        $filedocument->changed = $filedocument->created;
+
+        // Add Parent information fields. See http://drupal.org/node/1515822 for explanation
+        $parent_entity_info = entity_get_info($parent_entity_type);
+        $small_parent_entity = new stdClass();
+        $small_parent_entity->entity_type = $parent_entity_type;
+        $small_parent_entity->{$parent_entity_info['entity keys']['id']} = $parent_entity_id;
+        $small_parent_entity->{$parent_entity_info['entity keys']['bundle']} = $parent_entity_bundle;
+        $small_parent_entity->{$parent_entity_info['entity keys']['label']} = $parent_entity->{$parent_entity_info['entity keys']['label']};
+
+        // Add all to one field because if it is spread out over
+        // multiple fields there is no way of knowing which multifield value
+        // belongs to which entity
+        // It does not load the complete entity in to the index because that
+        // would dramatically increase the index size and processing time
+        $filedocument->zm_parent_entity = drupal_json_encode($small_parent_entity);
+        $filedocument->sm_parent_entity_bundle = $parent_entity_type . "-" . $parent_entity_bundle;
+        $filedocument->sm_parent_entity_type = $parent_entity_type;
+
+        // Add Apachesolr Attachments specific fields.
+        $filedocument->ss_filemime = $file->filemime;
+        $filedocument->ss_filesize = $file->filesize;
+
+        $documents[] = $filedocument;
     }
-  }
-  return $results;
+    return $documents;
+}
+//Implements altering of resuts to provide proper links to the nodes
+function book_field_search_apachesolr_process_results(&$results, DrupalSolrQueryInterface $query) {
+    $result_number = count($results);
+    if (module_exists('collection_layout')) {
+        for ($i = 0; $i < $result_number; $i++) {
+            if ($results[$i]['entity_type'] == 'lib_book') {
+                $link = $results[$i]['link'];
+                $parent_entity_info = $results[$i]['fields']['zm_parent_entity'][0];
+                $pattern = '/nid":"\d+/';
+                preg_match($pattern, $parent_entity_info, $matches);
+                $pattern = '/\d+/';
+                preg_match($pattern, $matches[0], $matches);
+                if (isset($matches[0])) {
+                    $options = array(
+                        'query' => array(
+                            'nid' => $matches[0],
+                            'search' => arg(2),
+                        ),
+                        'absolute' => TRUE,
+                    );
+                    $link = url('node-page', $options);
+                    $results[$i]['link'] = $link;
+                } else {
+                    $options = array(
+                        'query' => array(
+                            'search' => arg(2),
+                        ),
+                        'absolute' => TRUE,
+                    );
+                    $link = url('node-page', $options);
+                    $results[$i]['link'] = $link;
+                }                
+            }
+        }
+    } else {
+        for ($i = 0; $i < $result_number; $i++) {
+            if ($results[$i]['entity_type'] == 'lib_book') {
+                $options = array(
+                    'query' => array(
+                        'search' => arg(2),
+                    ),
+                );
+                $link = url($results[$i]['link'], $options);
+                $results[$i]['link'] = $link;
+            }
+        }
+    }
 }

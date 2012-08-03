@@ -1,5 +1,5 @@
 (function ($) {   
-    $(function(){
+    $(document).ready(function (){
         var paths = Drupal.settings.book_field.paths;    
         var length = paths.length;
         var i = 0;
@@ -27,7 +27,7 @@
                             ProgressiveLoading : false,
                             MinZoomSize : 0.2,
                             MaxZoomSize : 5,
-                            SearchMatchAll : false,
+                            SearchMatchAll : true,
                             InitViewMode : 'Portrait',
 						 
                             ViewModeToolsVisible : true,
@@ -38,14 +38,22 @@
   						
                             localeChain: 'en_US'
                         }
-                    });
-						 
-                function onDocumentLoadedError(errMessage){
-                    $('#viewerPlaceHolder').html("Error displaying document. Make sure the conversion tool is installed and that correct user permissions are applied to the SWF Path directory");
-                }
-            
+                    });	      
             }
-        }
-        
+             
+        }           
     });
+    
 })(jQuery);
+function onDocumentLoaded(totalPages){ 
+    var searchTherm = Drupal.settings.book_field.search;
+    if (searchTherm != undefined){        
+        var instance = window.FlexPaperViewer_Instance ;
+        var api = instance.getApi();    
+        api.searchText(searchTherm);
+    }
+     
+}
+function onDocumentLoadedError(errMessage){
+    $('#viewerPlaceHolder').html("Error displaying document. Make sure the conversion tool is installed and that correct user permissions are applied to the SWF Path directory");
+}
