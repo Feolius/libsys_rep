@@ -8,8 +8,11 @@ function collection_layout_views_data_alter(&$data) {
 }
 
 function collection_layout_views_pre_render(&$view) {
-    if ($view->name == 'node_view' && $view->current_display == 'page' && isset($_SESSION['collection_layout']['nid'])) {
-        if (!isset($_SESSION['collection_layout']['view_result']))
+    if ($view->name == 'node_view' && 
+            ($view->current_display == 'inf' || $view->current_display == 'image_deep_zoom' 
+            || $view->current_display == 'media' || $view->current_display == 'book')
+            && isset($_SESSION['collection_layout']['nid'])) {
+        //if (!isset($_SESSION['collection_layout']['view_result']))
             $_SESSION['collection_layout']['view_result'] = $view->result;
         $tmp = array();
         foreach ($_SESSION['collection_layout']['view_result'] as $row) 

@@ -18,7 +18,6 @@ function collection_layout_menu() {
         'type' => MENU_CALLBACK,
     );
     $items['node-page'] = array(
-        'title' => 'Collection',
         'access callback' => TRUE,
         'page callback' => 'collection_layout_node_page_callback',
         'type' => MENU_CALLBACK,
@@ -138,11 +137,12 @@ function get_term_name($tid) {
 
 function collection_layout_collection_page_callback() {
     drupal_add_css(drupal_get_path('module', 'collection_layout') . '/css/collection_page_style.css');
+    drupal_add_library('system', 'ui.dialog');
     if (!isset($_SESSION['collection_layout']['date']['min']))
         $_SESSION['collection_layout']['date']['min'] = 1000;
     if (!isset($_SESSION['collection_layout']['date']['max']))
         $_SESSION['collection_layout']['date']['max'] = 2050;
-    
+
     foreach ($_GET as $key => $value) {
         if (is_filter($key))
             add_filter_value($key, $value);
@@ -191,14 +191,14 @@ function collection_layout_collection_page_callback() {
 }
 
 function collection_layout_contents($which_block) {
-  switch ($which_block) {
-    case 'files_filter_block':
-        $elements = array();
-        $elements[''];
-        return $elements;
-    default :
-        return;
-  }
+    switch ($which_block) {
+        case 'files_filter_block':
+            $elements = array();
+            $elements[''];
+            return $elements;
+        default :
+            return;
+    }
 }
 
 function collection_layout_block_view($delta = '') {
@@ -212,10 +212,10 @@ function collection_layout_block_view($delta = '') {
             'date_min' => $_SESSION['collection_layout']['date']['min'],
             'date_max' => $_SESSION['collection_layout']['date']['max'],
             )), 'setting');
-    
+
     $refine = array();
     $filter_list = get_filter_list();
-   
+
     foreach ($filter_list as $fid => $val) {
         if ($fid != 'date') {
             if ($fid != 'view_type')
@@ -239,7 +239,7 @@ function collection_layout_block_view($delta = '') {
                     )));
         }
     }
-    
+
     $date = get_filter_value('date');
     $date_range_filter_string = isset($date['min']) ? "{$date['min']}--{$date['max']}" : 'all';
     $date_filter_string = isset($date['year']) ? $date['year'] : 'all';
@@ -252,7 +252,7 @@ function collection_layout_block_view($delta = '') {
     $group = get_filter_value('group');
     $group_filter_string = $group ? implode('+', $group) : 'all';
 
-    $filters = array( 
+    $filters = array(
         'documen_type' => array(
             '#title' => t('Document type'),
             '#content' => views_embed_view('document_type_views', 'page', $date_range_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string)
@@ -274,7 +274,7 @@ function collection_layout_block_view($delta = '') {
             '#content' => views_embed_view('collection_view', 'filter_date', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string)
         )
     );
-    
+
     $content = array(
         'browsing' => array(
             '#title' => t('Browsing'),
@@ -295,7 +295,7 @@ function collection_layout_block_view($delta = '') {
         ),
         'filters' => $filters
     );
-    
+
     $block = array(
         'subject' => t(''),
         'content' => theme('filter_block', array('element' => $content))
@@ -374,8 +374,6 @@ function collection_layout_views_api() {
 
 function collection_layout_node_page_callback() {
 
-    drupal_add_css(drupal_get_path('module', 'collection_layout') . '/css/msft-metro-buttons.css');
-    drupal_add_css(drupal_get_path('module', 'collection_layout') . '/cmmb.css');
     if (isset($_SESSION['collection_layout']['flag']) && $_SESSION['collection_layout']['flag']) {
         unset($_SESSION['collection_layout']['view_result']);
         $_SESSION['collection_layout']['flag'] = 0;
@@ -399,29 +397,47 @@ function collection_layout_node_page_callback() {
     $date = get_filter_value('date');
     $date_range_filter_string = isset($date['min']) ? "{$date['min']}--{$date['max']}" : 'all';
     $date_filter_string = isset($date['year']) ? $date['year'] : 'all';
-
-    $result = views_embed_view('node_view', 'page', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string);
-
     views_embed_view('timeline_json_view', 'block_1', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string);
 
-    $result .= '<iframe src="timeline-frame" style="width:100%; height:400px; border:1px solid #e0e0e0"></iframe>';
-
-    for ($i = 0; $i < count($_SESSION['collection_layout']['view_result']); $i++) {
+//'<div class="collection_layout_timeline"><iframe src="timeline-frame" style="width:99%; height:100%; border:1px solid #e0e0e0"></iframe></div>',    
+    $links = array();
+    for ($i = 0; $i < count($_SESSION['collection_layout']['view_result']); $i++)
         if ($_SESSION['collection_layout']['nid'] == $_SESSION['collection_layout']['view_result'][$i]->nid) {
             if ($i != 0)
-                $result .= '<div>' . l('', 'node-page', array(
-                            'query' => array('nid' => $_SESSION['collection_layout']['view_result'][$i - 1]->nid),
-                            'attributes' => array('class' => array('m-icon-big-swapleft'))
-                        )) . '</div>';
+                $links['#left'] = l('', 'node-page', array(
+                    'query' => array('nid' => $_SESSION['collection_layout']['view_result'][$i - 1]->nid),
+                    'attributes' => array('class' => array('m-icon-big-swapleft'))
+                        ));
             if ($i != count($_SESSION['collection_layout']['view_result']) - 1)
-                $result.= '<div>' . l('', 'node-page', array(
-                            'query' => array('nid' => $_SESSION['collection_layout']['view_result'][$i + 1]->nid),
-                            'attributes' => array('class' => array('m-icon-big-swapright'))
-                        )) . '</div>';
+                $links['#right'] = l('', 'node-page', array(
+                    'query' => array('nid' => $_SESSION['collection_layout']['view_result'][$i + 1]->nid),
+                    'attributes' => array('class' => array('m-icon-big-swapright'))
+                        ));
+            //$result .= '<div class="collection_layout_slider_button_right">' .  . '</div>';
         }
-    }
-
-    return $result;
+    $content = array(
+        '#information' => array(
+            '#title' => t('General'),
+            '#view' => views_embed_view('node_view', 'inf', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+            '#timeline_iframe' => array(
+                '#url' => 'timeline-frame'
+            )
+        ),
+        '#image' => array(
+            '#title' => t('Image'),
+            '#view' => views_embed_view('node_view', 'image_deep_zoom', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+        ),
+        '#media' => array(
+            '#title' => t('Media'),
+            '#view' => views_embed_view('node_view', 'media', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+        ),
+        '#text' => array(
+            '#title' => t('Book'),
+            '#view' => views_embed_view('node_view', 'book', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+        ),
+        '#slider_links' => $links
+    );
+    return theme('node_page', array('element' => $content));
 }
 
 function collection_layout_timeline_frame_callback() {
@@ -482,23 +498,57 @@ function collection_layout_timeline_json_callback() {
     exit;
 }
 
-function collection_layout_theme(){
+function collection_layout_theme() {
     return array(
         'filter_block' => array(
             'render element' => 'element',
+        ),
+        'node_page' => array(
+            'render element' => 'element'
         )
     );
 }
 
-function theme_filter_block($variables){
-    drupal_add_css(drupal_get_path('module', 'collection_layout') . '/css/filter_block.css');
+function theme_node_page($variables) {
+    drupal_add_css(drupal_get_path('module', 'collection_layout') . '/css/msft-metro-buttons.css');
+    drupal_add_css(drupal_get_path('module', 'collection_layout') . '/css/cmmb.css');
+    drupal_add_css(drupal_get_path('module', 'collection_layout') . '/css/node_page_style.css');
+    drupal_add_js(drupal_get_path('module', 'collection_layout') . '/js/node_slider_buttons.js');
+    drupal_add_js(drupal_get_path('module', 'collection_layout') . '/js/node_tabs.js');
+    drupal_add_library('system', 'ui.tabs');
     
     extract($variables);
     
+    $output = '<div id="collection_layout_tabs">';
+    $output .= "<ul>
+                    <li><a href=\"#tabs-1\">{$element['#information']['#title']}</a></li>
+                    <li><a href=\"#tabs-2\">{$element['#image']['#title']}</a></li>
+                    <li><a href=\"#tabs-3\">{$element['#media']['#title']}</a></li>
+                    <li><a href=\"#tabs-4\">{$element['#text']['#title']}</a></li>
+                </ul>";
+     $output .= "<div id=\"tabs-1\">{$element['#information']['#view']}
+                 <div class=\"collection_layout_timeline\"><iframe src=\"{$element['#information']['#timeline_iframe']['#url']}\" style=\"width:99%; height:100%; border:1px solid #e0e0e0\"></iframe></div>
+                 </div>
+                 <div id=\"tabs-2\">{$element['#image']['#view']}</div>
+                 <div id=\"tabs-3\">{$element['#media']['#view']}</div>
+                 <div id=\"tabs-4\">{$element['#text']['#view']}</div>";
+    $output .= '</div>';
+    
+    $output .= isset($element['#slider_links']['#left']) ? "<div class=\"collection_layout_slider_button_left\">{$element['#slider_links']['#left']}</div>" : '';
+    $output .= isset($element['#slider_links']['#right']) ? "<div class=\"collection_layout_slider_button_right\">{$element['#slider_links']['#right']}</div>" : '';
+    
+    return $output;
+}
+
+function theme_filter_block($variables) {
+    drupal_add_css(drupal_get_path('module', 'collection_layout') . '/css/filter_block.css');
+
+    extract($variables);
+
     $output = '<div id="conten_layout_filter_block">';
     $output .= '<h2>' . $element['browsing']['#title'] . '</h2>';
     $output .= '<div class="collection_layout_sub_content">';
-    foreach($element['browsing']['#content'] as $link){
+    foreach ($element['browsing']['#content'] as $link) {
         $output .= '<div><span>' . $link . '</span></div>';
     }
     $output .= '</div>';
@@ -506,16 +556,16 @@ function theme_filter_block($variables){
     $output .= '<div id="collection_layout_date_range_slider">' . $element['publication_date_range']['#content'] . '</div>';
     $output .= '<h2>' . $element['refine']['#title'] . '</h2>';
     $output .= '<div class="collection_layout_sub_content">';
-    foreach($element['refine']['#content'] as $link){
+    foreach ($element['refine']['#content'] as $link) {
         $output .= '<div><span>' . $link . '</span></div>';
     }
     $output .= '</div>';
-    
-    foreach($element['filters'] as $filter){
+
+    foreach ($element['filters'] as $filter) {
         $output .= '<h2>' . $filter['#title'] . '</h2>';
         $output .= '<div class="collection_layout_sub_content">' . $filter['#content'] . '</div>';
     }
-    
+
     $output .= '</div>';
     return $output;
 }
