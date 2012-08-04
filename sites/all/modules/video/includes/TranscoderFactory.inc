@@ -34,6 +34,10 @@ interface TranscoderFactoryInterface {
   public function isAvailable(&$errormsg);
 
   public function getDimensions();
+
+  public function setInput(array $file);
+
+  public function loadOutput($fid);
 }
 
 /**
@@ -53,7 +57,7 @@ abstract class TranscoderAbstractionFactory {
   /**
    * Set Input file to add input file in to settings variable
    */
-  public function setInput($file, $input_frame_rate=0, $validate_decode_codecs = TRUE) {
+  public function setInput(array $file) {
     // @TODO : do some validation to check the file exists;
     if (!empty($file)) {
       if (empty($file['uri']))
@@ -89,28 +93,7 @@ abstract class TranscoderAbstractionFactory {
   /**
    * Get enabled and supporting codecs by the transcoder.
    */
-  public function getCodecs() {
-    $codecs = array(
-      'encode' => array(
-        'video' => array(
-          'h264' => 'H.264 (default)',
-          'vp8' => 'VP8',
-          'theora' => 'Theora',
-          'vp6' => 'VP6',
-          'mpeg4' => 'MPEG-4',
-          'wmv' => 'WMV'
-        ),
-        'audio' => array(
-          'aac' => 'AAC (default for most cases)',
-          'mp3' => 'MP3',
-          'vorbis' => 'Vorbis (default for VP8 and Theora)',
-          'wma' => 'WMA'
-        )
-      ),
-      'decoding' => array()
-    );
-    return $codecs;
-  }
+  abstract public function getCodecs();
 
   /**
    * Get available output file formats from the transcoder.
@@ -144,6 +127,13 @@ abstract class TranscoderAbstractionFactory {
       'wmv' => 'WMV'
     );
   }
+
+  /**
+   * Returns a list of all supported pixel formats.
+   *
+   * Returns NULL when pixel formats are not configurable for this transcoder.
+   */
+  public abstract function getPixelFormats();
 
   /**
    * Get the installed transcoder version.
@@ -217,6 +207,10 @@ abstract class TranscoderAbstractionFactory {
     return drupal_write_record('video_queue', $video) === SAVED_NEW ? $video : FALSE;
   }
 
+  public function updateJob(stdClass $video) {
+    return drupal_write_record('video_queue', $video, 'fid') === SAVED_UPDATED;
+  }
+
   /**
    * Delete transcoder job and its details from database.
    *
@@ -253,18 +247,18 @@ abstract class TranscoderAbstractionFactory {
   /**
    * Load output from a transcoding job from the database.
    */
-  public function loadOutput() {
+  public function loadOutput($fid) {
     $fids = db_select('video_output', 'vo')
-      ->fields('vo', array('output_fid'))
-      ->condition('vo.original_fid', $this->settings['input']['fid'])
-      ->execute()->fetchAllKeyed(0, 0);
-    $files = file_load_multiple($fids);
+      ->fields('vo')
+      ->condition('vo.original_fid', $fid)->execute()->fetchAllAssoc('output_fid');
+    $files = file_load_multiple(array_keys($fids));
 
-    $videofiles = new stdClass();
+    $videofiles = array();
     foreach ($files as $file) {
       $extension = drupal_strtolower(pathinfo($file->filename, PATHINFO_EXTENSION));
-      $videofiles->{$extension} = $file;
+      $videofiles[] = $file;
     }
+
     return $videofiles;
   }
 
@@ -287,6 +281,19 @@ abstract class TranscoderAbstractionFactory {
    */
   public function processPostback() {
   }
+
+  /**
+   * Reset internal variables to their initial state.
+   */
+  public function reset($keepinput = FALSE) {
+    if (!$keepinput) {
+      unset($this->settings['input']);
+    }
+
+    unset($this->settings['options']);
+    unset($this->settings['output']);
+    $this->errors = array();
+  }
 }
 
 interface TranscoderAbstractFactoryInterface {
@@ -300,8 +307,13 @@ class TranscoderAbstractionAbstractFactory implements TranscoderAbstractFactoryI
    */
   public static function getProduct($transcoder = NULL) {
     // get our configured transcoder.
-    if (!isset($transcoder))
-      $transcoder = variable_get('video_convertor', 'TranscoderAbstractionFactoryZencoder');
+    if (!isset($transcoder)) {
+      $transcoder = variable_get('video_convertor', 'TranscoderAbstractionFactoryFfmpeg');
+    }
+    if ($transcoder == '') {
+      return NULL;
+    }
+
     if (!module_load_include('inc', 'video', '/transcoders/' . $transcoder)) {
       $modules = module_list();
       $files = array();

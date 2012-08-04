@@ -17,6 +17,7 @@ class Conversion {
         $this->process($video);
       }
       // clear cache once completed the conversion to update the file paths
+      // @todo check whether this is necessary
       cache_clear_all();
     }
   }
@@ -30,6 +31,9 @@ class Conversion {
   public function loadJobQueue() {
     $factory = new TranscoderAbstractionAbstractFactory();
     $transcoder = $factory->getProduct();
+    if ($transcoder == NULL) {
+      return array();
+    }
     return $transcoder->loadJobQueue();
   }
 
@@ -47,9 +51,7 @@ class Conversion {
       $video = $this->loadJob($video);
     }
 
-    $return = $this->render($video);
-    cache_clear_all('video:video:' . md5($video->fid), 'cache');
-    return $return;
+    return $this->render($video);
   }
 
   private function render(stdClass $video) {
@@ -86,9 +88,9 @@ class Conversion {
     }
   }
 
-  public function changeStatus($vid, $status) {
+  public function changeStatus($fid, $status) {
     $transcoder = new Transcoder();
-    return $transcoder->changeStatus($vid, $status);
+    return $transcoder->changeStatus($fid, $status);
   }
 
   /**

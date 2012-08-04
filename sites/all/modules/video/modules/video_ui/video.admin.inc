@@ -17,63 +17,193 @@ function video_transcoder_admin_settings() {
  * Form API callback to validate the upload settings form.
  */
 function video_transcoder_admin_settings_validate($form, &$form_state) {
-  // add validations by transcoder interface
-  $transcoder = $form_state['values']['video_convertor'];
+  $transcodername = $form_state['values']['video_convertor'];
+  if ($transcodername == '') {
+    return;
+  }
+
   $factory = new TranscoderAbstractionAbstractFactory();
-  $transcoder = $factory->getProduct($transcoder);
+  $transcoder = $factory->getProduct($transcodername);
   $transcoder->adminSettingsValidate($form, $form_state);
+
+  if (!form_get_errors() && $transcodername != variable_get('video_convertor')) {
+    drupal_set_message(t('Because the selected transcoder was changed, you need to update the codec settings for your presets.'), 'warning');
+    $form_state['redirect'] = 'admin/config/media/video/presets';
+  }
 }
 
 /**
  * Video preset admin settings
  */
-function video_preset_admin_settings() {
-  $preset = new Preset();
-  $form = $preset->adminSettings();
+function video_preset_admin_settings($form_state) {
+  $form = array(
+    '#theme' => 'video_preset_admin_settings',
+    '#submit' => array('video_preset_admin_settings_submit'),
+  );
+
+  module_load_include('inc', 'video_ui', 'video.preset');
+  $presets = video_preset_get_presets();
+
+  if (empty($presets)) {
+    drupal_set_message(t('No presets were found. Please use the !create_link link to create a new Video Preset, or upload an existing Feature to your modules directory.', array('!create_link' => l(t('Add Preset'), 'admin/config/media/video/presets/add'))), 'warning');
+  }
+
+  $form['video_use_preset_wxh'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use preset dimensions for video conversion.'),
+    '#default_value' => variable_get('video_use_preset_wxh', FALSE),
+    '#description' => t('Override the user selected dimensions with the value from the presets (recommended).')
+  );
+
+  if (!empty($presets)) {
+    $selected = array_filter(variable_get('video_preset', array()));
+
+    $form['video_preset'] = array(
+      '#tree' => TRUE,
+    );
+
+    foreach ($presets as $preset) {
+      $form['video_preset'][$preset['name']] = array(
+        'description' => array('#markup' => check_plain($preset['description'])),
+        'edit' => array('#type' => 'link', '#title' => t('edit'), '#href' => 'admin/config/media/video/presets/preset/' . $preset['name']),
+        'delete' => $preset['default'] ? '' : array('#type' => 'link', '#title' => t('delete'), '#href' => 'admin/config/media/video/presets/preset/' . $preset['name'] . '/delete'),
+        'export' => array('#type' => 'link', '#title' => t('export'), '#href' => 'admin/config/media/video/presets/preset/' . $preset['name'] . '/export'),
+        /*
+        'weight' => array(
+          '#type' => 'weight',
+          '#title' => t('Weight for @title', array('@title' => $preset['name'])),
+          '#title_display' => 'invisible',
+          '#default_value' => mt_rand(1, 14),
+        ),
+        */
+        'status' => array(
+          '#type' => 'checkbox',
+          '#title' => $preset['name'],
+          '#default_value' => in_array($preset['name'], $selected),
+        ),
+      );
+    }
+  }
+
   return system_settings_form($form);
+}
+
+function video_preset_admin_settings_validate($form, $form_state) {
+  if (isset($form['video_preset'])) {
+    $hasany = FALSE;
+
+    foreach ($form_state['values']['video_preset'] as $name => $values) {
+      if ($values['status'] == 1) {
+        $hasany = TRUE;
+        break;
+      }
+    }
+
+    if (!$hasany) {
+      form_error($form['video_preset'], t('You must enable at least one preset.'));
+    }
+  }
+}
+
+function video_preset_admin_settings_submit($form, &$form_state) {
+  $form_state['values']['video_use_preset_wxh'] = (bool)$form_state['values']['video_use_preset_wxh'];
+
+  $selected = array();
+
+  if (isset($form['video_preset'])) {
+    foreach ($form_state['values']['video_preset'] as $name => $values) {
+      if ($values['status'] == 1) {
+        $selected[] = $name;
+      }
+    }
+  }
+
+  $form_state['values']['video_preset'] = $selected;
+}
+
+function theme_video_preset_admin_settings($variables) {
+  $form = $variables['form'];
+
+  $header = array(
+    array('data' => t('Name')),
+    array('data' => t('Description')),
+//    array('data' => t('Weight')),
+    array('data' => t('Operations'), 'colspan' => 3),
+  );
+
+  $rows = array();
+  foreach (element_children($form['video_preset']) as $id) {
+//    $form['video_preset'][$id]['weight']['#attributes']['class'] = array('video-preset-weight');
+    $rows[] = array(
+      'data' => array(
+        drupal_render($form['video_preset'][$id]['status']),
+        drupal_render($form['video_preset'][$id]['description']),
+//        drupal_render($form['video_preset'][$id]['weight']),
+        drupal_render($form['video_preset'][$id]['edit']),
+        drupal_render($form['video_preset'][$id]['delete']),
+        drupal_render($form['video_preset'][$id]['export']),
+      ),
+//      'class' => array('draggable'),
+    );
+  }
+
+  $actions = drupal_render_children($form['actions']);
+  $output = drupal_render_children($form);
+  $output .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'video-preset')));
+  $output .= $actions;
+
+//  drupal_add_tabledrag('video-preset', 'order', 'sibling', 'video-preset-weight');
+
+  return $output;
 }
 
 /**
  * Video general admin settings
  */
 function video_general_admin_settings() {
+  $hastranscoder = variable_get('video_convertor') !== '';
+
   $form = array();
   $form['video_autoplay'] = array(
     '#type' => 'checkbox',
     '#title' => t('Automatically start video on page load'),
     '#default_value' => variable_get('video_autoplay', FALSE),
-    '#description' => t('Start the video when the page and video loads')
+    '#description' => t('Start the video when the page and video loads'),
   );
   $form['video_autobuffering'] = array(
     '#type' => 'checkbox',
     '#title' => t('Automatically start video buffering'),
     '#default_value' => variable_get('video_autobuffering', TRUE),
-    '#description' => t('Start buffering video when the page and video loads')
+    '#description' => t('Start buffering video when the page and video loads'),
   );
   $form['video_bypass_conversion'] = array(
     '#type' => 'checkbox',
     '#title' => t('Bypass video conversion'),
     '#default_value' => variable_get('video_bypass_conversion', FALSE),
-    '#description' => t('Bypass video conversion when creating videos.')
+    '#description' => t('Bypass video conversion when creating videos.'),
+    '#access' => $hastranscoder,
   );
   $form['video_convert_on_save'] = array(
     '#type' => 'checkbox',
     '#title' => t('Video convert on node submit'),
     '#default_value' => variable_get('video_convert_on_save', FALSE),
-    '#description' => t('Convert videos on node submit will enable by default for all users.')
+    '#description' => t('Convert videos on node submit will enable by default for all users.'),
+    '#access' => $hastranscoder,
   );
   $form['video_use_default_thumb'] = array(
     '#type' => 'checkbox',
     '#title' => t('Override video thumbnails with default thumbnail'),
     '#default_value' => variable_get('video_use_default_thumb', FALSE),
-    '#description' => t('Override auto thumbnails with default thumbnail.')
+    '#description' => t('Override auto thumbnails with default thumbnail.'),
+    '#access' => $hastranscoder,
   );
   $form['video_publish_on_complete'] = array(
     '#type' => 'checkbox',
     '#title' => t('Publish when conversion complete'),
     '#default_value' => variable_get('video_publish_on_complete', FALSE),
     '#description' => t('This feature is now fully controlled by !rules module. Download the module and configure rules to take effect when video conversions have completed or failed.', array('!rules' => l(t('Rules'), 'http://drupal.org/project/rules'))),
-    '#disabled' => TRUE
+    '#disabled' => TRUE,
+    '#access' => $hastranscoder,
   );
   return system_settings_form($form);
 }
@@ -82,11 +212,13 @@ function video_general_admin_settings() {
  * Video player admin settings
  */
 function video_players_admin_settings() {
-  $form = array();
+  $form = array(
+    '#submit' => array('video_players_admin_settings_submit'),
+  );
   $form['extensions'] = array(
     '#type' => 'fieldset',
     '#title' => t('Video extensions'),
-    '#description' => t('Here you can map specific players to each video extension type.'),
+    '#description' => t('Here you can map specific players to each video extension type.') . ' ' . t('This player will be selected when you choose the !formatter formatter for a Video field.', array('!formatter' => t('Video player'))),
   );
   // lets get all our supported extensions and players.
   $extensions = video_utility::getVideoExtensions();
@@ -102,7 +234,8 @@ function video_players_admin_settings() {
       '#options' => $players,
       '#required' => TRUE,
     );
-    // For flash
+
+    // For Flash
     if (!empty($flv_players)) {
       $value = variable_get('video_extension_' . $ext . '_flash_player', '');
       if (empty($value) || !isset($flv_players[$value])) {
@@ -124,7 +257,7 @@ function video_players_admin_settings() {
     else {
       $form['extensions']['video_extension_' . $ext . '_flash_player']['type'] = array(
         '#type' => 'markup',
-        '#markup' => t('No flash players detected.<br />You need to install !flowplayer or !jwplayer.', array('!flowplayer' => l(t('Flowplayer API'), 'http://www.drupal.org/project/flowplayer'), '!jwplayer' => l(t('JW Player'), 'http://www.drupal.org/project/jw_player'))),
+        '#markup' => t('No Flash players detected.<br />You need to install !flowplayer or !jwplayer.', array('!flowplayer' => l(t('Flowplayer API'), 'http://www.drupal.org/project/flowplayer'), '!jwplayer' => l(t('JW Player'), 'http://www.drupal.org/project/jw_player'))),
         '#states' => array(
           'visible' => array(
             ':input[id=edit-video-extension-' . $ext . ']' => array('value' => 'video_play_flv'),
@@ -132,6 +265,7 @@ function video_players_admin_settings() {
         ),
       );
     }
+
     // for HTML5
     if (!empty($html5_players)) {
       $value = variable_get('video_extension_' . $ext . '_html5_player', '');
@@ -153,7 +287,28 @@ function video_players_admin_settings() {
       );
     }
   }
+
   return system_settings_form($form);
+}
+
+/**
+ * Submit helper to remove unneeded variables before they are saved.
+ */
+function video_players_admin_settings_submit($form, &$form_state) {
+  // Clear all existing variables
+  db_query('DELETE FROM {variable} WHERE name LIKE \'video_extension_%\'');
+
+  // Remove flv player or html5 player when that player hasn't been selected
+  $extensions = video_utility::getVideoExtensions();
+  foreach (array_keys($extensions) as $ext) {
+    $selected = $form_state['values']['video_extension_' . $ext];
+    if ($selected != 'video_play_flv') {
+      unset($form_state['values']['video_extension_' . $ext . '_flash_player']);
+    }
+    if ($selected != 'video_play_html5') {
+      unset($form_state['values']['video_extension_' . $ext . '_html5_player']);
+    }
+  }
 }
 
 /**

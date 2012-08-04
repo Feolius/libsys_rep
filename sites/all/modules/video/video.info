@@ -10,7 +10,6 @@ files[] = includes/Conversion.inc
 files[] = includes/Metadata.inc
 files[] = includes/Preset.inc
 files[] = includes/Transcoder.inc
-files[] = includes/VideoHelper.inc
 files[] = includes/TranscoderFactory.inc
 files[] = transcoders/TranscoderAbstractionFactoryFfmpeg.inc
 files[] = transcoders/TranscoderAbstractionFactoryZencoder.inc
@@ -19,9 +18,11 @@ files[] = tests/TranscoderAbstractionFactoryFfmpeg.test
 files[] = tests/TranscoderAbstractionFactoryZencoder.test
 files[] = libraries/phpvideotoolkit/phpvideotoolkit.php5.php
 files[] = tests/VideoUtility.test
-; Information added by drupal.org packaging script on 2012-05-16
-version = "7.x-2.6"
+files[] = tests/VideoField.test
+
+; Information added by drupal.org packaging script on 2012-07-22
+version = "7.x-2.7"
 core = "7.x"
 project = "video"
-datestamp = "1337203623"
+datestamp = "1342958543"
 

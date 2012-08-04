@@ -147,8 +147,7 @@ class video_utility {
       drupal_unlink($uri);
     }
     elseif (is_dir($uri)) {
-      $contents = scandir($uri);
-      foreach ($objs as $obj) {
+      foreach (scandir($uri) as $obj) {
         if ($obj != '.' && $obj != '..') {
           self::unlink($uri . '/' . $obj);
         }
@@ -188,11 +187,11 @@ class video_utility {
     return array(
       'divx' => 'video_play_divx',
       'mkv' => 'video_play_divx',
-      'mov' => 'video_play_quicktime',
+      'mov' => 'video_play_html5',
       '3gp' => 'video_play_quicktime',
       '3g2' => 'video_play_quicktime',
-      'mp4' => 'video_play_quicktime',
-      'm4v' => 'video_play_quicktime',
+      'mp4' => 'video_play_html5',
+      'm4v' => 'video_play_html5',
       'rm' => 'video_play_realmedia',
       'f4v' => 'video_play_flv',
       'flv' => 'video_play_flv',
@@ -204,9 +203,10 @@ class video_utility {
       'avi' => 'video_play_windowsmedia',
       'mpg' => 'video_play_windowsmedia',
       'mpeg' => 'video_play_windowsmedia',
-      'ogg' => 'video_play_theora',
-      'ogv' => 'video_play_theora',
-      'webm' => 'video_play_theora'
+      'ogg' => 'video_play_html5',
+      'ogv' => 'video_play_html5',
+      'webm' => 'video_play_html5',
+      'mp3' => 'video_play_html5',
     );
   }
 
