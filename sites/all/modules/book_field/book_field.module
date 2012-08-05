@@ -564,6 +564,7 @@ function book_field_field_presave($entity_type, $entity, $field, $instance, $lan
     // permanent status, so that it will not be removed when temporary files are
     // cleaned up.
     foreach ($items as $item) {
+        
         if (isset($item['fid_swf']) && $item['fid_swf'] != 0) {
             $file = file_load($item['fid_swf']);
             _book_field_file_move($file);
@@ -612,9 +613,8 @@ function book_field_theme() {
  */
 function theme_book_field_google_doc_view($variables) {
     $file = (object) $variables['file'];
-    $url = file_create_url($file->uri);
-    dpm($url);
-    return '<iframe src="https://docs.google.com/viewer?url=' . $url . '&embedded=true" style="width:720px; height:500px;" frameborder="0"></iframe>';
+    $url = file_create_url($file->uri);    
+    return '<iframe src="https://docs.google.com/viewer?url=' . $url . '&embedded=true" style="width:720px; height:500px;" frameborder="1"></iframe>';
 }
 
 /**

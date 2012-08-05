@@ -7,6 +7,8 @@ core = 7.x
 files[] = apachesolr_attachments.admin.inc
 files[] = apachesolr_attachments.install
 files[] = apachesolr_attachments.module
+files[] = apachesolr_attachments.index.inc
+
 
 ; Information added by drupal.org packaging script on 2012-07-06
 version = "7.x-1.2"

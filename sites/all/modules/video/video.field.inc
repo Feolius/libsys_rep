@@ -16,11 +16,12 @@ function video_field_info() {
         'uri_scheme' => variable_get('file_default_scheme', 'public'),
         'uri_scheme_converted' => variable_get('file_default_scheme', 'public'),
         'uri_scheme_thumbnails' => variable_get('file_default_scheme', 'public'),
-        'thumbnail_format' => 'png',
-        'autoconversion' => 0,
-        'autothumbnail' => 'no',
+        'thumbnail_format' => 'jpg',
+        'autoconversion' => 1,
+        'autothumbnail' => 'auto',
         'default_video_thumbnail' => 0,
         'preview_video_thumb_style' => 'thumbnail',
+        'presets' => array(),
       ),
       'instance_settings' => array(
         'file_extensions' => 'mp4 ogg avi mov wmv flv ogv webm',
@@ -38,6 +39,10 @@ function video_field_info() {
  * Implements hook_field_settings_form().
  */
 function video_field_settings_form($field, $instance, $has_data) {
+  $factory = new TranscoderAbstractionAbstractFactory();
+  $transcoder = $factory->getProduct();
+  $hastranscoder = $transcoder != NULL;
+
   $defaults = field_info_field_settings($field['type']);
   $settings = array_merge($defaults, $field['settings']);
 
@@ -59,6 +64,7 @@ function video_field_settings_form($field, $instance, $has_data) {
     '#options' => $scheme_options,
     '#default_value' => $settings['uri_scheme_converted'],
     '#description' => t('Select where the converted video files should be stored. Private file storage has significantly more overhead than public files, but allows restricted access to files within this field.'),
+    '#access' => $hastranscoder,
   );
   $form['uri_scheme_thumbnails'] = array(
     '#type' => 'radios',
@@ -66,12 +72,11 @@ function video_field_settings_form($field, $instance, $has_data) {
     '#options' => $scheme_options,
     '#default_value' => $settings['uri_scheme_thumbnails'],
     '#description' => t('Select where the generated thumbnails should be stored. Private file storage has significantly more overhead than public files, but allows restricted access to files within this field.'),
+    '#access' => $hastranscoder,
   );
 
   // Add warnings for S3
-  if (isset($scheme_options['s3'])) {
-    $factory = new TranscoderAbstractionAbstractFactory();
-    $transcoder = $factory->getProduct();
+  if ($hastranscoder && isset($scheme_options['s3'])) {
     $value = $transcoder->getValue();
 
     if ($value == 'TranscoderAbstractionFactoryFfmpeg') {
@@ -92,6 +97,15 @@ function video_field_settings_form($field, $instance, $has_data) {
       '!preset' => l(t('preset settings'), 'admin/config/media/video/presets'),
     )),
     '#default_value' => isset($settings['autoconversion']) ? $settings['autoconversion'] : '',
+    '#access' => $hastranscoder,
+  );
+
+  $form['thumbnail_format'] = array(
+    '#title' => t('Thumbnail format'),
+    '#type' => 'radios',
+    '#options' => array('jpg' => 'JPEG', 'png' => 'PNG'),
+    '#default_value' => !empty($settings['thumbnail_format']) ? $settings['thumbnail_format'] : 'jpg',
+    '#access' => $hastranscoder,
   );
 
   $thumb_options = array(
@@ -100,12 +114,9 @@ function video_field_settings_form($field, $instance, $has_data) {
     'no' => 'Don\'t create thumbnail',
   );
 
-  $form['thumbnail_format'] = array(
-    '#title' => t('Thumbnail format'),
-    '#type' => 'radios',
-    '#options' => array('png' => 'PNG', 'jpg' => 'JPEG'),
-    '#default_value' => !empty($settings['thumbnail_format']) ? $settings['thumbnail_format'] : 'png',
-  );
+  if (!$hastranscoder) {
+    unset($thumb_options['auto']);
+  }
 
   $form['autothumbnail'] = array(
     '#type' => 'radios',
@@ -131,6 +142,27 @@ function video_field_settings_form($field, $instance, $has_data) {
     '#empty_option' => '<' . t('no preview') . '>',
     '#default_value' => !empty($settings['preview_video_thumb_style']) ? $settings['preview_video_thumb_style'] : '',
     '#description' => t('This image style will be used to show extracted video thumbnails on video node edit. Extracted thumbnail preview will also use this style.'),
+  );
+
+  module_load_include('inc', 'video_ui', 'video.preset');
+  $selectedpresets = array_filter(variable_get('video_preset', array()));
+  $presets = video_preset_get_presets();
+  $presetnames = array();
+  foreach ($presets as $preset) {
+    $presetnames[$preset['name']] = $preset['name'];
+
+    if (in_array($preset['name'], $selectedpresets)) {
+      $presetnames[$preset['name']] .= ' (' . t('default') . ')';
+    }
+  }
+
+  $form['presets'] = array(
+    '#title' => t('Presets'),
+    '#type' => 'checkboxes',
+    '#options' => $presetnames,
+    '#default_value' => !empty($settings['presets']) ? $settings['presets'] : array(),
+    '#description' => t('If any presets are selected, these presets will be used for this field instead of the default presets.'),
+    '#access' => $hastranscoder,
   );
 
   return $form;
@@ -179,6 +211,158 @@ function video_field_instance_settings_form(array $field, array $instance) {
  */
 function video_field_load($entity_type, $entities, $field, $instances, $langcode, &$items, $age) {
   file_field_load($entity_type, $entities, $field, $instances, $langcode, $items, $age);
+
+  // Load all files we need for these entities
+  $videofids = array();
+  $fids = array();
+  foreach ($entities as $id => $entity) {
+    // Load the files from the files table.
+    foreach ($items[$id] as $delta => $item) {
+      if (empty($item) || empty($item['fid'])) {
+        continue;
+      }
+      $videofids[] = $item['fid'];
+      if (!empty($item['thumbnail'])) {
+        $fids[] = $item['thumbnail'];
+      }
+    }
+  }
+
+  if (empty($videofids)) {
+    return;
+  }
+
+  // Load the queues
+  $queues = db_select('video_queue', 'q')
+    ->fields('q')
+    ->condition('q.fid', $videofids, 'IN')->execute()->fetchAllAssoc('fid');
+
+  // Load the derived files
+  $outputs = db_select('video_output', 'vo')
+    ->fields('vo')
+    ->condition('vo.original_fid', $videofids, 'IN')
+    ->execute()->fetchAllAssoc('output_fid');
+
+  $fids = array_merge($fids, array_keys($outputs));
+  $files = file_load_multiple($fids);
+
+  // Apply the found information to all files for all entities
+  foreach ($entities as $id => $entity) {
+    foreach ($items[$id] as $delta => $item) {
+      if (empty($item) || empty($item['fid'])) {
+        continue;
+      }
+      // Check whether transcoding is enabled for this file
+      if (isset($queues[$item['fid']])) {
+        $items[$id][$delta]['autoconversion'] = TRUE;
+        $items[$id][$delta]['conversioncompleted'] = $queues[$item['fid']]->status == VIDEO_RENDERING_COMPLETE;
+        $items[$id][$delta]['conversionstatus'] = $queues[$item['fid']]->status;
+
+        // Load converted files
+        $items[$id][$delta]['playablefiles'] = array();
+        foreach ($outputs as $outputfid => $output) {
+          if ($output->original_fid == $items[$id][$delta]['fid'] && isset($files[$outputfid]) && $files[$outputfid]->filesize > 0) {
+            $conv = (array)$files[$outputfid] + (array)$output;
+            $items[$id][$delta]['playablefiles'][] = (object)$conv;
+          }
+        }
+
+        // If for some reason there are no playable files, mark the status as failed
+        if (empty($items[$id][$delta]['playablefiles']) && $items[$id][$delta]['conversioncompleted']) {
+          $items[$id][$delta]['conversioncompleted'] = FALSE;
+          $items[$id][$delta]['conversionstatus'] = VIDEO_RENDERING_FAILED;
+        }
+      }
+      else {
+        $items[$id][$delta]['playablefiles'] = array((object)$items[$id][$delta]);
+        $items[$id][$delta]['autoconversion'] = FALSE;
+      }
+
+      // Load thumbnail
+      if (empty($item['thumbnail']) || !isset($files[$item['thumbnail']])) {
+        $items[$id][$delta]['thumbnail'] = NULL;
+        $items[$id][$delta]['thumbnailfile'] = NULL;
+      }
+      else {
+        $items[$id][$delta]['thumbnailfile'] = $files[$item['thumbnail']];
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_validate().
+ *
+ * This allows field validation even when the file is added programmatically to
+ * the entity. The function only validates new files, not files that have been
+ * added to the entity before.
+ */
+function video_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
+  $current_fids = array();
+
+  // Get the video fids
+  foreach ($items as $delta => $item) {
+    if (empty($item['fid'])) {
+      continue;
+    }
+    $current_fids[$item['fid']] = $item['fid'];
+  }
+
+  if (empty($current_fids)) {
+    return;
+  }
+
+  // Create a bare-bones entity so that we can load its previous values.
+  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+  $original = entity_create_stub_entity($entity_type, array($id, $vid, $bundle));
+  field_attach_load($entity_type, array($id => $original), FIELD_LOAD_CURRENT, array('field_id' => $field['id']));
+
+  // Remove the entries from $current_fids that are already present in the database,
+  // leaving the ones that are new during this save operation.
+  if (!empty($original->{$field['field_name']}[$langcode])) {
+    foreach ($original->{$field['field_name']}[$langcode] as $originalitem) {
+      if (isset($originalitem['fid']) && isset($current_fids[$originalitem['fid']])) {
+        unset($current_fids[$originalitem['fid']]);
+      }
+    }
+  }
+
+  if (empty($current_fids)) {
+    // No new files have been added, only new files are checked
+    return;
+  }
+
+  $current_files = file_load_multiple($current_fids);
+  $validators = file_field_widget_upload_validators($field, $instance);
+  if (empty($validators)) {
+    // No validation rules
+    return;
+  }
+
+  // Validate the new entries
+  foreach ($items as $delta => $item) {
+    if (empty($item['fid']) || !isset($current_files[$item['fid']])) {
+      continue;
+    }
+
+    $fileerrors = file_validate($current_files[$item['fid']], $validators);
+
+    foreach ($fileerrors as $fileerror) {
+      $errors[$field['field_name']][$langcode][$delta][] = array(
+        'error' => 'video_upload',
+        'message' => $fileerror,
+      );
+    }
+  }
+}
+
+/**
+ * Implements hook_field_widget_error().
+ *
+ * Work-around for Drupal bug http://drupal.org/node/1432732
+ */
+function video_field_widget_error($element, $error, $form, &$form_state) {
+  form_error($element, $error['message']);
 }
 
 /**
@@ -191,13 +375,6 @@ function video_field_presave($entity_type, $entity, $field, $instance, $langcode
       if (!empty($item['use_default_video_thumb'])) {
         $items[$delta]['thumbnail'] = $field['settings']['default_video_thumbnail']['fid'];
       }
-    }
-
-    // delete from cache if exists
-    $cid = 'video:video:' . md5($item['fid']);
-    $cache = cache_get($cid);
-    if (!empty($cache->data)) {
-      cache_clear_all($cid, 'cache');
     }
   }
 
@@ -213,7 +390,7 @@ function video_field_insert($entity_type, $entity, $field, $instance, $langcode,
   _video_field_file_autoconversion($entity_type, $entity, $field, $instance, $langcode, $items);
 
   // Update the thumbnails to be permanent and register with entity
-  $thumbnails = _video_field_get_all_thumbnails($items);
+  $thumbnails = _video_field_get_all_thumbnails($field, $items);
   if (!empty($thumbnails)) {
     db_update('file_managed')
       ->fields(array('status' => FILE_STATUS_PERMANENT))
@@ -230,13 +407,20 @@ function video_field_insert($entity_type, $entity, $field, $instance, $langcode,
 
 /**
  * Implements hook_field_update().
+ *
+ * @todo handle new revisions
  */
 function video_field_update($entity_type, $entity, $field, $instance, $langcode, &$items) {
-  file_field_update($entity_type, $entity, $field, $instance, $langcode, $items);
-  _video_field_file_autoconversion($entity_type, $entity, $field, $instance, $langcode, $items);
+  // The derived files are handled first, because when the original file is deleted first,
+  // the derived files can not be looked up anymore.
+
+  // Modification of file_field_update().
+  // That function can't be called because the logic for finding
+  // existing fids is not the same.
+  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
 
   // Register the thumbnails in file_usage
-  $thumbnails = _video_field_get_all_thumbnails($items);
+  $thumbnails = _video_field_get_all_thumbnails($field, $items);
   if (!empty($thumbnails)) {
     db_update('file_managed')
       ->fields(array('status' => FILE_STATUS_PERMANENT))
@@ -246,21 +430,6 @@ function video_field_update($entity_type, $entity, $field, $instance, $langcode,
   // Register the thumbnails in file_usage
   $converted = _video_field_get_all_converted($items);
   $derivedfiles = array_merge($converted, $thumbnails);
-
-  // Modification of file_field_update().
-  // That function can't be called because the logic for finding
-  // existing fids is not the same.
-  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
-
-  // On new revisions, all files are considered to be a new usage and no
-  // deletion of previous file usages are necessary.
-  if (!empty($entity->revision)) {
-    foreach ($derivedfiles as $item) {
-      $file = (object) $item;
-      file_usage_add($file, 'file', $entity_type, $id);
-    }
-    return;
-  }
 
   // Build a display of the current FIDs.
   $current_fids = array();
@@ -274,17 +443,15 @@ function video_field_update($entity_type, $entity, $field, $instance, $langcode,
 
   // Compare the original field values with the ones that are being saved.
   $original_fids = array();
-  $delete_fids = array();
   if (!empty($original->{$field['field_name']}[$langcode])) {
-    $original_thumbs = _video_field_get_all_thumbnails($original->{$field['field_name']}[$langcode]);
-    $original_converted = _video_field_get_all_converted($original->{$field['field_name']}[$langcode]);
+    $original_thumbs = _video_field_get_all_thumbnails($field, $original->{$field['field_name']}[$langcode], $entity_type, $id);
+    $original_converted = _video_field_get_all_converted($original->{$field['field_name']}[$langcode], $entity_type, $id);
     $original_derivedfiles = array_merge($original_thumbs, $original_converted);
     foreach ($original_derivedfiles as $original_derivedfile) {
       $original_fids[] = $original_derivedfile['fid'];
       if (isset($original_derivedfile['fid']) && !in_array($original_derivedfile['fid'], $current_fids)) {
         // Decrement the file usage count by 1 and delete the file if possible.
         file_field_delete_file($original_derivedfile, $field, $entity_type, $id);
-        $delete_fids[] = $original_derivedfile['fid'];
       }
     }
   }
@@ -297,11 +464,9 @@ function video_field_update($entity_type, $entity, $field, $instance, $langcode,
     }
   }
 
-  // Delete fids from video_thumbnails
-  if (!empty($delete_fids)) {
-    db_delete('video_thumbnails')->condition('thumbnailfid', $delete_fids, 'IN')->execute();
-    db_delete('video_output')->condition('output_fid', $delete_fids, 'IN')->execute();
-  }
+  // Process the original file
+  file_field_update($entity_type, $entity, $field, $instance, $langcode, $items);
+  _video_field_file_autoconversion($entity_type, $entity, $field, $instance, $langcode, $items);
 }
 
 /**
@@ -311,18 +476,12 @@ function video_field_delete($entity_type, $entity, $field, $instance, $langcode,
   file_field_delete($entity_type, $entity, $field, $instance, $langcode, $items);
 
   // Deregister the thumbnails in file_usage
-  $thumbnails = _video_field_get_all_thumbnails($items);
-  if (!empty($thumbnails)) {
-    file_field_delete($entity_type, $entity, $field, $instance, $langcode, $thumbnails);
-    db_delete('video_thumbnails')->condition('thumbnailfid', array_keys($thumbnails), 'IN')->execute();
-  }
+  $thumbnails = _video_field_get_all_thumbnails($field, $items);
+  file_field_delete($entity_type, $entity, $field, $instance, $langcode, $thumbnails);
 
   // Deregister the converted files in file_usage
   $converted = _video_field_get_all_converted($items);
-  if (!empty($converted)) {
-    file_field_delete($entity_type, $entity, $field, $instance, $langcode, $converted);
-    db_delete('video_output')->condition('output_fid', array_keys($converted), 'IN')->execute();
-  }
+  file_field_delete($entity_type, $entity, $field, $instance, $langcode, $converted);
 }
 
 /**
@@ -332,12 +491,12 @@ function video_field_delete_revision($entity_type, $entity, $field, $instance, $
   file_field_delete_revision($entity_type, $entity, $field, $instance, $langcode, $items);
 
   // Deregister the thumbnails in file_usage
-  $thumbnails = _video_field_get_all_thumbnails($items);
+  $thumbnails = _video_field_get_all_thumbnails($field, $items);
   file_field_delete_revision($entity_type, $entity, $field, $instance, $langcode, $thumbnails);
 
   // Deregister the converted files in file_usage
   $converted = _video_field_get_all_converted($items);
-  file_field_delete($entity_type, $entity, $field, $instance, $langcode, $converted);
+  file_field_delete_revision($entity_type, $entity, $field, $instance, $langcode, $converted);
 }
 
 /**
@@ -345,6 +504,33 @@ function video_field_delete_revision($entity_type, $entity, $field, $instance, $
  */
 function video_field_is_empty($item, $field) {
   return file_field_is_empty($item, $field);
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Processes newly uploaded files that should be converted on save.
+ */
+function video_entity_insert($entity, $type) {
+  _video_field_convert_on_save($entity, $type);
+}
+
+/**
+ * Implements hook_entity_updated().
+ *
+ * Processes newly uploaded files that should be converted on save.
+ */
+function video_entity_update($entity, $type) {
+  _video_field_convert_on_save($entity, $type);
+}
+
+/**
+ * Implements hook_entity_translation_save().
+ *
+ * Process saving a "Entity Translation" save.
+ */
+function video_entity_translation_save($type, $entity, $language) {
+  _video_field_convert_on_save($entity, $type);
 }
 
 /**
@@ -403,6 +589,9 @@ function video_field_widget_form(&$form, &$form_state, $field, $instance, $langc
       '#type' => 'value',
       '#value' => NULL,
     );
+
+    // Override value loader
+    $elements[$delta]['#value_callback'] = 'video_field_widget_value';
   }
 
   if ($field['cardinality'] == 1) {
@@ -415,6 +604,36 @@ function video_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     $elements['#file_upload_description'] = theme('file_upload_help', array('upload_validators' => $elements[0]['#upload_validators']));
   }
   return $elements;
+}
+
+/**
+ * The #value_callback for the video field element.
+ *
+ * This function loads additional information related to the video to be used in
+ * video_widget_element_settings().
+ */
+function video_field_widget_value($element, $input = FALSE, $form_state) {
+  $value = file_field_widget_value($element, $input, $form_state);
+
+  if ($value['fid'] > 0) {
+    $factory = new TranscoderAbstractionAbstractFactory();
+    $transcoder = $factory->getProduct();
+
+    if ($transcoder != NULL) {
+      $video = $transcoder->loadJob($value['fid']);
+
+      if ($video) {
+        $value['dimensions'] = $video->dimensions;
+        $value['conversionstatus'] = $video->video_status;
+      }
+    }
+  }
+
+  if ($input && !empty($input['dimensions'])) {
+    $value['dimensions'] = $input['dimensions'];
+  }
+
+  return $value;
 }
 
 /**
@@ -482,7 +701,7 @@ function video_thumb_process(array &$element, array &$form_state, array $field) 
           '#attributes' => array('class' => array('video-thumbnails'), 'onchange' => 'Drupal.behaviors.videoEdit()', 'rel' => 'video_large_thumbnail-' . $fid),
         );
       }
-      elseif($thumbs === FALSE) {
+      elseif ($thumbs === FALSE) {
         $gen_fail = TRUE;
       }
     }
@@ -534,39 +753,35 @@ function video_thumb_process(array &$element, array &$form_state, array $field) 
  * Process elements loads on settings
  */
 function video_widget_element_settings(array &$element, array &$form_state, array $field) {
+  $factory = new TranscoderAbstractionAbstractFactory();
+  $transcoder = $factory->getProduct();
+
   $file = $element['#value'];
   $delta = $element['#delta'];
 
   $instance = field_widget_instance($element, $form_state);
   $dimensions = $instance['settings']['default_dimensions'];
   $default_dimensions = user_access('override player dimensions');
-  $description = t('Set your video dimensions. This will create your player with these dimensions.');
+  $autoconversion = !empty($field['settings']['autoconversion']) && $transcoder != NULL;
 
-  // Lets figure out our dimensions for our video and add astericks next to our options.
+  $description = t('Set your video dimensions. This will create your player with these dimensions.');
   $options = video_utility::getDimensions();
-  if ($field['settings']['autoconversion'] && isset($element['preview']) && $file['fid'] != 0 && $default_dimensions) {
+  if ($autoconversion && isset($element['preview']) && $file['fid'] != 0 && $default_dimensions) {
     $file_object = file_load($file['fid']);
     $video_info = _video_dimensions_options($options, $file_object);
     if (!empty($video_info['width']) && !empty($video_info['height'])) {
-      $description .= ' ' . t('Your video size is <b>!size</b>, if you choose a higher resolution, this could cause video distortion. You are shown dimensions that match your aspect ratio, if you choose dimensions that do not match your ratio, we will pad your video by adding black bars on either the top or bottom while maintaining your videos original aspect ratio.', array('!size' => $video_info['width'] . 'x' . $video_info['height']));
-    }
-
-    // setup our default display of dimensions.
-    // lets go through our options looking for a matching resolution
-    foreach ($options as $key => $value) {
-      if (stristr($value, t('(Matches Resolution)'))) {
-        $dimensions = $key;
-        break;
-      }
+      $dimensions = $video_info['width'] . 'x' . $video_info['height'];
+      $description .= ' ' . t('Your video size is %size, if you choose a higher resolution, this could cause video distortion. You are shown dimensions that match your aspect ratio, if you choose dimensions that do not match your ratio, we will pad your video by adding black bars on either the top or bottom while maintaining your videos original aspect ratio.', array('%size' => $dimensions));
     }
   }
+
   // Override our dimensions to the user selected.
   if (!empty($file['dimensions'])) {
     $dimensions = $file['dimensions'];
   }
 
   // show only enabled the autoconversion
-  if ($field['settings']['autoconversion']) {
+  if ($autoconversion) {
     $element['dimensions'] = array(
       '#type' => 'select',
       '#title' => t('Output video dimensions'),
@@ -582,19 +797,15 @@ function video_widget_element_settings(array &$element, array &$form_state, arra
   }
 
   // only in preview mode and then create thumbnails
-  if ($field['settings']['autoconversion']) {
+  if ($autoconversion) {
     // check if already converted or failed
-    $factory = new TranscoderAbstractionAbstractFactory();
-    $transcoder = $factory->getProduct();
-    $transcoder->setInput($file);
-    $video = $transcoder->loadJob();
-    if (user_access('re convert video') && isset($video->video_status) && ($video->video_status == VIDEO_RENDERING_COMPLETE || $video->video_status == VIDEO_RENDERING_FAILED)) {
-      $status = array(VIDEO_RENDERING_COMPLETE => 'completed', VIDEO_RENDERING_FAILED => 'failed');
+    if (user_access('re convert video') && isset($file['conversionstatus']) && ($file['conversionstatus'] == VIDEO_RENDERING_COMPLETE || $file['conversionstatus'] == VIDEO_RENDERING_FAILED)) {
+      $status = array(VIDEO_RENDERING_COMPLETE => 'been completed', VIDEO_RENDERING_FAILED => 'failed');
       $element['re_convert_video'] = array(
         '#type' => 'checkbox',
-        '#title' => t('Video conversion has been <b>' . $status[$video->video_status] . '!</b>. Re-queue video?.'),
-        '#description' => t('This will re-convert your video to output formats when you save, or schedule it for cron.'),
-        '#attributes' => array('class' => array('video-re-convert', 'video-' . $video->video_status)),
+        '#title' => t('Video conversion has ' . $status[$file['conversionstatus']] . '. Re-queue video?'),
+        '#description' => t('This will re-convert your video to output formats when you save or schedule it for cron.'),
+        '#attributes' => array('class' => array('video-re-convert', 'video-' . $file['conversionstatus'])),
       );
     }
     if (user_access('bypass conversion video')) {
@@ -674,13 +885,13 @@ function _video_dimensions_options(&$options, $video) {
     $wxh = explode('x', $value);
     // Lets check our width and height first
     if ($aspect_ratio['width'] == $wxh[0] && $aspect_ratio['height'] == $wxh[1]) {
-      $options[$key] = $value . ' ' . t('(Matches Resolution)');
+      $options[$key] = $value . ' (' . t('Matches resolution of original file') . ')';
     }
     else {
       // Now lets check our ratio's
       $ratio = number_format($wxh[0] / $wxh[1], 4);
       if ($ratio == $aspect_ratio['ratio']) {
-        $options[$key] = $value . ' ' . t('(Matches Ratio)');
+        $options[$key] = $value . ' (' . t('Matches ratio of original file') . ')';
       }
     }
   }
@@ -714,15 +925,16 @@ function _video_aspect_ratio($video) {
  */
 
 /**
- * Implements CCK's hook_field_formatter_info().
+ * Implements hook_field_formatter_info().
  */
 function video_field_formatter_info() {
-  $formatters = array(
+  return array(
     'video_formatter_player' => array(
       'label' => t('Video player'),
       'field types' => array('video'),
       'settings' => array(
         'widthxheight' => '640x360',
+        'poster_image_style' => '',
       ),
     ),
     'video_formatter_thumbnail' => array(
@@ -730,11 +942,10 @@ function video_field_formatter_info() {
       'field types' => array('video'),
       'settings' => array(
         'image_style' => '',
-        'image_link' => ''
+        'image_link' => '',
       ),
     ),
   );
-  return $formatters;
 }
 
 /**
@@ -743,39 +954,49 @@ function video_field_formatter_info() {
 function video_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
+  $image_styles = image_style_options(FALSE);
 
-  if ($display['type'] == 'video_formatter_thumbnail') {
-    $image_styles = image_style_options(FALSE);
-    $element['image_style'] = array(
-      '#title' => t('Video thumbnail style'),
-      '#type' => 'select',
-      '#default_value' => $settings['image_style'],
-      '#empty_option' => t('None (original video thumbnail)'),
-      '#options' => $image_styles,
-    );
+  switch ($display['type']) {
+    case 'video_formatter_thumbnail':
+      $element['image_style'] = array(
+        '#title' => t('Video thumbnail style'),
+        '#type' => 'select',
+        '#default_value' => $settings['image_style'],
+        '#empty_option' => t('None (original video thumbnail)'),
+        '#options' => $image_styles,
+      );
 
-    $link_types = array(
-      'content' => t('Content'),
-      'file' => t('File'),
-    );
-    $element['image_link'] = array(
-      '#title' => t('Link video or video thumbanil to'),
-      '#type' => 'select',
-      '#default_value' => $settings['image_link'],
-      '#empty_option' => t('Nothing'),
-      '#options' => $link_types,
-    );
+      $element['image_link'] = array(
+        '#title' => t('Link video or video thumbnail to'),
+        '#type' => 'select',
+        '#default_value' => $settings['image_link'],
+        '#empty_option' => t('Nothing'),
+        '#options' => array(
+          'content' => t('Content'),
+          'file' => t('File'),
+        ),
+      );
+      break;
+
+    case 'video_formatter_player':
+      $element['widthxheight'] = array(
+        '#title' => t('Dimensions'),
+        '#type' => 'select',
+        '#default_value' => $settings['widthxheight'],
+        '#description' => t('Select the desired dimensions of the video player. You can add your own dimensions at !settings.', array('!settings' => l(t('video metadata settings'), 'admin/config/media/video/metadata'))),
+        '#options' => video_utility::getDimensions(),
+      );
+
+      $element['poster_image_style'] = array(
+        '#title' => t('Poster image style'),
+        '#type' => 'select',
+        '#default_value' => $settings['poster_image_style'],
+        '#empty_option' => t('None (original image)'),
+        '#options' => $image_styles,
+      );
+      break;
   }
-  // set the player wxh
-  if ($display['type'] == 'video_formatter_player') {
-    $element['widthxheight'] = array(
-      '#title' => t('Dimensions'),
-      '#type' => 'select',
-      '#default_value' => $settings['widthxheight'],
-      '#description' => t('Select the desired widthxheight of the video player. You can add your own dimensions from !settings.', array('!settings' => l(t('video metadata settings'), 'admin/config/media/video/metadata'))),
-      '#options' => video_utility::getDimensions(),
-    );
-  }
+
   return $element;
 }
 
@@ -789,27 +1010,34 @@ function video_field_formatter_settings_summary($field, $instance, $view_mode) {
   $image_styles = image_style_options(FALSE);
   // Unset possible 'No defined styles' option.
   unset($image_styles['']);
+
   // Styles could be lost because of enabled/disabled modules that defines
   // their styles in code.
-  if ($display['type'] == 'video_formatter_thumbnail') {
-    if (isset($image_styles[$settings['image_style']])) {
-      $summary[] = t('Video thumbnail style: @style', array('@style' => $image_styles[$settings['image_style']]));
-    }
-    else {
-      $summary[] = t('Original video thumbnail');
-    }
+  switch ($display['type']) {
+    case 'video_formatter_thumbnail':
+      if (isset($image_styles[$settings['image_style']])) {
+        $summary[] = t('Video thumbnail style: @style', array('@style' => $image_styles[$settings['image_style']]));
+      }
+      else {
+        $summary[] = t('Original video thumbnail');
+      }
 
-    $link_types = array(
-      'content' => t('Linked to content'),
-      'file' => t('Linked to video file'),
-    );
-    // Display this setting only if image is linked.
-    if (isset($link_types[$settings['image_link']])) {
-      $summary[] = $link_types[$settings['image_link']];
-    }
-  }
-  if ($display['type'] == 'video_formatter_player') {
-    $summary[] = t('WidthxHeight of the player: @widthxheight', array('@widthxheight' => $settings['widthxheight']));
+      $link_types = array(
+        'content' => t('Linked to content'),
+        'file' => t('Linked to video file'),
+      );
+      // Display this setting only if image is linked.
+      if (isset($link_types[$settings['image_link']])) {
+        $summary[] = $link_types[$settings['image_link']];
+      }
+      break;
+
+    case 'video_formatter_player':
+      $summary[] = t('Player dimensions: @widthxheight', array('@widthxheight' => $settings['widthxheight']));
+      if (isset($image_styles[$settings['poster_image_style']])) {
+        $summary[] = t('Poster image style: @style', array('@style' => $image_styles[$settings['poster_image_style']]));
+      }
+      break;
   }
 
   return implode('<br />', $summary);
@@ -821,44 +1049,48 @@ function video_field_formatter_settings_summary($field, $instance, $view_mode) {
 function video_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
   $settings = $display['settings'];
-  // set the display
-  $theme = $display['type'];
+
   foreach ($items as $delta => $item) {
-    if ($display['type'] == 'video_formatter_thumbnail') {
-      // Check if the formatter involves a link.
-      if ($settings['image_link'] == 'content') {
-        $uri = entity_uri($entity_type, $entity);
-      }
-      elseif ($settings['image_link'] == 'file') {
-        $link_file = TRUE;
-      }
-      if (isset($link_file)) {
-        $uri = array(
-          'path' => file_create_url($item['uri']),
-          'options' => array(),
+    switch ($display['type']) {
+      case 'video_formatter_thumbnail':
+        // Check if the formatter involves a link.
+        if ($settings['image_link'] == 'content') {
+          $uri = entity_uri($entity_type, $entity);
+        }
+        elseif ($settings['image_link'] == 'file') {
+          $link_file = TRUE;
+        }
+        if (isset($link_file)) {
+          $uri = array(
+            'path' => file_create_url($item['uri']),
+            'options' => array(),
+          );
+        }
+        $element[$delta] = array(
+          '#theme' => 'video_formatter_thumbnail',
+          '#item' => $item,
+          '#image_style' => $settings['image_style'],
+          '#path' => isset($uri) ? $uri : '',
+          '#entity' => $entity,
+          '#field' => $field,
+          '#instance' => $instance
         );
-      }
-      $element[$delta] = array(
-        '#theme' => $theme,
-        '#item' => $item,
-        '#image_style' => $settings['image_style'],
-        '#path' => isset($uri) ? $uri : '',
-        '#entity' => $entity,
-        '#field' => $field,
-        '#instance' => $instance
-      );
-    }
-    if ($display['type'] == 'video_formatter_player') {
-      $element[$delta] = array(
-        '#theme' => $theme,
-        '#item' => $item,
-        '#entity' => $entity,
-        '#field' => $field,
-        '#instance' => $instance,
-        '#player_dimensions' => $settings['widthxheight']
-      );
+        break;
+
+      case 'video_formatter_player':
+        $element[$delta] = array(
+          '#theme' => 'video_formatter_player',
+          '#item' => $item,
+          '#entity' => $entity,
+          '#field' => $field,
+          '#instance' => $instance,
+          '#player_dimensions' => $settings['widthxheight'],
+          '#poster_image_style' => $settings['poster_image_style'],
+        );
+        break;
     }
   }
+
   return $element;
 }
 
@@ -873,28 +1105,14 @@ function video_filefield_sources_widgets() {
  * Video file save to the video_queue table for conversions
  */
 function _video_field_file_autoconversion($entity_type, $entity, $field, $instance, $langcode, &$items) {
-  if (empty($field['settings']['autoconversion'])) {
-    return;
-  }
-
-  // Find the entity id
-  list($entity_id, $entity_vid, $bundle) = entity_extract_ids($entity_type, $entity);
-
-  $hasfilefieldpaths = module_exists('filefield_paths') && !empty($instance['settings']['filefield_paths']);
-
-  $video_conversion = new Conversion();
   $factory = new TranscoderAbstractionAbstractFactory();
   $transcoder = $factory->getProduct();
 
-  foreach ($items as $delta => &$item) {
-    // When filefield_paths is active, _video_field_file_autoconversion is invoked twice:
-    // the first time before filefield_paths has changed the path,
-    // the second time after the file has been moved (or not)
-    // We only process the item in the second round of processing.
-    if ($hasfilefieldpaths && !isset($item['origname'])) {
-      continue;
-    }
+  if (empty($field['settings']['autoconversion']) || $transcoder == NULL) {
+    return;
+  }
 
+  foreach ($items as $delta => &$item) {
     // set input file
     $transcoder->setInput($item);
     // skip adding entry if bypass conversion is checked
@@ -909,6 +1127,8 @@ function _video_field_file_autoconversion($entity_type, $entity, $field, $instan
 
     // Create the job if it doesn't exist
     if (!$video) {
+      list($entity_id, $entity_vid, $bundle) = entity_extract_ids($entity_type, $entity);
+      // @todo get the default dimension when not available in $item
       if (!($transcoder->createJob($item['fid'], $item['dimensions'], $entity_id, $entity_type, $field['field_name'], $langcode, $delta))) {
         drupal_set_message(t('Something went wrong with your video job creation. Please check your recent log entries for further debugging.'), 'error');
         return;
@@ -919,32 +1139,69 @@ function _video_field_file_autoconversion($entity_type, $entity, $field, $instan
 
     // re queue for video conversion
     if (!empty($item['re_convert_video'])) {
-      $video_conversion->changeStatus($video->vid, VIDEO_RENDERING_PENDING);
       $video->video_status = VIDEO_RENDERING_PENDING;
+      $video->dimensions = $item['dimensions'];
+      $transcoder->updateJob($video);
     }
 
     // Convert on save if the job is pending and if it is requested
+    // The automatic conversions of files is handled in _video_field_convert_on_save(),
+    // which is called from hook_entity_insert/hook_entity_update.
     if (!empty($item['convert_video_on_save']) && $video->video_status == VIDEO_RENDERING_PENDING) {
-      if ($video_conversion->process($video)) {
-        drupal_set_message(t('Transcoding job submission was successful. Your video will be converted and published very soon.'));
-      }
-      else {
-        $video_conversion->changeStatus($video->vid, VIDEO_RENDERING_FAILED);
-        drupal_set_message(t('Something went wrong with your video transcoding. Please check your recent log entries for further debugging.'), 'error');
-      }
+      // Only save the fid, because the location of the file may change
+      // between now and _video_field_convert_on_save().
+      $entity->video_convert_on_save[$video->fid] = $video->fid;
     }
   }
 }
 
-function _video_field_get_all_thumbnails(array $items) {
+/**
+ * Processes video fields that should convert on save.
+ *
+ * This is not performed in _video_field_file_autoconversion() because
+ * of incompatibilities with Rules and File(field) Paths.
+ *
+ * When hook_entity_insert/update are called, all field related operations
+ * are complete and the entity is fully saved to the database. This
+ * allows Rules to supply a proper entity to the event handlers.
+ *
+ * The $entity->video_convert_on_save property is set in
+ * _video_field_file_autoconversion().
+ */
+function _video_field_convert_on_save($entity, $type) {
+  if (!empty($entity->video_convert_on_save)) {
+    $video_conversion = new Conversion();
+
+    foreach ($entity->video_convert_on_save as $videofid) {
+      if ($video_conversion->process($videofid)) {
+        drupal_set_message(t('Transcoding job submission was successful. Your video will be converted and published very soon.'));
+      }
+      else {
+        $video_conversion->changeStatus($videofid, VIDEO_RENDERING_FAILED);
+        drupal_set_message(t('Something went wrong with your video transcoding. Please check your recent log entries for further debugging.'), 'error');
+      }
+    }
+
+    unset($entity->video_convert_on_save);
+  }
+}
+
+function _video_field_get_all_thumbnails(array $field, array $items, $usage_entity_type = NULL, $usage_entity_id = NULL) {
   if (empty($items)) {
     return array();
   }
 
+  $defaultthumbnailfid = !empty($field['settings']['default_video_thumbnail']) ? $field['settings']['default_video_thumbnail']['fid'] : 0;
   $videofids = array();
+  $thumbnailfids = array();
   foreach ($items as $item) {
     if (!empty($item['fid'])) {
       $videofids[] = intval($item['fid']);
+
+      // Add the selected thumbnail if it is not the default thumbnail for the field
+      if (!empty($item['thumbnail']) && $item['thumbnail'] != $defaultthumbnailfid) {
+        $thumbnailfids[] = intval($item['thumbnail']);
+      }
     }
   }
 
@@ -952,14 +1209,25 @@ function _video_field_get_all_thumbnails(array $items) {
     return array();
   }
 
-  $thumbnailfids = db_select('video_thumbnails', 't')
-    ->fields('t', array('thumbnailfid'))->condition('videofid', $videofids, 'IN')
-    ->execute()->fetchCol(0);
+  // Add the automatically extracted thumbnails
+  $query = db_select('video_thumbnails', 't')
+    ->fields('t', array('thumbnailfid'))
+    ->condition('videofid', $videofids, 'IN');
+
+  // Only return files with usage when requested
+  if ($usage_entity_type != NULL && $usage_entity_id != NULL) {
+    $query->innerJoin('file_usage', 'u', 'u.fid = t.thumbnailfid AND u.type = :type AND u.id = :id', array(
+        ':type' => $usage_entity_type,
+        ':id' => $usage_entity_id,
+    ));
+  }
+
+  $thumbnailfids = array_merge($thumbnailfids, $query->execute()->fetchCol(0));
 
   return video_utility::objectToArray(file_load_multiple($thumbnailfids));
 }
 
-function _video_field_get_all_converted(array $items) {
+function _video_field_get_all_converted(array $items, $usage_entity_type = NULL, $usage_entity_id = NULL) {
   if (empty($items)) {
     return array();
   }
@@ -975,9 +1243,19 @@ function _video_field_get_all_converted(array $items) {
     return array();
   }
 
-  $convertedfids = db_select('video_output', 't')
-    ->fields('t', array('output_fid'))->condition('original_fid', $videofids, 'IN')
-    ->execute()->fetchCol(0);
+  $query = db_select('video_output', 't')
+    ->fields('t', array('output_fid'))
+    ->condition('original_fid', $videofids, 'IN');
+
+  // Only return files with usage when requested
+  if ($usage_entity_type != NULL && $usage_entity_id != NULL) {
+    $query->innerJoin('file_usage', 'u', 'u.fid = t.output_fid AND u.type = :type AND u.id = :id', array(
+      ':type' => $usage_entity_type,
+      ':id' => $usage_entity_id,
+    ));
+  }
+
+  $convertedfids = $query->execute()->fetchCol(0);
 
   return video_utility::objectToArray(file_load_multiple($convertedfids));
 }

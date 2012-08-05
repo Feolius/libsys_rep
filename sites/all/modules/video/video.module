@@ -88,7 +88,7 @@ function video_permission() {
 function video_theme() {
   $theme = array();
   $theme['video_formatter_player'] = array(
-    'variables' => array('item' => NULL, 'entity' => NULL, 'field' => NULL, 'instance' => NULL, 'player_dimensions' => NULL),
+    'variables' => array('item' => NULL, 'entity' => NULL, 'field' => NULL, 'instance' => NULL, 'player_dimensions' => NULL, 'poster_image_style' => NULL),
     'file' => 'video.theme.inc',
   );
   $theme['video_formatter_thumbnail'] = array(
@@ -115,7 +115,7 @@ function video_theme() {
   $players = video_utility::getVideoPlayers();
   foreach ($players as $tpl => $value) {
     $theme[$tpl] = array(
-      'variables' => array('video' => NULL, 'themed_output' => NULL),
+      'variables' => array('item' => NULL, 'width' => NULL, 'height' => NULL),
       'template' => str_replace('_', '-', $tpl),
       'path' => $path,
     );
@@ -123,12 +123,12 @@ function video_theme() {
   // We need to add an flv theme buffer to allow users to override in their own module to add in extra parameters before
   // calling our flv template file.
   $theme['video_flv'] = array(
-    'variables' => array('video' => NULL),
-    'file' => 'video.theme.inc'
+    'variables' => array('item' => NULL, 'themed_output' => NULL),
+    'file' => 'video.theme.inc',
   );
   $theme['video_html5'] = array(
-    'variables' => array('video' => NULL),
-    'file' => 'video.theme.inc'
+    'variables' => array('item' => NULL, 'width' => NULL, 'height' => NULL, 'files' => NULL),
+    'file' => 'video.theme.inc',
   );
   // Dialog page.
   $theme['video_dialog_page'] = array(
@@ -137,6 +137,45 @@ function video_theme() {
     'file' => 'video.theme.inc',
   );
   return $theme;
+}
+
+/**
+ * Implements hook_theme_registry_alter().
+ *
+ * Add a generic preprocess function to all video theme methods.
+ */
+function video_theme_registry_alter(&$registry) {
+  $players = video_utility::getVideoPlayers();
+  $templates = array_keys($players);
+  $templates[] = 'video_flv';
+  $templates[] = 'video_html5';
+
+  foreach ($templates as $template) {
+    if (!isset($registry[$template])) {
+      continue;
+    }
+
+    if (!isset($registry[$template]['preprocess functions'])) {
+      $registry[$template]['preprocess functions'] = array();
+    }
+
+    $registry[$template]['preprocess functions'][] = 'video_preprocess_video_formatter_player';
+  }
+}
+
+/**
+ * Implements hook_preprocess_video_formatter_player().
+ *
+ * Generic preprocess function for all video theme functions to load some
+ * variables.
+ */
+function video_preprocess_video_formatter_player(array &$variables) {
+  if (!isset($variables['autoplay'])) {
+    $variables['autoplay'] = (bool)variable_get('video_autoplay', FALSE);
+  }
+  if (!isset($variables['autobuffering'])) {
+    $variables['autobuffering'] = (bool)variable_get('video_autobuffering', TRUE);
+  }
 }
 
 /**
@@ -152,7 +191,7 @@ function video_cron() {
     $queue = DrupalQueue::get('video_queue');
     foreach ($videos as $video) {
       if ($queue->createItem($video)) {
-        $video_conversion->changeStatus($video->vid, VIDEO_RENDERING_INQUEUE);
+        $video_conversion->changeStatus($video->fid, VIDEO_RENDERING_INQUEUE);
       }
     }
   }
@@ -183,7 +222,16 @@ function video_queue_process($video) {
  * @todo: delete more
  */
 function video_file_delete(stdClass $file) {
+  // Deregister the file in video_queue
   db_delete('video_queue')->condition('fid', $file->fid)->execute();
+
+  // Deregister the thumbnails in video_thumbnails
+  db_delete('video_thumbnails')->condition('thumbnailfid', $file->fid)->execute();
+  db_delete('video_thumbnails')->condition('videofid', $file->fid)->execute();
+
+  // Deregister the converted files in video_output
+  db_delete('video_output')->condition('output_fid', $file->fid)->execute();
+  db_delete('video_output')->condition('original_fid', $file->fid)->execute();
 }
 
 /**
@@ -232,20 +280,23 @@ function video_views_handlers() {
  */
 function video_file_download($uri) {
   // Check if the file is a transcoded or thumbnail file and determine access by evaluating access to the original file
-  $fileinfo = NULL;
+  $fileinfo = FALSE;
+  $extension = video_utility::getExtension($uri);
+  $isimage = $extension == 'png' || $extension == 'jpg';
 
   // Check for transcoded files
-  if (strpos($uri, '/converted/') !== FALSE) {
+  // @todo only execute the query if the file name seems to be a video
+  if (!$isimage) {
     $fileinfo = db_query('SELECT video.uri videouri, converted.* FROM {file_managed} video JOIN {video_output} op ON video.fid = op.original_fid JOIN {file_managed} converted ON converted.fid = op.output_fid WHERE converted.uri = :uri', array(':uri' => $uri))->fetchObject();
   }
 
   // Check for thumbnails (new style, files uploaded after upgrade to 2.6)
-  if (strpos($uri, '/thumbnails/') !== FALSE) {
+  if ($fileinfo === FALSE && $isimage) {
     $fileinfo = db_query('SELECT video.uri videouri, thumb.* FROM {file_managed} video JOIN {video_thumbnails} tn ON video.fid = tn.videofid JOIN {file_managed} thumb ON thumb.fid = tn.thumbnailfid WHERE thumb.uri = :uri', array(':uri' => $uri))->fetchObject();
   }
 
   // Check for thumbnails (old style, only works for selected thumbnail)
-  if ($fileinfo == NULL && strpos($uri, '/thumbnails/') !== FALSE) {
+  if ($fileinfo === FALSE && strpos($uri, '/thumbnails/') !== FALSE) {
     $thumbfile = db_query('SELECT thumb.* FROM {file_managed} thumb WHERE thumb.uri = :uri', array(':uri' => $uri))->fetchObject();
     if ($thumbfile != NULL && strncmp($thumbfile->filemime, 'image/', 6) === 0) {
       // The following code is derived from file_file_download() and tries to find the original video URI for this thumbnail

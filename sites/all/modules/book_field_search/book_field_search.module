@@ -48,16 +48,18 @@ function book_field_apachesolr_entity_info_alter(&$entity_info) {
 }
 
 /**
- * Status callback for the files. Files should never be removed from the table.
+ * Status callback for the files attched to lib_book entity. Files should never be removed from the table.
  * See apachesolr_attachments_apachesolr_exclude() for exclusion of items
  * @param type $entity_id
  * @param type $entity_type
  * @return type
  */
 function book_field_search_status_callback($entity_id, $entity_type) {
-    $entity = entity_load($entity_type, array($entity_id));
-
+    module_load_include('inc', 'apachesolr_attachments', 'apachesolr_attachments.index');
+    $entity = entity_load($entity_type, array($entity_id));    
     $file = file_load($entity[$entity_id]->fid);
+    //var_dump($file);
+    //exit;
     if (apachesolr_attachments_allowed_mime($file->filemime) == FALSE) {
         // Set status to 0 and remove from the index
         return FALSE;
