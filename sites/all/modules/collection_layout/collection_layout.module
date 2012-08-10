@@ -398,45 +398,51 @@ function collection_layout_node_page_callback() {
     $date_range_filter_string = isset($date['min']) ? "{$date['min']}--{$date['max']}" : 'all';
     $date_filter_string = isset($date['year']) ? $date['year'] : 'all';
     views_embed_view('timeline_json_view', 'block_1', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string);
-
-//'<div class="collection_layout_timeline"><iframe src="timeline-frame" style="width:99%; height:100%; border:1px solid #e0e0e0"></iframe></div>',    
-    $links = array();
-    for ($i = 0; $i < count($_SESSION['collection_layout']['view_result']); $i++)
-        if ($_SESSION['collection_layout']['nid'] == $_SESSION['collection_layout']['view_result'][$i]->nid) {
-            if ($i != 0)
-                $links['#left'] = l('', 'node-page', array(
-                    'query' => array('nid' => $_SESSION['collection_layout']['view_result'][$i - 1]->nid),
-                    'attributes' => array('class' => array('m-icon-big-swapleft'))
-                        ));
-            if ($i != count($_SESSION['collection_layout']['view_result']) - 1)
-                $links['#right'] = l('', 'node-page', array(
-                    'query' => array('nid' => $_SESSION['collection_layout']['view_result'][$i + 1]->nid),
-                    'attributes' => array('class' => array('m-icon-big-swapright'))
-                        ));
-            //$result .= '<div class="collection_layout_slider_button_right">' .  . '</div>';
-        }
+    
     $content = array(
         '#information' => array(
             '#title' => t('General'),
-            '#view' => views_embed_view('node_view', 'inf', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
-            '#timeline_iframe' => array(
-                '#url' => 'timeline-frame'
-            )
+            '#content' => array(
+                '#view' => views_embed_view('node_view', 'inf', $_SESSION['collection_layout']['nid'], $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+                '#timeline_iframe' => array(
+                    '#url' => 'timeline-frame'
+            ))
         ),
         '#image' => array(
             '#title' => t('Image'),
-            '#view' => views_embed_view('node_view', 'image_deep_zoom', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+            '#content' => array(
+                '#view' => views_embed_view('node_view', 'image_deep_zoom', $_SESSION['collection_layout']['nid'], $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+            )
         ),
         '#media' => array(
             '#title' => t('Media'),
-            '#view' => views_embed_view('node_view', 'media', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+            '#content' => array(
+                '#view' => views_embed_view('node_view', 'media', $_SESSION['collection_layout']['nid'], $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+            )
         ),
         '#text' => array(
             '#title' => t('Book'),
-            '#view' => views_embed_view('node_view', 'book', $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+            '#content' => array(
+                'flexpaper' => array(
+                    '#view' => views_embed_view('node_view', 'book_flexpaper', $_SESSION['collection_layout']['nid'], $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+                    '#title' => t('Flexpaper')
+                ),
+                'google_docs' => array(
+                    '#view' => views_embed_view('node_view', 'book_google_docs', $_SESSION['collection_layout']['nid'], $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+                    '#title' => t('Google Docs')
+                ),
+                'file_link' => array(
+                    '#view' => views_embed_view('node_view', 'book_file_link', $_SESSION['collection_layout']['nid'], $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+                    '#title' => t('Donload')
+                )
+            )
         ),
-        '#slider_links' => $links
+        '#slider_links' => array(
+            '#left' => views_embed_view('node_view', 'node_prev', $_SESSION['collection_layout']['nid'], $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+            '#right' => views_embed_view('node_view', 'node_next', $_SESSION['collection_layout']['nid'], $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
+        )
     );
+    
     return theme('node_page', array('element' => $content));
 }
 
@@ -516,9 +522,9 @@ function theme_node_page($variables) {
     drupal_add_js(drupal_get_path('module', 'collection_layout') . '/js/node_slider_buttons.js');
     drupal_add_js(drupal_get_path('module', 'collection_layout') . '/js/node_tabs.js');
     drupal_add_library('system', 'ui.tabs');
-    
+
     extract($variables);
-    
+
     $output = '<div id="collection_layout_tabs">';
     $output .= "<ul>
                     <li><a href=\"#tabs-1\">{$element['#information']['#title']}</a></li>
@@ -526,17 +532,27 @@ function theme_node_page($variables) {
                     <li><a href=\"#tabs-3\">{$element['#media']['#title']}</a></li>
                     <li><a href=\"#tabs-4\">{$element['#text']['#title']}</a></li>
                 </ul>";
-     $output .= "<div id=\"tabs-1\">{$element['#information']['#view']}
-                 <div class=\"collection_layout_timeline\"><iframe src=\"{$element['#information']['#timeline_iframe']['#url']}\" style=\"width:99%; height:100%; border:1px solid #e0e0e0\"></iframe></div>
+    $output .= "<div id=\"tabs-1\">{$element['#information']['#content']['#view']}
+                 <div class=\"collection_layout_timeline\"><iframe src=\"{$element['#information']['#content']['#timeline_iframe']['#url']}\" style=\"width:99%; height:100%; border:1px solid #e0e0e0\"></iframe></div>
                  </div>
-                 <div id=\"tabs-2\">{$element['#image']['#view']}</div>
-                 <div id=\"tabs-3\">{$element['#media']['#view']}</div>
-                 <div id=\"tabs-4\">{$element['#text']['#view']}</div>";
+                 <div id=\"tabs-2\">{$element['#image']['#content']['#view']}</div>
+                 <div id=\"tabs-3\">{$element['#media']['#content']['#view']}</div>
+                 <div id=\"tabs-4\">
+                 <div id=\"collection_layout_book_tabs\">
+                    <ul>
+                        <li><a href=\"#tabs-1\">{$element['#text']['#content']['file_link']['#title']}</a></li>
+                        <li><a href=\"#tabs-2\">{$element['#text']['#content']['google_docs']['#title']}</a></li>
+                        <li><a href=\"#tabs-3\">{$element['#text']['#content']['flexpaper']['#title']}</a></li>
+                    </ul>
+                    <div id=\"tabs-1\">{$element['#text']['#content']['file_link']['#view']}</div>
+                    <div id=\"tabs-2\">{$element['#text']['#content']['google_docs']['#view']}</div>
+                    <div id=\"tabs-3\">{$element['#text']['#content']['flexpaper']['#view']}</div>    
+                    
+                 </div>
+                 </div>";
     $output .= '</div>';
-    
-    $output .= isset($element['#slider_links']['#left']) ? "<div class=\"collection_layout_slider_button_left\">{$element['#slider_links']['#left']}</div>" : '';
-    $output .= isset($element['#slider_links']['#right']) ? "<div class=\"collection_layout_slider_button_right\">{$element['#slider_links']['#right']}</div>" : '';
-    
+    $output .= $element['#slider_links']['#left'];
+    $output .= $element['#slider_links']['#right'];
     return $output;
 }
 
