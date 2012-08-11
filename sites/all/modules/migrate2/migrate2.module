@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the migrate feature.
- */
-
-include_once 'migrate2.features.inc';

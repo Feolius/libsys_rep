@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the to server feature.
- */
-
-include_once 'to_server.features.inc';

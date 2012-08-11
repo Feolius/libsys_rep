@@ -1,5 +1,0 @@
-name = Files Filter
-package = Adventict DL
-core = 7.x
-version = VERSION
-files[] = files_filter.module
