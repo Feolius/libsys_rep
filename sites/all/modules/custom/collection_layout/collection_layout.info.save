@@ -1,5 +1,0 @@
-name = Collection Layout
-package = Adventist DL
-core = 7.x
-files[] = collection_layout.module
-files[] = collection_layout_handler_field_taxonomy.inc
