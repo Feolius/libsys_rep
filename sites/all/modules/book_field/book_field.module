@@ -9,7 +9,7 @@ function book_field_element_info() {
         '#input' => TRUE,
         '#process' => array('book_field_managed_book_process'),
         '#value_callback' => 'book_field_managed_book_value',
-        '#element_validate' => array('book_field_managed_book_validate'),
+        //'#element_validate' => array('book_field_managed_book_validate'),
         '#pre_render' => array('book_field_managed_book_pre_render'),
         '#theme' => 'file_managed_file',
         '#theme_wrappers' => array('form_element'),
@@ -140,8 +140,9 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
             }
         }
         //Conversion to swf
-        if (isset($form_state['input'][$element['#parents'][0]]['und'][0]['create_swf']) && $form_state['input'][$element['#parents'][0]]['und'][0]['create_swf'] == '1') {
-            if ($input['fid_swf'] == 0) {
+        if ($input['fid_swf'] == 0) {
+            if (isset($form_state['input'][$element['#parents'][0]]['und'][0]['create_swf']) && $form_state['input'][$element['#parents'][0]]['und'][0]['create_swf'] == '1') {
+
                 $uri = $file->uri;
                 $file_name = $file->filename;
                 $arr = explode('.', $file_name);
@@ -210,31 +211,29 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
                     $file_swf = file_load($a[0]->fid);
                     $fid_swf = $file_swf->fid;
                 }
-
-                /*     $file_path = drupal_realpath($file->uri);
-                  if (!file_exists($file_path)) {
-                  form_error($element, "Error in covertation process");
-                  } else {
-                  $file_swf = file_save($file);
-                  $fid_swf = $file_swf->fid;
-                  }
-                  }else{
-                  $fid_swf = $input['fid_swf'];
-                  } */
-
-
                 $result = db_query('SELECT fid FROM {file_managed} WHERE uri = :uri', array(
                     ':uri' => $file->uri
                         ));
                 $a = $result->fetchAll();
-            } else {
-                $fid_swf = $input['fid_swf'];
             }
+        } else {
+            $fid_swf = $input['fid_swf'];
+        }
+    } else {
+        $default_fid = isset($element['#default_value']) ? $element['#default_value']['fid'] : 0;
+        $default_fid_swf = isset($element['#default_value']) ? $element['#default_value']['fid_swf'] : 0;
+        // Confirm that the file exists when used as a default value.
+        if ($default_fid && $file = file_load($default_fid)) {
+            $fid = $file->fid;
+        }
+        if ($default_fid_swf && $file = file_load($default_fid_swf)) {
+            $fid_swf = $file->fid;
         }
     }
     $return['fid'] = $fid;
 
     $return['fid_swf'] = $fid_swf;
+
     return $return;
 }
 
@@ -359,15 +358,15 @@ function book_field_managed_book_submit($form, &$form_state) {
     $parents = $form_state['triggering_element']['#array_parents'];
     $button_key = array_pop($parents);
     $element = drupal_array_get_nested_value($form, $parents);
-
     if ($button_key == 'remove_button') {
-        if ($element['#file'] && $element['#file']->status == 0) {
+        if ($element['#file']) {
             file_delete($element['#file']);
         }
-        if ($element['#file_swf'] && $element['#file_swf']->status == 0) {
+        if ($element['#file_swf']) {
             file_delete($element['#file_swf']);
         }
         $values_element = $element['#extended'] ? $element['fid'] : $element;
+
         form_set_value($values_element, NULL, $form_state);
         drupal_array_set_nested_value($form_state['input'], $values_element['#parents'], NULL);
     }
@@ -428,6 +427,10 @@ function book_field_field_formatter_info() {
             'label' => t('Google Doc Viewer formatter'),
             'field types' => array('book_field'),
         ),
+        'file_link_formatter' => array(
+            'label' => t('File link'),
+            'field types' => array('book_field'),
+        ),
     );
 }
 
@@ -443,11 +446,13 @@ function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $
                 '#title' => t('Upload book'),
                 '#description' => 'Book uploading',
                 '#type' => 'managed_book',
+                '#value_callback' => 'book_field_widget_value',
                 '#upload_validators' => array(
                     'file_validate_extensions' => array('pdf'),
                     // Pass the maximum file size in bytes
                     'file_validate_size' => array(5 * 1024 * 1024),
                 ),
+                '#default_value' => $items[0],
             );
             $element['create_swf'] = array(
                 '#title' => t('Convert to SWF'),
@@ -464,6 +469,17 @@ function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $
             );
             return $element;
     }
+}
+
+function book_field_widget_value($element, $input = FALSE, $form_state) {
+    // We depend on the managed file element to handle uploads.
+    $return = book_field_managed_book_value($element, $input, $form_state);
+
+    // Ensure that all the required properties are returned even if empty.
+    $return += array(
+        'fid' => 0,
+    );
+    return $return;
 }
 
 function book_field_widget_fid_value(&$element, $input = FALSE, $form_state) {
@@ -485,22 +501,22 @@ function book_field_widget_fid_swf_value(&$element, $input = FALSE, $form_state)
 /**
  * An #element_validate callback for the managed_book element.
  */
-function book_field_managed_book_validate(&$element, &$form_state) {
-    $clicked_button = end($form_state['triggering_element']['#parents']);
-    if ($clicked_button != 'remove_button' && !empty($element['fid']['#value'])) {
-        if ($element['fid']['#value']) {
-            $file = file_load($element['fid']['#value']);
-            if ($file->status == FILE_STATUS_PERMANENT) {
-                $references = file_usage_list($file);
-                if (empty($references)) {
-                    form_error($element, t('The file used in the !name field may not be referenced.', array('!name' => $element['#title'])));
-                }
-            }
-        } else {
-            form_error($element, t('The file referenced by the !name field does not exist.', array('!name' => $element['#title'])));
-        }
-    }
-}
+/* function book_field_managed_book_validate(&$element, &$form_state) {
+  $clicked_button = end($form_state['triggering_element']['#parents']);
+  if ($clicked_button != 'remove_button' && !empty($element['fid']['#value'])) {
+  if ($element['fid']['#value']) {
+  $file = file_load($element['fid']['#value']);
+  if ($file->status == FILE_STATUS_PERMANENT) {
+  $references = file_usage_list($file);
+  if (empty($references)) {
+  form_error($element, t('The file used in the !name field may not be referenced.', array('!name' => $element['#title'])));
+  }
+  }
+  } else {
+  form_error($element, t('The file referenced by the !name field does not exist.', array('!name' => $element['#title'])));
+  }
+  }
+  } */
 
 /**
  * Implements hook_field_formatter_view().
@@ -528,7 +544,7 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
                     '#theme' => 'book_field_flexpaper_view',
                     '#file' => $file,
                 );
-            } elseif (isset($item['fid'])) {
+            } elseif (isset($item['fid']) && $item['fid'] != 0) {
                 $file = file_load($item['fid']);
                 $element[$delta] = array(
                     '#theme' => 'file_link',
@@ -542,6 +558,15 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
             $file = file_load($item['fid']);
             $element[$delta] = array(
                 '#theme' => 'book_field_google_doc_view',
+                '#file' => $file,
+            );
+        }
+    }
+    if ($display['type'] == 'file_link_formatter') {
+        foreach ($items as $delta => $item) {
+            $file = file_load($item['fid']);
+            $element[$delta] = array(
+                '#theme' => 'file_link',
                 '#file' => $file,
             );
         }
@@ -563,8 +588,9 @@ function book_field_field_presave($entity_type, $entity, $field, $instance, $lan
     // Make sure that each file which will be saved with this object has a
     // permanent status, so that it will not be removed when temporary files are
     // cleaned up.
+    list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+
     foreach ($items as $item) {
-        
         if (isset($item['fid_swf']) && $item['fid_swf'] != 0) {
             $file = file_load($item['fid_swf']);
             _book_field_file_move($file);
@@ -578,12 +604,115 @@ function book_field_field_presave($entity_type, $entity, $field, $instance, $lan
     }
 }
 
+//Moves file from temporary directory to permanent directory and set status = 1.
 function _book_field_file_move($file) {
     if (!$file->status) {
         $file->status = FILE_STATUS_PERMANENT;
         file_save($file);
         $file_name = $file->filename;
         $file = file_move($file, file_default_scheme() . '://' . $file_name);
+    }
+}
+
+/**
+ * Implements hook_field_insert().
+ */
+/* function book_field_field_insert($entity_type, $entity, $field, $instance, $langcode, &$items) {
+  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+  // Add a new usage of each uploaded file.
+  foreach ($items as $item) {
+  if (($fid_swf = $item['fids']['fid_swf']) != 0) {
+  $file = file_load($fid_swf);
+  dpm($file);
+  file_usage_add($file, 'book_field', $entity_type, $id);
+  $fid = $item['fids']['fid'];
+  $file = file_load($fid);
+  file_usage_add($file, 'book_field', $entity_type, $id);
+  } elseif (($fid = $item['fids']['fid']) != 0) {
+  $file = file_load($fid);
+  file_usage_add($file, 'book_field', $entity_type, $id);
+  }
+  }
+  } */
+
+/**
+ * Implements hook_field_update().
+ */
+/* function book_field_field_update($entity_type, $entity, $field, $instance, $langcode, &$items) {
+  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+  // On new revisions, all files are considered to be a new usage and no
+  // deletion of previous file usages are necessary.
+
+  if (!empty($entity->revision)) {
+  foreach ($items as $item) {
+  if (($fid_swf = $item['fids']['fid_swf']) != 0) {
+  $file = file_load($fid_swf);
+  file_usage_add($file, 'book_field', $entity_type, $id);
+  $fid = $item['fids']['fid'];
+  $file = file_load($fid);
+  file_usage_add($file, 'book_field', $entity_type, $id);
+  } elseif (($fid = $item['fids']['fid']) != 0) {
+  $file = file_load($fid);
+  file_usage_add($file, 'book_field', $entity_type, $id);
+  }
+  }
+  return;
+  }
+
+  // Build a display of the current FIDs.
+  $current_fids = array();
+  $current_fids_swf = array();
+
+  foreach ($items as $item) {
+  $current_fids[] = $item['fids']['fid'];
+  $current_fids_swf[] = $item['fids']['fid_swf'];
+  }
+
+  // Create a bare-bones entity so that we can load its previous values.
+  $original = entity_create_stub_entity($entity_type, array($id, $vid, $bundle));
+  dpm($original);
+  field_attach_load($entity_type, array($id => $original), FIELD_LOAD_CURRENT, array('field_id' => $field['id']));
+  // Compare the original field values with the ones that are being saved.
+  $original_fids = array();
+  $original_fids_swf = array();
+  if (!empty($original->{$field['field_name']}[$langcode])) {
+  foreach ($original->{$field['field_name']}[$langcode] as $original_item) {
+  $original_fids[] = $original_item['fid'];
+  $original_fids_swf[] = $original_item['fid_swf'];
+  if (isset($original_item['fid_swf']) && !in_array($original_item['fid_swf'], $current_fids_swf)) {
+  // Decrement the file usage count by 1 and delete the file if possible.
+  $file = file_load($original_item['fid_swf']);
+  book_field_field_delete_file($file, $entity_type, $id);
+  $file = file_load($original_item['fid']);
+  book_field_field_delete_file($file, $entity_type, $id);
+  }elseif(isset($original_item['fid']) && !in_array($original_item['fid'], $current_fids)){
+  $file = file_load($original_item['fid']);
+  book_field_field_delete_file($file, $entity_type, $id);
+  }
+  }
+  }
+  // Add new usage entries for newly added files.
+  foreach ($items as $item) {
+  if (!in_array($item['fids']['fid_swf'], $original_fids_swf)) {
+  $file = file_load($item['fids']['fid_swf']);
+  file_usage_add($file, 'book_field', $entity_type, $id);
+  $file = file_load($item['fids']['fid']);
+  file_usage_add($file, 'book_field', $entity_type, $id);
+  }elseif(!in_array($item['fids']['fid'], $original_fids)){
+  $file = file_load($item['fids']['fid']);
+  file_usage_add($file, 'book_field', $entity_type, $id);
+  }
+  }
+  } */
+
+function book_field_field_delete_file($file, $entity_type, $id, $count = 1) {
+    // To prevent the file field from deleting files it doesn't know about, check
+    // the file reference count. Temporary files can be deleted because they
+    // are not yet associated with any content at all.  
+    $file_usage = file_usage_list($file);
+    if ($file->status == 0 || !empty($file_usage['file'])) {
+        file_usage_delete($file, 'book_field', $entity_type, $id, $count);
+        file_delete($file);
     }
 }
 
@@ -613,7 +742,7 @@ function book_field_theme() {
  */
 function theme_book_field_google_doc_view($variables) {
     $file = (object) $variables['file'];
-    $url = file_create_url($file->uri);    
+    $url = file_create_url($file->uri);
     return '<iframe src="https://docs.google.com/viewer?url=' . $url . '&embedded=true" style="width:720px; height:500px;" frameborder="1"></iframe>';
 }
 
@@ -622,6 +751,5 @@ function theme_book_field_google_doc_view($variables) {
  */
 function theme_book_field_flexpaper_view($variables) {
     $file = (object) $variables['file'];
-
     return '<p class = "viewerPlaceHolder">Document loading..</p>';
 }

@@ -19,6 +19,12 @@
             })
         }
     };
+    $(".collection_layout_slider_button_left a").ready(function() {
+        $(".collection_layout_slider_button_left a").text('');
+    });
+    $(".collection_layout_slider_button_right a").ready(function() {
+        $(".collection_layout_slider_button_right a").text('');
+    });
     $(collectionLayout.reposition);
     $(window).resize(collectionLayout.reposition);
     $(document).scroll(function(eventObject){
