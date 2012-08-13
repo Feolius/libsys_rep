@@ -2239,8 +2239,8 @@ function views_to_server_views_default_views() {
     'files' => 'files',
   );
 
-  /* Display: Block */
-  $handler = $view->new_display('block', 'Block', 'block_1');
+  /* Display: Timeline json */
+  $handler = $view->new_display('block', 'Timeline json', 'timeline_json');
   $translatables['timeline_json_view'] = array(
     t('Master'),
     t('more'),
@@ -2250,7 +2250,7 @@ function views_to_server_views_default_views() {
     t('Asc'),
     t('Desc'),
     t('All'),
-    t('Block'),
+    t('Timeline json'),
   );
   $export['timeline_json_view'] = $view;
 
