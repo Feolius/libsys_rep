@@ -8,7 +8,7 @@ function collection_layout_views_data_alter(&$data) {
 }
 
 function collection_layout_views_pre_render(&$view) {
-    if ($view->name == 'timeline_json_view' && $view->current_display == 'block_1') {
+    if ($view->name == 'timeline_json_view' && $view->current_display == 'timeline_json') {
         $_SESSION['collection_layout']['json']['date'] = array();
         $_SESSION['collection_layout']['json']['title'] = array();
         $_SESSION['collection_layout']['json']['text'] = array();

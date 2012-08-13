@@ -1,31 +1,8 @@
 <?php
 
+require_once 'collection_layout_filters.inc';
+
 class collection_layout_handler_field_taxonomy extends views_handler_field_taxonomy {
-
-    function get_filter_machine_name($voc) {
-        switch ($voc) {
-            case 'library_voc_cat' :
-                return 'category';
-            case 'library_voc_collection' :
-                return 'collection';
-            case 'library_voc_doc_type' :
-                return 'document_type';
-            case 'library_voc_groupe' :
-                return 'group';
-            default :
-                return false;
-        }
-    }
-
-    function get_filter_list() {
-        $list = array();
-        if (isset($_SESSION['collection_layout']))
-            foreach ($_SESSION['collection_layout'] as $key => $value) {
-                if (is_filter($key))
-                    $list[$key] = $value;
-            }
-        return empty($list) ? false : $list;
-    }
 
     function render_link($data, $values) {
         $tid = $this->get_value($values, 'tid');
@@ -37,7 +14,7 @@ class collection_layout_handler_field_taxonomy extends views_handler_field_taxon
             $term->vocabulary_machine_name = $values->{$this->aliases['vocabulary_machine_name']};
             $this->options['alter']['make_link'] = TRUE;
             $uri = entity_uri('taxonomy_term', $term);
-            $filter_name = $this->get_filter_machine_name($term->vocabulary_machine_name);
+            $filter_name = collection_layout_get_filter_machine_name($term->vocabulary_machine_name);
             if ($filter_name) {
                 $path = "collection?{$filter_name}={$term->tid}";
                 $this->options['alter']['path'] = $path;
@@ -48,7 +25,7 @@ class collection_layout_handler_field_taxonomy extends views_handler_field_taxon
         if (!empty($this->options['convert_spaces'])) {
             $data = str_replace(' ', '-', $data);
         }
-        $filter_list = $this->get_filter_list();
+        $filter_list = collection_layout_get_enable_filters_list();
         if ($filter_list) {
             if (isset($filter_list[$filter_name]) && in_array($tid, $filter_list[$filter_name]))
                 $data .= '[X]';
