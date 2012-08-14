@@ -17,10 +17,3 @@ files[] = plugins/facetapi/widget.inc
 files[] = plugins/facetapi/widget_links.inc
 files[] = tests/facetapi_test.plugins.inc
 files[] = tests/facetapi.test
-
-; Information added by drupal.org packaging script on 2012-06-28
-version = "7.x-1.0"
-core = "7.x"
-project = "facetapi"
-datestamp = "1340904699"
-

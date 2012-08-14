@@ -2,6 +2,7 @@
 
 /**
  * Implements hook_entity_info().
+ * We create new entity to provide searching for files attached by book_field module.
  */
 function book_field_search_entity_info() {
     $return = array(
@@ -16,12 +17,7 @@ function book_field_search_entity_info() {
             ),
             'bundle keys' => array(
                 'bundle' => 'bundle',
-            ),
-            //'entity class' => 'EntityClass',
-            // 'controller class' => 'EntityAPIController',
-            // Make use the class' label() and uri() implementation by default.
-            // 'label callback' => 'entity_class_label',
-            //'uri callback' => 'entity_class_uri',
+            ),            
             'module' => 'book_field_search',
             'bundles' => array(
                 'pdf' => array(
@@ -34,6 +30,7 @@ function book_field_search_entity_info() {
 
     return $return;
 }
+
 /**
  * @file
  *   Indexer for the hook_apachesolr_entity_info_alter entities for the book_field_search module.
@@ -48,18 +45,13 @@ function book_field_apachesolr_entity_info_alter(&$entity_info) {
 }
 
 /**
- * Status callback for the files attched to lib_book entity. Files should never be removed from the table.
- * See apachesolr_attachments_apachesolr_exclude() for exclusion of items
- * @param type $entity_id
- * @param type $entity_type
- * @return type
+ * Status callback for the files. Files should never be removed from the table.
  */
 function book_field_search_status_callback($entity_id, $entity_type) {
     module_load_include('inc', 'apachesolr_attachments', 'apachesolr_attachments.index');
-    $entity = entity_load($entity_type, array($entity_id));    
+    $entity = entity_load($entity_type, array($entity_id));
+
     $file = file_load($entity[$entity_id]->fid);
-    //var_dump($file);
-    //exit;
     if (apachesolr_attachments_allowed_mime($file->filemime) == FALSE) {
         // Set status to 0 and remove from the index
         return FALSE;
@@ -91,6 +83,7 @@ function book_field_search_solr_reindex() {
         db_delete('lib_book')
                 ->execute();
         $files = _book_field_search_get_all_files();
+
         // If we do not have files, return success
         if (empty($files)) {
             return TRUE;
@@ -155,43 +148,8 @@ function book_field_search_add_file_usage(stdClass $stub_file, $parent_entity_ty
                 ))->execute();
     }
 }
-
 /**
- * Implenents hook_apachesolr_ENTITY_TYPE_exclude().
- *
- * This is invoked for each lib_book entity that is being inspected to be added to the
- * index. if any module returns TRUE, the entity is skipped for indexing.
- *
- * @param integer $entity_id
- * @param integer $row
- *   A complete set of data from the indexing table.
- * @param string $env_id
- * @return boolean
- */
-function book_field_search_apachesolr_lib_book_exclude($entity_id, $row, $env_id) {
-    module_load_include('inc', 'apachesolr_attachments', 'apachesolr_attachments.index');
-    // Make sure we have a boolean value.
-    // Anything different from 1 becomes zero
-    if (!$entity_id || !$row->parent_entity_id) {
-        // Exclude
-        return TRUE;
-    }
-    // Check if the parent entity is excluded
-    $parent_entity_id = $row->parent_entity_id;
-    $parent_entity_type = $row->parent_entity_type;
-    $exclude = apachesolr_attachments_is_parent_excluded($entity_id, 'lib_book', $parent_entity_id, $parent_entity_type, $env_id);
-    if ($exclude) {
-        // Exclude
-        return TRUE;
-    }
-    // Do not exclude
-    return FALSE;
-}
-
-/**
- * Fetches all files linked to nodes created by fields from the file module
- * regardless of the widget
- * @return type
+ * Fetches all files linked to nodes created by field from the book_field module *
  */
 function _book_field_search_get_all_files() {
     $results = array();
@@ -213,7 +171,7 @@ function _book_field_search_get_all_files() {
                         // Fetch all file ids related to the entities
                         ->addExtraField($field_info['field_name'], 'fid', 'fid')
                         ->execute();
-                $results = array_merge_recursive($results, $results_query);
+                $results = array_merge($results, $results_query);
             }
         }
     }
@@ -229,6 +187,7 @@ function _book_field_search_get_all_files() {
  *   The entity we are indexing.
  * @param string $entity_type
  *   The type of entity we're dealing with.
+ * @see original apachesolr_attachment_solr_document for information
  */
 function book_field_search_solr_document(ApacheSolrDocument $document, $lib_book, $entity_type, $env_id) {
     global $base_url;
@@ -236,23 +195,17 @@ function book_field_search_solr_document(ApacheSolrDocument $document, $lib_book
     $documents = array();
     $table = apachesolr_get_indexer_table('lib_book');
     $file = file_load($lib_book->fid);
-
-    // Text is saved in the index table. Will be used by the node indexing if
-    // available.
     $text = apachesolr_attachments_get_attachment_text($file);
     // If we don't have extracted text we should stop our process here
-
     if (empty($text)) {
         return $documents;
     }
-
     // Get the list of parents that we should index from the indexing table
     $parents = db_select($table, 'aie')
             ->fields('aie')
             ->condition('entity_type', 'lib_book')
             ->condition('entity_id', $lib_book->lib_book_id)
             ->execute();
-
     foreach ($parents as $parent) {
         // load the parent entity and reset cache
         $parent_entities = entity_load($parent->parent_entity_type, array($parent->parent_entity_id), NULL, TRUE);
@@ -267,23 +220,21 @@ function book_field_search_solr_document(ApacheSolrDocument $document, $lib_book
         $parent_entity_type = $parent->parent_entity_type;
         // Get a clone of the bare minimum document
         $filedocument = clone $document;
-
         //Get the callback array to add stuff to the document
-        $callbacks = apachesolr_entity_get_callback($parent_entity_type, 'document callback');
-        // Skip invalid entity types
+        $callbacks = apachesolr_entity_get_callback($parent_entity_type, 'document callback');        
         if (empty($callbacks)) {
             continue;
         }
-
         $build_documents = array();
-        foreach ($callbacks as $callback) {
-            // Call a type-specific callback to add stuff to the document.
+        foreach ($callbacks as $callback) {            
             $build_documents = array_merge($build_documents, $callback($filedocument, $parent_entity, $parent_entity_type, $env_id));
         }
-
+        
         // Take the top document from the stack
         $filedocument = reset($build_documents);
+        
         // Build our separate document and overwrite basic information
+        //Check if parent entity is node.
         if ($parent_entity_type == 'node') {
             $parent_entity = node_load($parent_entity_id);
         } else {
@@ -296,7 +247,7 @@ function book_field_search_solr_document(ApacheSolrDocument $document, $lib_book
 
         $filedocument->path = $base_url . "/node/" . $parent_entity_id;
         $filedocument->parent_entity_id = $parent_entity_id;
-        
+
         // Add extra info to our document
         $filedocument->label = apachesolr_clean_text($parent_entity->title);
         $filedocument->content = apachesolr_clean_text($file->filename) . ' ' . $text;
@@ -313,25 +264,38 @@ function book_field_search_solr_document(ApacheSolrDocument $document, $lib_book
         $small_parent_entity->entity_type = $parent_entity_type;
         $small_parent_entity->{$parent_entity_info['entity keys']['id']} = $parent_entity_id;
         $small_parent_entity->{$parent_entity_info['entity keys']['bundle']} = $parent_entity_bundle;
-        $small_parent_entity->{$parent_entity_info['entity keys']['label']} = $parent_entity->{$parent_entity_info['entity keys']['label']};
-
-        // Add all to one field because if it is spread out over
-        // multiple fields there is no way of knowing which multifield value
-        // belongs to which entity
-        // It does not load the complete entity in to the index because that
-        // would dramatically increase the index size and processing time
+        $small_parent_entity->{$parent_entity_info['entity keys']['label']} = $parent_entity->{$parent_entity_info['entity keys']['label']};        
         $filedocument->zm_parent_entity = drupal_json_encode($small_parent_entity);
         $filedocument->sm_parent_entity_bundle = $parent_entity_type . "-" . $parent_entity_bundle;
-        $filedocument->sm_parent_entity_type = $parent_entity_type;
+        $filedocument->sm_parent_entity_type = $parent_entity_type; 
+        
+        //Indexing all needed attached fields to provide facets. 
+        $indexed_fields = apachesolr_entity_fields($parent_entity_type);
+        foreach ($indexed_fields as $index_key => $nodefields) {
+            foreach ($nodefields as $field_info) {
+                $field_name = $field_info['field']['field_name'];
+                // See if the node has fields that can be indexed                
+                if (isset($parent_entity->{$field_name})) {
+                    // Got a field.
+                    $function = $field_info['indexing_callback'];
+                    if ($function && function_exists($function)) {                        
+                        $fields = $function($parent_entity, $field_name, $index_key, $field_info);                        
+                        foreach ($fields as $field) {                           
+                            $filedocument->setMultiValue($field['key'], $field['value']);
+                        }
+                    }
+                }
+            }
+        }
 
         // Add Apachesolr Attachments specific fields.
         $filedocument->ss_filemime = $file->filemime;
         $filedocument->ss_filesize = $file->filesize;
-
         $documents[] = $filedocument;
-    }
+    }        
     return $documents;
 }
+
 //Implements altering of resuts to provide proper links to the nodes
 function book_field_search_apachesolr_process_results(&$results, DrupalSolrQueryInterface $query) {
     $result_number = count($results);
@@ -363,7 +327,7 @@ function book_field_search_apachesolr_process_results(&$results, DrupalSolrQuery
                     );
                     $link = url('node-page', $options);
                     $results[$i]['link'] = $link;
-                }                
+                }
             }
         }
     } else {
@@ -379,4 +343,52 @@ function book_field_search_apachesolr_process_results(&$results, DrupalSolrQuery
             }
         }
     }
+}
+//Implements map callback altering for location field facet to make filters by country 
+function book_field_search_facetapi_facet_info_alter(array &$facet_info, array $searcher_info) {
+    // Change the author index field for Apache Solr searchers indexing node data.
+    if ('apachesolr' == $searcher_info['adapter']) {        
+        $facet_info['im_field_files_location']['map callback'] = 'book_field_search_location_map_callback';       
+    }
+}
+//Map callback for location field
+function book_field_search_location_map_callback($facets, $options) {
+    $map = array();
+    $allowed_references = array();
+    $adress_fields = array();
+    $country_list = country_get_list();   
+    $fields = field_info_fields();
+    foreach ($fields as $index_field => $field) {
+        if ($field['type'] == 'addressfield') {
+            $adress_fields += array($index_field => $field);
+        }
+    }
+    $field_name = $options['field']['field_name'];
+    if (isset($fields[$field_name])) {
+        $allowed_references = node_reference_potential_references($fields[$field_name]);
+    }
+    foreach ($facets as $key) {
+        if (isset($allowed_references[$key])) {
+            $node = node_load($key);
+            foreach ($adress_fields as $adress_field_name => $adress_field) {
+                if (isset($node->$adress_field_name)) {
+                    $value = field_get_items('node', $node, $adress_field_name);
+                    if (isset($value[0]['country'])) {
+                        $country_ISO = $value[0]['country'];
+                        $country_name = $country_list[$country_ISO];
+                        $map[$key]['#markup'] = field_filter_xss($country_name);                        
+                    } else {
+                        $map[$key]['#markup'] = field_filter_xss("Country is undefined");
+                    }
+                } else {
+                    $map[$key]['#markup'] = field_filter_xss("Country is undefined");
+                }
+            }
+        } elseif ($key == '_empty_' && $options['facet missing allowed']) {
+            // Facet missing.
+            $map[$key]['#markup'] = theme('facetapi_facet_missing', array('field_name' => $options['display_name']));
+        }
+        $map[$key]['#html'] = TRUE;
+    }
+    return $map;
 }

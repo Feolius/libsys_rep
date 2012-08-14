@@ -1,0 +1,104 @@
+<?php
+
+/**
+ * Implements hook_facetapi_widgets().
+ */
+function facetapi_date_range_widget_facetapi_widgets() {
+    return array(
+        'facetapi_date_range_widget' => array(
+            'handler' => array(
+                'label' => t('Date Range'),
+                'class' => 'FacetapiWidgetDateRange',
+                'query types' => array('term', 'date'),
+            ),
+        ),
+    );
+}
+
+function date_filter_submit($form, &$form_state) {
+    $basic_path = $form_state['build_info']['args'][0]['search path'];
+    $field_alias = $form_state['build_info']['args'][0]['field alias'];
+    $min_year = $form_state['input']['min_textfield'];
+    $max_year = $form_state['input']['max_textfield'];
+    $min_date_ISO = ($min_year - 1) . '-01-01T00:00:00Z';
+    $max_date_ISO = $max_year . '-01-01T00:00:00Z';
+    $request = $field_alias . ':[' . $min_date_ISO . ' TO ' . $max_date_ISO . ']';
+    $merge = TRUE;
+    if (isset($_GET['f'])) {
+        $f = $_GET['f'];
+        foreach ($f as $key => $row) {
+            if (strstr($row, $field_alias)) {
+                $f[$key] = $request;
+                $merge = FALSE;
+                continue;
+            }
+        }
+        if ($merge) {
+            $f = array_merge($f, array($request));
+        }
+    }else
+        $f = array($request);
+    $options = array(
+        'query' => array(
+            'f' => $f,
+            'min' => $min_year,
+            'max' => $max_year,
+        ),
+    );
+    $form_state['redirect'] = array(
+        $basic_path, $options, 302
+    );
+}
+
+function facet_api_date_range_widget_filter_form($form, &$form_state, $args) {
+    $params = func_get_args();
+    if (empty($_GET['min'])) {
+        $min_year = $args['min year'];
+        $max_year = $args['max year'];
+    } else {
+        $min_year = $_GET['min'];
+        $max_year = $_GET['max'];
+    }
+    $form = array(
+        'min_textfield' => array(
+            '#type' => 'textfield',
+            '#description' => t('Left limit'),
+            '#size' => 2,
+            '#maxlength' => 4,
+            '#weight' => -15,
+            '#default_value' => $min_year,
+        ),
+        'max_textfield' => array(
+            '#type' => 'textfield',
+            '#description' => t('Right limit'),
+            '#size' => 2,
+            '#maxlength' => 4,
+            '#weight' => -14,
+            '#default_value' => $max_year,
+        ),
+        'filter_button' => array(
+            '#type' => 'submit',
+            '#value' => t('Filter'),
+            '#weight' => 15,
+            '#submit' => array('date_filter_submit'),
+        ),
+    );   
+    return $form;
+}
+
+function facet_api_date_range_widget_filter_form_validate($form, &$form_state){    
+    $min_year = $form_state['input']['min_textfield'];
+    $max_year = $form_state['input']['max_textfield'];
+    $res = is_int($min_year);    
+    if($min_year > $max_year){
+        form_set_error('min_textfield', t('Left limit should be less than right limit.'));
+    }
+    if(!is_numeric($min_year)){
+        form_set_error('min_textfield', t('Please insert correct date.'));
+    }
+    if(!is_numeric($max_year)){
+        form_set_error('max_textfield', t('Please insert correct date.'));
+    }
+    
+}
+

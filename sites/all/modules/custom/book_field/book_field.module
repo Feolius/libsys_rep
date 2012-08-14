@@ -438,7 +438,10 @@ function book_field_field_formatter_info() {
  * Implements hook_field_widget_form().
  */
 function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-
+    $defaults = array(
+        'fid' => 0,
+        'fid_swf' => 0,
+    );
     $widget = $instance['widget'];
     switch ($widget['type']) {
         case 'book_field_widget':
@@ -452,7 +455,7 @@ function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $
                     // Pass the maximum file size in bytes
                     'file_validate_size' => array(5 * 1024 * 1024),
                 ),
-                '#default_value' => $items[0],
+                '#default_value' => !empty($items) ? $items[0] : $defaults,
             );
             $element['create_swf'] = array(
                 '#title' => t('Convert to SWF'),
@@ -497,27 +500,6 @@ function book_field_widget_fid_swf_value(&$element, $input = FALSE, $form_state)
     }
     return $return;
 }
-
-/**
- * An #element_validate callback for the managed_book element.
- */
-/* function book_field_managed_book_validate(&$element, &$form_state) {
-  $clicked_button = end($form_state['triggering_element']['#parents']);
-  if ($clicked_button != 'remove_button' && !empty($element['fid']['#value'])) {
-  if ($element['fid']['#value']) {
-  $file = file_load($element['fid']['#value']);
-  if ($file->status == FILE_STATUS_PERMANENT) {
-  $references = file_usage_list($file);
-  if (empty($references)) {
-  form_error($element, t('The file used in the !name field may not be referenced.', array('!name' => $element['#title'])));
-  }
-  }
-  } else {
-  form_error($element, t('The file referenced by the !name field does not exist.', array('!name' => $element['#title'])));
-  }
-  }
-  } */
-
 /**
  * Implements hook_field_formatter_view().
  */
@@ -614,96 +596,7 @@ function _book_field_file_move($file) {
     }
 }
 
-/**
- * Implements hook_field_insert().
- */
-/* function book_field_field_insert($entity_type, $entity, $field, $instance, $langcode, &$items) {
-  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
-  // Add a new usage of each uploaded file.
-  foreach ($items as $item) {
-  if (($fid_swf = $item['fids']['fid_swf']) != 0) {
-  $file = file_load($fid_swf);
-  dpm($file);
-  file_usage_add($file, 'book_field', $entity_type, $id);
-  $fid = $item['fids']['fid'];
-  $file = file_load($fid);
-  file_usage_add($file, 'book_field', $entity_type, $id);
-  } elseif (($fid = $item['fids']['fid']) != 0) {
-  $file = file_load($fid);
-  file_usage_add($file, 'book_field', $entity_type, $id);
-  }
-  }
-  } */
 
-/**
- * Implements hook_field_update().
- */
-/* function book_field_field_update($entity_type, $entity, $field, $instance, $langcode, &$items) {
-  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
-  // On new revisions, all files are considered to be a new usage and no
-  // deletion of previous file usages are necessary.
-
-  if (!empty($entity->revision)) {
-  foreach ($items as $item) {
-  if (($fid_swf = $item['fids']['fid_swf']) != 0) {
-  $file = file_load($fid_swf);
-  file_usage_add($file, 'book_field', $entity_type, $id);
-  $fid = $item['fids']['fid'];
-  $file = file_load($fid);
-  file_usage_add($file, 'book_field', $entity_type, $id);
-  } elseif (($fid = $item['fids']['fid']) != 0) {
-  $file = file_load($fid);
-  file_usage_add($file, 'book_field', $entity_type, $id);
-  }
-  }
-  return;
-  }
-
-  // Build a display of the current FIDs.
-  $current_fids = array();
-  $current_fids_swf = array();
-
-  foreach ($items as $item) {
-  $current_fids[] = $item['fids']['fid'];
-  $current_fids_swf[] = $item['fids']['fid_swf'];
-  }
-
-  // Create a bare-bones entity so that we can load its previous values.
-  $original = entity_create_stub_entity($entity_type, array($id, $vid, $bundle));
-  dpm($original);
-  field_attach_load($entity_type, array($id => $original), FIELD_LOAD_CURRENT, array('field_id' => $field['id']));
-  // Compare the original field values with the ones that are being saved.
-  $original_fids = array();
-  $original_fids_swf = array();
-  if (!empty($original->{$field['field_name']}[$langcode])) {
-  foreach ($original->{$field['field_name']}[$langcode] as $original_item) {
-  $original_fids[] = $original_item['fid'];
-  $original_fids_swf[] = $original_item['fid_swf'];
-  if (isset($original_item['fid_swf']) && !in_array($original_item['fid_swf'], $current_fids_swf)) {
-  // Decrement the file usage count by 1 and delete the file if possible.
-  $file = file_load($original_item['fid_swf']);
-  book_field_field_delete_file($file, $entity_type, $id);
-  $file = file_load($original_item['fid']);
-  book_field_field_delete_file($file, $entity_type, $id);
-  }elseif(isset($original_item['fid']) && !in_array($original_item['fid'], $current_fids)){
-  $file = file_load($original_item['fid']);
-  book_field_field_delete_file($file, $entity_type, $id);
-  }
-  }
-  }
-  // Add new usage entries for newly added files.
-  foreach ($items as $item) {
-  if (!in_array($item['fids']['fid_swf'], $original_fids_swf)) {
-  $file = file_load($item['fids']['fid_swf']);
-  file_usage_add($file, 'book_field', $entity_type, $id);
-  $file = file_load($item['fids']['fid']);
-  file_usage_add($file, 'book_field', $entity_type, $id);
-  }elseif(!in_array($item['fids']['fid'], $original_fids)){
-  $file = file_load($item['fids']['fid']);
-  file_usage_add($file, 'book_field', $entity_type, $id);
-  }
-  }
-  } */
 
 function book_field_field_delete_file($file, $entity_type, $id, $count = 1) {
     // To prevent the file field from deleting files it doesn't know about, check
