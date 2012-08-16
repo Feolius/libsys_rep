@@ -20,7 +20,7 @@ function date_filter_submit($form, &$form_state) {
     $field_alias = $form_state['build_info']['args'][0]['field alias'];
     $min_year = $form_state['input']['min_textfield'];
     $max_year = $form_state['input']['max_textfield'];
-    $min_date_ISO = ($min_year - 1) . '-01-01T00:00:00Z';
+    $min_date_ISO = $min_year . '-01-01T00:00:00Z';
     $max_date_ISO = $max_year . '-01-01T00:00:00Z';
     $request = $field_alias . ':[' . $min_date_ISO . ' TO ' . $max_date_ISO . ']';
     $merge = TRUE;
