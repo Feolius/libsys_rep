@@ -1,9 +1,9 @@
 name = Content types
-description = Content types for adventist digital library site(files, people, location).
+description = Content types for adventist digital library site(files, people, location). Valid for Drupal core 7.15
 core = 7.x
 package = Features
 php = 5.2.4
-version = 7.x-1.7
+version = 7.x-1.8
 project = content_types
 dependencies[] = addressfield
 dependencies[] = book_field
