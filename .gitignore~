@@ -7,4 +7,4 @@ sites/*/private
 
 # Ignore paths that contain netbeans project metadata
 
-nbproject
+/nbproject/private/
