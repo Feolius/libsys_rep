@@ -4,7 +4,6 @@ core = 7.x
 package = Features
 php = 5.2.4
 version = 7.x-1.7
-project = views_to_server
 dependencies[] = ctools
 dependencies[] = views
 features[ctools][] = views:views_default:3.0
