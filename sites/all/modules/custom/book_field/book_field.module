@@ -8,8 +8,7 @@ function book_field_element_info() {
     $types['managed_book'] = array(
         '#input' => TRUE,
         '#process' => array('book_field_managed_book_process'),
-        '#value_callback' => 'book_field_managed_book_value',
-        //'#element_validate' => array('book_field_managed_book_validate'),
+        '#value_callback' => 'book_field_managed_book_value',        
         '#pre_render' => array('book_field_managed_book_pre_render'),
         '#theme' => 'file_managed_file',
         '#theme_wrappers' => array('form_element'),
@@ -509,12 +508,16 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
         foreach ($items as $delta => $item) {
             if (isset($item['fid_swf']) && $item['fid_swf'] != '0') {
                 $file = file_load($item['fid_swf']);
-                $module_path = drupal_get_path('module', 'book_field');
+                $module_path = drupal_get_path('module', 'book_field');                
                 $uri = $file->uri;
                 $path = drupal_realpath($uri);
                 $drupal_folder = realpath('.');
                 $relative_path = str_replace($drupal_folder, "", $path);
-                drupal_add_js(array('book_field' => array('paths' => array($relative_path))), 'setting');
+                $settings = array(
+                    'paths' => array($relative_path),
+                    'module_path' => $module_path,
+                );
+                drupal_add_js(array('book_field' => $settings), 'setting');
                 if (isset($_GET['search'])) {
                     drupal_add_js(array('book_field' => array('search' => array($_GET['search']))), 'setting');
                 }

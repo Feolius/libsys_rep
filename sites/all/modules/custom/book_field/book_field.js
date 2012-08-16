@@ -1,19 +1,34 @@
 (function ($) {   
     $(document).ready(function (){
-        var paths = Drupal.settings.book_field.paths;    
+        
+        //Get paths of swf files
+        var paths = Drupal.settings.book_field.paths;
+        
+        //Get path of FlexPaperViewer.swf file
+        var modulePath = Drupal.settings.book_field.module_path;
+        var FlexPaperViewerPath = getOrigin()+ '/' + modulePath + '/FlexPaperViewer';
+        
+        //We have to be able to show a few documents on page. Calculate numberof documents that have
+        //to be shown on the page
         var length = paths.length;
         var i = 0;
+        
+        //Find all elements with class viewerPlaceHolder
         var placeHolders = $('p.viewerPlaceHolder');
+        
+        //Put ids for this elements
         placeHolders.each(function(index){
             $(this).attr('id', 'viewerPlaceHolder_' + index); 
         });
+        
+        //Implements showing for each element
         for (var i = 0; i < length; i++){
             var id = 'viewerPlaceHolder_' + i.toString();
             var res = $.find('#' + id);
             if(res.length != 0){
                 var path = paths[i];
                 var fp = new FlexPaperViewer(	
-                    '/sites/all/modules/book_field/FlexPaperViewer',
+                    FlexPaperViewerPath,
                     id, {
                         config : {
                             SwfFile : path,
@@ -45,15 +60,19 @@
     });
     
 })(jQuery);
+//Implements higlighting search term after documents being load
 function onDocumentLoaded(totalPages){ 
     var searchTherm = Drupal.settings.book_field.search;
     if (searchTherm != undefined){        
         var instance = window.FlexPaperViewer_Instance ;
         var api = instance.getApi();    
         api.searchText(searchTherm);
-    }
-     
+    }     
 }
 function onDocumentLoadedError(errMessage){
     $('#viewerPlaceHolder').html("Error displaying document. Make sure the conversion tool is installed and that correct user permissions are applied to the SWF Path directory");
+}
+//Get origin path to site
+function getOrigin() {
+    return document.location.protocol + "//" + document.location.host;
 }
