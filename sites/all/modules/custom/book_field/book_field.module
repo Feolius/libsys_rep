@@ -45,16 +45,18 @@ function book_field_menu() {
  * Menu callback for upload progress.
  *
  * @param $key
- *   The unique key for this upload process.
+ *   The unique combination of upload key and converting progress key.
  */
 function book_field_ajax_progress($key) {
     $key = explode('_', $key);
     $upload_key = $key[0];
-    $progress_key = $key[1];
+    $progress_key = $key[1];   
     $result = db_query('SELECT progress FROM {progress} WHERE pid = :pid', array(
         ':pid' => $progress_key
             ));
     $a = $result->fetchAll();
+    
+    //If record exist conversion in process else uploading proceeding
     if ($a == NULL) {
         $progress = array(
             'message' => t('Starting upload...'),
@@ -80,14 +82,12 @@ function book_field_ajax_progress($key) {
             $progress['percentage'] = round(100 * $current_page / $last_page);
         }
     }
-
     drupal_json_output($progress);
 }
 
 /*
  * Count number of pages in PDF file
  */
-
 function getNumPagesPdf($filepath) {
     $fp = @fopen(preg_replace("/\[(.*?)\]/i", "", $filepath), "r");
     $max = 0;
@@ -126,7 +126,7 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
     } elseif (is_numeric($form_state_fid)) {
         $fid = $form_state_fid;
     }
-
+    
     // Process any input and save new uploads.
     if (!empty($input)) {
         // Uploads take priority over all other values.
@@ -137,46 +137,67 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
             if (isset($input['fid']) && $file = file_load($input['fid'])) {
                 $fid = $file->fid;
             }
-        }
+        }        
         //Conversion to swf
         if ($input['fid_swf'] == 0) {
-            if (isset($form_state['input'][$element['#parents'][0]]['und'][0]['create_swf']) && $form_state['input'][$element['#parents'][0]]['und'][0]['create_swf'] == '1') {
-
+            
+            //Check if checkbox "create swf" checked
+            if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['create_swf']) &&
+                    $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['create_swf'] == '1') {
                 $uri = $file->uri;
                 $file_name = $file->filename;
                 $arr = explode('.', $file_name);
                 $arr_length = count($arr);
                 $file_name = "";
+                
+                //Exclude name of file extension
                 for ($i = 0; $i < ($arr_length - 1); $i++) {
                     $file_name = $file_name . $arr[$i];
                 }
                 $path = drupal_realpath($uri);
                 $temp_path = file_directory_temp() . '/';
+                
+                //Get file name with index if index exists. (e.g. filename_0, 0 is index)
                 $real_file_name = str_replace($temp_path, "", $path);
                 $arr = explode('.', $real_file_name);
                 $arr_length = count($arr);
                 $real_file_name = "";
+                
+                //Exclude name of file extension
                 for ($i = 0; $i < ($arr_length - 1); $i++) {
                     $real_file_name = $real_file_name . $arr[$i];
                 }
+                
+                //Create new uri for swf file
                 $swf_uri = "temporary://" . $real_file_name . ".swf";
                 $result = db_query('SELECT fid FROM {file_managed} WHERE uri = :uri', array(
                     ':uri' => $swf_uri
                         ));
                 $a = $result->fetchAll();
-                if ($a == NULL) {
+                
+                //If file with new uri doesn't exist in db conversion proceeds.
+                if ($a == NULL) {                    
+                    //Write record in record table with id of conversion progress
                     $record = array('pid' => $input['CONVERSION_IDENTIFIER'], 'progress' => '-1');
-                    drupal_write_record('progress', $record);
-                    $command = "pdf2swf '" . $path . "' -o '" . $temp_path . $real_file_name . ".swf' -f -T 9 -t -s storeallcharacters";
+                    drupal_write_record('progress', $record);                    
+                    
+                    //Get number of pages
                     $numberOfPages = getNumPagesPdf($path);
+                    
+                    //Execute command in pipe to reviewing current progress of conversion
+                    $command = "pdf2swf '" . $path . "' -o '" . $temp_path . $real_file_name . ".swf' -f -T 9 -t -s storeallcharacters";
                     $handle = popen($command, 'r');
                     while (!feof($handle)) {
+                        
+                        //Check current state every 2 seconds
                         sleep(2);
                         $read = fread($handle, 2096);
                         $pattern = "/page \d+/";
                         $result = preg_match_all($pattern, $read, $matches);
+                        
+                        //Get current page and write serialized string with current progress in db.
                         $length = count($matches[0]);
-                        $pattern = "/\d+/";
+                        $pattern = "/\d+/";                        
                         if ($length > 1) {
                             $result = preg_match_all($pattern, $matches[0][$length - 2], $match);
                             $record = array('pid' => $input['CONVERSION_IDENTIFIER'], 'progress' => $match[0][0] . '/' . $numberOfPages);
@@ -187,8 +208,9 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
                             drupal_write_record('progress', $record, 'pid');
                         }
                     }
-                    pclose($handle);
-                    $uri_swf = "temporary://" . $real_file_name . ".swf";
+                    pclose($handle);  
+                    
+                    //Create new file object for swf file
                     $file = new stdClass();
                     $file->uid = $user->uid;
                     $file->status = 0;
@@ -197,16 +219,21 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
                     $file->filemime = "application/x-shockwave-flash";
                     $file->filesize = filesize($temp_path . $real_file_name . ".swf");
                     $file_path = drupal_realpath($file->uri);
+                    
+                    //If file exists we save file
                     if (!file_exists($file_path)) {
-                        form_error($element, "Error in covertation process");
+                        form_error($element, "Error in conversation process");
                     } else {
                         $file_swf = file_save($file);
                         $fid_swf = $file_swf->fid;
                     }
+                    
+                    //Remove record from progress table
                     $delete = db_delete('progress')
                             ->condition('pid', $input['CONVERSION_IDENTIFIER'])
                             ->execute();
                 } else {
+                    //If file exists we get its fid from db
                     $file_swf = file_load($a[0]->fid);
                     $fid_swf = $file_swf->fid;
                 }
@@ -216,6 +243,7 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
                 $a = $result->fetchAll();
             }
         } else {
+            //If file previously was converted we should get its fid from input
             $fid_swf = $input['fid_swf'];
         }
     } else {
@@ -229,15 +257,15 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
             $fid_swf = $file->fid;
         }
     }
+    
+    //Return both fids of pdf and swf files
     $return['fid'] = $fid;
-
     $return['fid_swf'] = $fid_swf;
-
     return $return;
 }
 
+//Process function for managed_book form type.
 function book_field_managed_book_process($element, &$form_state, $form) {
-
     $fid = 0;
     $fid_swf = 0;
     if (isset($element['#value']['fid'])) {
@@ -259,6 +287,7 @@ function book_field_managed_book_process($element, &$form_state, $form) {
             'message' => $element['#progress_message'],
         ),
     );
+    
     // Set up the buttons first since we need to check if they were clicked.
     $element['upload_button'] = array(
         '#name' => implode('_', $element['#parents']) . '_upload_button',
@@ -271,8 +300,7 @@ function book_field_managed_book_process($element, &$form_state, $form) {
         '#weight' => -5,
     );
 
-    // Force the progress indicator for the remove button to be either 'none' or
-    // 'throbber', even if the upload button is using something else.
+    // Force the progress indicator for the remove button to be 'throbber'.
     $ajax_settings['progress']['type'] = 'throbber';
     $ajax_settings['progress']['message'] = NULL;
     $ajax_settings['effect'] = 'none';
@@ -295,6 +323,8 @@ function book_field_managed_book_process($element, &$form_state, $form) {
         '#type' => 'hidden',
         '#value' => $fid_swf,
     );
+    
+    //Get upload progress key and conversion progress key
     $upload_progress_key = mt_rand();
     $conversion_progress_key = mt_rand();
     $element['UPLOAD_IDENTIFIER'] = array(
@@ -329,7 +359,6 @@ function book_field_managed_book_process($element, &$form_state, $form) {
             '#weight' => -10,
         );
     } elseif ($element['#file']) {
-
         $element['filename'] = array(
             '#type' => 'markup',
             '#markup' => theme('file_link', array('file' => $element['#file'])) . ' ',
@@ -353,11 +382,15 @@ function book_field_managed_book_process($element, &$form_state, $form) {
     return $element;
 }
 
-function book_field_managed_book_submit($form, &$form_state) {
+//Submit callback for remove/update button
+function book_field_managed_book_submit($form, &$form_state) {    
+    //We need perform some actions only if submiting button is remove button
+    //For upload button all actions perform in value callback
     $parents = $form_state['triggering_element']['#array_parents'];
     $button_key = array_pop($parents);
     $element = drupal_array_get_nested_value($form, $parents);
     if ($button_key == 'remove_button') {
+        //Delete files
         if ($element['#file']) {
             file_delete($element['#file']);
         }
@@ -369,9 +402,12 @@ function book_field_managed_book_submit($form, &$form_state) {
         form_set_value($values_element, NULL, $form_state);
         drupal_array_set_nested_value($form_state['input'], $values_element['#parents'], NULL);
     }
+    
+    //Rebuild form
     $form_state['rebuild'] = TRUE;
 }
 
+//Pre render  callback for managed_book form type
 function book_field_managed_book_pre_render($element) {
     // If we already have a file, we don't want to show the upload controls.
     if (!empty($element['#value']['fid'])) {
@@ -382,8 +418,6 @@ function book_field_managed_book_pre_render($element) {
     else {
         $element['remove_button']['#access'] = FALSE;
     }
-
-
     return $element;
 }
 
@@ -484,18 +518,20 @@ function book_field_widget_value($element, $input = FALSE, $form_state) {
     return $return;
 }
 
+//Callback value for fid element in widget form
 function book_field_widget_fid_value(&$element, $input = FALSE, $form_state) {
     $return = '0';
-    if (isset($form_state['input'][$element['#parents'][0]]['und'][0]['fids']['fid'])) {
-        $return = $form_state['input'][$element['#parents'][0]]['und'][0]['fids']['fid'];
+    if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['fids']['fid'])) {
+        $return = $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['fids']['fid'];
     }
     return $return;
 }
 
+//Callback value for fid_swf element in widget form
 function book_field_widget_fid_swf_value(&$element, $input = FALSE, $form_state) {
     $return = '0';
-    if (isset($form_state['input'][$element['#parents'][0]]['und'][0]['fids']['fid_swf'])) {
-        $return = $form_state['input'][$element['#parents'][0]]['und'][0]['fids']['fid_swf'];
+    if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['fids']['fid_swf'])) {
+        $return = $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['fids']['fid_swf'];
     }
     return $return;
 }
@@ -596,19 +632,6 @@ function _book_field_file_move($file) {
         file_save($file);
         $file_name = $file->filename;
         $file = file_move($file, file_default_scheme() . '://' . $file_name);
-    }
-}
-
-
-
-function book_field_field_delete_file($file, $entity_type, $id, $count = 1) {
-    // To prevent the file field from deleting files it doesn't know about, check
-    // the file reference count. Temporary files can be deleted because they
-    // are not yet associated with any content at all.  
-    $file_usage = file_usage_list($file);
-    if ($file->status == 0 || !empty($file_usage['file'])) {
-        file_usage_delete($file, 'book_field', $entity_type, $id, $count);
-        file_delete($file);
     }
 }
 
