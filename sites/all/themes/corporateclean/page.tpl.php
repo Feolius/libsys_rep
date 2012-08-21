@@ -1,3 +1,4 @@
+<?php drupal_add_css(drupal_get_path('theme', 'corporateclean') . '/tweet_button.css')?>
 <!-- Header. -->
 <div id="header">
 
@@ -66,12 +67,12 @@
                 <div style="float:left; padding:0 30px 0 0;">
                 <img height="250px" class="masked" src="<?php print base_path() . drupal_get_path('theme', 'corporateclean') ;?>/mockup/slide-1.jpg"/>
                 </div>
-                <h2>Sample product name</h2>
-                <strong>General</strong><br/>
-                <em>Client name</em><br/>
-                <br/>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                <div style="display:block; padding:30px 0 10px 0;"><a class="more" href="#">Tell me more</a></div>
+                <h2>Ellen G. White Estate</h2>
+                <p>The Ellen G. White Estate, Incorporated, or simply the (Ellen) White Estate, is the official organization created by Ellen G. White to act as the custodian of her writings, which are of importance to the Seventh-day Adventist Church. Based at the General Conference in Silver Spring, Maryland, with which it works closely, the White Estate has branch offices and research centers at Adventist universities and colleges around the world.</p>
+		<p>The mission of the White Estate is to circulate Ellen White's writings, translate them, and provide resources for helping to better understand her life and ministry. At the Toronto General Conference Session in 2000, the world church expanded the mission of the organization to include a responsibility for promoting Adventist history for the entire denomination.</p>
+                <div style="display:block; padding:30px 0 10px 0; float: left"><a class="more" href="#">Tell me more</a></div>
+                <a href="https://twitter.com/ellenwhite" class="twitter-follow-button" data-show-count="false" data-size="large" >Follow @ellenwhite</a>
+                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
                 <!--EOF:slider-item content-->
                 
             </div>
@@ -86,12 +87,12 @@
                 <div style="float:right; padding:0 0 0 30px;">
                 <img height="250px" class="masked" src="<?php print base_path() . drupal_get_path('theme', 'corporateclean') ;?>/mockup/slide-2.jpg"/>
                 </div>
-                <h2>Sample service name</h2>
-                <strong>General</strong><br/>
-                <em>Client name</em><br/>
-                <br/>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                <div style="display:block; padding:30px 0 10px 0;"><a class="more" href="#">Tell me more</a></div>
+                <h2>Center for Adventist Research</h2>
+                <p>The Center for Adventist Research is a leading documentary collection for the study of the Seventh-day Adventist Church, its predecessors and related groups, from the Millerite movement of the mid nineteenth century to the present. The Center holds publications in all formats on all aspects of the Seventh-day Adventist Church--its mission, theology, and activities--including those from official and unofficial sources. The center serves as a Branch Office of the Ellen G. White Estate, the rare material repository for the James White Library and as the Andrews University Archives and Records Center.</p
+		<p>Any conclusions, published or unpublished, drawn by researchers using Center for Adventist Research resources are the responsibility of the researcher and do not necessarily reflect those of the Center for Adventist Research, Andrews University, Ellen G.  White Estate, or the Seventh-day Adventist church.</p>
+                <div style="display:block; padding:30px 0 10px 0; float: left"><a class="more" href="#">Tell me more</a></div>
+                <a href="https://twitter.com/gcarchives" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @gcarchives</a>
+                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
                 <!--EOF:slider-item content-->
             
             </div>
@@ -103,29 +104,18 @@
             <div class="content">
             
                 <!--slider-item content-->
-                <h2>Sample product name</h2>
-                <strong>General</strong><br/>
-                <em>Client name</em><br/>
-                <br/>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-                <div style="display:block; padding:30px 0 10px 0;"><a class="more" href="#">Tell me more</a></div>
-                <!--EOF:slider-item content-->
-            
-            </div>
-        </div>
-        <!--EOF:slider-item-->
-        
-        <!--slider-item-->
-        <div class="slider-item">
-            <div class="content">
-                
-                <!--slider-item content-->
+                <div style="float:right; padding:0 0 0 30px;">
                 <img height="250px" class="masked" src="<?php print base_path() . drupal_get_path('theme', 'corporateclean') ;?>/mockup/slide-3.jpg"/>
+                </div>
+                <h2>Office of Archives, Statistics, and Research</h2>
+                <p>The Office of Archives, Statistics, and Research has been established for the purpose of managing the Records Center and Archives of the denomination's world headquarters, conduct research projects for General Conference administration, produce the denomination's annual directory, the Yearbook, and its annual statistical report. The Office is located in the lower level of the headquarters complex, and includes a fireproof, climate-controlled vault, two workrooms, and office space for its staff. While its responsibilities are limited to the headquarters complex, its staff members are available as consultants to the church's organizations and institutions, as time permits.</p>
+                <div style="display:block; padding:30px 0 10px 0;"><a class="more" href="#">Tell me more</a></div>
                 <!--EOF:slider-item content-->
             
             </div>
         </div>
         <!--EOF:slider-item-->
+        
     
     </div>
     <!--EOF:slideshow-->
@@ -134,7 +124,6 @@
     <div id="slider-controls-wrapper">
         <div id="slider-controls">
             <ul id="slider-navigation">
-                <li><a href="#"></a></li>
                 <li><a href="#"></a></li>
                 <li><a href="#"></a></li>
                 <li><a href="#"></a></li>
