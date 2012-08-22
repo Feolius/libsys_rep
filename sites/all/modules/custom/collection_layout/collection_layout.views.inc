@@ -16,6 +16,7 @@ function collection_layout_views_pre_render(&$view) {
         $_SESSION['collection_layout']['json']['nid'] = array();
 
         foreach ($view->result as $row) {
+	    dpm($row->field_field_files_image);
             $tmp = explode('-', $row->field_field_files_date[0]['raw']['value']);
             $_SESSION['collection_layout']['json']['date'][] = $tmp[0];
             $_SESSION['collection_layout']['json']['title'][] = $row->_field_data['nid']['entity']->title;
