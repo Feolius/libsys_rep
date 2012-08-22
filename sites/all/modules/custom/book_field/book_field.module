@@ -89,23 +89,24 @@ function book_field_ajax_progress($key) {
  * Count number of pages in PDF file
  */
 
-function getNumPagesPdf($filepath) {
-    $fp = @fopen(preg_replace("/\[(.*?)\]/i", "", $filepath), "r");
-    $max = 0;
-    while (!feof($fp)) {
-        $line = fgets($fp, 255);
-        if (preg_match('/\/Count [0-9]+/', $line, $matches)) {
-            preg_match('/[0-9]+/', $matches[0], $matches2);
-            if ($max < $matches2[0])
-                $max = $matches2[0];
-        }
+function getNumPagesPdf($filepath) {  
+    $stream = @fopen($filepath, "r");
+    $PDFContent = @fread($stream, filesize($filepath));
+    $firstValue = 0;
+    $secondValue = 0;
+    if (preg_match("/\/N\s+([0-9]+)/", $PDFContent, $matches)) {
+        $firstValue = $matches[1];
     }
-    fclose($fp);
+
+    if (preg_match_all("/\/Count\s+([0-9]+)/s", $PDFContent, $matches)) {
+        $secondValue = max($matches[1]);
+    }
+    $max = (($secondValue != 0) ? $secondValue : max($firstValue, $secondValue));
+    fclose($stream);
     if ($max == 0) {
         $im = new imagick($filepath);
         $max = $im->getNumberImages();
     }
-
     return $max;
 }
 
@@ -156,7 +157,7 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
                     $file_name = $file_name . $arr[$i];
                 }
                 $path = drupal_realpath($uri);
-                $temp_path = file_directory_temp() . '/';
+                $temp_path = file_directory_temp();
 
                 //Get file name with index if index exists. (e.g. filename_0, 0 is index)
                 $real_file_name = get_real_file_name($file);
@@ -380,18 +381,18 @@ function book_field_managed_book_submit($form, &$form_state) {
     $element = drupal_array_get_nested_value($form, $parents);
     if ($button_key == 'remove_button') {
         //Delete files
-        if ($element['#file']) {                 
-            file_delete($element['#file']); 
+        if ($element['#file']) {
+            file_delete($element['#file']);
             //Find and delete thumbnail
-            $real_file_name = get_real_file_name($element['#file']);            
-            $image_uri = file_default_scheme() . "://" . $real_file_name . '-thumb.jpeg';           
+            $real_file_name = get_real_file_name($element['#file']);
+            $image_uri = file_default_scheme() . "://" . $real_file_name . '-thumb.jpeg';
             $result = db_query('SELECT fid FROM {file_managed} WHERE uri = :uri', array(
                 ':uri' => $image_uri
                     ));
             $a = $result->fetchAll();
-            if ($a != NULL){
+            if ($a != NULL) {
                 $fid_image = $a[0]->fid;
-            }  
+            }
             $image_file = file_load($fid_image);
             file_delete($image_file);
         }
@@ -486,8 +487,6 @@ function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $
                 '#value_callback' => 'book_field_widget_value',
                 '#upload_validators' => array(
                     'file_validate_extensions' => array('pdf'),
-                    // Pass the maximum file size in bytes
-                    'file_validate_size' => array(5 * 1024 * 1024),
                 ),
                 '#default_value' => !empty($items) ? $items[0] : $defaults,
             );
@@ -541,22 +540,22 @@ function book_field_widget_fid_swf_value(&$element, $input = FALSE, $form_state)
  * Implements hook_field_formatter_view().
  */
 function book_field_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-    global $base_url;    
+    global $base_url;
     $element = array();
     if ($display['type'] == 'book_field_formatter') {
         foreach ($items as $delta => $item) {
             if (isset($item['fid_swf']) && $item['fid_swf'] != '0') {
                 $file = file_load($item['fid_swf']);
                 $module_path = drupal_get_path('module', 'book_field');
-                $FlexPaperViewerPath = $base_url . '/' . $module_path . '/FlexPaperViewer';               
+                $FlexPaperViewerPath = $base_url . '/' . $module_path . '/FlexPaperViewer';
                 $uri = $file->uri;
-                $path = drupal_realpath($uri);                
+                $path = drupal_realpath($uri);
                 $drupal_folder = realpath('.');
                 $relative_path = str_replace($drupal_folder, "", $path);
                 $swf_path = $base_url . '/' . $relative_path;
                 $settings = array(
                     'paths' => array($swf_path),
-                    'FlexPaperViewerPath' => $FlexPaperViewerPath,                    
+                    'FlexPaperViewerPath' => $FlexPaperViewerPath,
                 );
                 drupal_add_js(array('book_field' => $settings), 'setting');
                 if (isset($_GET['search'])) {
@@ -589,18 +588,18 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
         }
     }
     if ($display['type'] == 'file_link_formatter') {
-        foreach ($items as $delta => $item) {            
+        foreach ($items as $delta => $item) {
             $file = file_load($item['fid']);
-            if(module_exists('book_thumbnail')){
-            $element[$delta] = array(
-                '#theme' => 'book_field_link_view',
-                '#file' => $file,
-            );
-            }else{
+            if (module_exists('book_thumbnail')) {
                 $element[$delta] = array(
-                '#theme' => 'file_link',
-                '#file' => $file,
-            );
+                    '#theme' => 'book_field_link_view',
+                    '#file' => $file,
+                );
+            } else {
+                $element[$delta] = array(
+                    '#theme' => 'file_link',
+                    '#file' => $file,
+                );
             }
         }
     }
