@@ -1,0 +1,9 @@
+name = Book thumbnail
+description = Provides rescaling of thumbnail
+core = 7.x
+package = Features
+version = 7.x-1.0
+project = book_thumbnail
+dependencies[] = image
+features[features_api][] = api:1
+features[image][] = compressing

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Book thumbnail feature.
+ */
+
+include_once 'book_thumbnail.features.inc';
