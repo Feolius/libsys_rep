@@ -379,6 +379,8 @@ function collection_layout_timeline_json_callback() {
         $asset = new stdClass();
         if (isset($_SESSION['collection_layout']['json']['image_url']))
             $asset->media = $_SESSION['collection_layout']['json']['image_url'][$i];
+        else 
+            $asset->media = "";
         $asset->credit = "";
         $asset->caption = "";
 
