@@ -428,6 +428,7 @@ function collection_layout_preprocess_timeline_json(&$vars) {
     $options = $vars['options'];
     $vars['start_slide'] = $options->start_slide;
     $vars['timeline_lib_url'] = $options->timeline_lib_url;
+    $vars['source'] = base_path() . '/timeline-json';
 }
 
 function collection_layout_preprocess_timeline_iframe(&$vars) {

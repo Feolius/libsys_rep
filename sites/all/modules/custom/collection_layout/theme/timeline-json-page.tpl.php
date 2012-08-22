@@ -5,7 +5,7 @@
             var timeline_config = {
                 width: '100%',
                 height: '100%',
-                source: '/timeline-json',
+                source: '<?php print $source ?>',
                 start_at_slide: <?php print $start_slide ?>
             }
         </script>
