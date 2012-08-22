@@ -283,7 +283,7 @@ function collection_layout_node_page_callback() {
     drupal_add_js(drupal_get_path('module', 'collection_layout') . '/js/node_slider_buttons.js');
     drupal_add_js(drupal_get_path('module', 'collection_layout') . '/js/node_tabs.js');
     drupal_add_library('system', 'ui.tabs');
-    
+
     if (isset($_SESSION['collection_layout']['flag']) && $_SESSION['collection_layout']['flag']) {
         unset($_SESSION['collection_layout']['view_result']);
         $_SESSION['collection_layout']['flag'] = 0;
@@ -357,7 +357,7 @@ function collection_layout_node_page_callback() {
 
 function collection_layout_timeline_frame_callback() {
     $start_node_index = 0;
-    
+
     foreach ($_SESSION['collection_layout']['json']['nid'] as $nid)
         if ($nid == $_SESSION['collection_layout']['nid'])
             break;
@@ -377,7 +377,8 @@ function collection_layout_timeline_json_callback() {
 
     for ($i = 0; $i < count($_SESSION['collection_layout']['json']['date']); $i++) {
         $asset = new stdClass();
-        $asset->media = $_SESSION['collection_layout']['json']['image_url'][$i];
+        if (isset($_SESSION['collection_layout']['json']['image_url']))
+            $asset->media = $_SESSION['collection_layout']['json']['image_url'][$i];
         $asset->credit = "";
         $asset->caption = "";
 
@@ -427,7 +428,7 @@ function collection_layout_preprocess_timeline_json(&$vars) {
     $vars['timeline_lib_url'] = $options->timeline_lib_url;
 }
 
-function collection_layout_preprocess_timeline_iframe(&$vars){
+function collection_layout_preprocess_timeline_iframe(&$vars) {
     $vars['iframe_url'] = 'timeline-iframe';
     $vars['iframe_width'] = '100%';
     $vars['iframe_height'] = '600px';
