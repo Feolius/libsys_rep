@@ -366,7 +366,7 @@ function collection_layout_timeline_frame_callback() {
 
     $options = new stdClass();
     $options->start_slide = $start_node_index;
-    $options->timeline_lib_url = '/' . libraries_get_path('timeline') . '/compiled/js/timeline-embed.js';
+    $options->timeline_lib_url = base_path() . '/' . libraries_get_path('timeline') . '/compiled/js/timeline-embed.js';
     echo theme('timeline_json', array('options' => $options));
     exit;
 }
