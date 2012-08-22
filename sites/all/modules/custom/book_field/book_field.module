@@ -541,19 +541,22 @@ function book_field_widget_fid_swf_value(&$element, $input = FALSE, $form_state)
  * Implements hook_field_formatter_view().
  */
 function book_field_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+    global $base_url;    
     $element = array();
     if ($display['type'] == 'book_field_formatter') {
         foreach ($items as $delta => $item) {
             if (isset($item['fid_swf']) && $item['fid_swf'] != '0') {
                 $file = file_load($item['fid_swf']);
                 $module_path = drupal_get_path('module', 'book_field');
+                $FlexPaperViewerPath = $base_url . '/' . $module_path . '/FlexPaperViewer';               
                 $uri = $file->uri;
-                $path = drupal_realpath($uri);
+                $path = drupal_realpath($uri);                
                 $drupal_folder = realpath('.');
                 $relative_path = str_replace($drupal_folder, "", $path);
+                $swf_path = $base_url . '/' . $relative_path;
                 $settings = array(
-                    'paths' => array($relative_path),
-                    'module_path' => $module_path,
+                    'paths' => array($swf_path),
+                    'FlexPaperViewerPath' => $FlexPaperViewerPath,                    
                 );
                 drupal_add_js(array('book_field' => $settings), 'setting');
                 if (isset($_GET['search'])) {
@@ -586,12 +589,19 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
         }
     }
     if ($display['type'] == 'file_link_formatter') {
-        foreach ($items as $delta => $item) {
+        foreach ($items as $delta => $item) {            
             $file = file_load($item['fid']);
+            if(module_exists('book_thumbnail')){
             $element[$delta] = array(
                 '#theme' => 'book_field_link_view',
                 '#file' => $file,
             );
+            }else{
+                $element[$delta] = array(
+                '#theme' => 'file_link',
+                '#file' => $file,
+            );
+            }
         }
     }
     return $element;

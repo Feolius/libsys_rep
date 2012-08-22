@@ -2,11 +2,12 @@
     $(document).ready(function (){
         
         //Get paths of swf files
-        var paths = Drupal.settings.book_field.paths;
+        var paths = Drupal.settings.book_field.paths;       
         
         //Get path of FlexPaperViewer.swf file
         var modulePath = Drupal.settings.book_field.module_path;
-        var FlexPaperViewerPath = getOrigin()+ '/' + modulePath + '/FlexPaperViewer';
+        var baseUrl = Drupal.settings.book_field.base_url;
+        var FlexPaperViewerPath = Drupal.settings.book_field.FlexPaperViewerPath;
         
         //We have to be able to show a few documents on page. Calculate numberof documents that have
         //to be shown on the page
@@ -71,8 +72,4 @@ function onDocumentLoaded(totalPages){
 }
 function onDocumentLoadedError(errMessage){
     $('#viewerPlaceHolder').html("Error displaying document. Make sure the conversion tool is installed and that correct user permissions are applied to the SWF Path directory");
-}
-//Get origin path to site
-function getOrigin() {
-    return document.location.protocol + "//" + document.location.host;
 }
