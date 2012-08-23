@@ -90,9 +90,8 @@
                 <h2>Center for Adventist Research</h2>
                 <p>The Center for Adventist Research is a leading documentary collection for the study of the Seventh-day Adventist Church, its predecessors and related groups, from the Millerite movement of the mid nineteenth century to the present. The Center holds publications in all formats on all aspects of the Seventh-day Adventist Church--its mission, theology, and activities--including those from official and unofficial sources. The center serves as a Branch Office of the Ellen G. White Estate, the rare material repository for the James White Library and as the Andrews University Archives and Records Center.</p
 		<p>Any conclusions, published or unpublished, drawn by researchers using Center for Adventist Research resources are the responsibility of the researcher and do not necessarily reflect those of the Center for Adventist Research, Andrews University, Ellen G.  White Estate, or the Seventh-day Adventist church.</p>
-                <div style="display:block; padding:30px 0 10px 0; float: left"><a class="more" href="#">Tell me more</a></div>
-                <a href="https://twitter.com/gcarchives" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @gcarchives</a>
-                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+                <div style="display:block; padding:30px 0 10px 0;"><a class="more" href="#">Tell me more</a></div>
+                
                 <!--EOF:slider-item content-->
             
             </div>
@@ -109,7 +108,9 @@
                 </div>
                 <h2>Office of Archives, Statistics, and Research</h2>
                 <p>The Office of Archives, Statistics, and Research has been established for the purpose of managing the Records Center and Archives of the denomination's world headquarters, conduct research projects for General Conference administration, produce the denomination's annual directory, the Yearbook, and its annual statistical report. The Office is located in the lower level of the headquarters complex, and includes a fireproof, climate-controlled vault, two workrooms, and office space for its staff. While its responsibilities are limited to the headquarters complex, its staff members are available as consultants to the church's organizations and institutions, as time permits.</p>
-                <div style="display:block; padding:30px 0 10px 0;"><a class="more" href="#">Tell me more</a></div>
+                <div style="display:block; padding:30px 0 10px 0;  float: left"><a class="more" href="#">Tell me more</a></div>
+		<a href="https://twitter.com/gcarchives" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @gcarchives</a>
+                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
                 <!--EOF:slider-item content-->
             
             </div>
