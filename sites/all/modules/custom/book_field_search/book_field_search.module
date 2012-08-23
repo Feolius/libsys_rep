@@ -19,6 +19,7 @@ function book_field_search_entity_info() {
                 'bundle' => 'bundle',
             ),
             'module' => 'book_field_search',
+            'uri callback' => 'lib_book_uri_callback',
             'bundles' => array(
                 'pdf' => array(
                     'label' => t('PDF'),
@@ -27,8 +28,16 @@ function book_field_search_entity_info() {
         ),
     );
 
-
     return $return;
+}
+
+function lib_book_uri_callback($entity) {
+    //dpm($entity);
+    $fid = $entity->fid;
+    $file = file_load($fid);    
+    return array(
+        'path' => $file->uri,
+    );
 }
 
 /**
@@ -90,7 +99,6 @@ function book_field_search_solr_reindex() {
         // Loop over all the files and add them to our indexing table
         foreach ($files as $parent_entity_type => $parent_entities) {
             foreach ($parent_entities as $parent_entity_info) {
-                dpm($parent_entity_info);
                 // Fake our file class
                 $file = new stdClass();
                 foreach ($parent_entity_info->extraFields as $key => $value) {
