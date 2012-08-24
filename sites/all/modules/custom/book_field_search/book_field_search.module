@@ -34,7 +34,7 @@ function book_field_search_entity_info() {
 function lib_book_uri_callback($entity) {
     //dpm($entity);
     $fid = $entity->fid;
-    $file = file_load($fid);    
+    $file = file_load($fid);
     return array(
         'path' => $file->uri,
     );
@@ -404,4 +404,65 @@ function book_field_search_location_map_callback($facets, $options) {
         $map[$key]['#html'] = TRUE;
     }
     return $map;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function book_field_search_theme() {
+    return array(
+        'apachesolr_search_snippets__lib_book__pdf' => array(
+            'variables' => array('doc' => NULL, 'snippets' => array()),
+        ),
+    );
+}
+
+/**
+ *Theme function for snippets
+ */
+function theme_apachesolr_search_snippets__lib_book__pdf($vars) {
+    $result = array();
+    $doc = $vars['doc'];
+    $snippets = $vars['snippets'];
+    $country_list = country_get_list();
+    foreach ($doc->zm_parent_entity as $parent_entity_encoded) {
+        $parent_entity = (object) drupal_json_decode($parent_entity_encoded);
+    }
+    $nid = $parent_entity->nid;
+    $node = node_load($nid);
+    $node_fields = field_info_instances('node', $node->type);
+    foreach ($node_fields as $field_bundle_name => $field_bundle_info) {
+        $field_info = field_info_field_by_id($field_bundle_info['field_id']);
+        if ($field_info['type'] == 'node_reference') {
+            $value = field_get_items('node', $node, $field_bundle_name);
+            $child_nid = $value[0]['nid'];
+            if (isset($child_nid)) {
+                $child_node = node_load($child_nid);
+                $child_node_fields = field_info_instances('node', $child_node->type);
+                foreach ($child_node_fields as $child_field_bundle_name => $child_field_bundle_info) {
+                    $child_field_info = field_info_field_by_id($child_field_bundle_info['field_id']);
+                    if ($child_field_info['type'] == 'addressfield') {
+                        $child_value = field_get_items('node', $child_node, $child_field_bundle_name);
+                        $country_ISO = $child_value[0]['country'];
+                        $result['country'] = $country_list[$country_ISO];
+                    } else {
+                        $result['author']['label'] = $child_node->title;
+                        $result['author']['uri'] = entity_uri('node', $child_node);
+                        dpm($result);
+                    }
+                }
+            }
+        }
+        if($field_info['type'] == 'datetime'){
+            $value = field_get_items('node', $node, $field_bundle_name);
+            $time = $value[0]['value'];
+            $time = explode('-', $time);
+            $year = $time[0]; 
+            $result['year'] = $year;            
+        }
+        
+    }
+    $file_type = t('!icon @filemime', array('@filemime' => $doc->ss_filemime, '!icon' => theme('file_icon', array('file' => (object) array('filemime' => $doc->ss_filemime)))));
+    $author_link = l($result['author']['label'], $result['author']['uri']['path']);    
+    return implode(' ... ', $snippets) . '<span><em> written by: </em>' . $author_link . '<em> country:</em> ' . $result['country'] . ', ' . $result['year'] . '</span>';
 }
