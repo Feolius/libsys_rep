@@ -1,0 +1,13 @@
+name = Related Links
+description = Displays links related to content.
+core = 7.x
+configure = admin/config/search/relatedlinks/configure
+
+files[] = tests/relatedlinks.test
+files[] = tests/relatedlinks.parsed.test
+; Information added by drupal.org packaging script on 2012-05-19
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "relatedlinks"
+datestamp = "1337387926"
+
