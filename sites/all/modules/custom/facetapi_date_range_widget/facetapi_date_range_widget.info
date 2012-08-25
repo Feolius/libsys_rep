@@ -3,6 +3,7 @@ description = "Provides facetapi date range widget."
 package = Book field
 core = 7.x
 dependencies[] = book_field_search
+dependencies[] = facetapi
 files[] = plugins/facetapi/widget_date_range.inc
 
 
