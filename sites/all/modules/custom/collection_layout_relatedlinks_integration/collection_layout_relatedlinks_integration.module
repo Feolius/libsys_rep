@@ -1,12 +1,9 @@
 <?php
 
 function collection_layout_relatedlinks_integration_block_view_alter(&$data, $block) {
-    dpm($data);
-    dpm(drupal_get_path_alias($_GET['q']));
     $aliases =  explode('/',drupal_get_path_alias($_GET['q']));
     // This is only valid if we're looking at a node now.
     if (is_numeric($block->delta) && in_array('node-page', $aliases)) {
-        $block = array();
         $node = node_load($_GET['nid']);
         // Only display if node type is associated with this module.
         if ($node && in_array($node->type, variable_get('relatedlinks_node_types', _relatedlinks_node_get_types(TRUE)))) {
