@@ -1,0 +1,52 @@
+<?php
+
+function collection_layout_relatedlinks_integration_block_view_alter(&$data, $block) {
+    dpm($data);
+    dpm(drupal_get_path_alias($_GET['q']));
+    $aliases =  explode('/',drupal_get_path_alias($_GET['q']));
+    // This is only valid if we're looking at a node now.
+    if (is_numeric($block->delta) && in_array('node-page', $aliases)) {
+        $block = array();
+        $node = node_load($_GET['nid']);
+        // Only display if node type is associated with this module.
+        if ($node && in_array($node->type, variable_get('relatedlinks_node_types', _relatedlinks_node_get_types(TRUE)))) {
+            $link_types = variable_get('relatedlinks_types', _relatedlinks_get_type_defaults());
+            $append = FALSE;
+            $links = array();
+            foreach ($link_types as $type => $config) {
+                // Only worry about enabled types.
+                if ($config['enabled']) {
+                    if ($type == RELATEDLINKS_DISCOVERED && (($block->delta == $type) || ($append && !$config['block'])) &&
+                            !isset($node->relatedlinks[RELATEDLINKS_DISCOVERED])) {
+                        // Refresh discovered links. This is being done here rather than
+                        // 'hook_node_load' due to weight conflicts with the taxonomy
+                        // module.
+                        $node->relatedlinks[RELATEDLINKS_DISCOVERED] = _relatedlinks_update_discovered_links($node);
+                    }
+
+                    // Current block.
+                    if ($block->delta == $type) {
+                        $data['subject'] = check_plain($config['title']);
+                        $links = isset($node->relatedlinks[$type]) ? array_merge($links, $node->relatedlinks[$type]) : $links;
+
+                        // Allow other types to append links to this block if needed.
+                        $append = TRUE;
+                    } elseif ($append) {
+                        if ($config['block']) {
+                            break;
+                        } else {
+                            $links = isset($node->relatedlinks[$type]) ? array_merge($links, $node->relatedlinks[$type]) : $links;
+                        }
+                    }
+                }
+            }
+
+            $links = _relatedlinks_filter($links);
+            if (!empty($links)) {
+                $data['content'] = theme('relatedlinks', array('links' => $links));
+            }
+
+            return $block;
+        }
+    }
+}
