@@ -1,7 +1,7 @@
 <?php
 
 function collection_layout_relatedlinks_integration_block_view_alter(&$data, $block) {
-    $aliases =  explode('/',drupal_get_path_alias($_GET['q']));
+    $aliases = explode('/', drupal_get_path_alias($_GET['q']));
     // This is only valid if we're looking at a node now.
     if (is_numeric($block->delta) && in_array('node-page', $aliases)) {
         $node = node_load($_GET['nid']);
@@ -23,6 +23,17 @@ function collection_layout_relatedlinks_integration_block_view_alter(&$data, $bl
 
                     // Current block.
                     if ($block->delta == $type) {
+                        if (isset($node->relatedlinks[$type])) {
+                            foreach ($node->relatedlinks[$type] as &$val) {
+                                $tmp = explode('/', $val->url);
+                                $nid = $tmp[1];
+                                $val->url = url('node-page', array(
+                                    'absolute' => TRUE,
+                                    'query' => array(
+                                        'nid' => $nid
+                                        )));
+                            }
+                        }
                         $data['subject'] = check_plain($config['title']);
                         $links = isset($node->relatedlinks[$type]) ? array_merge($links, $node->relatedlinks[$type]) : $links;
 
@@ -32,6 +43,17 @@ function collection_layout_relatedlinks_integration_block_view_alter(&$data, $bl
                         if ($config['block']) {
                             break;
                         } else {
+                            if (isset($node->relatedlinks[$type])) {
+                                foreach ($node->relatedlinks[$type] as &$val) {
+                                    $tmp = explode('/', $val->url);
+                                    $nid = $tmp[1];
+                                    $val->url = url('node-page', array(
+                                        'absolute' => TRUE,
+                                        'query' => array(
+                                            'nid' => $nid
+                                            )));
+                                }
+                            }
                             $links = isset($node->relatedlinks[$type]) ? array_merge($links, $node->relatedlinks[$type]) : $links;
                         }
                     }
