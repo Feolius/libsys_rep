@@ -342,7 +342,7 @@ function collection_layout_node_page_callback() {
                 ),
                 'file_link' => array(
                     '#view' => views_embed_view('node_view', 'book_file_link', $_SESSION['collection_layout']['nid'], $date_range_filter_string, $doc_type_filter_string, $category_filter_string, $collection_filter_string, $group_filter_string, $date_filter_string),
-                    '#title' => t('Donload')
+                    '#title' => t('Download')
                 )
             )
         ),
