@@ -31,8 +31,7 @@ function book_field_search_entity_info() {
     return $return;
 }
 
-function lib_book_uri_callback($entity) {
-    //dpm($entity);
+function lib_book_uri_callback($entity) {    
     $fid = $entity->fid;
     $file = file_load($fid);
     return array(
@@ -40,8 +39,7 @@ function lib_book_uri_callback($entity) {
     );
 }
 
-/**
- * @file
+/** 
  *   Indexer for the hook_apachesolr_entity_info_alter entities for the book_field_search module.
  */
 function book_field_apachesolr_entity_info_alter(&$entity_info) {
@@ -384,17 +382,19 @@ function book_field_search_location_map_callback($facets, $options) {
         if (isset($allowed_references[$key])) {
             $node = node_load($key);
             foreach ($adress_fields as $adress_field_name => $adress_field) {
+                $output = $node->title;
                 if (isset($node->$adress_field_name)) {
                     $value = field_get_items('node', $node, $adress_field_name);
                     if (isset($value[0]['country'])) {
                         $country_ISO = $value[0]['country'];
                         $country_name = $country_list[$country_ISO];
-                        $map[$key]['#markup'] = field_filter_xss($country_name);
+                        $output = $output . ': ' . $country_name;
+                        $map[$key]['#markup'] = field_filter_xss($output);
                     } else {
-                        $map[$key]['#markup'] = field_filter_xss("Country is undefined");
+                        $map[$key]['#markup'] = field_filter_xss($output);
                     }
                 } else {
-                    $map[$key]['#markup'] = field_filter_xss("Country is undefined");
+                    $map[$key]['#markup'] = field_filter_xss($output);
                 }
             }
         } elseif ($key == '_empty_' && $options['facet missing allowed']) {
@@ -402,7 +402,7 @@ function book_field_search_location_map_callback($facets, $options) {
             $map[$key]['#markup'] = theme('facetapi_facet_missing', array('field_name' => $options['display_name']));
         }
         $map[$key]['#html'] = TRUE;
-    }
+    }    
     return $map;
 }
 
