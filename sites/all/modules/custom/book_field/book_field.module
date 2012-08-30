@@ -55,17 +55,23 @@ function book_field_ajax_progress($key) {
         ':pid' => $progress_key
             ));
     $a = $result->fetchAll();
-
     //If record exist conversion in process else uploading proceeding
     if ($a == NULL) {
-        $progress = array(
-            'message' => t('Starting upload...'),
-            'percentage' => -1,
-        );
-        $status = uploadprogress_get_info($upload_key);
-        if (isset($status['bytes_uploaded']) && !empty($status['bytes_total'])) {
-            $progress['message'] = t('Uploading... (@current of @total)', array('@current' => format_size($status['bytes_uploaded']), '@total' => format_size($status['bytes_total'])));
-            $progress['percentage'] = round(100 * $status['bytes_uploaded'] / $status['bytes_total']);
+        if ($upload_key != 0) {
+            $progress = array(
+                'message' => t('Starting upload...'),
+                'percentage' => -1,
+            );
+            $status = uploadprogress_get_info($upload_key);
+            if (isset($status['bytes_uploaded']) && !empty($status['bytes_total'])) {
+                $progress['message'] = t('Uploading... (@current of @total)', array('@current' => format_size($status['bytes_uploaded']), '@total' => format_size($status['bytes_total'])));
+                $progress['percentage'] = round(100 * $status['bytes_uploaded'] / $status['bytes_total']);
+            }
+        } else {
+            $progress = array(
+                'message' => t('Uploading...'),
+                'percentage' => -1,
+            );
         }
     } else {
         if ($a[0]->progress == -1) {
@@ -89,7 +95,7 @@ function book_field_ajax_progress($key) {
  * Count number of pages in PDF file
  */
 
-function getNumPagesPdf($filepath) {  
+function getNumPagesPdf($filepath) {
     $stream = @fopen($filepath, "r");
     $PDFContent = @fread($stream, filesize($filepath));
     $firstValue = 0;
@@ -314,9 +320,13 @@ function book_field_managed_book_process($element, &$form_state, $form) {
         '#value' => $fid_swf,
     );
 
-    //Get upload progress key and conversion progress key
-    $upload_progress_key = mt_rand();
+    //Get upload progress key and conversion progress key    
     $conversion_progress_key = mt_rand();
+    if (extension_loaded('uploadprogress')) {
+        $upload_progress_key = mt_rand();
+    } else {
+        $upload_progress_key = 0;
+    }
     $element['UPLOAD_IDENTIFIER'] = array(
         '#type' => 'hidden',
         '#value' => $upload_progress_key,
