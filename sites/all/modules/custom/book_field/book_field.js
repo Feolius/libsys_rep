@@ -4,9 +4,7 @@
         //Get paths of swf files
         var paths = Drupal.settings.book_field.paths;       
         
-        //Get path of FlexPaperViewer.swf file
-        var modulePath = Drupal.settings.book_field.module_path;
-        var baseUrl = Drupal.settings.book_field.base_url;
+        //Get path of FlexPaperViewer.swf file        
         var FlexPaperViewerPath = Drupal.settings.book_field.FlexPaperViewerPath;
         
         //We have to be able to show a few documents on page. Calculate numberof documents that have
