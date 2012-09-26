@@ -1,0 +1,279 @@
+<?php
+
+/**
+ * Implements hook_menu()
+ */
+function facet_collection_menu() {
+    $items['collection'] = array(
+        'title' => t('Collection'),
+        'type' => MENU_LOCAL_TASK,
+        'page callback' => 'facet_collection_page',
+        'page arguments' => array(),
+        'access arguments' => array('search content'),
+    );
+    return $items;
+}
+
+/**
+ * Page callback for collection
+ */
+function facet_collection_page() {
+    $build = array();
+    $environment = apachesolr_default_environment();
+    $solr = apachesolr_get_solr($environment);
+    $params = facet_collection_get_params();
+    $base_path = arg(0);
+    $results = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
+    $build['search_results'] = array(
+        '#theme' => 'search_results',
+        '#results' => $results,
+        '#module' => 'facet_collection'
+    );
+    return $build;
+}
+
+/*
+ * Get all params to make solr query
+ */
+
+function facet_collection_get_params() {
+    $params = array();
+    $params['q'] = 'entity_type:node';
+    $params['defType'] = 'lucene';
+    $params['spellcheck'] = FALSE;
+    return $params;
+}
+
+/*
+ * Implements hook_block_info()
+ */
+
+function facet_collection_block_info() {
+    $blocks['content_types_selection'] = array(
+        'info' => t('Filters for nodes')
+    );
+    return $blocks;
+}
+
+/*
+ * Imblements hook_block_view()
+ */
+
+function facet_collection_block_view($delta) {
+    $realm_name = 'block';
+
+    //We need to collect all facetapi presentations for separate block in one 
+    //and add titles for each facet.
+    $content = array();
+
+    //Get all facets that can be shown because we need only facets that satisfy all chosen content types.    
+    $available_facets = facet_collection_get_available_facets();
+    if ($delta == 'content_types_selection') {
+
+        //We need searcher for further actions.         
+        $searcher_info = facetapi_get_searcher_info();
+        $searcher = array_shift(array_keys($searcher_info));
+
+        //Get adapter and build block realm to grab all build information
+        $adapter = facetapi_adapter_load($searcher);
+        $enabled_facets = $adapter->getEnabledFacets();
+        $builds = facetapi_build_realm($searcher, $realm_name);
+        foreach ($builds as $facet_name => $build) {
+            if (is_array($build) && !empty($available_facets)) {
+                if (in_array($facet_name, $available_facets)) {
+                    $field = $enabled_facets[$facet_name]['field'];
+                    $title = $build['#title'];
+                    $build[$field]['#title'] = $title;
+                    $content[] = $build;
+                }
+            }
+        }
+    }
+    return array(
+        'subject' => t('Filters'),
+        'content' => $content,
+    );
+}
+
+/*
+ * Filter facet list to show only facets that satisfy all chosen content types
+ */
+
+function facet_collection_get_available_facets() {
+    $available_facets = array();
+
+    //Get all facets for collection from cache
+    $data = cache_get('facet_collection:listfacets');
+    $facet_list = $data->data;
+
+    //@todo Get it from settings.
+    $content_types = array('files', 'location', 'people');
+
+    //By defaults all content types are shown. If we take content type filters the list of content types will be changed.
+    $content_types_by_filters = FALSE;
+    if (isset($_GET['f'])) {
+
+        //Check if there are some filters and if it's true check if this filters are content type filters.
+        $filters = $_GET['f'];
+        foreach ($filters as $filter) {
+            $arr = explode(':', $filter);
+            if ($arr[0] == 'bundle') {
+
+                //List of content types will consist on all chosen content types.
+                if ($content_types_by_filters == FALSE) {
+                    $content_types = array();
+                }
+                $content_types_by_filters = TRUE;
+                if ($content_types_by_filters == TRUE) {
+                    $content_types[] = $arr[1];
+                }
+            }
+        }
+    }
+    
+    //Perform comparison with conent type list of each facet. 
+    //If it is satisfy all chosen  content types we take this facet
+    foreach ($facet_list as $facet => $facet_content_types) {
+        $facet_content_types_array = array();
+        foreach ($facet_content_types as $facet_content_type) {
+            $facet_content_type = array_shift($facet_content_type);
+            $facet_content_types_array[] = $facet_content_type;
+        }
+        $facet_content_types = array_values(($facet_content_types));
+        $array_diff = array_diff($content_types, $facet_content_types_array);
+        if (empty($array_diff)) {
+            $available_facets[] = $facet;
+        }
+    }
+    return $available_facets;
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function facet_collection_apachesolr_entity_info_alter(&$entity_info) {
+    // Add document callback to provide all needed filters   
+    $entity_info['node']['document callback'][] = 'facet_collection_solr_document';
+}
+
+/*
+ * Document callback for nodes
+ */
+function facet_collection_solr_document(ApacheSolrDocument $document, $node, $entity_type, $env_id) {
+    $filedocument = clone $document;
+    $indexed_fields = apachesolr_entity_fields($entity_type);
+    foreach ($indexed_fields as $index_key => $nodefields) {
+        foreach ($nodefields as $field_info) {
+            $field_name = $field_info['field']['field_name'];
+            // See if the node has fields that can be indexed                
+            if (!empty($node->{$field_name})) {
+                //Add our fields in document.     
+
+                if ($field_info['field']['type'] == 'taxonomy_term_reference') {
+                    foreach ($field_info['field']['settings']['allowed_values'] as $vocabulary) {
+                        $voc_name = $vocabulary['vocabulary'];
+                    }
+                    $items = field_get_items('node', $node, $field_name);
+                    $index_field_name = facet_collection_get_fieldname_by_vocabulary($voc_name);
+                    foreach ($items as $item) {
+                        $filedocument->setMultiValue($index_field_name, $item['tid']);
+                    }
+                } elseif ($field_info['field']['type'] == 'node_reference') {
+                    foreach ($field_info['field']['settings']['referenceable_types'] as $content_type) {
+                        if ($content_type != 0) {
+                            continue;
+                        }
+                        $function = $field_info['indexing_callback'];
+                        if ($function && function_exists($function)) {
+                            $fields = $function('node', $field_name, $index_key, $field_info);
+                            foreach ($fields as $field) {
+                                $filedocument->setMultiValue($field['key'], $field['value']);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $documents = array();
+    $documents[] = $filedocument;
+    return $documents;
+}
+
+/*
+ * Get unique field name by vocabulary name
+ */
+
+function facet_collection_get_fieldname_by_vocabulary($voc_name) {
+    return 'im_voc_' . $voc_name;
+}
+
+/*
+ * Implements hook_facetapi_facet_info
+ */
+
+function facet_collection_facetapi_facet_info($searcher_info) {
+    $facets = array();
+    $data = array();
+    $indexed_fields = apachesolr_entity_fields('node');
+    $instances = field_info_instances('node');
+    foreach ($indexed_fields as $index_key => $nodefields) {
+        foreach ($nodefields as $field_info) {
+            if ($field_info['field']['type'] == 'taxonomy_term_reference') {
+                $voc_machine_name = $field_info['field']['settings']['allowed_values'][0]['vocabulary'];
+                if (empty($voc_machine_name)) {
+                    continue;
+                }
+                $vocabulary = taxonomy_vocabulary_machine_name_load($voc_machine_name);
+                $facet_name = 'collection_' . $voc_machine_name;
+                $bundle = array_shift($field_info['bundles']);
+                $data[$facet_name][] = array($bundle);
+                if (isset($facets[$facet_name])) {
+                    continue;
+                }
+                $label = $vocabulary->name;
+                $index_field_name = facet_collection_get_fieldname_by_vocabulary($voc_machine_name);
+                $map_callback = 'facet_collection_map_taxonomy_terms';
+                $map_options = array();
+            } elseif ($field_info['field']['type'] == 'node_reference') {
+                $field_name = $field_info['field']['field_name'];
+                $facet_name = 'collection_' . $field_name;
+                $bundle = array_shift($field_info['bundles']);
+                $data[$facet_name][] = array($bundle);
+                $label = $instances[$bundle][$field_name]['label'];
+                $index_field_name = apachesolr_index_key($field_info);
+                $map_callback = $field_info['map callback'];
+                $map_options = $field_info;
+            }
+            $facets[$facet_name] = array(
+                'name' => $facet_name,
+                'label' => t($label),
+                'description' => t('Automatically created facet for facet collection module'),
+                'field' => $index_field_name,
+                'field api name' => FALSE,
+                'field api bundles' => array(),
+                'query types' => array('term'),
+                'allowed operators' => array(FACETAPI_OPERATOR_AND => FALSE, FACETAPI_OPERATOR_OR => TRUE),
+                'facet mincount allowed' => TRUE,
+                'facet missing allowed' => TRUE,
+                'map callback' => $map_callback,
+                'map options' => $map_options,
+            );
+        }
+    }
+    cache_set('facet_collection:listfacets', $data, 'cache', CACHE_TEMPORARY);
+    return $facets;
+}
+
+/*
+ * Map callback for taxonomy term facet
+ */
+function facet_collection_map_taxonomy_terms($variables) {
+    $map = array();
+    foreach ($variables as $tid) {
+        $term = taxonomy_term_load($tid);
+        $map[$tid] = entity_label('taxonomy_term', $term);
+    }
+    return $map;
+}
+
