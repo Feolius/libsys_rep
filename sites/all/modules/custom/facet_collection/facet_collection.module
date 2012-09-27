@@ -60,22 +60,27 @@ function facet_collection_block_info() {
  */
 
 function facet_collection_block_view($delta) {
-    $realm_name = 'block';
-
+    
     //We need to collect all facetapi presentations for separate block in one 
     //and add titles for each facet.
+    $realm_name = 'block';
     $content = array();
-
-    //Get all facets that can be shown because we need only facets that satisfy all chosen content types.    
-    $available_facets = facet_collection_get_available_facets();
     if ($delta == 'content_types_selection') {
-
         //We need searcher for further actions.         
         $searcher_info = facetapi_get_searcher_info();
         $searcher = array_shift(array_keys($searcher_info));
 
         //Get adapter and build block realm to grab all build information
         $adapter = facetapi_adapter_load($searcher);
+        
+        //We should check facets visibility.
+        if (!cache_get('facet_collection:visibility')) {
+           facet_collection_set_facets_vsibility($adapter, $realm_name, $searcher);
+        }        
+        //Get all facets that can be shown because we need only facets that satisfy all chosen content types.    
+        $available_facets = facet_collection_get_available_facets();
+
+        //Build content using facetapi block presentation for each facet
         $enabled_facets = $adapter->getEnabledFacets();
         $builds = facetapi_build_realm($searcher, $realm_name);
         foreach ($builds as $facet_name => $build) {
@@ -96,9 +101,22 @@ function facet_collection_block_view($delta) {
 }
 
 /*
+ * Set collection fasets visibility and make record in database
+ */
+function facet_collection_set_facets_vsibility($adapter, $realm_name, $searcher) {
+    $realm = facetapi_realm_load($realm_name);
+    $data = cache_get('facet_collection:listfacets');
+    $facet_list = $data->data;    
+    foreach ($facet_list as $faset_name => $faset_info){
+        $faset = facetapi_facet_load($faset_name, $searcher);
+        facetapi_save_facet_enabled($adapter, $realm, $faset);
+    } 
+    cache_set('facet_collection:visibility', TRUE, 'cache', CACHE_TEMPORARY);
+}
+
+/*
  * Filter facet list to show only facets that satisfy all chosen content types
  */
-
 function facet_collection_get_available_facets() {
     $available_facets = array();
 
@@ -130,7 +148,7 @@ function facet_collection_get_available_facets() {
             }
         }
     }
-    
+
     //Perform comparison with conent type list of each facet. 
     //If it is satisfy all chosen  content types we take this facet
     foreach ($facet_list as $facet => $facet_content_types) {
@@ -159,6 +177,7 @@ function facet_collection_apachesolr_entity_info_alter(&$entity_info) {
 /*
  * Document callback for nodes
  */
+
 function facet_collection_solr_document(ApacheSolrDocument $document, $node, $entity_type, $env_id) {
     $filedocument = clone $document;
     $indexed_fields = apachesolr_entity_fields($entity_type);
@@ -203,7 +222,6 @@ function facet_collection_solr_document(ApacheSolrDocument $document, $node, $en
 /*
  * Get unique field name by vocabulary name
  */
-
 function facet_collection_get_fieldname_by_vocabulary($voc_name) {
     return 'im_voc_' . $voc_name;
 }
@@ -211,10 +229,10 @@ function facet_collection_get_fieldname_by_vocabulary($voc_name) {
 /*
  * Implements hook_facetapi_facet_info
  */
-
-function facet_collection_facetapi_facet_info($searcher_info) {
+function facet_collection_facetapi_facet_info($searcher_info) {   
     $facets = array();
     $data = array();
+    $realm = 'block';
     $indexed_fields = apachesolr_entity_fields('node');
     $instances = field_info_instances('node');
     foreach ($indexed_fields as $index_key => $nodefields) {
@@ -253,6 +271,7 @@ function facet_collection_facetapi_facet_info($searcher_info) {
                 'field api name' => FALSE,
                 'field api bundles' => array(),
                 'query types' => array('term'),
+                'default widget' => 'facetapi_links',
                 'allowed operators' => array(FACETAPI_OPERATOR_AND => FALSE, FACETAPI_OPERATOR_OR => TRUE),
                 'facet mincount allowed' => TRUE,
                 'facet missing allowed' => TRUE,
@@ -268,6 +287,7 @@ function facet_collection_facetapi_facet_info($searcher_info) {
 /*
  * Map callback for taxonomy term facet
  */
+
 function facet_collection_map_taxonomy_terms($variables) {
     $map = array();
     foreach ($variables as $tid) {
