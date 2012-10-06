@@ -18,11 +18,46 @@ function facetapi_date_range_widget_facetapi_widgets() {
 function date_filter_submit($form, &$form_state) {
     $basic_path = $form_state['build_info']['args'][0]['search path'];
     $field_alias = $form_state['build_info']['args'][0]['field alias'];
-    $min_year = $form_state['input']['min_textfield'];
-    $max_year = $form_state['input']['max_textfield'];
-    $min_date_ISO = $min_year . '-01-01T00:00:00Z';
-    $max_date_ISO = $max_year . '-01-01T00:00:00Z';
-    $request = $field_alias . ':[' . $min_date_ISO . ' TO ' . $max_date_ISO . ']';
+
+    //We consider to use dateapi functions instead of facetapi functions for converting date to ISO format
+    //because it gives better precision and convienience.
+    $min_date = $form_state['input']['min_date'];
+    $min_date_parts = explode('/', $min_date);
+    $parts_number = count($min_date_parts);
+    if ($parts_number == 1) {
+        $min_date_full = $min_date . '/01/01';
+    }
+    if ($parts_number == 2) {
+        $min_date_full = $min_date . '/01';
+    }
+    if ($parts_number == 3) {
+        $min_date_full = $min_date;
+    }
+    $date_min_obj = new DateObject($min_date_full, NULL, 'Y/m/d');
+    $min_date_array = $date_min_obj->toArray();
+    $min_date_ISO = $date_min_obj->toISO($min_date_array);
+    $max_date = $form_state['input']['max_date'];
+    $max_date_parts = explode('/', $max_date);
+    $parts_number = count($max_date_parts);
+    if ($parts_number == 1) {
+        $max_date_full = $max_date . '/31/12';
+    }    
+    if ($parts_number == 2) {
+        $month = $max_date_parts[1];
+        $year = $max_date_parts[0];
+        $days_number = date_days_in_month($year, $month);
+        $max_date_full = $max_date . '/' . $days_number;
+    }    
+    if ($parts_number == 3) {
+        $max_date_full = $max_date;
+    }
+    
+    $date_max_obj = new DateObject($max_date_full, NULL, 'Y/m/d');
+    $max_date_array = $date_max_obj->toArray();
+    $max_date_ISO = $date_max_obj->toISO($max_date_array);
+
+    //Build request
+    $request = $field_alias . ':[' . $min_date_ISO . 'Z TO ' . $max_date_ISO . 'Z]';
     $merge = TRUE;
     if (isset($_GET['f'])) {
         $f = $_GET['f'];
@@ -41,8 +76,8 @@ function date_filter_submit($form, &$form_state) {
     $options = array(
         'query' => array(
             'f' => $f,
-            'min' => $min_year,
-            'max' => $max_year,
+            'min' => $min_date,
+            'max' => $max_date,
         ),
     );
     $form_state['redirect'] = array(
@@ -50,45 +85,55 @@ function date_filter_submit($form, &$form_state) {
     );
 }
 
-function facet_api_date_range_widget_filter_form($form, &$form_state, $args) {
+function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
     $params = func_get_args();
+    $date_now = date_now();   
+    $date_now_full = date_format_date($date_now, 'custom', 'Y/m/d');    
+    $date_now_month = date_format_date($date_now, 'custom', 'Y/m');   
+    $date_now_year = date_format_date($date_now, 'custom', 'Y');
+    $format = 'Format:' . $date_now_full . ', ' . $date_now_month . ', ' . $date_now_year; 
     if (empty($_GET['min'])) {
-        $min_year = $args['min year'];
-        $max_year = $args['max year'];
+        $min_date = $args['min date'];
+        $max_date = $args['max date'];
     } else {
-        $min_year = $_GET['min'];
-        $max_year = $_GET['max'];
+        $min_date = $_GET['min'];
+        $max_date = $_GET['max'];
     }
     $form = array(
-        'min_textfield' => array(
+        'min_date' => array(
             '#type' => 'textfield',
             '#description' => t('Left limit'),
-            '#size' => 2,
-            '#maxlength' => 4,
+            '#size' => 4,
+            '#maxlength' => 12,
             '#weight' => -15,
-            '#default_value' => $min_year,
+            '#default_value' => $min_date,
         ),
-        'max_textfield' => array(
+        'max_date' => array(
             '#type' => 'textfield',
             '#description' => t('Right limit'),
-            '#size' => 2,
-            '#maxlength' => 4,
+            '#size' => 4,
+            '#maxlength' => 12,
             '#weight' => -14,
-            '#default_value' => $max_year,
+            '#default_value' => $max_date,
         ),
+        'label' => array(
+            '#type' => 'item',
+            '#markup' => '<div class="desription">' . $format . ' </div>',
+        ),        
         'filter_button' => array(
             '#type' => 'submit',
             '#value' => t('Filter'),
+            '#description' => t('Format:'),
             '#weight' => 15,
             '#submit' => array('date_filter_submit'),
         ),
-    );   
+    );
     return $form;
 }
 
 function facet_api_date_range_widget_filter_form_validate($form, &$form_state){    
-    $min_year = $form_state['input']['min_textfield'];
-    $max_year = $form_state['input']['max_textfield'];
+    $min_date = $form_state['input']['min_textfield'];
+    $max_date = $form_state['input']['max_textfield'];
     $res = is_int($min_year);    
     if($min_year > $max_year){
         form_set_error('min_textfield', t('Left limit should be less than right limit.'));

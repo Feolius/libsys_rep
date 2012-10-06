@@ -23,7 +23,7 @@ function facet_collection_page() {
     $solr = apachesolr_get_solr($environment);
     $params = facet_collection_get_params();
     $base_path = arg(0);
-    $results = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
+    $results = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);    
     $build['search_results'] = array(
         '#theme' => 'search_results',
         '#results' => $results,
@@ -60,7 +60,7 @@ function facet_collection_block_info() {
  */
 
 function facet_collection_block_view($delta) {
-    
+
     //We need to collect all facetapi presentations for separate block in one 
     //and add titles for each facet.
     $realm_name = 'block';
@@ -72,11 +72,11 @@ function facet_collection_block_view($delta) {
 
         //Get adapter and build block realm to grab all build information
         $adapter = facetapi_adapter_load($searcher);
-        
+
         //We should check facets visibility.
         if (!cache_get('facet_collection:visibility')) {
-           facet_collection_set_facets_vsibility($adapter, $realm_name, $searcher);
-        }        
+            facet_collection_set_facets_visibility($adapter, $realm_name, $searcher);
+        }
         //Get all facets that can be shown because we need only facets that satisfy all chosen content types.    
         $available_facets = facet_collection_get_available_facets();
 
@@ -86,14 +86,15 @@ function facet_collection_block_view($delta) {
         foreach ($builds as $facet_name => $build) {
             if (is_array($build) && !empty($available_facets)) {
                 if (in_array($facet_name, $available_facets)) {
-                    $field = $enabled_facets[$facet_name]['field'];
+                    $field_alias = $enabled_facets[$facet_name]['field alias'];
                     $title = $build['#title'];
-                    $build[$field]['#title'] = $title;
+                    $build[$field_alias]['#title'] = $title;
                     $content[] = $build;
                 }
             }
         }
     }
+
     return array(
         'subject' => t('Filters'),
         'content' => $content,
@@ -103,18 +104,19 @@ function facet_collection_block_view($delta) {
 /*
  * Set collection fasets visibility and make record in database
  */
-function facet_collection_set_facets_vsibility($adapter, $realm_name, $searcher) {
+
+function facet_collection_set_facets_visibility($adapter, $realm_name, $searcher) {
     $realm = facetapi_realm_load($realm_name);
     $data = cache_get('facet_collection:listfacets');
-    $facet_list = $data->data;    
-    foreach ($facet_list as $faset_name => $faset_info){
+    $facet_list = $data->data;
+    foreach ($facet_list as $faset_name => $faset_info) {
         $faset = facetapi_facet_load($faset_name, $searcher);
         facetapi_save_facet_enabled($adapter, $realm, $faset);
-    } 
+    }
     cache_set('facet_collection:visibility', TRUE, 'cache', CACHE_TEMPORARY);
 }
 
-/*
+/**
  * Filter facet list to show only facets that satisfy all chosen content types
  */
 function facet_collection_get_available_facets() {
@@ -150,8 +152,11 @@ function facet_collection_get_available_facets() {
     }
 
     //Perform comparison with conent type list of each facet. 
-    //If it is satisfy all chosen  content types we take this facet
+    //If it is satisfy all chosen  content types we take this facet     
     foreach ($facet_list as $facet => $facet_content_types) {
+        if ($facet == 'collection_date_facet') {
+            continue;
+        }
         $facet_content_types_array = array();
         foreach ($facet_content_types as $facet_content_type) {
             $facet_content_type = array_shift($facet_content_type);
@@ -184,10 +189,10 @@ function facet_collection_solr_document(ApacheSolrDocument $document, $node, $en
     foreach ($indexed_fields as $index_key => $nodefields) {
         foreach ($nodefields as $field_info) {
             $field_name = $field_info['field']['field_name'];
+
             // See if the node has fields that can be indexed                
             if (!empty($node->{$field_name})) {
-                //Add our fields in document.     
-
+                //Add our fields in document. 
                 if ($field_info['field']['type'] == 'taxonomy_term_reference') {
                     foreach ($field_info['field']['settings']['allowed_values'] as $vocabulary) {
                         $voc_name = $vocabulary['vocabulary'];
@@ -197,18 +202,25 @@ function facet_collection_solr_document(ApacheSolrDocument $document, $node, $en
                     foreach ($items as $item) {
                         $filedocument->setMultiValue($index_field_name, $item['tid']);
                     }
-                } elseif ($field_info['field']['type'] == 'node_reference') {
+                }
+                if ($field_info['field']['type'] == 'node_reference') {
                     foreach ($field_info['field']['settings']['referenceable_types'] as $content_type) {
-                        if ($content_type != 0) {
+                        if ($content_type == '0') {
                             continue;
                         }
                         $function = $field_info['indexing_callback'];
                         if ($function && function_exists($function)) {
-                            $fields = $function('node', $field_name, $index_key, $field_info);
+                            $fields = $function($node, $field_name, $index_key, $field_info);
                             foreach ($fields as $field) {
                                 $filedocument->setMultiValue($field['key'], $field['value']);
                             }
                         }
+                    }
+                }
+                if ($field_info['field']['type'] == 'date') {
+                    $fields = facet_collection_date_indexing_callback($node, $field_name, 'dm_facet_collection_date', $field_info);
+                    foreach ($fields as $field) {
+                        $filedocument->setMultiValue($field['key'], $field['value']);
                     }
                 }
             }
@@ -219,17 +231,115 @@ function facet_collection_solr_document(ApacheSolrDocument $document, $node, $en
     return $documents;
 }
 
+/**
+ * Index callback for date fields
+ */
+function facet_collection_date_indexing_callback($node, $field_name, $index_key, $field_info) {
+    //If we have date with certain precision we should add additional dates in document to perform filtration
+    $fields = array();
+    $field = $node->$field_name;
+    list($lang, $values) = each($field);
+    foreach ($values as $value) {
+        if (isset($value['value2'])) {
+            $date_start = new DateObject($value['value']);
+
+            //Comparison of start and end dates     
+            $date_end = new DateObject($value['value2']);
+            $difference = $date_start->difference($date_end, 'days');
+            $date_array = $date_start->toArray();
+            $year = $date_array['year'];
+            
+            //If difference is equal one year we should add 365 or 366 dates for the field to fill all year date range.
+            if ($difference == 365 || $difference == 366) {
+                for ($month = 1; $month <= 12; $month++) {
+                    $days_in_month = date_days_in_month($year, $month);
+                    for ($day_number = 1; $day_number <= $days_in_month; $day_number++) {
+                        $date_string = $year . '/' . $month . '/' . $day_number;
+                        $date_obj = new DateObject($date_string, NULL, 'Y/m/d');
+                        $date_array = $date_obj->toArray(TRUE);
+                        $date_ISO = $date_obj->toISO($date_array);
+                        $date = date_create($date_ISO);
+                        $index_value = apachesolr_date_iso($date->format('U'));
+                        $fields[] = array(
+                            'key' => $index_key,
+                            'value' => $index_value,
+                        );
+                    }
+                }
+                
+                //Just add the date to field
+            } elseif ($difference == 0) {
+                $date = date_create($value['value']);
+                $index_value = apachesolr_date_iso($date->format('U'));
+                $fields[] = array(
+                    'key' => $index_key,
+                    'value' => $index_value,
+                );
+                
+                //Adding dates that fill current month
+            } else {
+                $month = $date_array['month'];
+                $days_in_month = date_days_in_month($year, $month);
+                for ($day_number = 1; $day_number <= $days_in_month; $day_number++) {
+                    $date_string = $year . '/' . $month . '/' . $day_number;
+                    $date_obj = new DateObject($date_string, NULL, 'Y/m/d');
+                    $date_array = $date_obj->toArray(TRUE);
+                    $date_ISO = $date_obj->toISO($date_array);
+                    $date = date_create($date_ISO);
+                    $index_value = apachesolr_date_iso($date->format('U'));
+                    $fields[] = array(
+                        'key' => $index_key,
+                        'value' => $index_value,
+                    );
+                }
+            }
+            
+            //We store min and max date in persistent variables because we need min and max callbacks for facet
+            //that returns this values
+            //Check if current date is min or max from all indexed dates  
+            $max_date = variable_get('facet_collection_max_indexed_date');            
+            $min_date = variable_get('facet_collection_min_indexed_date');           
+            if (!empty($max_date)) {
+                $max_date_obj = new DateObject($max_date);                
+                if ($max_date_obj < $date_end) {
+                    $date_array = $date_end->toArray(TRUE);
+                    $date_ISO = $date_end->toISO($date_array);
+                    variable_set('facet_collection_max_indexed_date', $date_ISO);
+                }
+            } else {
+                $date_array = $date_end->toArray(TRUE);
+                $date_ISO = $date_end->toISO($date_array);
+                variable_set('facet_collection_max_indexed_date', $date_ISO);
+            }
+            if (!empty($min_date)) {
+                $min_date_obj = new DateObject($min_date);               
+                if ($date_start < $min_date_obj) {
+                    $date_array = $date_start->toArray(TRUE);
+                    $date_ISO = $date_start->toISO($date_array);
+                    variable_set('facet_collection_min_indexed_date', $date_ISO);
+                }
+            } else {
+                $date_array = $date_start->toArray(TRUE);
+                $date_ISO = $date_start->toISO($date_array);
+                variable_set('facet_collection_min_indexed_date', $date_ISO);
+            }
+        }
+    }
+    return $fields;
+}
+
 /*
  * Get unique field name by vocabulary name
  */
+
 function facet_collection_get_fieldname_by_vocabulary($voc_name) {
     return 'im_voc_' . $voc_name;
 }
 
-/*
- * Implements hook_facetapi_facet_info
+/**
+ * Implements hook_facetapi_facet_info()
  */
-function facet_collection_facetapi_facet_info($searcher_info) {   
+function facet_collection_facetapi_facet_info($searcher_info) {
     $facets = array();
     $data = array();
     $realm = 'block';
@@ -237,6 +347,14 @@ function facet_collection_facetapi_facet_info($searcher_info) {
     $instances = field_info_instances('node');
     foreach ($indexed_fields as $index_key => $nodefields) {
         foreach ($nodefields as $field_info) {
+            $field_name = $field_info['field']['field_name'];
+            $bundle = array_shift($field_info['field']['bundles']['node']);
+            $map_callback = $field_info['map callback'];
+            $map_options = $field_info;
+            $min_callback = FALSE;
+            $max_callback = FALSE;
+            $query_types = array('term');
+            $default_widget = 'facetapi_links';
             if ($field_info['field']['type'] == 'taxonomy_term_reference') {
                 $voc_machine_name = $field_info['field']['settings']['allowed_values'][0]['vocabulary'];
                 if (empty($voc_machine_name)) {
@@ -244,7 +362,6 @@ function facet_collection_facetapi_facet_info($searcher_info) {
                 }
                 $vocabulary = taxonomy_vocabulary_machine_name_load($voc_machine_name);
                 $facet_name = 'collection_' . $voc_machine_name;
-                $bundle = array_shift($field_info['bundles']);
                 $data[$facet_name][] = array($bundle);
                 if (isset($facets[$facet_name])) {
                     continue;
@@ -253,30 +370,40 @@ function facet_collection_facetapi_facet_info($searcher_info) {
                 $index_field_name = facet_collection_get_fieldname_by_vocabulary($voc_machine_name);
                 $map_callback = 'facet_collection_map_taxonomy_terms';
                 $map_options = array();
-            } elseif ($field_info['field']['type'] == 'node_reference') {
-                $field_name = $field_info['field']['field_name'];
+            }
+            if ($field_info['field']['type'] == 'node_reference') {
                 $facet_name = 'collection_' . $field_name;
-                $bundle = array_shift($field_info['bundles']);
-                $data[$facet_name][] = array($bundle);
                 $label = $instances[$bundle][$field_name]['label'];
                 $index_field_name = apachesolr_index_key($field_info);
-                $map_callback = $field_info['map callback'];
-                $map_options = $field_info;
+                $data[$facet_name][] = array($bundle);
+            }
+            if ($field_info['field']['type'] == 'date') {
+                $facet_name = 'collection_date_facet';
+                $label = 'Date';
+                $index_field_name = 'dm_facet_collection_date';
+                $query_types = array('date');
+                $default_widget = 'facetapi_date_range_widget';
+                $min_callback = 'apachesolr_get_min_date';
+                $max_callback = 'apachesolr_get_max_date';
+                $data[$facet_name][] = array($bundle);
             }
             $facets[$facet_name] = array(
                 'name' => $facet_name,
                 'label' => t($label),
                 'description' => t('Automatically created facet for facet collection module'),
                 'field' => $index_field_name,
-                'field api name' => FALSE,
+                'field alias' => $facet_name,
+                'field api name' => $field_name,
                 'field api bundles' => array(),
-                'query types' => array('term'),
-                'default widget' => 'facetapi_links',
+                'query types' => $query_types,
+                'default widget' => $default_widget,
                 'allowed operators' => array(FACETAPI_OPERATOR_AND => FALSE, FACETAPI_OPERATOR_OR => TRUE),
                 'facet mincount allowed' => TRUE,
                 'facet missing allowed' => TRUE,
                 'map callback' => $map_callback,
                 'map options' => $map_options,
+                'min callback' => $min_callback,
+                'max callback' => $max_callback,
             );
         }
     }
@@ -284,10 +411,9 @@ function facet_collection_facetapi_facet_info($searcher_info) {
     return $facets;
 }
 
-/*
+/**
  * Map callback for taxonomy term facet
  */
-
 function facet_collection_map_taxonomy_terms($variables) {
     $map = array();
     foreach ($variables as $tid) {
@@ -297,3 +423,33 @@ function facet_collection_map_taxonomy_terms($variables) {
     return $map;
 }
 
+/**
+ * Implements hook_form_alter()
+ */
+function facet_collection_form_alter(&$form, &$form_state, $form_id) {
+    if ($form_id == 'apachesolr_index_action_form_delete_confirm') {
+        $form['#submit'][] = 'facet_collection_index_action_form_delete_submit';
+    }
+}
+
+/**
+ * Submit callback for apachesolr_index_action_form. We need it to remove persistent variables that contain min and max dates
+ */
+function facet_collection_index_action_form_delete_submit($form, &$form_state) {
+    variable_del('facet_collection_min_indexed_date');
+    variable_del('facet_collection_max_indexed_date');
+}
+
+/**
+ * Max date callback for facet collection
+ */
+function facet_collection_get_max_date(){
+    return strtotime(variable_get('facet_collection_max_indexed_date'));
+}
+
+/**
+ * Min date callback for facet collection
+ */
+function facet_collection_get_min_date(){   
+    return  strtotime(variable_get('facet_collection_min_indexed_date'));
+}
