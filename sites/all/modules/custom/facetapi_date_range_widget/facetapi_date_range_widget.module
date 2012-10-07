@@ -21,9 +21,12 @@ function date_filter_submit($form, &$form_state) {
 
     //We consider to use dateapi functions instead of facetapi functions for converting date to ISO format
     //because it gives better precision and convienience.
+    //Perform smart date fulling for apache solr query.
     $min_date = $form_state['input']['min_date'];
     $min_date_parts = explode('/', $min_date);
     $parts_number = count($min_date_parts);
+    
+    //We add the minimal possible date here because we deal with min date field 
     if ($parts_number == 1) {
         $min_date_full = $min_date . '/01/01';
     }
@@ -39,6 +42,8 @@ function date_filter_submit($form, &$form_state) {
     $max_date = $form_state['input']['max_date'];
     $max_date_parts = explode('/', $max_date);
     $parts_number = count($max_date_parts);
+    
+    //We add the max possible date here because we deal with max date field 
     if ($parts_number == 1) {
         $max_date_full = $max_date . '/31/12';
     }    
@@ -85,6 +90,9 @@ function date_filter_submit($form, &$form_state) {
     );
 }
 
+/**
+ * Form callback for date filter
+ */
 function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
     $params = func_get_args();
     $date_now = date_now();   
@@ -103,16 +111,16 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
         'min_date' => array(
             '#type' => 'textfield',
             '#description' => t('Left limit'),
-            '#size' => 4,
-            '#maxlength' => 12,
+            '#size' => 6,
+            '#maxlength' => 10,
             '#weight' => -15,
             '#default_value' => $min_date,
         ),
         'max_date' => array(
             '#type' => 'textfield',
             '#description' => t('Right limit'),
-            '#size' => 4,
-            '#maxlength' => 12,
+            '#size' => 6,
+            '#maxlength' => 10,
             '#weight' => -14,
             '#default_value' => $max_date,
         ),
@@ -131,19 +139,19 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
     return $form;
 }
 
-function facet_api_date_range_widget_filter_form_validate($form, &$form_state){    
-    $min_date = $form_state['input']['min_textfield'];
-    $max_date = $form_state['input']['max_textfield'];
-    $res = is_int($min_year);    
-    if($min_year > $max_year){
+function facetapi_date_range_widget_filter_form_validate($form, &$form_state){ 
+    $min_date = $form_state['input']['min_date'];    
+    $max_date = $form_state['input']['max_date'];
+    $min_date_obj = new DateObject($min_date, NULL, 'Y/m/d');
+    $max_date_obj = new DateObject($max_date, NULL, 'Y/m/d');
+    if(!date_is_date($min_date_obj)){
+        form_set_error('max_date', t('Please insert correct date.'));
+    }
+    if(!date_is_date($max_date_obj)){
+        form_set_error('min_date', t('Please insert correct date.'));
+    }
+    if ($min_date_obj > $max_date_obj){
         form_set_error('min_textfield', t('Left limit should be less than right limit.'));
-    }
-    if(!is_numeric($min_year)){
-        form_set_error('min_textfield', t('Please insert correct date.'));
-    }
-    if(!is_numeric($max_year)){
-        form_set_error('max_textfield', t('Please insert correct date.'));
-    }
-    
+    }   
 }
 

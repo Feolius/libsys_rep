@@ -17,11 +17,15 @@ function library_datefield_widget_field_widget_info() {
  */
 function library_datefield_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
     $widget = $instance['widget'];
+    
+    //Get today date for using in description
     $date_now = date_now();   
     $date_now_full = date_format_date($date_now, 'custom', 'Y/m/d');    
     $date_now_month = date_format_date($date_now, 'custom', 'Y/m');   
     $date_now_year = date_format_date($date_now, 'custom', 'Y');
     $timezone = date_default_timezone();
+    
+    //Get default value for widget
     if (isset($items[$delta])){
         $date_value_obj = new DateObject($items[$delta]['value']);
         $date_value2_obj = new DateObject($items[$delta]['value2']);
@@ -34,8 +38,8 @@ function library_datefield_widget_field_widget_form(&$form, &$form_state, $field
             $default_value = date_format_date($date_value_obj, 'custom', 'Y/m');
         }        
     }else{
-        $default_value = $date_now;
-    }
+        $default_value = $date_now_full;
+    }    
     if ($widget['type'] == 'library_datefield_widget') {
         $element['library_date'] = array(
             '#title' => t('Date'),
@@ -59,6 +63,9 @@ function library_datefield_widget_field_widget_form(&$form, &$form_state, $field
     return $element;
 }
 
+/**
+ * Value callback for start date
+ */
 function library_datefield_widget_value($element, $input = FALSE, $form_state) {
     if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'])) {
         $date_string = $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'];
@@ -78,6 +85,9 @@ function library_datefield_widget_value($element, $input = FALSE, $form_state) {
     
 }
 
+/**
+ * Value callback for end date
+ */
 function library_datefield_widget_value2($element, $input = FALSE, $form_state) {
     if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'])) {
         $date_string = $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'];

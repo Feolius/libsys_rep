@@ -32,11 +32,11 @@ function facet_collection_page() {
     return $build;
 }
 
-/*
+/**
  * Get all params to make solr query
  */
-
 function facet_collection_get_params() {
+    //We use lucene type here because we make specific query that return only documents corresponds to entity type node;
     $params = array();
     $params['q'] = 'entity_type:node';
     $params['defType'] = 'lucene';
@@ -47,7 +47,6 @@ function facet_collection_get_params() {
 /*
  * Implements hook_block_info()
  */
-
 function facet_collection_block_info() {
     $blocks['content_types_selection'] = array(
         'info' => t('Filters for nodes')
@@ -56,9 +55,8 @@ function facet_collection_block_info() {
 }
 
 /*
- * Imblements hook_block_view()
+ * Implements hook_block_view()
  */
-
 function facet_collection_block_view($delta) {
 
     //We need to collect all facetapi presentations for separate block in one 
@@ -104,7 +102,6 @@ function facet_collection_block_view($delta) {
 /*
  * Set collection fasets visibility and make record in database
  */
-
 function facet_collection_set_facets_visibility($adapter, $realm_name, $searcher) {
     $realm = facetapi_realm_load($realm_name);
     $data = cache_get('facet_collection:listfacets');
@@ -182,7 +179,6 @@ function facet_collection_apachesolr_entity_info_alter(&$entity_info) {
 /*
  * Document callback for nodes
  */
-
 function facet_collection_solr_document(ApacheSolrDocument $document, $node, $entity_type, $env_id) {
     $filedocument = clone $document;
     $indexed_fields = apachesolr_entity_fields($entity_type);
@@ -265,10 +261,10 @@ function facet_collection_date_indexing_callback($node, $field_name, $index_key,
                             'value' => $index_value,
                         );
                     }
-                }
+                }               
+            } elseif ($difference == 0) {
                 
                 //Just add the date to field
-            } elseif ($difference == 0) {
                 $date = date_create($value['value']);
                 $index_value = apachesolr_date_iso($date->format('U'));
                 $fields[] = array(
@@ -328,10 +324,9 @@ function facet_collection_date_indexing_callback($node, $field_name, $index_key,
     return $fields;
 }
 
-/*
+/**
  * Get unique field name by vocabulary name
  */
-
 function facet_collection_get_fieldname_by_vocabulary($voc_name) {
     return 'im_voc_' . $voc_name;
 }
