@@ -15,17 +15,17 @@ function facetapi_date_range_widget_facetapi_widgets() {
     );
 }
 
-function date_filter_submit($form, &$form_state) {
+function facetapi_date_range_widget_filter_submit($form, &$form_state) {
     $basic_path = $form_state['build_info']['args'][0]['search path'];
     $field_alias = $form_state['build_info']['args'][0]['field alias'];
 
-    //We consider to use dateapi functions instead of facetapi functions for converting date to ISO format
+    //We consider to use dateapi functions instead of facetapi date functions for converting date to ISO format
     //because it gives better precision and convienience.
     //Perform smart date fulling for apache solr query.
     $min_date = $form_state['input']['min_date'];
     $min_date_parts = explode('/', $min_date);
     $parts_number = count($min_date_parts);
-    
+
     //We add the minimal possible date here because we deal with min date field 
     if ($parts_number == 1) {
         $min_date_full = $min_date . '/01/01';
@@ -42,21 +42,21 @@ function date_filter_submit($form, &$form_state) {
     $max_date = $form_state['input']['max_date'];
     $max_date_parts = explode('/', $max_date);
     $parts_number = count($max_date_parts);
-    
+
     //We add the max possible date here because we deal with max date field 
     if ($parts_number == 1) {
         $max_date_full = $max_date . '/31/12';
-    }    
+    }
     if ($parts_number == 2) {
         $month = $max_date_parts[1];
         $year = $max_date_parts[0];
         $days_number = date_days_in_month($year, $month);
         $max_date_full = $max_date . '/' . $days_number;
-    }    
+    }
     if ($parts_number == 3) {
         $max_date_full = $max_date;
     }
-    
+
     $date_max_obj = new DateObject($max_date_full, NULL, 'Y/m/d');
     $max_date_array = $date_max_obj->toArray();
     $max_date_ISO = $date_max_obj->toISO($max_date_array);
@@ -90,16 +90,43 @@ function date_filter_submit($form, &$form_state) {
     );
 }
 
+function facetapi_date_range_widget_reset_submit($form, &$form_state) {
+    $options = array();
+    $basic_path = $form_state['build_info']['args'][0]['search path'];
+    $field_alias = $form_state['build_info']['args'][0]['field alias'];
+    if (isset($_GET['f'])) {
+        $f = $_GET['f'];
+        foreach ($f as $key => $row) {
+            if (strstr($row, $field_alias)) {
+                unset($f[$key]);
+                $merge = FALSE;
+                continue;
+            }
+        }
+
+        if (!empty($f)) {
+            $options = array(
+                'query' => array(
+                    'f' => $f,
+                ),
+            );
+        }
+    }
+    $form_state['redirect'] = array(
+        $basic_path, $options, 302
+    );
+}
+
 /**
  * Form callback for date filter
  */
 function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
     $params = func_get_args();
-    $date_now = date_now();   
-    $date_now_full = date_format_date($date_now, 'custom', 'Y/m/d');    
-    $date_now_month = date_format_date($date_now, 'custom', 'Y/m');   
+    $date_now = date_now();
+    $date_now_full = date_format_date($date_now, 'custom', 'Y/m/d');
+    $date_now_month = date_format_date($date_now, 'custom', 'Y/m');
     $date_now_year = date_format_date($date_now, 'custom', 'Y');
-    $format = 'Format:' . $date_now_full . ', ' . $date_now_month . ', ' . $date_now_year; 
+    $format = 'Format:' . $date_now_full . ', ' . $date_now_month . ', ' . $date_now_year;
     if (empty($_GET['min'])) {
         $min_date = $args['min date'];
         $max_date = $args['max date'];
@@ -111,7 +138,7 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
         'min_date' => array(
             '#type' => 'textfield',
             '#description' => t('Left limit'),
-            '#size' => 6,
+            '#size' => 10,
             '#maxlength' => 10,
             '#weight' => -15,
             '#default_value' => $min_date,
@@ -119,7 +146,7 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
         'max_date' => array(
             '#type' => 'textfield',
             '#description' => t('Right limit'),
-            '#size' => 6,
+            '#size' => 10,
             '#maxlength' => 10,
             '#weight' => -14,
             '#default_value' => $max_date,
@@ -127,31 +154,58 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
         'label' => array(
             '#type' => 'item',
             '#markup' => '<div class="desription">' . $format . ' </div>',
-        ),        
+        ),
         'filter_button' => array(
             '#type' => 'submit',
             '#value' => t('Filter'),
             '#description' => t('Format:'),
             '#weight' => 15,
-            '#submit' => array('date_filter_submit'),
+            '#submit' => array('facetapi_date_range_widget_filter_submit'),
+        ),
+        'reset_button' => array(
+            '#type' => 'submit',
+            '#value' => t('Reset'),
+            '#description' => t('Format:'),
+            '#weight' => 15,
+            '#submit' => array('facetapi_date_range_widget_reset_submit'),
         ),
     );
+
     return $form;
 }
 
-function facetapi_date_range_widget_filter_form_validate($form, &$form_state){ 
-    $min_date = $form_state['input']['min_date'];    
+function facetapi_date_range_widget_filter_form_validate($form, &$form_state) {
+    $min_date = $form_state['input']['min_date'];
     $max_date = $form_state['input']['max_date'];
+    $date_array = explode('/', $min_date);
+    $parts_number = count($date_array);
+    if ($parts_number == 1) {
+        $min_date = $min_date . '/01/01';
+    }
+    if ($parts_number == 2) {
+        $min_date = $min_date . '/01';
+    }    
+    $date_array = explode('/', $max_date);
+    $parts_number = count($date_array);
+    if ($parts_number == 1) {
+        $max_date = $max_date . '/12/31';
+    }
+    if ($parts_number == 2) {
+        $month = $date_array[1];
+        $year = $date_array[0];
+        $days_number = date_days_in_month($year, $month);
+        $max_date = $max_date . '/' . $days_number;        
+    }
     $min_date_obj = new DateObject($min_date, NULL, 'Y/m/d');
     $max_date_obj = new DateObject($max_date, NULL, 'Y/m/d');
-    if(!date_is_date($min_date_obj)){
-        form_set_error('max_date', t('Please insert correct date.'));
-    }
-    if(!date_is_date($max_date_obj)){
+    if (!date_is_date($min_date_obj)) {
         form_set_error('min_date', t('Please insert correct date.'));
     }
-    if ($min_date_obj > $max_date_obj){
+    if (!date_is_date($max_date_obj)) {
+        form_set_error('max_date', t('Please insert correct date.'));
+    }
+    if ($min_date_obj > $max_date_obj) {
         form_set_error('min_textfield', t('Left limit should be less than right limit.'));
-    }   
+    }
 }
 

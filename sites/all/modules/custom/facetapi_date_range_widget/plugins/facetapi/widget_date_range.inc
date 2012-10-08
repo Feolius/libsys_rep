@@ -17,9 +17,9 @@ class FacetapiWidgetDateRange extends FacetapiWidget {
         $form_id = 'facetapi_date_range_widget_filter_form';  
         
         //Get min and max date. Transform it in 'Y/m/d' format for presentation in our widget
-        $min_date_unix = $this->facet['min callback']($this->facet->getFacet()); 
+        $min_date_unix = $this->facet['min callback']($this->facet->getFacet());         
         $date_min_obj = new DateObject($min_date_unix, NULL, 'U');
-        $min_date = $date_min_obj->format('Y/m/d');
+        $min_date = $date_min_obj->format('Y/m/d');        
         $max_date_unix = $this->facet['max callback']($this->facet->getFacet()); 
         $date_max_obj = new DateObject($max_date_unix, NULL, 'U');
         $max_date = $date_max_obj->format('Y/m/d');
@@ -34,32 +34,7 @@ class FacetapiWidgetDateRange extends FacetapiWidget {
         $element = &$this->build[$this->facet['field alias']];
         $element = array(            
             'markup' => drupal_get_form($form_id, $args),                    
-        );
-        /*$form_id = 'facet_api_date_range_widget_filter_form';         
-        $minimum = $this->facet['min callback']($this->facet->getFacet()); 
-        $date_min_obj = new DateObject($minimum, NULL, 'U');
-        $minimum = facetapi_isodate($minimum); 
-        dpm($minimum);
-        $maximum = $this->facet['max callback']($this->facet->getFacet());
-        $maximum = facetapi_isodate($maximum);
-        $minimum = explode('-', $minimum);
-        $maximum = explode('-', $maximum);
-        $min_year = $minimum[0] + 1;
-        dpm($min_year);
-        $max_year = $maximum[0] + 1;        
-        $info = array_shift($this->build[$this->facet['field alias']]);        
-        $search_path = $info['#path']; 
-        $args = array(
-            'search path' => $search_path,
-            'field alias' => $this->facet['field alias'],
-            'min year' => $min_year,
-            'max year' => $max_year,
-        );        
-        $element = &$this->build[$this->facet['field alias']];
-        $element = array(            
-            'markup' => drupal_get_form($form_id, $args),                    
-        ); */     
-        
+        );       
     }
 
 }
