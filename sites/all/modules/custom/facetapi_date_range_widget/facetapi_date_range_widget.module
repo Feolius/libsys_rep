@@ -15,6 +15,25 @@ function facetapi_date_range_widget_facetapi_widgets() {
     );
 }
 
+/**
+ * Implements hook_forms().
+ */
+function facetapi_date_range_widget_forms($form_id, $args) {
+    $forms = array();
+    $searcher_info = facetapi_get_searcher_info();
+    $searcher = array_shift(array_keys($searcher_info));
+    $adapter = facetapi_adapter_load($searcher);
+    $enabled_facets = $adapter->getEnabledFacets();
+    foreach($enabled_facets as $enabled_facet){
+        if(in_array('date', $enabled_facet['query types'])){
+            $forms['facetapi_date_range_widget_' . $enabled_facet['name'] . '_form'] = array(
+                'callback' => 'facetapi_date_range_widget_filter_form',
+            );
+        }
+    }
+    return $forms;
+}
+
 function facetapi_date_range_widget_filter_submit($form, &$form_state) {
     $basic_path = $form_state['build_info']['args'][0]['search path'];
     $field_alias = $form_state['build_info']['args'][0]['field alias'];
@@ -184,7 +203,7 @@ function facetapi_date_range_widget_filter_form_validate($form, &$form_state) {
     }
     if ($parts_number == 2) {
         $min_date = $min_date . '/01';
-    }    
+    }
     $date_array = explode('/', $max_date);
     $parts_number = count($date_array);
     if ($parts_number == 1) {
@@ -194,7 +213,7 @@ function facetapi_date_range_widget_filter_form_validate($form, &$form_state) {
         $month = $date_array[1];
         $year = $date_array[0];
         $days_number = date_days_in_month($year, $month);
-        $max_date = $max_date . '/' . $days_number;        
+        $max_date = $max_date . '/' . $days_number;
     }
     $min_date_obj = new DateObject($min_date, NULL, 'Y/m/d');
     $max_date_obj = new DateObject($max_date, NULL, 'Y/m/d');

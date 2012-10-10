@@ -1,0 +1,5 @@
+name = Filters UI
+package = Adventist DL
+core = 7.x
+dependencies[] = field
+dependencies[] = field_ui

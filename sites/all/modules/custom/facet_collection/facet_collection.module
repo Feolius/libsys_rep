@@ -23,7 +23,7 @@ function facet_collection_page() {
     $solr = apachesolr_get_solr($environment);
     $params = facet_collection_get_params();
     $base_path = arg(0);
-    $results = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);    
+    $results = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
     $build['search_results'] = array(
         '#theme' => 'search_results',
         '#results' => $results,
@@ -47,6 +47,7 @@ function facet_collection_get_params() {
 /*
  * Implements hook_block_info()
  */
+
 function facet_collection_block_info() {
     $blocks['content_types_selection'] = array(
         'info' => t('Filters for nodes')
@@ -57,6 +58,7 @@ function facet_collection_block_info() {
 /*
  * Implements hook_block_view()
  */
+
 function facet_collection_block_view($delta) {
 
     //We need to collect all facetapi presentations for separate block in one 
@@ -75,8 +77,13 @@ function facet_collection_block_view($delta) {
         if (!cache_get('facet_collection:visibility')) {
             facet_collection_set_facets_visibility($adapter, $realm_name, $searcher);
         }
-        //Get all facets that can be shown because we need only facets that satisfy all chosen content types.    
-        $available_facets = facet_collection_get_available_facets();
+
+        //Get filter settings
+        $filter_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
+
+        //Get all facets that can be shown because we need only facets that satisfy all chosen content types.  
+
+        $available_facets = facet_collection_get_available_facets($filter_settings);
 
         //Build content using facetapi block presentation for each facet
         $enabled_facets = $adapter->getEnabledFacets();
@@ -102,11 +109,12 @@ function facet_collection_block_view($delta) {
 /*
  * Set collection fasets visibility and make record in database
  */
+
 function facet_collection_set_facets_visibility($adapter, $realm_name, $searcher) {
     $realm = facetapi_realm_load($realm_name);
     $data = cache_get('facet_collection:listfacets');
     $facet_list = $data->data;
-    foreach ($facet_list as $faset_name => $faset_info) {
+    foreach ($facet_list as $faset_name) {
         $faset = facetapi_facet_load($faset_name, $searcher);
         facetapi_save_facet_enabled($adapter, $realm, $faset);
     }
@@ -116,7 +124,7 @@ function facet_collection_set_facets_visibility($adapter, $realm_name, $searcher
 /**
  * Filter facet list to show only facets that satisfy all chosen content types
  */
-function facet_collection_get_available_facets() {
+function facet_collection_get_available_facets($filter_settings) {
     $available_facets = array();
 
     //Get all facets for collection from cache
@@ -150,19 +158,29 @@ function facet_collection_get_available_facets() {
 
     //Perform comparison with conent type list of each facet. 
     //If it is satisfy all chosen  content types we take this facet     
-    foreach ($facet_list as $facet => $facet_content_types) {
-        if ($facet == 'collection_date_facet') {
+    $searcher_info = facetapi_get_searcher_info();
+    $searcher = array_shift(array_keys($searcher_info));
+    foreach ($facet_list as $facet_name) {
+        $facet_content_types_array = array();
+        if ($facet_name == 'collection_date_facet') {
             continue;
         }
-        $facet_content_types_array = array();
-        foreach ($facet_content_types as $facet_content_type) {
-            $facet_content_type = array_shift($facet_content_type);
-            $facet_content_types_array[] = $facet_content_type;
+        $facet = facetapi_facet_load($facet_name, $searcher);
+        $field_info = field_info_field($facet['field api name']);
+        if ($field_info['type'] == 'taxonomy_term_reference') {
+            $voc_machine_name = $field_info['settings']['allowed_values'][0]['vocabulary'];
+            if (isset($filter_settings['taxonomy_term_reference'][$voc_machine_name])) {
+                $facet_content_types_array = array_keys($filter_settings['taxonomy_term_reference'][$voc_machine_name]);
+            }
         }
-        $facet_content_types = array_values(($facet_content_types));
+        if ($field_info['type'] == 'node_reference') {
+            if (isset($filter_settings['node_reference'][$field_info['field_name']])) {
+                $facet_content_types_array = array_keys($filter_settings['node_reference'][$field_info['field_name']]);
+            }
+        }
         $array_diff = array_diff($content_types, $facet_content_types_array);
         if (empty($array_diff)) {
-            $available_facets[] = $facet;
+            $available_facets[] = $facet_name;
         }
     }
     return $available_facets;
@@ -179,6 +197,7 @@ function facet_collection_apachesolr_entity_info_alter(&$entity_info) {
 /*
  * Document callback for nodes
  */
+
 function facet_collection_solr_document(ApacheSolrDocument $document, $node, $entity_type, $env_id) {
     $filedocument = clone $document;
     $indexed_fields = apachesolr_entity_fields($entity_type);
@@ -213,7 +232,7 @@ function facet_collection_solr_document(ApacheSolrDocument $document, $node, $en
                         }
                     }
                 }
-                if ($field_info['field']['type'] == 'date') {
+                if ($field_info['field']['type'] == 'date' || $field_info['field']['type'] == 'datetime') {
                     $fields = facet_collection_date_indexing_callback($node, $field_name, 'dm_facet_collection_date', $field_info);
                     foreach ($fields as $field) {
                         $filedocument->setMultiValue($field['key'], $field['value']);
@@ -224,6 +243,7 @@ function facet_collection_solr_document(ApacheSolrDocument $document, $node, $en
     }
     $documents = array();
     $documents[] = $filedocument;
+
     return $documents;
 }
 
@@ -244,7 +264,7 @@ function facet_collection_date_indexing_callback($node, $field_name, $index_key,
             $difference = $date_start->difference($date_end, 'days');
             $date_array = $date_start->toArray();
             $year = $date_array['year'];
-            
+
             //If difference is equal one year we should add 365 or 366 dates for the field to fill all year date range.
             if ($difference == 365 || $difference == 366) {
                 for ($month = 1; $month <= 12; $month++) {
@@ -261,9 +281,9 @@ function facet_collection_date_indexing_callback($node, $field_name, $index_key,
                             'value' => $index_value,
                         );
                     }
-                }               
+                }
             } elseif ($difference == 0) {
-                
+
                 //Just add the date to field
                 $date = date_create($value['value']);
                 $index_value = apachesolr_date_iso($date->format('U'));
@@ -271,7 +291,7 @@ function facet_collection_date_indexing_callback($node, $field_name, $index_key,
                     'key' => $index_key,
                     'value' => $index_value,
                 );
-                
+
                 //Adding dates that fill current month
             } else {
                 $month = $date_array['month'];
@@ -289,14 +309,14 @@ function facet_collection_date_indexing_callback($node, $field_name, $index_key,
                     );
                 }
             }
-            
+
             //We store min and max date in persistent variables because we need min and max callbacks for facet
             //that returns this values
             //Check if current date is min or max from all indexed dates  
-            $max_date = variable_get('facet_collection_max_indexed_date');            
-            $min_date = variable_get('facet_collection_min_indexed_date');           
+            $max_date = variable_get('facet_collection_max_indexed_date');
+            $min_date = variable_get('facet_collection_min_indexed_date');
             if (!empty($max_date)) {
-                $max_date_obj = new DateObject($max_date);                
+                $max_date_obj = new DateObject($max_date);
                 if ($max_date_obj < $date_end) {
                     $date_array = $date_end->toArray(TRUE);
                     $date_ISO = $date_end->toISO($date_array);
@@ -308,7 +328,7 @@ function facet_collection_date_indexing_callback($node, $field_name, $index_key,
                 variable_set('facet_collection_max_indexed_date', $date_ISO);
             }
             if (!empty($min_date)) {
-                $min_date_obj = new DateObject($min_date);               
+                $min_date_obj = new DateObject($min_date);
                 if ($date_start < $min_date_obj) {
                     $date_array = $date_start->toArray(TRUE);
                     $date_ISO = $date_start->toISO($date_array);
@@ -357,7 +377,7 @@ function facet_collection_facetapi_facet_info($searcher_info) {
                 }
                 $vocabulary = taxonomy_vocabulary_machine_name_load($voc_machine_name);
                 $facet_name = 'collection_' . $voc_machine_name;
-                $data[$facet_name][] = array($bundle);
+                $data[] = $facet_name;
                 if (isset($facets[$facet_name])) {
                     continue;
                 }
@@ -370,17 +390,17 @@ function facet_collection_facetapi_facet_info($searcher_info) {
                 $facet_name = 'collection_' . $field_name;
                 $label = $instances[$bundle][$field_name]['label'];
                 $index_field_name = apachesolr_index_key($field_info);
-                $data[$facet_name][] = array($bundle);
+                $data[] = $facet_name;
             }
-            if ($field_info['field']['type'] == 'date') {
+            if ($field_info['field']['type'] == 'date' || $field_info['field']['type'] == 'datetime') {
                 $facet_name = 'collection_date_facet';
                 $label = 'Date';
                 $index_field_name = 'dm_facet_collection_date';
                 $query_types = array('date');
                 $default_widget = 'facetapi_date_range_widget';
-                $min_callback = 'apachesolr_get_min_date';
-                $max_callback = 'apachesolr_get_max_date';
-                $data[$facet_name][] = array($bundle);
+                $min_callback = 'facet_collection_get_min_date';
+                $max_callback = 'facet_collection_get_max_date';
+                $data[] = $facet_name;
             }
             $facets[$facet_name] = array(
                 'name' => $facet_name,
@@ -401,7 +421,7 @@ function facet_collection_facetapi_facet_info($searcher_info) {
                 'max callback' => $max_callback,
             );
         }
-    }
+    }   
     cache_set('facet_collection:listfacets', $data, 'cache', CACHE_TEMPORARY);
     return $facets;
 }
@@ -438,13 +458,72 @@ function facet_collection_index_action_form_delete_submit($form, &$form_state) {
 /**
  * Max date callback for facet collection
  */
-function facet_collection_get_max_date(){
+function facet_collection_get_max_date() {
     return strtotime(variable_get('facet_collection_max_indexed_date'));
 }
 
 /**
  * Min date callback for facet collection
  */
-function facet_collection_get_min_date(){   
-    return  strtotime(variable_get('facet_collection_min_indexed_date'));
+function facet_collection_get_min_date() {
+    return strtotime(variable_get('facet_collection_min_indexed_date'));
+}
+
+/**
+ * Implements hook_apachesolr_query_alter()
+ */
+function facet_collection_apachesolr_query_alter($query) {
+    $content_types = array('files', 'location', 'people');
+    //If filtration by date is used we should get only content types that available for filtration by date
+    if (arg(0) == 'collection') {
+        $filters = $query->getFilters();
+        foreach ($filters as $filter) {
+            if ($filter['#name'] == 'dm_facet_collection_date') {
+                $filters_settings = variable_get('facet_collection_filters_settings');
+                $filters_settings = drupal_json_decode($filters_settings);
+
+                //Get available content types from settings
+                $available_content_types = array();
+                if (isset($filters_settings['date'])) {
+                    $available_content_types = array_merge($available_content_types, array_keys($filters_settings['date']));
+                }
+                if (isset($filters_settings['datetime'])) {
+                    $available_content_types = array_merge($available_content_types, array_keys($filters_settings['datetime']));
+                }
+
+                //Get filtering content types for current query
+                $filtering_content_types = array();
+                if (isset($_GET['f'])) {
+                    $f = $_GET['f'];
+                    foreach ($f as $key => $row) {
+                        if (strstr($row, 'bundle')) {
+                            $arr = explode(':', $row);
+                            $filtering_content_type = $arr[1];
+                            $filtering_content_types[] = $filtering_content_type;
+                        }
+                    }
+                }
+
+                //Exclude all forbidden content types from query and save only allowed content types in filter
+                if (!empty($filtering_content_types)) {
+                    $forbidden_content_types = array_diff($filtering_content_types, $available_content_types);
+                    dpm($forbidden_content_types);
+                    $query->removeFilter('bundle');
+                    if (!empty($forbidden_content_types)) {
+                        $allowed_content_types = array_diff($filtering_content_types, $forbidden_content_types);
+                        if (!empty($allowed_content_types)) {
+                            $query->addFilter('bundle', '(' . implode(' OR ', $allowed_content_types) . ')', FALSE);
+                        } else {
+                            $query->addFilter('bundle', '(' . implode(' OR ', $available_content_types) . ')', FALSE);
+                        }
+                    } else {
+                        $query->addFilter('bundle', '(' . implode(' OR ', $filtering_content_types) . ')', FALSE);
+                    }
+                } else {
+                    $query->removeFilter('bundle');
+                    $query->addFilter('bundle', '(' . implode(' OR ', $available_content_types) . ')', FALSE);
+                }
+            }
+        }
+    }
 }
