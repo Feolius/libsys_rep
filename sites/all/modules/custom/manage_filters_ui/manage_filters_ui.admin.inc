@@ -262,9 +262,10 @@ function manage_filters_ui_filters_overview_form($form, &$form_state, $entity_ty
         '#type' => 'filters_ui_table',
         '#tree' => TRUE,
         '#header' => array(
-            t('Filter'),
+            t('Field'),
             t('Weight'),
             t('Parent'),
+            t('Filter by'),
             array('data' => t('State'), 'colspan' => 3),
         ),
         '#regions' => array(
@@ -286,6 +287,16 @@ function manage_filters_ui_filters_overview_form($form, &$form_state, $entity_ty
     foreach ($instances as $name => $instance) {
         $field = field_info_field($instance['field_name']);
         if (is_field_filterable($field)) {
+            if ($field['type'] == 'entityreference') {
+                $filter_by_label = 'Node Reference';
+            } elseif ($field['type'] == 'taxonomy_term_reference') {
+                $vocabulary = taxonomy_vocabulary_machine_name_load($field['settings']['allowed_values'][0]['vocabulary']);
+                $filter_by_label = 'Vocabulary '.$vocabulary->name;
+            } elseif ($field['type'] == 'datetime'
+                    || $field['type'] == 'date'
+                    || $field['type'] == 'datestamp') {
+                $filter_by_label = 'Date';               
+            }
             $table[$name] = array(
                 '#attributes' => array('class' => array('draggable', 'tabledrag-leaf')),
                 '#row_type' => 'field',
@@ -320,6 +331,9 @@ function manage_filters_ui_filters_overview_form($form, &$form_state, $entity_ty
                         '#default_value' => $name,
                         '#attributes' => array('class' => array('field-name')),
                     ),
+                ),
+                'filter_by' => array(
+                    '#markup' => check_plain($filter_by_label),
                 ),
             );
 
@@ -670,7 +684,7 @@ function manage_filters_ui_filters_overview_form_submit($form, &$form_state) {
                         }
                     }
                 }
-            } elseif ($field_info['type'] == 'node_reference') {
+            } elseif ($field['type'] == 'entityreference' && $field['settings']['target_type'] == 'node') {
                 if (array_key_exists($bundle, $facet_fiters_settings[$field_info['type']][$filter_name])) {
                     unset($facet_fiters_settings[$field_info['type']][$filter_name][$bundle]);
                 }
@@ -691,7 +705,7 @@ function manage_filters_ui_filters_overview_form_submit($form, &$form_state) {
                     $facet_fiters_settings[$field_info['type']][$allowed_value['vocabulary']][$bundle] = array();
                 }
             }
-        } elseif ($field_info['type'] == 'node_reference') {
+        } elseif ($field['type'] == 'entityreference' && $field['settings']['target_type'] == 'node') {
             $facet_fiters_settings[$field_info['type']][$filter_name][$bundle] = array();
         } elseif ($field_info['type'] == 'datetime' || $field_info['type'] == 'datestamp' || $field_info['type'] == 'date') {
             $facet_fiters_settings[$field_info['type']][$bundle] = array();
@@ -703,6 +717,7 @@ function manage_filters_ui_filters_overview_form_submit($form, &$form_state) {
     variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
     variable_set('facet_collection_filters_settings', drupal_json_encode($facet_fiters_settings));
 
+    dpm($facet_fiters_settings);
     drupal_set_message(t('Your settings have been saved.'));
 }
 
@@ -712,14 +727,14 @@ function manage_filters_ui_filters_overview_form_submit($form, &$form_state) {
 function is_filters_settings_visible($filters, $form_state, $field) {
     $filters_list = get_referenced_filterable_fields($field);
     if (!empty($filters_list)) {
-        if (isset($form_state['values'])) {
-            if (isset($form_state['values']['fields'][$field['field_name']]['type'])
-                    && $form_state['values']['fields'][$field['field_name']]['type'] == 'visible') {
-                return TRUE;
-            }
-        } elseif (isset($filters[$field['field_name']])) {
+//        if (isset($form_state['values'])) {
+//            if (isset($form_state['values']['fields'][$field['field_name']]['type'])
+//                    && $form_state['values']['fields'][$field['field_name']]['type'] == 'visible') {
+//                return TRUE;
+//            }
+//        } elseif (isset($filters[$field['field_name']])) {
             return TRUE;
-        }
+//        }
     }
     return FALSE;
 }
@@ -729,8 +744,8 @@ function is_filters_settings_visible($filters, $form_state, $field) {
  */
 function get_referenced_filterable_fields($field) {
     $referenced_filterable_fields = array();
-    if ($field['type'] == 'node_reference') {
-        foreach ($field['settings']['referenceable_types'] as $ref_type) {
+    if ($field['type'] == 'entityreference' && $field['settings']['target_type'] == 'node') {
+        foreach ($field['settings']['handler_settings']['target_bundles'] as $ref_type) {
             $ref_instances = field_info_instances('node', $ref_type);
             $filters_list = array();
             foreach ($ref_instances as $ref_instance) {
@@ -752,7 +767,7 @@ function get_referenced_filterable_fields($field) {
  */
 function is_field_filterable($field) {
     if ($field['type'] == 'taxonomy_term_reference'
-            || $field['type'] == 'node_reference'
+            || ($field['type'] == 'entityreference' && $field['settings']['target_type'] == 'node')
             || $field['type'] == 'datetime'
             || $field['type'] == 'date'
             || $field['type'] == 'datestamp') {
