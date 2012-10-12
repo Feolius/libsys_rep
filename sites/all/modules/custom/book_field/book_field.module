@@ -664,9 +664,11 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
     if ($display['type'] == 'file_link_formatter') {
         foreach ($items as $delta => $item) {
             if (module_exists('book_thumbnail') && $item['fid_thumb'] != 0) {
-                $file = file_load($item['fid_thumb']);
+                $file_thumb = file_load($item['fid_thumb']);
+                $file = file_load($item['fid']);
                 $element[$delta] = array(
                     '#theme' => 'book_field_link_view',
+                    '#file_thumb' => $file_thumb,
                     '#file' => $file,
                 );
             } elseif ($item['fid'] != 0) {
@@ -812,7 +814,7 @@ function book_field_theme() {
             'variables' => array('file' => NULL, 'icon_directory' => NULL),
         ),
         'book_field_link_view' => array(
-            'variables' => array('file' => NULL, 'icon_directory' => NULL),
+            'variables' => array('file' => NULL, 'file_thumb' => NULL, 'icon_directory' => NULL),
         ),
     );
 }
@@ -837,14 +839,15 @@ function theme_book_field_flexpaper_view($variables) {
 /**
  * Theme function for the link formatter.
  */
-function theme_book_field_link_view($variables) {
-    $styles = image_styles();
-    $file = (object) $variables['file'];
+function theme_book_field_link_view($variables) {      
+    $file_thumb = (object) $variables['file_thumb'];
+    $file = (object) $variables['file'];     
     $uri = $file->uri;
+    $uri_thumb = $file_thumb->uri;
     $style = 'compressing';
-    $text = '<img src="' . image_style_url($style, $uri) . '">';
+    $text = '<img src="' . image_style_url($style, $uri_thumb) . '">';    
     $options['html'] = TRUE;
-    return '<h1>' . $file->filename . '</h1>' . l($text, $url, $options);
+    return '<h1>' . $file->filename . '</h1>' . l($text, file_create_url($uri), $options);
 }
 
 /**
