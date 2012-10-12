@@ -774,6 +774,9 @@ function manage_filters_ui_filters_overview_form_submit($form, &$form_state) {
     }
 
     //Save filters settings at the variables
+    //Filters settings stored in such kind of sturcture 
+    //(bundle_name -> field_name  -> state              -> (hidden or visible) )                   
+    //(                              referenced_filters -> field_name          )     
     $facet_filters[$bundle] = $content_type_filters;
     variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
     variable_set('facet_collection_filters_settings', drupal_json_encode($facet_filters_settings));
