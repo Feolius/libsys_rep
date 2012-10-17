@@ -3,7 +3,7 @@
 /**
  * Implements hook_menu().
  */
-function manage_filters_ui_menu()
+function filters_ui_menu()
 {
     $items = array();
     foreach (entity_get_info() as $entity_type => $entity_info) {
@@ -43,10 +43,10 @@ function manage_filters_ui_menu()
                         $items["$path/filters"] = array(
                             'title' => t('Manage filters'),
                             'page callback' => 'drupal_get_form',
-                            'page arguments' => array('manage_filters_ui_filters_overview_form', $entity_type, $bundle_arg),
+                            'page arguments' => array('filters_ui_filters_overview_form', $entity_type, $bundle_arg),
                             'type' => MENU_LOCAL_TASK,
                             'weight' => 2,
-                            'file' => 'manage_filters_ui.admin.inc',
+                            'file' => 'filters_ui.admin.inc',
                         ) + $access;
                     }
                 }
@@ -59,12 +59,12 @@ function manage_filters_ui_menu()
 /**
  * Implements hook_element_info().
  */
-function manage_filters_ui_element_info()
+function filters_ui_element_info()
 {
     return array(
         'filters_ui_table' => array(
             '#theme' => 'filters_ui_table',
-            '#pre_render' => array('manage_filters_ui_table_pre_render'),
+            '#pre_render' => array('filters_ui_table_pre_render'),
             '#regions' => array('' => array()),
         ),
     );
@@ -73,7 +73,7 @@ function manage_filters_ui_element_info()
 /**
  * Implements hook_theme().
  */
-function manage_filters_ui_theme()
+function filters_ui_theme()
 {
     return array(
         'filters_ui_table' => array(
@@ -85,7 +85,7 @@ function manage_filters_ui_theme()
 /**
  * Implements hook_field_delete_instance().
  */
-function manage_filters_ui_field_delete_instance($instance)
+function filters_ui_field_delete_instance($instance)
 {
     $facet_filters = drupal_json_decode(variable_get('facet_collection_filters'));
     $bundle = $instance['bundle'];
@@ -149,7 +149,7 @@ function manage_filters_ui_field_delete_instance($instance)
 /**
  * Implements hook_field_create_instance().
  */
-function manage_filters_ui_field_create_instance($instance)
+function filters_ui_field_create_instance($instance)
 {
     $field = field_info_field($instance['field_name']);
     if (is_field_filterable($field)) {

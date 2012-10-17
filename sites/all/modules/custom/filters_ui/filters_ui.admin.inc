@@ -3,7 +3,7 @@
 /**
  * Displays a message listing the inactive fields of a given bundle.
  */
-//function manage_filters_ui_inactive_message($entity_type, $bundle) {
+//function filters_ui_inactive_message($entity_type, $bundle) {
 //    $inactive_instances = field_ui_inactive_instances($entity_type, $bundle);
 //    if (!empty($inactive_instances)) {
 //        $field_types = field_info_field_types();
@@ -21,9 +21,9 @@
 /**
  * Determines the rendering order of an array representing a tree.
  *
- * Callback for array_reduce() within manage_filters_ui_table_pre_render().
+ * Callback for array_reduce() within filters_ui_table_pre_render().
  */
-function _manage_filters_ui_reduce_order($array, $a)
+function _filters_ui_reduce_order($array, $a)
 {
     $array = !isset($array) ? array() : $array;
 
@@ -32,7 +32,7 @@ function _manage_filters_ui_reduce_order($array, $a)
     }
     if (!empty($a['children'])) {
         uasort($a['children'], 'drupal_sort_weight');
-        $array = array_merge($array, array_reduce($a['children'], '_manage_filters_ui_reduce_order'));
+        $array = array_merge($array, array_reduce($a['children'], '_filters_ui_reduce_order'));
     }
     return $array;
 }
@@ -41,10 +41,10 @@ function _manage_filters_ui_reduce_order($array, $a)
  * Returns the region to which a row in the 'Manage filters' screen belongs.
  *
  * This function is used as a #region_callback in
- * manage_filters_ui_field_overview_form(), and is called during
- * manage_filters_ui_table_pre_render().
+ * filters_ui_field_overview_form(), and is called during
+ * filters_ui_table_pre_render().
  */
-function manage_filters_ui_filters_overview_row_region($row)
+function filters_ui_filters_overview_row_region($row)
 {
     switch ($row['#row_type']) {
         case 'field':
@@ -53,9 +53,9 @@ function manage_filters_ui_filters_overview_row_region($row)
 }
 
 /**
- * Pre-render callback for manage_filters_ui_table elements.
+ * Pre-render callback for filters_ui_table elements.
  */
-function manage_filters_ui_table_pre_render($elements)
+function filters_ui_table_pre_render($elements)
 {
     $js_settings = array();
 
@@ -114,7 +114,7 @@ function manage_filters_ui_table_pre_render($elements)
     }
     // Determine rendering order from the tree structure.
     foreach ($regions as $region_name => $region) {
-        $elements['#regions'][$region_name]['rows_order'] = array_reduce($trees[$region_name], '_manage_filters_ui_reduce_order');
+        $elements['#regions'][$region_name]['rows_order'] = array_reduce($trees[$region_name], '_filters_ui_reduce_order');
     }
 
     $elements['#attached']['js'][] = array(
@@ -211,15 +211,15 @@ function theme_filters_ui_table($variables)
 /**
  * Form constructor for the filters settings.
  *
- * @see manage_filters_ui_filters_overview_multistep_submit()
- * @see manage_filters_ui_filters_overview_form_submit()
+ * @see filters_ui_filters_overview_multistep_submit()
+ * @see filters_ui_filters_overview_form_submit()
  * @ingroup forms
  */
-function manage_filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bundle)
+function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bundle)
 {
     $bundle = field_extract_bundle($entity_type, $bundle);
 
-    //manage_filters_ui_inactive_message($entity_type, $bundle);
+    //filters_ui_inactive_message($entity_type, $bundle);
     $admin_path = _field_ui_bundle_admin_path($entity_type, $bundle);
 
     // Gather type information.
@@ -306,7 +306,7 @@ function manage_filters_ui_filters_overview_form($form, &$form_state, $entity_ty
             $table[$name] = array(
                 '#attributes' => array('class' => array('draggable', 'tabledrag-leaf')),
                 '#row_type' => 'field',
-                '#region_callback' => 'manage_filters_ui_filters_overview_row_region',
+                '#region_callback' => 'filters_ui_filters_overview_row_region',
                 '#js_settings' => array(
                     'rowHandler' => 'field',
                 ),
@@ -381,9 +381,9 @@ function manage_filters_ui_filters_overview_form($form, &$form_state, $entity_ty
             }
 
             $base_button = array(
-                '#submit' => array('manage_filters_ui_filters_overview_multistep_submit'),
+                '#submit' => array('filters_ui_filters_overview_multistep_submit'),
                 '#ajax' => array(
-                    'callback' => 'manage_filters_ui_filters_overview_multistep_js',
+                    'callback' => 'filters_ui_filters_overview_multistep_js',
                     'wrapper' => 'field-display-overview-wrapper',
                     'effect' => 'fade',
                 ),
@@ -395,7 +395,7 @@ function manage_filters_ui_filters_overview_form($form, &$form_state, $entity_ty
                 // settings form and submit buttons.
                 $table[$name]['state']['settings_edit_form'] = array();
 
-                $settings_form = manage_filters_ui_filter_settings_form($field, $node_reference_filters_settings, $form, $form_state);
+                $settings_form = filters_ui_filter_settings_form($field, $node_reference_filters_settings, $form, $form_state);
 
                 if ($settings_form) {
                     $table[$name]['state']['#cell_attributes'] = array('colspan' => 3);
@@ -430,7 +430,7 @@ function manage_filters_ui_filters_overview_form($form, &$form_state, $entity_ty
                 }
             } else {
                 // Display a summary of the current formatter settings.
-                $summary = manage_filters_ui_filter_settings_summary($field, $node_reference_filters_settings, $filters);
+                $summary = filters_ui_filter_settings_summary($field, $node_reference_filters_settings, $filters);
                 $table[$name]['settings_summary'] = array();
                 $table[$name]['settings_edit'] = array();
                 if ($summary) {
@@ -470,9 +470,9 @@ function manage_filters_ui_filters_overview_form($form, &$form_state, $entity_ty
         '#value' => t('Refresh'),
         '#op' => 'refresh_table',
         '#attributes' => array('style' => 'display:none'),
-        '#submit' => array('manage_filters_ui_filters_overview_multistep_submit'),
+        '#submit' => array('filters_ui_filters_overview_multistep_submit'),
         '#ajax' => array(
-            'callback' => 'manage_filters_ui_filters_overview_multistep_js',
+            'callback' => 'filters_ui_filters_overview_multistep_js',
             'wrapper' => 'field-display-overview-wrapper',
             'effect' => 'fade',
             // The button stays hidden, so we hide the Ajax spinner too. Ad-hoc
@@ -497,7 +497,7 @@ function manage_filters_ui_filters_overview_form($form, &$form_state, $entity_ty
 /**
  * Return filter settings
  */
-function manage_filters_ui_filter_settings_form($field, $ref_filters, $form, &$form_state)
+function filters_ui_filter_settings_form($field, $ref_filters, $form, &$form_state)
 {
     $filterable_fields = get_referenced_filterable_fields($field);
     foreach ($filterable_fields as $ref_type => $filters_list) {
@@ -523,14 +523,14 @@ function manage_filters_ui_filter_settings_form($field, $ref_filters, $form, &$f
     $context = array(
         'field' => $field,
     );
-    drupal_alter('manage_filters_ui_filter_settings_form', $form, $form_state, $context);
+    drupal_alter('filters_ui_filter_settings_form', $form, $form_state, $context);
     return $form;
 }
 
 /**
  * Return filter settings summary
  */
-function manage_filters_ui_filter_settings_summary($field, $ref_filters, $filters)
+function filters_ui_filter_settings_summary($field, $ref_filters, $filters)
 {
     $summary = "";
     if (is_filters_settings_visible($field)) {
@@ -554,9 +554,9 @@ function manage_filters_ui_filter_settings_summary($field, $ref_filters, $filter
 }
 
 /**
- * Form submission handler for buttons in manage_filters_ui_filters_overview_form().
+ * Form submission handler for buttons in filters_ui_filters_overview_form().
  */
-function manage_filters_ui_filters_overview_multistep_submit($form, &$form_state)
+function filters_ui_filters_overview_multistep_submit($form, &$form_state)
 {
     $trigger = $form_state['triggering_element'];
     $op = $trigger['#op'];
@@ -597,7 +597,7 @@ function manage_filters_ui_filters_overview_multistep_submit($form, &$form_state
 /**
  * Ajax handler for multistep buttons on the 'Manage filters' screen.
  */
-function manage_filters_ui_filters_overview_multistep_js($form, &$form_state)
+function filters_ui_filters_overview_multistep_js($form, &$form_state)
 {
     $trigger = $form_state['triggering_element'];
     $op = $trigger['#op'];
@@ -633,9 +633,9 @@ function manage_filters_ui_filters_overview_multistep_js($form, &$form_state)
 }
 
 /**
- * Form submission handler for manage_filters_ui_filters_overview_form().
+ * Form submission handler for filters_ui_filters_overview_form().
  */
-function manage_filters_ui_filters_overview_form_submit($form, &$form_state)
+function filters_ui_filters_overview_form_submit($form, &$form_state)
 {
 
     $form_values = $form_state['values'];
