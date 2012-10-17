@@ -1,0 +1,5 @@
+name = Filters UI for Datetime
+description = Allow use filtering by datetime fields
+package = Adventist DL
+core = 7.x
+dependencies[] = filters_ui

@@ -96,48 +96,9 @@ function filters_ui_field_delete_instance($instance)
     if (isset($facet_filters[$bundle])) {
         if (isset($facet_filters[$bundle][$field['field_name']])) {
             $facet_filters_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
-            switch ($field['type']) {
-                case 'taxonomy_term_reference':
-                    $vocabulary = $field['settings']['allowed_values'][0]['vocabulary'];
-                    unset($facet_filters_settings[$field['type']][$vocabulary][$bundle]);
-                    break;
-                case 'entityreference':
-                    unset($facet_filters_settings[$field['type']][$field['field_name']][$bundle]);
-                    //The algorithm of erasing old information for associated array
-                    //for referenced filters is the same as for usual filters.
-                    $entity_reference_filters_settings = $facet_filters_settings[$field['type']][$field['field_name']]['settings'];
-                    foreach ($field['referenced_filters'] as $ref_bundle => $ref_filters) {
-                        foreach ($ref_filters as $ref_filter_name => $ref_filter) {
-                            $ref_field_info = field_info_field($ref_filter_name);
-                            switch ($ref_field_info['type']) {
-                                case 'taxonomy_term_reference':
-                                    $ref_vocabulary_name = $ref_field_info['settings']['allowed_values'][0]['vocabulary'];
-                                    if (array_key_exists($ref_bundle, $entity_reference_filters_settings[$ref_field_info['type']][$ref_vocabulary_name])) {
-                                        unset($entity_reference_filters_settings[$ref_field_info['type']][$ref_vocabulary_name][$ref_bundle]);
-                                    }
-                                    break;
-                                case 'entityreference':
-                                    if (array_key_exists($ref_bundle, $entity_reference_filters_settings[$ref_field_info['type']][$ref_filter_name])) {
-                                        unset($entity_reference_filters_settings[$ref_field_info['type']][$ref_filter_name][$ref_bundle]);
-                                    }
-                                    break;
-//                                    case 'date':
-//                                    case 'datetime':
-//                                    case 'datestamp':
-//                                        if (array_key_exists($ref_bundle, $entity_reference_filters_settings[$ref_field_info['type']])) {
-//                                            unset($entity_reference_filters_settings[$ref_field_info['type']][$ref_bundle]);
-//                                        }
-//                                        break;
-                            }
-                        }
-                    }
-                    $facet_filters_settings[$field['type']][$field['field_name']]['settings'] = $entity_reference_filters_settings;
-                    break;
-//                case 'datetime':
-//                case 'date':
-//                case 'datestamp':
-//                    unset($facet_fiters_settings[$field['type']][$bundle]);
-//                    break;
+            $function = 'filters_ui_' . $field['type'] . '_delete_field';
+            if (function_exists($function)) {
+                $function($field, $bundle, $facet_filters_settings, $facet_filters[$bundle][$field['field_name']]);
             }
             unset($facet_filters[$bundle][$field['field_name']]);
             variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
@@ -171,9 +132,9 @@ function is_field_filterable($field)
 {
     if ($field['type'] == 'taxonomy_term_reference'
         || ($field['type'] == 'entityreference' && $field['settings']['target_type'] == 'node')
-//        || $field['type'] == 'datetime'
-//        || $field['type'] == 'date'
-//        || $field['type'] == 'datestamp'
+        || $field['type'] == 'datetime'
+        || $field['type'] == 'date'
+        || $field['type'] == 'datestamp'
     ) {
         return TRUE;
     }

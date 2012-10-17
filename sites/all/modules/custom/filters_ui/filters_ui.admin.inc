@@ -367,8 +367,11 @@ function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bu
                 $node_reference_filters_settings = array();
                 foreach ($tmp_settings as $ref_type_name => $ref_filters) {
                     foreach ($ref_filters['filters'] as $ref_filter) {
+                        $node_reference_filters_settings[$ref_type_name][$ref_filter] = array();
                         if (!empty($ref_filter)) {
-                            $node_reference_filters_settings[$ref_type_name][$ref_filter] = array();
+                            $node_reference_filters_settings[$ref_type_name][$ref_filter]['state'] = 'visible';
+                        } else {
+                            $node_reference_filters_settings[$ref_type_name][$ref_filter]['state'] = 'hidden';
                         }
                     }
                 }
@@ -395,7 +398,11 @@ function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bu
                 // settings form and submit buttons.
                 $table[$name]['state']['settings_edit_form'] = array();
 
-                $settings_form = filters_ui_filter_settings_form($field, $node_reference_filters_settings, $form, $form_state);
+                $settings_form = array();
+                $function = 'filters_ui_' . $field['type'] . '_settings_form';
+                if (function_exists($function)) {
+                    $settings_form = $function($field, $node_reference_filters_settings, $form, $form_state);
+                }
 
                 if ($settings_form) {
                     $table[$name]['state']['#cell_attributes'] = array('colspan' => 3);
@@ -429,8 +436,12 @@ function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bu
                     $table[$name]['#attributes']['class'][] = 'field-formatter-settings-editing';
                 }
             } else {
-                // Display a summary of the current formatter settings.
-                $summary = filters_ui_filter_settings_summary($field, $node_reference_filters_settings, $filters);
+                // Display a summary of the current filter settings.
+                $summary = NULL;
+                $function = 'filters_ui_' . $field['type'] . '_summary';
+                if (function_exists($function)) {
+                    $summary = $function($field, $node_reference_filters_settings);
+                }
                 $table[$name]['settings_summary'] = array();
                 $table[$name]['settings_edit'] = array();
                 if ($summary) {
@@ -492,65 +503,6 @@ function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bu
     $form['#attached']['drupal_add_tabledrag'][] = array('field-display-overview', 'match', 'parent', 'field-parent', 'field-parent', 'field-name');
 
     return $form;
-}
-
-/**
- * Return filter settings
- */
-function filters_ui_filter_settings_form($field, $ref_filters, $form, &$form_state)
-{
-    $filterable_fields = get_referenced_filterable_fields($field);
-    foreach ($filterable_fields as $ref_type => $filters_list) {
-        $chosen_filters = array();
-        foreach ($filters_list as $filter_name => $filter) {
-            if (isset($ref_filters[$ref_type])) {
-                if (array_key_exists($filter_name, $ref_filters[$ref_type])) {
-                    array_push($chosen_filters, $filter_name);
-                }
-            }
-        }
-        $form[$ref_type] = array(
-            '#type' => 'fieldset',
-            '#title' => t('Filters for content type ' . $ref_type),
-        );
-        $form[$ref_type]['filters'] = array(
-            '#type' => 'checkboxes',
-            '#options' => $filters_list,
-            '#default_value' => $chosen_filters,
-            '#title' => t('Choose fields for filtering'),
-        );
-    }
-    $context = array(
-        'field' => $field,
-    );
-    drupal_alter('filters_ui_filter_settings_form', $form, $form_state, $context);
-    return $form;
-}
-
-/**
- * Return filter settings summary
- */
-function filters_ui_filter_settings_summary($field, $ref_filters, $filters)
-{
-    $summary = "";
-    if (is_filters_settings_visible($field)) {
-        if (empty($ref_filters)) {
-            $summary = 'No filters are chosen';
-        } else {
-            $summary = "";
-            foreach ($ref_filters as $ref_type_name => $ref_type_filters) {
-                foreach ($ref_type_filters as $filter_name => $ref_filter) {
-                    $instance = field_info_instance("node", $filter_name, $ref_type_name);
-                    if ($instance) {
-                        $filters = $filters . $instance['label'] . ", ";
-                    }
-                }
-                $filters = substr($filters, 0, strlen($filters) - 2);
-                $summary = $summary . "Filters for content type " . $ref_type_name . ": " . $filters . "<br>";
-            }
-        }
-    }
-    return $summary;
 }
 
 /**
@@ -642,7 +594,7 @@ function filters_ui_filters_overview_form_submit($form, &$form_state)
     $bundle = $form['#bundle'];
     $content_type_filters = array();
     //Get current version of filter list for clean facet_collection_filters_settings up 
-    //from current bundle
+    //of current bundle
     //variable_del('facet_collection_filters_settings');
     //variable_del('facet_collection_filters');
     $facet_filters = drupal_json_decode(variable_get('facet_collection_filters'));
@@ -650,7 +602,7 @@ function filters_ui_filters_overview_form_submit($form, &$form_state)
 
     //Get changed filters settings from forms
     if (!empty($form_values['fields'])) {
-        foreach ($form_values['fields'] as $field_name => $field) {
+        foreach ($form_values['fields'] as $field_name => $field_info) {
             $values = $form_values['fields'][$field_name];
             // Get filters settings. They lie either directly in submitted form
             // values (if the whole form was submitted while some filter
@@ -662,8 +614,11 @@ function filters_ui_filters_overview_form_submit($form, &$form_state)
                 foreach ($settings as $ref_type_name => $ref_type) {
                     $filters_for_ref_type = array();
                     foreach ($ref_type['filters'] as $ref_filter_name => $ref_filter) {
+                        $filters_for_ref_type[$ref_filter_name] = array();
                         if (!empty($ref_filter)) {
-                            $filters_for_ref_type[$ref_filter_name] = array();
+                            $filters_for_ref_type[$ref_filter_name]['state'] = 'visible';
+                        } else {
+                            $filters_for_ref_type[$ref_filter_name]['state'] = 'hidden';
                         }
                     }
                     if (!empty($filters_for_ref_type)) {
@@ -681,176 +636,34 @@ function filters_ui_filters_overview_form_submit($form, &$form_state)
     //Erase the current bundle entries from  existing version of facet_collections_filters_settings
     if (isset($facet_filters[$bundle])) {
         foreach ($facet_filters[$bundle] as $filter_name => $filter) {
-            if ($filter['state'] == 'visible') {
-                $field_info = field_info_field($filter_name);
-                switch ($field_info['type']) {
-                    case 'taxonomy_term_reference':
-                        $vocabulary_name = $field_info['settings']['allowed_values'][0]['vocabulary'];
-                        if (array_key_exists($bundle, $facet_filters_settings[$field_info['type']][$vocabulary_name])) {
-                            unset($facet_filters_settings[$field_info['type']][$vocabulary_name][$bundle]);
-                        }
-                        break;
-                    case 'entityreference':
-                        if (array_key_exists($bundle, $facet_filters_settings[$field_info['type']][$filter_name])) {
-                            unset($facet_filters_settings[$field_info['type']][$filter_name][$bundle]);
-                        }
-                        //The algorithm of erasing old information for associated array
-                        //for referenced filters is the same as for usual filters.
-                        $entity_reference_filters_settings = $facet_filters_settings[$field_info['type']][$filter_name]['settings'];
-                        foreach ($filter['referenced_filters'] as $ref_bundle => $ref_filters) {
-                            foreach ($ref_filters as $ref_filter_name => $ref_filter) {
-                                $ref_field_info = field_info_field($ref_filter_name);
-                                switch ($ref_field_info['type']) {
-                                    case 'taxonomy_term_reference':
-                                        $ref_vocabulary_name = $ref_field_info['settings']['allowed_values'][0]['vocabulary'];
-                                        if (array_key_exists($ref_bundle, $entity_reference_filters_settings[$ref_field_info['type']][$ref_vocabulary_name])) {
-                                            unset($entity_reference_filters_settings[$ref_field_info['type']][$ref_vocabulary_name][$ref_bundle]);
-                                        }
-                                        break;
-                                    case 'entityreference':
-                                        if (array_key_exists($ref_bundle, $entity_reference_filters_settings[$ref_field_info['type']][$ref_filter_name])) {
-                                            unset($entity_reference_filters_settings[$ref_field_info['type']][$ref_filter_name][$ref_bundle]);
-                                        }
-                                        break;
-//                                    case 'date':
-//                                    case 'datetime':
-//                                    case 'datestamp':
-//                                        if (array_key_exists($ref_bundle, $entity_reference_filters_settings[$ref_field_info['type']])) {
-//                                            unset($entity_reference_filters_settings[$ref_field_info['type']][$ref_bundle]);
-//                                        }
-//                                        break;
-                                }
-                            }
-                        }
-                        $facet_filters_settings[$field_info['type']][$filter_name]['settings'] = $entity_reference_filters_settings;
-                        break;
-//                    case 'datetime':
-//                    case 'datestamp' :
-//                    case 'date':
-//                        if (array_key_exists($bundle, $facet_filters_settings[$field_info['type']])) {
-//                            unset($facet_filters_settings[$field_info['type']][$bundle]);
-//                        }
-//                        break;
-                }
+            $field = field_info_field($filter_name);
+            $function = 'filters_ui_' . $field['type'] . '_delete_field';
+            if (function_exists($function)) {
+                $function($field, $bundle, $facet_filters_settings, $filter);
             }
         }
     }
 
     //Save filters setting in more convenient for apache_solr form
-    //Filters settings stored in such kind of structure
-    //(              voc_name(for term_reference)     -> bundle_name                                    )
-    //(field_type -> field_name(for entityreference)  -> content_types                   -> bundle_name )                   
-    //(                                                  settings(for referenced filters)               )
-    //(              bundle_name(for date types)                                                        )
     foreach ($content_type_filters as $filter_name => $filter) {
-        $field_info = field_info_field($filter_name);
-        if ($filter['state'] == 'visible') {
-            switch ($field_info['type']) {
-                case 'taxonomy_term_reference':
-                    $vocabulary_name = $field_info['settings']['allowed_values'][0]['vocabulary'];
-                    if (!isset($facet_filters_settings[$field_info['type']][$vocabulary_name])) {
-                        $facet_filters_settings[$field_info['type']][$vocabulary_name] = array();
-                    }
-                    $facet_filters_settings[$field_info['type']][$vocabulary_name][$bundle] = array();
-                    break;
-                case 'entityreference':
-                    if (!isset($facet_filters_settings[$field_info['type']][$filter_name])) {
-                        $facet_filters_settings[$field_info['type']][$filter_name] = array();
-                    }
-                    $facet_filters_settings[$field_info['type']][$filter_name]['content_types'][$bundle] = array();
-                    $entity_reference_filters_settings = array();
-                    //The structure of associated array for referenced filters is the same
-                    //as for usual filters.
-                    //(              voc_name(for term_reference)     -> bundle_name )
-                    //(field_type -> field_name(for entityreference)  -> bundle_name )
-                    //(              bundle_name(for date types)                     )
-                    foreach ($filter['referenced_filters'] as $ref_bundle => $ref_filters) {
-                        foreach ($ref_filters as $ref_filter_name => $ref_filter) {
-                            $ref_field_info = field_info_field($ref_filter_name);
-                            switch ($ref_field_info['type']) {
-                                case 'taxonomy_term_reference':
-                                    $ref_vocabulary_name = $ref_field_info['settings']['allowed_values'][0]['vocabulary'];
-                                    if (!isset($$entity_reference_filters_settings[$ref_field_info['type']][$ref_vocabulary_name])) {
-                                        $entity_reference_filters_settings[$ref_field_info['type']][$ref_vocabulary_name] = array();
-                                    }
-                                    $entity_reference_filters_settings[$ref_field_info['type']][$ref_vocabulary_name][$ref_bundle] = array();
-                                    break;
-                                case 'entityreference':
-                                    if (!isset($entity_reference_filters_settings[$ref_field_info['type']][$ref_filter_name])) {
-                                        $entity_reference_filters_settings[$ref_field_info['type']][$ref_filter_name] = array();
-                                    }
-                                    $entity_reference_filters_settings[$ref_field_info['type']][$ref_filter_name][$ref_bundle] = array();
-                                    break;
-//                                case 'date':
-//                                case 'datetime':
-//                                case 'datestamp':
-//                                    if (!isset($entity_reference_filters_settings[$ref_field_info['type']])) {
-//                                        $entity_reference_filters_settings[$ref_field_info['type']] = array();
-//                                    }
-//                                    $entity_reference_filters_settings[$ref_field_info['type']][$ref_bundle] = array();
-//                                    break;
-                            }
-                        }
-                    }
-                    $facet_filters_settings[$field_info['type']][$filter_name]['settings'] = $entity_reference_filters_settings;
-                    break;
-//                case 'date':
-//                case 'datetime':
-//                case 'datestamp':
-//                    if (!isset($facet_filters_settings[$field_info['type']])) {
-//                        $facet_filters_settings[$field_info['type']] = array();
-//                    }
-//                    $facet_filters_settings[$field_info['type']][$bundle] = array();
-//                    break;
-            }
+        $field = field_info_field($filter_name);
+        $function = 'filters_ui_' . $field['type'] . '_add_field';
+        if (function_exists($function)) {
+            $function($field, $bundle, $facet_filters_settings, $filter);
         }
+
     }
 
     //Save filters settings at the variables
-    //Filters settings stored in such kind of structure
-    //(bundle_name -> field_name  -> state              -> (hidden or visible) )                   
-    //(                              referenced_filters -> field_name          )
     $facet_filters[$bundle] = $content_type_filters;
     variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
     variable_set('facet_collection_filters_settings', drupal_json_encode($facet_filters_settings));
 
-   // dpm($facet_filters_settings);
+    dpm($facet_filters_settings);
     drupal_set_message(t('Your settings have been saved.'));
 }
 
-/**
- * Function to define is filters settings form need to be visible or not
- */
-function is_filters_settings_visible($field)
-{
-    $filters_list = get_referenced_filterable_fields($field);
-    if (!empty($filters_list)) {
-        return TRUE;
-    }
-    return FALSE;
-}
 
-/**
- * Return list of referenced filterable fields for each referencable_type for some field
- */
-function get_referenced_filterable_fields($field)
-{
-    $referenced_filterable_fields = array();
-    if ($field['type'] == 'entityreference' && $field['settings']['target_type'] == 'node') {
-        foreach ($field['settings']['handler_settings']['target_bundles'] as $ref_type) {
-            $ref_instances = field_info_instances('node', $ref_type);
-            $filters_list = array();
-            foreach ($ref_instances as $ref_instance) {
-                $ref_field = field_info_field($ref_instance['field_name']);
-                if (is_field_filterable($ref_field)) {
-                    $filters_list[$ref_instance['field_name']] = $ref_instance['label'];
-                }
-            }
-            if (!empty($filters_list)) {
-                $referenced_filterable_fields[$ref_type] = $filters_list;
-            }
-        }
-    }
-    return $referenced_filterable_fields;
-}
+
+
 

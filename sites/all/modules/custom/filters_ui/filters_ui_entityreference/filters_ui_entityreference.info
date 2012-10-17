@@ -1,0 +1,5 @@
+name = Filters UI for Entity Reference
+description = Allow use filtering by entity reference fields
+package = Adventist DL
+core = 7.x
+dependencies[] = filters_ui

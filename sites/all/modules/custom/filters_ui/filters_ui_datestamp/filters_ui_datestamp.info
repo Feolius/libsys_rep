@@ -1,0 +1,5 @@
+name = Filters UI for Datestamp
+description = Allow use filtering by datestamp fields
+package = Adventist DL
+core = 7.x
+dependencies[] = filters_ui
