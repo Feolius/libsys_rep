@@ -3,7 +3,8 @@
 /**
  * Implements hook_menu().
  */
-function manage_filters_ui_menu() {
+function manage_filters_ui_menu()
+{
     $items = array();
     foreach (entity_get_info() as $entity_type => $entity_info) {
         if ($entity_info['fieldable'] && $entity_type == 'node') {
@@ -20,7 +21,7 @@ function manage_filters_ui_menu() {
                     // would be replaced with the bundle name string.
                     if (isset($bundle_info['admin']['bundle argument'])) {
                         $bundle_arg = $bundle_info['admin']['bundle argument'];
-                        $bundle_pos = (string) $bundle_arg;
+                        $bundle_pos = (string)$bundle_arg;
                     } else {
                         $bundle_arg = $bundle_name;
                         $bundle_pos = '0';
@@ -46,7 +47,7 @@ function manage_filters_ui_menu() {
                             'type' => MENU_LOCAL_TASK,
                             'weight' => 2,
                             'file' => 'manage_filters_ui.admin.inc',
-                                ) + $access;
+                        ) + $access;
                     }
                 }
             }
@@ -58,7 +59,8 @@ function manage_filters_ui_menu() {
 /**
  * Implements hook_element_info().
  */
-function manage_filters_ui_element_info() {
+function manage_filters_ui_element_info()
+{
     return array(
         'filters_ui_table' => array(
             '#theme' => 'filters_ui_table',
@@ -71,7 +73,8 @@ function manage_filters_ui_element_info() {
 /**
  * Implements hook_theme().
  */
-function manage_filters_ui_theme() {
+function manage_filters_ui_theme()
+{
     return array(
         'filters_ui_table' => array(
             'render element' => 'elements',
@@ -80,32 +83,99 @@ function manage_filters_ui_theme() {
 }
 
 /**
- * Implements hook_field_delete().
+ * Implements hook_field_delete_instance().
  */
-function manage_fiters_ui_field_delete($entity_type, $entity, $field, $instance, $langcode, &$items) {
+function manage_filters_ui_field_delete_instance($instance)
+{
     $facet_filters = drupal_json_decode(variable_get('facet_collection_filters'));
-    
     $bundle = $instance['bundle'];
-    $field_name = $field['field_name'];
-    dpm($bundle,'BUNDLE');
-    dpm($field_name,'FIELD');
-    dpm($facet_filters, 'FACET_FILTERS');
+    $field = field_info_field($instance['field_name']);
+
     //Erase information of deleting field from existing version of facet_collections_filters
     //and facet_collections_filters_settings
     if (isset($facet_filters[$bundle])) {
-        if (isset($facet_filters[$bundle][$field_name])) {
-            unset($facet_filters[$bundle][$field_name]);
-            $facet_fiters_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
-            if ($field['type'] == 'taxonomy_term_reference') {
-                $vocabulary = $field_info['settings']['allowed_values'][0]['vocabulary'];
-                unset($facet_fiters_settings[$field['type']][$vocabulary][$bundle]);
-            } elseif ($field['type'] == 'node_reference') {
-                unset($facet_fiters_settings[$field['type']][$field_name][$bundle]);
-            } elseif ($field['type'] == 'datetime' || $field['type'] == 'datestamp' || $field['type'] == 'date') {
-                unset($facet_fiters_settings[$field['type']][$bundle]);
+        if (isset($facet_filters[$bundle][$field['field_name']])) {
+            $facet_filters_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
+            switch ($field['type']) {
+                case 'taxonomy_term_reference':
+                    $vocabulary = $field['settings']['allowed_values'][0]['vocabulary'];
+                    unset($facet_filters_settings[$field['type']][$vocabulary][$bundle]);
+                    break;
+                case 'entityreference':
+                    unset($facet_filters_settings[$field['type']][$field['field_name']][$bundle]);
+                    //The algorithm of erasing old information for associated array
+                    //for referenced filters is the same as for usual filters.
+                    $entity_reference_filters_settings = $facet_filters_settings[$field['type']][$field['field_name']]['settings'];
+                    foreach ($field['referenced_filters'] as $ref_bundle => $ref_filters) {
+                        foreach ($ref_filters as $ref_filter_name => $ref_filter) {
+                            $ref_field_info = field_info_field($ref_filter_name);
+                            switch ($ref_field_info['type']) {
+                                case 'taxonomy_term_reference':
+                                    $ref_vocabulary_name = $ref_field_info['settings']['allowed_values'][0]['vocabulary'];
+                                    if (array_key_exists($ref_bundle, $entity_reference_filters_settings[$ref_field_info['type']][$ref_vocabulary_name])) {
+                                        unset($entity_reference_filters_settings[$ref_field_info['type']][$ref_vocabulary_name][$ref_bundle]);
+                                    }
+                                    break;
+                                case 'entityreference':
+                                    if (array_key_exists($ref_bundle, $entity_reference_filters_settings[$ref_field_info['type']][$ref_filter_name])) {
+                                        unset($entity_reference_filters_settings[$ref_field_info['type']][$ref_filter_name][$ref_bundle]);
+                                    }
+                                    break;
+//                                    case 'date':
+//                                    case 'datetime':
+//                                    case 'datestamp':
+//                                        if (array_key_exists($ref_bundle, $entity_reference_filters_settings[$ref_field_info['type']])) {
+//                                            unset($entity_reference_filters_settings[$ref_field_info['type']][$ref_bundle]);
+//                                        }
+//                                        break;
+                            }
+                        }
+                    }
+                    $facet_filters_settings[$field['type']][$field['field_name']]['settings'] = $entity_reference_filters_settings;
+                    break;
+//                case 'datetime':
+//                case 'date':
+//                case 'datestamp':
+//                    unset($facet_fiters_settings[$field['type']][$bundle]);
+//                    break;
             }
+            unset($facet_filters[$bundle][$field['field_name']]);
             variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
-            variable_set('facet_collection_filters_settings', drupal_json_encode($facet_fiters_settings));
+            variable_set('facet_collection_filters_settings', drupal_json_encode($facet_filters_settings));
         }
     }
+}
+
+/**
+ * Implements hook_field_create_instance().
+ */
+function manage_filters_ui_field_create_instance($instance)
+{
+    $field = field_info_field($instance['field_name']);
+    if (is_field_filterable($field)) {
+        $facet_filters = drupal_json_decode(variable_get('facet_collection_filters'));
+        $bundle = $instance['bundle'];
+        if (!isset($facet_filters[$bundle])) {
+            $facet_filters[$bundle] = array();
+        }
+        $facet_filters[$bundle][$field['field_name']] = array();
+        $facet_filters[$bundle][$field['field_name']]['state'] = 'hidden';
+        $facet_filters[$bundle][$field['field_name']]['referened_filters'] = array();
+    }
+}
+
+/**
+ * Return TRUE if field is filterable
+ */
+function is_field_filterable($field)
+{
+    if ($field['type'] == 'taxonomy_term_reference'
+        || ($field['type'] == 'entityreference' && $field['settings']['target_type'] == 'node')
+//        || $field['type'] == 'datetime'
+//        || $field['type'] == 'date'
+//        || $field['type'] == 'datestamp'
+    ) {
+        return TRUE;
+    }
+    return FALSE;
 }
