@@ -31,7 +31,7 @@ function book_field_search_entity_info() {
     return $return;
 }
 
-function lib_book_uri_callback($entity) {    
+function lib_book_uri_callback($entity) {
     $fid = $entity->fid;
     $file = file_load($fid);
     return array(
@@ -39,7 +39,7 @@ function lib_book_uri_callback($entity) {
     );
 }
 
-/** 
+/**
  *   Indexer for the hook_apachesolr_entity_info_alter entities for the book_field_search module.
  */
 function book_field_apachesolr_entity_info_alter(&$entity_info) {
@@ -119,19 +119,13 @@ function book_field_search_solr_reindex() {
     return TRUE;
 }
 
-function book_field_search_add_file_usage(stdClass $stub_file, $parent_entity_type, $parent_entity_id) {
-    // Only add this file type if the parent entity type can be indexed.
-    // Example : node is mostly indexed but media module is not. So
-    // exclude all media entities from being added
+function book_field_search_add_file_usage(stdClass $stub_file, $parent_entity_type, $parent_entity_id) {   
+    
+    //Add indexind information in indexed table
     $entity_info = entity_get_info($parent_entity_type);
-    if (!empty($entity_info['apachesolr']['indexable'])) {
-        // We do have to load the file, because there is no way to get the
-        // bundle type, and media adds many bundles, so fixing this here
+    if (!empty($entity_info['apachesolr']['indexable'])) {        
         $file = file_load($stub_file->fid);
-        $indexer_table = apachesolr_get_indexer_table('lib_book');
-        // For non-media files there is no such thing as a defined type/bundle
-        // Define it here, so we can have a seamless integration between media and
-        // non-media
+        $indexer_table = apachesolr_get_indexer_table('lib_book');       
         if (empty($file->type)) {
             $file->type = 'application';
         }
@@ -227,7 +221,7 @@ function book_field_search_solr_document(ApacheSolrDocument $document, $lib_book
         // Retrieve the parent entity id and bundle
         list($parent_entity_id, $parent_entity_vid, $parent_entity_bundle) = entity_extract_ids($parent->parent_entity_type, $parent_entity);
         $parent_entity_type = $parent->parent_entity_type;
-        // Get a clone of the bare minimum document
+        // Get a clone of the bare minimum document        
         $filedocument = clone $document;
         //Get the callback array to add stuff to the document
         $callbacks = apachesolr_entity_get_callback($parent_entity_type, 'document callback');
@@ -283,7 +277,8 @@ function book_field_search_solr_document(ApacheSolrDocument $document, $lib_book
         foreach ($indexed_fields as $index_key => $nodefields) {
             foreach ($nodefields as $field_info) {
                 $field_name = $field_info['field']['field_name'];
-                // See if the node has fields that can be indexed                
+                // See if the node has fields that can be indexed  
+
                 if (isset($parent_entity->{$field_name})) {
                     // Got a field.
                     $function = $field_info['indexing_callback'];
@@ -305,51 +300,21 @@ function book_field_search_solr_document(ApacheSolrDocument $document, $lib_book
     return $documents;
 }
 
-//Implements altering of resuts to provide proper links to the nodes
+/**
+ * Implements altering of resuts to provide proper links to the nodes
+ * We should provide search key word for flexpaper highlighting
+ */
 function book_field_search_apachesolr_process_results(&$results, DrupalSolrQueryInterface $query) {
     $result_number = count($results);
-    if (module_exists('collection_layout')) {
-        for ($i = 0; $i < $result_number; $i++) {
-            if ($results[$i]['entity_type'] == 'lib_book') {
-                $link = $results[$i]['link'];
-                $parent_entity_info = $results[$i]['fields']['zm_parent_entity'][0];
-                $pattern = '/nid":"\d+/';
-                preg_match($pattern, $parent_entity_info, $matches);
-                $pattern = '/\d+/';
-                preg_match($pattern, $matches[0], $matches);
-                if (isset($matches[0])) {
-                    $options = array(
-                        'query' => array(
-                            'nid' => $matches[0],
-                            'search' => arg(2),
-                        ),
-                        'absolute' => TRUE,
-                    );
-                    $link = url('node-page', $options);
-                    $results[$i]['link'] = $link;
-                } else {
-                    $options = array(
-                        'query' => array(
-                            'search' => arg(2),
-                        ),
-                        'absolute' => TRUE,
-                    );
-                    $link = url('node-page', $options);
-                    $results[$i]['link'] = $link;
-                }
-            }
-        }
-    } else {
-        for ($i = 0; $i < $result_number; $i++) {
-            if ($results[$i]['entity_type'] == 'lib_book') {
-                $options = array(
-                    'query' => array(
-                        'search' => arg(2),
-                    ),
-                );
-                $link = url($results[$i]['link'], $options);
-                $results[$i]['link'] = $link;
-            }
+    for ($i = 0; $i < $result_number; $i++) {
+        if ($results[$i]['entity_type'] == 'lib_book') {
+            $options = array(
+                'query' => array(
+                    'search' => arg(2),
+                ),
+            );
+            $link = url($results[$i]['link'], $options);
+            $results[$i]['link'] = $link;
         }
     }
 }
@@ -357,16 +322,21 @@ function book_field_search_apachesolr_process_results(&$results, DrupalSolrQuery
 //Implements map callback altering for location field facet to make filters by country 
 function book_field_search_facetapi_facet_info_alter(array &$facet_info, array $searcher_info) {
     // Change the author index field for Apache Solr searchers indexing node data.
+
     if ('apachesolr' == $searcher_info['adapter']) {
-        $facet_info['im_field_files_location']['map callback'] = 'book_field_search_location_map_callback';
+        $facet_info['sm_field_files_location']['map callback'] = 'book_field_search_location_map_callback';
     }
 }
 
 //Map callback for location field
-function book_field_search_location_map_callback($facets, $options) {
+function book_field_search_location_map_callback($values, $options) {
+    include_once DRUPAL_ROOT . '/includes/locale.inc';
     $map = array();
-    $allowed_references = array();
     $adress_fields = array();
+    foreach ($values as $value) {
+        list($entity_type, $id) = explode(':', $value);
+        $entity_ids[$entity_type][] = $id;
+    }
     $country_list = country_get_list();
     $fields = field_info_fields();
     foreach ($fields as $index_field => $field) {
@@ -375,34 +345,30 @@ function book_field_search_location_map_callback($facets, $options) {
         }
     }
     $field_name = $options['field']['field_name'];
-    if (isset($fields[$field_name])) {
-        $allowed_references = node_reference_potential_references($fields[$field_name]);
-    }
-    foreach ($facets as $key) {
-        if (isset($allowed_references[$key])) {
-            $node = node_load($key);
-            foreach ($adress_fields as $adress_field_name => $adress_field) {
-                $output = $node->title;
-                if (isset($node->$adress_field_name)) {
-                    $value = field_get_items('node', $node, $adress_field_name);
-                    if (isset($value[0]['country'])) {
-                        $country_ISO = $value[0]['country'];
-                        $country_name = $country_list[$country_ISO];
-                        $output = $output . ': ' . $country_name;
-                        $map[$key]['#markup'] = field_filter_xss($output);
+    foreach ($entity_ids as $entity_type => $ids) {
+        if ($entity_type == 'node') {
+            $entities = entity_load($entity_type, $ids);
+            foreach ($entities as $id => $entity) {
+                foreach ($adress_fields as $adress_field_name => $adress_field) {
+                    $output = $entity->title;
+                    if (isset($entity->$adress_field_name)) {
+                        $value = field_get_items('node', $entity, $adress_field_name);
+                        $key = $entity_type . ':' . $id;
+                        if (isset($value[0]['country'])) {
+                            $country_ISO = $value[0]['country'];
+                            $country_name = $country_list[$country_ISO];
+                            $output = $output . ': ' . $country_name;
+                            $map[$key]['#markup'] = field_filter_xss($output);
+                        } else {
+                            $map[$key]['#markup'] = field_filter_xss($output);
+                        }
                     } else {
                         $map[$key]['#markup'] = field_filter_xss($output);
                     }
-                } else {
-                    $map[$key]['#markup'] = field_filter_xss($output);
                 }
             }
-        } elseif ($key == '_empty_' && $options['facet missing allowed']) {
-            // Facet missing.
-            $map[$key]['#markup'] = theme('facetapi_facet_missing', array('field_name' => $options['display_name']));
         }
-        $map[$key]['#html'] = TRUE;
-    }    
+    }
     return $map;
 }
 
@@ -421,51 +387,52 @@ function book_field_search_theme() {
  * Theme function for snippets
  */
 function theme_apachesolr_search_snippets__lib_book__pdf($vars) {
+    include_once DRUPAL_ROOT . '/includes/locale.inc';
     $result = array();
     $doc = $vars['doc'];
     $snippets = $vars['snippets'];
     $country_list = country_get_list();
-    
+
     //Get parent node
     foreach ($doc->zm_parent_entity as $parent_entity_encoded) {
         $parent_entity = (object) drupal_json_decode($parent_entity_encoded);
     }
     $nid = $parent_entity->nid;
     $node = node_load($nid);
-    
+
     //Load all fields attched to this node
     $node_fields = field_info_instances('node', $node->type);
     foreach ($node_fields as $field_bundle_name => $field_bundle_info) {
         $field_info = field_info_field_by_id($field_bundle_info['field_id']);
-        
+
         //We should find author node and location node here from all attached node reference
         if ($field_info['type'] == 'node_reference') {
             $value = field_get_items('node', $node, $field_bundle_name);
             $child_nid = $value[0]['nid'];
             if (isset($child_nid)) {
-                $child_node = node_load($child_nid);                
+                $child_node = node_load($child_nid);
                 $child_node_fields = field_info_instances('node', $child_node->type);
-                
+
                 //Get author node
-                if($child_node->type == 'people') {
-                        $result['author']['label'] = $child_node->title;
-                        $result['author']['uri'] = entity_uri('node', $child_node);
-                        continue;
-                 }
-                 
-                 //Get country name
+                if ($child_node->type == 'people') {
+                    $result['author']['label'] = $child_node->title;
+                    $result['author']['uri'] = entity_uri('node', $child_node);
+                    continue;
+                }
+
+                //Get country name
                 foreach ($child_node_fields as $child_field_bundle_name => $child_field_bundle_info) {
                     $child_field_info = field_info_field_by_id($child_field_bundle_info['field_id']);
                     if ($child_field_info['type'] == 'addressfield') {
                         $child_value = field_get_items('node', $child_node, $child_field_bundle_name);
                         $country_ISO = $child_value[0]['country'];
-                        $result['country'] = $country_list[$country_ISO];                       
-                    }                    
+                        $result['country'] = $country_list[$country_ISO];
+                    }
                 }
             }
         }
-        
-        //Get date calue
+
+        //Get date value
         if ($field_info['type'] == 'datetime') {
             $value = field_get_items('node', $node, $field_bundle_name);
             $time = $value[0]['value'];
@@ -473,8 +440,8 @@ function theme_apachesolr_search_snippets__lib_book__pdf($vars) {
             $year = $time[0];
             $result['year'] = $year;
         }
-    } 
-    
+    }
+
     $output = implode(' ... ', $snippets) . '<span>';
     if (!empty($result['author'])) {
         $author_link = l($result['author']['label'], $result['author']['uri']['path']);
@@ -486,6 +453,6 @@ function theme_apachesolr_search_snippets__lib_book__pdf($vars) {
     if (!empty($result['year'])) {
         $output = $output . ', ' . $result['year'];
     }
-    $output = $output . '</span>';    
+    $output = $output . '</span>';
     return $output;
 }
