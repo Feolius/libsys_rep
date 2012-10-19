@@ -1,6 +1,24 @@
 <?php
 
 /**
+ * Displays a message listing the inactive fields of a given bundle.
+ */
+//function filters_ui_inactive_message($entity_type, $bundle) {
+//    $inactive_instances = field_ui_inactive_instances($entity_type, $bundle);
+//    if (!empty($inactive_instances)) {
+//        $field_types = field_info_field_types();
+//
+//        foreach ($inactive_instances as $field_name => $instance) {
+//            $list[] = t('%field (@field_name) field requires the %widget_type widget provided by %widget_module module', array(
+//                '%field' => $instance['label'],
+//                '@field_name' => $instance['field_name'],
+//                    ));
+//        }
+//        drupal_set_message(t('Inactive fields are not shown unless their providing modules are enabled. The following fields are not enabled: !list', array('!list' => theme('item_list', array('items' => $list)))), 'error');
+//    }
+//}
+
+/**
  * Determines the rendering order of an array representing a tree.
  *
  * Callback for array_reduce() within filters_ui_table_pre_render().
@@ -201,8 +219,11 @@ function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bu
 {
     $bundle = field_extract_bundle($entity_type, $bundle);
 
+    //filters_ui_inactive_message($entity_type, $bundle);
     $admin_path = _field_ui_bundle_admin_path($entity_type, $bundle);
 
+    // Gather type information.
+    // $field_types = field_info_field_types();
     $bundle_instances = field_info_instances($entity_type, $bundle);
     $instances = array();
     foreach ($bundle_instances as $instance_name => $bundle_instance) {
@@ -574,6 +595,8 @@ function filters_ui_filters_overview_form_submit($form, &$form_state)
     $content_type_filters = array();
     //Get current version of filter list for clean facet_collection_filters_settings up 
     //of current bundle
+    //variable_del('facet_collection_filters_settings');
+    //variable_del('facet_collection_filters');
     $facet_filters = drupal_json_decode(variable_get('facet_collection_filters'));
     $facet_filters_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
 
@@ -636,6 +659,8 @@ function filters_ui_filters_overview_form_submit($form, &$form_state)
     variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
     variable_set('facet_collection_filters_settings', drupal_json_encode($facet_filters_settings));
 
+    //dpm($facet_filters_settings);
+    //dpm($facet_filters);
     drupal_set_message(t('Your settings have been saved.'));
 }
 

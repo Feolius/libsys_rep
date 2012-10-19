@@ -37,6 +37,7 @@ function filters_ui_menu()
                         'access arguments' => array('administer site configuration'),
                     );
                     // 'Manage filters' tab.
+                    //TODO: find other way to check. It is hardcode. It should be used only for default case.
                     $path_elements = explode('/', $path);
                     if (!in_array('comment', $path_elements)) {
                         $items["$path/filters"] = array(
