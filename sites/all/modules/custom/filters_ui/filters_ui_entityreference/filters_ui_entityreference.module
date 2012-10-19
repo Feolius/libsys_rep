@@ -117,8 +117,8 @@ function filters_ui_entityreference_add_field($field, $bundle, &$facet_filters_s
         foreach ($filter['referenced_filters'] as $ref_bundle => $ref_filters) {
             foreach ($ref_filters as $ref_filter_name => $ref_filter) {
                 $ref_field = field_info_field($ref_filter_name);
-                if ($ref_filter['state'] == 'visible' && !($ref_field['type'] == 'date'
-                        || $ref_field['type'] == 'datestamp' || $ref_field['type'] == 'datetime')) {
+                if ($ref_filter['state'] == 'visible' && $ref_field['type'] != 'date'
+                        && $ref_field['type'] != 'datestamp' && $ref_field['type'] != 'datetime') {
                     $entity_reference_filters_settings[$ref_filter_name] = array();
                 }
             }
