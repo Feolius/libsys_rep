@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Deleting information about field from information structure
  *
@@ -7,10 +8,11 @@
  * @param $facet_filters_settings
  * @param $filter
  */
-function filters_ui_date_delete_field($field, $bundle, &$facet_filters_settings, $filter)
-{
-    if (array_key_exists($bundle, $facet_filters_settings[$field['type']])) {
-        unset($facet_filters_settings[$field['type']][$bundle]);
+function filters_ui_date_delete_field($field, $bundle, &$facet_filters_settings, $filter) {
+    if ($filter['state'] == 'visible') {
+        if (array_key_exists($bundle, $facet_filters_settings[$field['type']])) {
+            unset($facet_filters_settings[$field['type']][$bundle]);
+        }
     }
 }
 
@@ -22,8 +24,7 @@ function filters_ui_date_delete_field($field, $bundle, &$facet_filters_settings,
  * @param $facet_filters_settings
  * @param $filter
  */
-function filters_ui_date_add_field($field, $bundle, &$facet_filters_settings, $filter)
-{
+function filters_ui_date_add_field($field, $bundle, &$facet_filters_settings, $filter) {
     if ($filter['state'] == 'visible') {
         if (!isset($facet_filters_settings[$field['type']])) {
             $facet_filters_settings[$field['type']] = array();

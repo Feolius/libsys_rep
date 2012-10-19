@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Deleting information about field from information structure
  *
@@ -7,11 +8,12 @@
  * @param $facet_filters_settings
  * @param $filter
  */
-function filters_ui_taxonomy_term_reference_delete_field($field, $bundle, &$facet_filters_settings, $filter)
-{
-    $vocabulary_name = $field['settings']['allowed_values'][0]['vocabulary'];
-    if (array_key_exists($bundle, $facet_filters_settings[$field['type']][$vocabulary_name])) {
-        unset($facet_filters_settings[$field['type']][$vocabulary_name][$bundle]);
+function filters_ui_taxonomy_term_reference_delete_field($field, $bundle, &$facet_filters_settings, $filter) {
+    if ($filter['state'] == 'visible') {
+        $vocabulary_name = $field['settings']['allowed_values'][0]['vocabulary'];
+        if (array_key_exists($bundle, $facet_filters_settings[$field['type']][$vocabulary_name])) {
+            unset($facet_filters_settings[$field['type']][$vocabulary_name][$bundle]);
+        }
     }
 }
 
@@ -23,8 +25,7 @@ function filters_ui_taxonomy_term_reference_delete_field($field, $bundle, &$face
  * @param $facet_filters_settings
  * @param $filter
  */
-function filters_ui_taxonomy_term_reference_add_field($field, $bundle, &$facet_filters_settings, $filter)
-{
+function filters_ui_taxonomy_term_reference_add_field($field, $bundle, &$facet_filters_settings, $filter) {
     if ($filter['state'] == 'visible') {
         $vocabulary_name = $field['settings']['allowed_values'][0]['vocabulary'];
         if (!isset($facet_filters_settings[$field['type']][$vocabulary_name])) {

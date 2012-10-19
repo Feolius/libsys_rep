@@ -297,11 +297,11 @@ function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bu
                 case  'entityreference':
                     $filter_by_label = 'Node Reference';
                     break;
-//                case 'date':
-//                case 'datetime':
-//                case 'datestamp':
-//                    $filter_by_label = 'Date';
-//                    break;
+                case 'date':
+                case 'datetime':
+                case 'datestamp':
+                    $filter_by_label = 'Date';
+                    break;
             }
             $table[$name] = array(
                 '#attributes' => array('class' => array('draggable', 'tabledrag-leaf')),
@@ -659,7 +659,8 @@ function filters_ui_filters_overview_form_submit($form, &$form_state)
     variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
     variable_set('facet_collection_filters_settings', drupal_json_encode($facet_filters_settings));
 
-    //dpm($facet_filters_settings);
+    dpm($facet_filters_settings);
+    dpm($facet_filters);
     drupal_set_message(t('Your settings have been saved.'));
 }
 
