@@ -114,7 +114,7 @@ function facet_collection_set_facets_visibility($adapter, $realm_name, $searcher
     $realm = facetapi_realm_load($realm_name);
     $data = cache_get('facet_collection:listfacets');
     $facet_list = $data->data;
-    foreach ($facet_list as $faset_name) {
+    foreach ($facet_list as $faset_name => $facet_parameters) {
         $faset = facetapi_facet_load($faset_name, $searcher);
         facetapi_save_facet_enabled($adapter, $realm, $faset);
     }
@@ -124,13 +124,13 @@ function facet_collection_set_facets_visibility($adapter, $realm_name, $searcher
 /**
  * Filter facet list to show only facets that satisfy all chosen content types
  */
-function facet_collection_get_available_facets($filter_settings) {
+function facet_collection_get_available_facets($filter_settings) {   
     $available_facets = array();
 
     //Get all facets for collection from cache
     $data = cache_get('facet_collection:listfacets');
     $facet_list = $data->data;
-
+    
     //@todo Get it from settings.
     $content_types = array('files', 'location', 'people');
 
@@ -160,29 +160,50 @@ function facet_collection_get_available_facets($filter_settings) {
     //If it is satisfy all chosen  content types we take this facet     
     $searcher_info = facetapi_get_searcher_info();
     $searcher = array_shift(array_keys($searcher_info));
-    foreach ($facet_list as $facet_name) {
+    foreach ($facet_list as $facet_name => $facet_info) {
+        $arr = explode('_', $facet_name);
+
         $facet_content_types_array = array();
         if ($facet_name == 'collection_date_facet') {
             continue;
         }
         $facet = facetapi_facet_load($facet_name, $searcher);
         $field_info = field_info_field($facet['field api name']);
-        if ($field_info['type'] == 'taxonomy_term_reference') {
-            $voc_machine_name = $field_info['settings']['allowed_values'][0]['vocabulary'];
-            if (isset($filter_settings['taxonomy_term_reference'][$voc_machine_name])) {
-                $facet_content_types_array = array_keys($filter_settings['taxonomy_term_reference'][$voc_machine_name]);
+        $field_type = $field_info['type'];
+        if ($field_type == 'taxonomy_term_reference') {
+            if (array_shift($arr) == 'inner') {
+                $outer_field_name = $facet_list[$facet_name]['outer_field_name'];
+                $field_name = $facet_list[$facet_name]['field_name'];
+                if (isset($filter_settings['entityreference'][$outer_field_name]['settings'][$field_type][$field_name])) {
+                    $outer_field_info = field_info_field($outer_field_name);
+                    $facet_content_types_array = $outer_field_info['bundles']['node'];
+                }
+            } else {
+                $voc_machine_name = $field_info['settings']['allowed_values'][0]['vocabulary'];
+                if (isset($filter_settings['taxonomy_term_reference'][$voc_machine_name])) {
+                    $facet_content_types_array = array_keys($filter_settings['taxonomy_term_reference'][$voc_machine_name]);
+                }
             }
         }
-        if ($field_info['type'] == 'node_reference') {
-            if (isset($filter_settings['node_reference'][$field_info['field_name']])) {
-                $facet_content_types_array = array_keys($filter_settings['node_reference'][$field_info['field_name']]);
+        if ($field_type == 'entityreference' && $field_info['settings']['target_type'] == 'node') {
+            if (array_shift($arr) == 'inner') {
+                $outer_field_name = $facet_list[$facet_name]['outer_field_name'];
+                $field_name = $facet_list[$facet_name]['field_name'];                
+                if (isset($filter_settings['entityreference'][$outer_field_name]['settings'][$field_type][$field_name])) {
+                    $outer_field_info = field_info_field($outer_field_name);
+                    $facet_content_types_array = $outer_field_info['bundles']['node'];                   
+                }
+            } else {
+                if (isset($filter_settings['entityreference'][$field_info['field_name']]['content_types'])) {
+                    $facet_content_types_array = array_keys($filter_settings['entityreference'][$field_info['field_name']]['content_types']);
+                }
             }
         }
         $array_diff = array_diff($content_types, $facet_content_types_array);
         if (empty($array_diff)) {
             $available_facets[] = $facet_name;
         }
-    }
+    }  
     return $available_facets;
 }
 
@@ -200,51 +221,84 @@ function facet_collection_apachesolr_entity_info_alter(&$entity_info) {
 
 function facet_collection_solr_document(ApacheSolrDocument $document, $node, $entity_type, $env_id) {
     $filedocument = clone $document;
-    $indexed_fields = apachesolr_entity_fields($entity_type);
-    foreach ($indexed_fields as $index_key => $nodefields) {
-        foreach ($nodefields as $field_info) {
-            $field_name = $field_info['field']['field_name'];
+    if ($entity_type == 'node') {
+        $filedocument = facet_collection_build_solr_document($filedocument, $node);
+    }
 
-            // See if the node has fields that can be indexed                
-            if (!empty($node->{$field_name})) {
-                //Add our fields in document. 
-                if ($field_info['field']['type'] == 'taxonomy_term_reference') {
-                    foreach ($field_info['field']['settings']['allowed_values'] as $vocabulary) {
-                        $voc_name = $vocabulary['vocabulary'];
-                    }
-                    $items = field_get_items('node', $node, $field_name);
-                    $index_field_name = facet_collection_get_fieldname_by_vocabulary($voc_name);
+    $documents = array();
+    $documents[] = $filedocument;
+    return $documents;
+}
+
+function facet_collection_build_solr_document($filedocument, $node, $outer_field_name = NULL) {
+    $node_instances = field_info_instances('node', $node->type);
+    foreach ($node_instances as $instance) {
+        $field_info = field_info_field($instance['field_name']);
+        $field_name = $field_info['field_name'];
+        if ($field_info['type'] == 'taxonomy_term_reference') {
+            $items = field_get_items('node', $node, $field_name);
+            foreach ($field_info['settings']['allowed_values'] as $vocabulary) {
+                $voc_name = $vocabulary['vocabulary'];
+            }
+            if (empty($outer_field_name)) {
+                $index_field_name = facet_collection_get_fieldname_by_vocabulary($voc_name);
+            } else {
+                $index_field_name = 'im_' . $outer_field_name . '_' . $field_name;
+            }
+            foreach ($items as $item) {
+                $filedocument->setMultiValue($index_field_name, $item['tid']);
+            }
+        } elseif ($field_info['type'] == 'entityreference' && $field_info['settings']['target_type'] == 'node') {
+            if (empty($outer_field_name)) {
+                $index_key = 'sm_' . $field_name;
+                $fields = facet_collection_entityreference_indexing_callback($node, $index_key, $field_info);
+                foreach ($fields as $field) {
+                    $filedocument->setMultiValue($field['key'], $field['value']);
+                }
+                $items = field_get_items('node', $node, $field_name);
+                if (!empty($items)) {
                     foreach ($items as $item) {
-                        $filedocument->setMultiValue($index_field_name, $item['tid']);
+                        $filedocument = facet_collection_build_solr_document($filedocument, node_load($item['target_id']), $field_name);
                     }
                 }
-                if ($field_info['field']['type'] == 'node_reference') {
-                    foreach ($field_info['field']['settings']['referenceable_types'] as $content_type) {
-                        if ($content_type == '0') {
-                            continue;
-                        }
-                        $function = $field_info['indexing_callback'];
-                        if ($function && function_exists($function)) {
-                            $fields = $function($node, $field_name, $index_key, $field_info);
-                            foreach ($fields as $field) {
-                                $filedocument->setMultiValue($field['key'], $field['value']);
-                            }
-                        }
-                    }
+            } else {
+                $index_key = 'sm_' . $outer_field_name . '_' . $field_name;
+                $fields = facet_collection_entityreference_indexing_callback($node, $index_key, $field_info);
+                foreach ($fields as $field) {
+                    $filedocument->setMultiValue($field['key'], $field['value']);
                 }
-                if ($field_info['field']['type'] == 'date' || $field_info['field']['type'] == 'datetime') {
-                    $fields = facet_collection_date_indexing_callback($node, $field_name, 'dm_facet_collection_date', $field_info);
-                    foreach ($fields as $field) {
-                        $filedocument->setMultiValue($field['key'], $field['value']);
-                    }
+            }
+        } elseif ($field_info['type'] == 'date' || $field_info['type'] == 'datetime') {
+            if (empty($outer_field_name)) {
+                $fields = facet_collection_date_indexing_callback($node, $field_name, 'dm_facet_collection_date', $field_info);
+                foreach ($fields as $field) {
+                    $filedocument->setMultiValue($field['key'], $field['value']);
+                }
+            } else {
+                continue;
+            }
+        }
+    }
+    return $filedocument;
+}
+
+function facet_collection_entityreference_indexing_callback($entity, $index_key, $field_info) {
+    $fields = array();
+    $field_name = $field_info['field_name'];
+    if (!empty($entity->{$field_name})) {
+        $entity_type = $field_info['settings']['target_type'];
+        foreach ($entity->$field_name as $entity_references) {
+            foreach ($entity_references as $reference) {
+                if ($id = (!empty($reference['target_id'])) ? $reference['target_id'] : FALSE) {
+                    $fields[] = array(
+                        'key' => $index_key,
+                        'value' => $entity_type . ':' . $id,
+                    );
                 }
             }
         }
     }
-    $documents = array();
-    $documents[] = $filedocument;
-
-    return $documents;
+    return $fields;
 }
 
 /**
@@ -355,44 +409,88 @@ function facet_collection_get_fieldname_by_vocabulary($voc_name) {
  * Implements hook_facetapi_facet_info()
  */
 function facet_collection_facetapi_facet_info($searcher_info) {
+    $facets = array();    
+    $fields = field_info_fields();
+    foreach ($fields as $field_info) {
+        $field_facets = facet_collection_get_facets_by_field($field_info);
+        $facets = array_merge($facets, $field_facets);
+    }
+    $data = drupal_static('facet_collection_get_facets_by_field');
+    $data = cache_set('facet_collection:listfacets', $data, 'cache', CACHE_TEMPORARY);    
+    return $facets;
+}
+
+
+function facet_collection_get_facets_by_field($field_info, $outer_field_name = NULL) {
     $facets = array();
-    $data = array();
-    $realm = 'block';
-    $indexed_fields = apachesolr_entity_fields('node');
-    $instances = field_info_instances('node');
-    foreach ($indexed_fields as $index_key => $nodefields) {
-        foreach ($nodefields as $field_info) {
-            $field_name = $field_info['field']['field_name'];
-            $bundle = array_shift($field_info['field']['bundles']['node']);
-            $map_callback = $field_info['map callback'];
-            $map_options = $field_info;
-            $min_callback = FALSE;
-            $max_callback = FALSE;
-            $query_types = array('term');
-            $default_widget = 'facetapi_links';
-            if ($field_info['field']['type'] == 'taxonomy_term_reference') {
-                $voc_machine_name = $field_info['field']['settings']['allowed_values'][0]['vocabulary'];
-                if (empty($voc_machine_name)) {
-                    continue;
+    $data = &drupal_static(__FUNCTION__);
+    if (!isset($data)) {
+        $data = array();
+    }
+    $field_name = $field_info['field_name'];
+    if (isset($field_info['bundles']['node'])) {        
+            $bundle = array_shift($field_info['bundles']['node']);        
+    } else {
+        return array();
+    }
+    $map_callback = FALSE;
+    $map_options = $field_info;
+    $min_callback = FALSE;
+    $max_callback = FALSE;
+    $query_types = array('term');
+    $default_widget = 'facetapi_links';
+    if ($field_info['type'] == 'taxonomy_term_reference') {
+        $voc_machine_name = $field_info['settings']['allowed_values'][0]['vocabulary'];
+        if (empty($voc_machine_name)) {
+            return array();
+        }
+        $vocabulary = taxonomy_vocabulary_machine_name_load($voc_machine_name);
+        if (empty($outer_field_name)) {
+            $facet_name = 'collection_' . $voc_machine_name;
+            $label = $vocabulary->name;
+            $index_field_name = facet_collection_get_fieldname_by_vocabulary($voc_machine_name);
+            $data[$facet_name] = array();
+        } else {
+            $facet_name = 'inner_collection_' . $outer_field_name . '_' . $field_name;
+            $instance = field_info_instance('node', $field_name, $bundle);
+            $label = $instance['label'] . ' attached to ' . $instance['bundle'];
+            $index_field_name = 'im_' . $outer_field_name . '_' . $field_name;
+            $data[$facet_name] = array('outer_field_name' => $outer_field_name,
+                'field_name' => $field_name,
+            );
+        }
+        if (isset($facets[$facet_name])) {
+            continue;
+        }
+        $map_callback = 'facet_collection_map_taxonomy_terms';
+        $map_options = array();
+    } elseif ($field_info['type'] == 'entityreference' && $field_info['settings']['target_type'] == 'node') {
+        $instance = field_info_instance('node', $field_name, $bundle);
+        if (empty($outer_field_name)) {
+            foreach ($field_info['settings']['handler_settings']['target_bundles'] as $content_type) {
+                $instances = field_info_instances('node', $content_type);
+                foreach ($instances as $inner_instance) {
+                    $field = field_info_field($inner_instance['field_name']);
+                    $inner_facets = facet_collection_get_facets_by_field($field, $field_name);
+                    $facets = array_merge($inner_facets, $facets);
                 }
-                $vocabulary = taxonomy_vocabulary_machine_name_load($voc_machine_name);
-                $facet_name = 'collection_' . $voc_machine_name;
-                $data[] = $facet_name;
-                if (isset($facets[$facet_name])) {
-                    continue;
-                }
-                $label = $vocabulary->name;
-                $index_field_name = facet_collection_get_fieldname_by_vocabulary($voc_machine_name);
-                $map_callback = 'facet_collection_map_taxonomy_terms';
-                $map_options = array();
             }
-            if ($field_info['field']['type'] == 'node_reference') {
-                $facet_name = 'collection_' . $field_name;
-                $label = $instances[$bundle][$field_name]['label'];
-                $index_field_name = apachesolr_index_key($field_info);
-                $data[] = $facet_name;
-            }
-            if ($field_info['field']['type'] == 'date' || $field_info['field']['type'] == 'datetime') {
+            $facet_name = 'collection_' . $field_name;
+            $index_field_name = 'sm_' . $field_name;
+            $label = $instance['label'];
+            $data[$facet_name] = array();
+        } else {            
+            $facet_name = 'inner_collection_' . $outer_field_name . '_' . $field_name;
+            $index_field_name = 'sm_' . $outer_field_name . '_' . $field_name;            
+            $label = $instance['label'] . ' attached to ' . $instance['bundle'];
+            $data[$facet_name] = array('outer_field_name' => $outer_field_name,
+                'field_name' => $field_name,
+            );
+        }
+        $map_callback = 'apachesolr_entityreference_facet_map_callback';
+    } elseif ($field_info['type'] == 'date' || $field_info['type'] == 'datetime') {
+        if (!isset($facets['collection_date_facet'])) {
+            if (empty($outer_field_name)) {
                 $facet_name = 'collection_date_facet';
                 $label = 'Date';
                 $index_field_name = 'dm_facet_collection_date';
@@ -400,29 +498,32 @@ function facet_collection_facetapi_facet_info($searcher_info) {
                 $default_widget = 'facetapi_date_range_widget';
                 $min_callback = 'facet_collection_get_min_date';
                 $max_callback = 'facet_collection_get_max_date';
-                $data[] = $facet_name;
+            } else {
+                return array();
             }
-            $facets[$facet_name] = array(
-                'name' => $facet_name,
-                'label' => t($label),
-                'description' => t('Automatically created facet for facet collection module'),
-                'field' => $index_field_name,
-                'field alias' => $facet_name,
-                'field api name' => $field_name,
-                'field api bundles' => array(),
-                'query types' => $query_types,
-                'default widget' => $default_widget,
-                'allowed operators' => array(FACETAPI_OPERATOR_AND => FALSE, FACETAPI_OPERATOR_OR => TRUE),
-                'facet mincount allowed' => TRUE,
-                'facet missing allowed' => TRUE,
-                'map callback' => $map_callback,
-                'map options' => $map_options,
-                'min callback' => $min_callback,
-                'max callback' => $max_callback,
-            );
+            $data[$facet_name] = array();
         }
-    }   
-    cache_set('facet_collection:listfacets', $data, 'cache', CACHE_TEMPORARY);
+    } else {
+        return array();
+    }    
+    $facets[$facet_name] = array(
+        'name' => $facet_name,
+        'label' => t($label),
+        'description' => t('Automatically created facet for facet collection module'),
+        'field' => $index_field_name,
+        'field alias' => $facet_name,
+        'field api name' => $field_name,
+        'field api bundles' => array(),
+        'query types' => $query_types,
+        'default widget' => $default_widget,
+        'allowed operators' => array(FACETAPI_OPERATOR_AND => FALSE, FACETAPI_OPERATOR_OR => TRUE),
+        'facet mincount allowed' => TRUE,
+        'facet missing allowed' => TRUE,
+        'map callback' => $map_callback,
+        'map options' => $map_options,
+        'min callback' => $min_callback,
+        'max callback' => $max_callback,
+    );    
     return $facets;
 }
 
@@ -507,7 +608,6 @@ function facet_collection_apachesolr_query_alter($query) {
                 //Exclude all forbidden content types from query and save only allowed content types in filter
                 if (!empty($filtering_content_types)) {
                     $forbidden_content_types = array_diff($filtering_content_types, $available_content_types);
-                    dpm($forbidden_content_types);
                     $query->removeFilter('bundle');
                     if (!empty($forbidden_content_types)) {
                         $allowed_content_types = array_diff($filtering_content_types, $forbidden_content_types);
