@@ -32,3 +32,13 @@ function filters_ui_datetime_add_field($field, $bundle, &$facet_filters_settings
         $facet_filters_settings[$field['type']][$bundle] = array();
     }
 }
+
+/**
+ * Return information by what current field would be filtered
+ *
+ * @param $field
+ * @return string
+ */
+function filters_ui_datetime_filter_by($field){
+    return 'Date';
+}

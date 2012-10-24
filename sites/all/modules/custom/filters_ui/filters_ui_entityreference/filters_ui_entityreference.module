@@ -50,7 +50,6 @@ function filters_ui_entityreference_settings_form($field, $ref_filters, $form, &
             $chosen_filters = array();
             foreach ($filters_list as $filter_name => $filter) {
                 if (isset($ref_filters[$ref_type])) {
-                    
                     if ($ref_filters[$ref_type][$filter_name]['state'] == 'visible') {
                         array_push($chosen_filters, $filter_name);
                     }
@@ -150,4 +149,15 @@ function _filters_ui_entityreference_get_referenced_filterable_fields($field) {
         }
     }
     return $referenced_filterable_fields;
+}
+
+
+/**
+ * Return information by what current field would be filtered
+ *
+ * @param $field
+ * @return string
+ */
+function filters_ui_entityreference_filter_by($field){
+    return 'Node Reference';
 }

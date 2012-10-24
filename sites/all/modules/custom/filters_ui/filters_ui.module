@@ -37,7 +37,6 @@ function filters_ui_menu()
                         'access arguments' => array('administer site configuration'),
                     );
                     // 'Manage filters' tab.
-                    //TODO: find other way to check. It is hardcode. It should be used only for default case.
                     $path_elements = explode('/', $path);
                     if (!in_array('comment', $path_elements)) {
                         $items["$path/filters"] = array(
@@ -92,7 +91,7 @@ function filters_ui_field_delete_instance($instance)
     $field = field_info_field($instance['field_name']);
 
     //Erase information of deleting field from existing version of facet_collections_filters
-    //and facet_collections_filters_settings
+    //and facet_collections_filters_settings common variables
     if (isset($facet_filters[$bundle])) {
         if (isset($facet_filters[$bundle][$field['field_name']])) {
             $facet_filters_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
@@ -122,6 +121,7 @@ function filters_ui_field_create_instance($instance)
         $facet_filters[$bundle][$field['field_name']] = array();
         $facet_filters[$bundle][$field['field_name']]['state'] = 'hidden';
         $facet_filters[$bundle][$field['field_name']]['referened_filters'] = array();
+        variable_set('facet_collection_filters',drupal_json_encode($facet_filters));
     }
 }
 

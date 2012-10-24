@@ -34,3 +34,14 @@ function filters_ui_taxonomy_term_reference_add_field($field, $bundle, &$facet_f
         $facet_filters_settings[$field['type']][$vocabulary_name][$bundle] = array();
     }
 }
+
+/**
+ * Return information by what current field would be filtered
+ *
+ * @param $field
+ * @return string
+ */
+function filters_ui_taxonomy_term_reference_filter_by($field){
+    $vocabulary = taxonomy_vocabulary_machine_name_load($field['settings']['allowed_values'][0]['vocabulary']);
+    return 'Vocabulary ' . $vocabulary->name;
+}

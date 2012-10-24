@@ -205,6 +205,7 @@ function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bu
 
     $bundle_instances = field_info_instances($entity_type, $bundle);
     $instances = array();
+    //At filters overview page we need to see only fields that is filterable
     foreach ($bundle_instances as $instance_name => $bundle_instance) {
         $field = field_info_field($bundle_instance['field_name']);
         if (is_field_filterable($field)) {
@@ -222,7 +223,7 @@ function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bu
         'formatter_settings_edit' => NULL,
     );
 
-    // Get common variable with data about filters states.
+    // Get common variable with information about filters states.
     // If variable doesn't set, all filters was taken as inactive.
     $filters = array();
     $filters_json = variable_get('facet_collection_filters');
@@ -268,19 +269,10 @@ function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bu
     foreach ($instances as $name => $instance) {
         $field = field_info_field($instance['field_name']);
         if (is_field_filterable($field)) {
-            switch ($field['type']) {
-                case 'taxonomy_term_reference':
-                    $vocabulary = taxonomy_vocabulary_machine_name_load($field['settings']['allowed_values'][0]['vocabulary']);
-                    $filter_by_label = 'Vocabulary ' . $vocabulary->name;
-                    break;
-                case  'entityreference':
-                    $filter_by_label = 'Node Reference';
-                    break;
-                case 'date':
-                case 'datetime':
-                case 'datestamp':
-                    $filter_by_label = 'Date';
-                    break;
+            $filter_by_label = '';
+            $function = 'filters_ui_' . $field['type'] . '_filter_by';
+            if (function_exists($function)) {
+                $filter_by_label = $function($field);
             }
             $table[$name] = array(
                 '#attributes' => array('class' => array('draggable', 'tabledrag-leaf')),
@@ -494,13 +486,13 @@ function filters_ui_filters_overview_multistep_submit($form, &$form_state)
 
     switch ($op) {
         case 'edit':
-// Store the field whose settings are currently being edited.
+            // Store the field whose settings are currently being edited.
             $field_name = $trigger['#field_name'];
             $form_state['formatter_settings_edit'] = $field_name;
             break;
 
         case 'update':
-// Store the saved settings, and set the field back to 'non edit' mode.
+            // Store the saved settings, and set the field back to 'non edit' mode.
             $field_name = $trigger['#field_name'];
             $values = $form_state['values']['fields'][$field_name]['settings_edit_form']['settings'];
             $form_state['formatter_settings'][$field_name] = $values;
@@ -508,13 +500,13 @@ function filters_ui_filters_overview_multistep_submit($form, &$form_state)
             break;
 
         case 'cancel':
-// Set the field back to 'non edit' mode.
+            // Set the field back to 'non edit' mode.
             unset($form_state['formatter_settings_edit']);
             break;
 
         case 'refresh_table':
-// If the currently edited field is one of the rows to be refreshed, set
-// it back to 'non edit' mode.
+            // If the currently edited field is one of the rows to be refreshed, set
+            // it back to 'non edit' mode.
             $updated_rows = explode(' ', $form_state['values']['refresh_rows']);
             if (isset($form_state['formatter_settings_edit']) && in_array($form_state['formatter_settings_edit'], $updated_rows)) {
                 unset($form_state['formatter_settings_edit']);
@@ -532,7 +524,7 @@ function filters_ui_filters_overview_multistep_js($form, &$form_state)
 {
     $trigger = $form_state['triggering_element'];
     $op = $trigger['#op'];
-// Pick the elements that need to receive the ajax-new-content effect.
+    // Pick the elements that need to receive the ajax-new-content effect.
     switch ($op) {
         case 'edit':
             $updated_rows = array($trigger['#field_name']);
@@ -559,7 +551,7 @@ function filters_ui_filters_overview_multistep_js($form, &$form_state)
         }
     }
 
-// Return the whole table.
+    // Return the whole table.
     return $form['fields'];
 }
 
@@ -610,7 +602,7 @@ function filters_ui_filters_overview_form_submit($form, &$form_state)
         }
     }
 
-    //Erase the current bundle entries from  existing version of facet_collections_filters_settings
+    //Erase the current bundle entries from existing version of facet_collections_filters_settings
     if (isset($facet_filters[$bundle])) {
         foreach ($facet_filters[$bundle] as $filter_name => $filter) {
             $field = field_info_field($filter_name);
@@ -621,7 +613,8 @@ function filters_ui_filters_overview_form_submit($form, &$form_state)
         }
     }
 
-    //Save filters setting in more convenient for apache_solr form
+    //Save changed filters setting in more convenient for apache_solr form at
+    //facet_collections_filters_settings common variable
     foreach ($content_type_filters as $filter_name => $filter) {
         $field = field_info_field($filter_name);
         $function = 'filters_ui_' . $field['type'] . '_add_field';
