@@ -57,7 +57,7 @@ function book_field_ajax_progress($key) {
     $a = $result->fetchAll();
     //If record exist conversion in process else uploading proceeding
     if ($a == NULL) {
-        //Check if we can show upload progress        
+        //Check if we can show upload progress
         if ($upload_key != 0) {
             $progress = array(
                 'message' => t('Starting upload...'),
@@ -353,7 +353,7 @@ function book_field_managed_book_process($element, &$form_state, $form) {
         '#value' => $fid_thumb,
     );
 
-    //Get upload progress key and conversion progress key    
+    //Get upload progress key and conversion progress key
     $conversion_progress_key = mt_rand();
 
     //Check if upload progress extension is available
@@ -425,7 +425,7 @@ function book_field_managed_book_submit($form, &$form_state) {
     $button_key = array_pop($parents);
     $element = drupal_array_get_nested_value($form, $parents);
     if ($button_key == 'remove_button') {
-        //Delete files        
+        //Delete files
         if ($element['#file_swf']) {
             file_delete($element['#file_swf']);
         }
@@ -605,7 +605,7 @@ function book_field_widget_fid_thumb_value(&$element, $input = FALSE, $form_stat
  */
 function book_field_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
     global $base_url;
-    $element = array();    
+    $element = array();
     if ($display['type'] == 'book_field_formatter') {
         foreach ($items as $delta => $item) {
             if ($item['fid_swf'] != '0') {
@@ -635,9 +635,11 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
                 );
             } else {
                 if (module_exists('book_thumbnail') && $item['fid_thumb'] != 0) {
-                    $file = file_load($item['fid_thumb']);
+                    $file_thumb = file_load($item['fid_thumb']);
+                    $file = file_load($item['fid']);
                     $element[$delta] = array(
                         '#theme' => 'book_field_link_view',
+                        '#file_thumb' => $file_thumb,
                         '#file' => $file,
                     );
                 } elseif ($item['fid'] != 0) {
@@ -839,19 +841,19 @@ function theme_book_field_flexpaper_view($variables) {
 /**
  * Theme function for the link formatter.
  */
-function theme_book_field_link_view($variables) {      
+function theme_book_field_link_view($variables) {
     $file_thumb = (object) $variables['file_thumb'];
-    $file = (object) $variables['file'];     
+    $file = (object) $variables['file'];
     $uri = $file->uri;
     $uri_thumb = $file_thumb->uri;
     $style = 'compressing';
-    $text = '<img src="' . image_style_url($style, $uri_thumb) . '">';    
+    $text = '<img src="' . image_style_url($style, $uri_thumb) . '">';
     $options['html'] = TRUE;
     return '<h1>' . $file->filename . '</h1>' . l($text, file_create_url($uri), $options);
 }
 
 /**
- * Get real file name without suffix 
+ * Get real file name without suffix
  */
 function get_real_file_name($file) {
     $uri = $file->uri;
