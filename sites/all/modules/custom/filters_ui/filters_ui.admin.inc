@@ -347,7 +347,7 @@ function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bu
                     }
                 }
             } else {
-                if (isset($filters[$name])) {
+                if (isset($filters[$name]['referenced_filters'])) {
                     $node_reference_filters_settings = $filters[$name]['referenced_filters'];
                 } else {
                     $node_reference_filters_settings = array();
