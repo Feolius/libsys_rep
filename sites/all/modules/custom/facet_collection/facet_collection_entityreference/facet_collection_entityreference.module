@@ -1,0 +1,190 @@
+<?php
+
+/**
+ * Implements hook_facet_collection_field_type_info()
+ */
+function facet_collection_entityreference_facet_collection_field_type_info() {
+    return array('entityreference');
+}
+
+/**
+ * Implements hook_facet_collection_field_facet_groups()
+ */
+function facet_collection_entityreference_facet_collection_field_facet_groups($field_info) {
+    $inner_facets = array();
+    $facets = array();
+    if (isset($field_info['bundles']['node'])) {
+        $bundle = array_shift($field_info['bundles']['node']);
+    } else {
+        return array();
+    }
+    $field_name = $field_info['field_name'];
+    $map_options = $field_info;
+    $query_types = array('term');
+    $default_widget = 'facetapi_links';
+
+    foreach ($field_info['settings']['handler_settings']['target_bundles'] as $content_type) {
+        $instances = field_info_instances('node', $content_type);
+        foreach ($instances as $inner_instance) {
+            $inner_field_info = field_info_field($inner_instance['field_name']);
+            if ($inner_field_info['type'] == 'taxonomy_term_reference' || $inner_field_info['type'] == 'entityreference') {
+                $inner_field_name = $inner_field_info['field_name'];
+                $inner_facet_name = 'inner_collection_' . $field_name . '_' . $inner_field_name;
+                $inner_label = $inner_instance['label'] . ' attached to ' . $inner_instance['bundle'];
+                if ($inner_field_info['type'] == 'taxonomy_term_reference') {
+                    $inner_index_field_name = 'im_' . $field_name . '_' . $inner_field_name;
+                    $inner_map_callback = 'facet_collection_entityreference_map_taxonomy_terms';
+                    $inner_map_options = array();
+                } else {
+                    $inner_index_field_name = 'sm_' . $field_name . '_' . $inner_field_name;
+                    $inner_map_callback = 'apachesolr_entityreference_facet_map_callback';
+                    $inner_map_options = $field_info;
+                }
+                $inner_facets[$inner_facet_name] = array(
+                    'name' => $inner_facet_name,
+                    'label' => t($inner_label),
+                    'description' => t('Automatically created facet for facet collection module'),
+                    'field' => $inner_index_field_name,
+                    'field alias' => $inner_facet_name,
+                    'field api name' => $inner_field_name,
+                    'field api bundles' => array(),
+                    'query types' => $query_types,
+                    'default widget' => $default_widget,
+                    'allowed operators' => array(FACETAPI_OPERATOR_AND => FALSE, FACETAPI_OPERATOR_OR => TRUE),
+                    'facet mincount allowed' => TRUE,
+                    'facet missing allowed' => TRUE,
+                    'map callback' => $inner_map_callback,
+                    'map options' => $inner_map_options,
+                    'min callback' => FALSE,
+                    'max callback' => FALSE,
+                );
+            }
+        }
+    }
+    $instance = field_info_instance('node', $field_name, $bundle);
+    $facet_name = 'collection_' . $field_name;
+    $index_field_name = 'sm_' . $field_name;
+    $label = $instance['label'];
+    $map_callback = 'apachesolr_entityreference_facet_map_callback';
+    $map_options = array();
+    $facets[$facet_name] = array(
+        'name' => $facet_name,
+        'label' => t($label),
+        'description' => t('Automatically created facet for facet collection module'),
+        'field' => $index_field_name,
+        'field alias' => $facet_name,
+        'field api name' => $field_name,
+        'field api bundles' => array(),
+        'query types' => $query_types,
+        'default widget' => $default_widget,
+        'allowed operators' => array(FACETAPI_OPERATOR_AND => FALSE, FACETAPI_OPERATOR_OR => TRUE),
+        'facet mincount allowed' => TRUE,
+        'facet missing allowed' => TRUE,
+        'map callback' => $map_callback,
+        'map options' => $map_options,
+        'min callback' => FALSE,
+        'max callback' => FALSE,
+    );
+    $facet_groups['default'] = $facets;
+    $facet_groups['inner'] = $inner_facets;
+    return $facet_groups;
+}
+
+/**
+ * Map callback for taxonomy term facets
+ */
+function facet_collection_entityreference_map_taxonomy_terms($variables) {
+    $map = array();
+    foreach ($variables as $tid) {
+        $term = taxonomy_term_load($tid);
+        $map[$tid] = entity_label('taxonomy_term', $term);
+    }
+    return $map;
+}
+
+/**
+ * Implements hook_facet_collection_index_field()
+ */
+function facet_collection_entityreference_facet_collection_index_field($filedocument, $node, $field_info) {
+    $field_name = $field_info['field_name'];
+    $index_key = 'sm_' . $field_name;
+    $fields = facet_collection_entityreference_indexing_callback($node, $index_key, $field_info);
+    foreach ($fields as $field) {
+        $filedocument->setMultiValue($field['key'], $field['value']);
+    }
+    $items = field_get_items('node', $node, $field_name);
+    if (!empty($items)) {
+        foreach ($items as $item) {
+            $inner_node = node_load($item['target_id']);
+            $inner_instances = field_info_instances('node', $inner_node->type);
+            foreach ($inner_instances as $inner_instance) {
+                $inner_field_info = field_info_field($inner_instance['field_name']);
+                if ($inner_field_info['type'] == 'taxonomy_term_reference') {
+                    $inner_field_name = $inner_field_info['field_name'];
+                    $inner_items = field_get_items('node', $inner_node, $inner_field_name);
+                    $index_field_name = 'im_' . $field_name . '_' . $inner_field_name;
+                    foreach ($inner_items as $inner_item) {
+                        $filedocument->setMultiValue($index_field_name, $inner_item['tid']);
+                    }
+                } elseif ($inner_field_info['type'] == 'entityreference') {
+                    $inner_index_key = 'sm_' . $field_name . '_' . $inner_field_name;
+                    $fields = facet_collection_entityreference_indexing_callback($inner_node, $inner_index_key, $inner_field_info);
+                    foreach ($fields as $field) {
+                        $filedocument->setMultiValue($field['key'], $field['value']);
+                    }
+                }
+            }
+        }
+    }
+    return $filedocument;
+}
+
+/**
+ * Implements hook_facet_collection_facet_content_types()
+ */
+function facet_collection_entityreference_facet_collection_facet_content_types($filter_settings, $facet_group, $facet_name, $searcher) {
+    $facet_content_types_array = array();
+    $facet = facetapi_facet_load($facet_name, $searcher);
+    if ($facet_group == 'inner') {
+        $arr = explode('inner_collection_', $facet_name);
+        $arr = explode('_' . $facet['field api name'], $arr[1]);
+        $arr_length = count($arr);
+        unset($arr[$arr_length - 1]);
+        $outer_field_name = implode('', $arr);
+        if (!empty($outer_field_name)) {
+            if (in_array($facet['field api name'], array_keys($filter_settings['entityreference'][$outer_field_name]['settings']))) {
+                $outer_field_info = field_info_field($outer_field_name);
+                $facet_content_types_array = $outer_field_info['bundles']['node'];
+            }
+        }
+    } else {
+        if ($filter_settings['entityreference'][$facet['field api name']]['state']) {
+            $facet_field_info = field_info_field($facet['field api name']);
+            $facet_content_types_array = $facet_field_info['bundles']['node'];
+        }
+    }
+    return $facet_content_types_array;
+}
+
+/**
+ * Indexing callback for entityreference
+ */
+function facet_collection_entityreference_indexing_callback($entity, $index_key, $field_info) {
+    $fields = array();
+    $field_name = $field_info['field_name'];
+    if (!empty($entity->{$field_name})) {
+        $entity_type = $field_info['settings']['target_type'];
+        foreach ($entity->$field_name as $entity_references) {
+            foreach ($entity_references as $reference) {
+                if ($id = (!empty($reference['target_id'])) ? $reference['target_id'] : FALSE) {
+                    $fields[] = array(
+                        'key' => $index_key,
+                        'value' => $entity_type . ':' . $id,
+                    );
+                }
+            }
+        }
+    }
+    return $fields;
+}
+
