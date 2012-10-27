@@ -135,7 +135,8 @@ function is_field_filterable($field)
         || $field['type'] == 'datetime'
         || $field['type'] == 'date'
         || $field['type'] == 'datestamp'
-    ) {
+        || $field['type'] == 'fivestar'
+     ) {
         return TRUE;
     }
     return FALSE;

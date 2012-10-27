@@ -629,6 +629,7 @@ function filters_ui_filters_overview_form_submit($form, &$form_state)
     variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
     variable_set('facet_collection_filters_settings', drupal_json_encode($facet_filters_settings));
 
+    dpm($facet_filters_settings);
     drupal_set_message(t('Your settings have been saved.'));
 }
 

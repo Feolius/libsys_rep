@@ -1,0 +1,47 @@
+<?php
+
+/**
+ * Deleting information about field from information structure
+ *
+ * @param $field
+ * @param $bundle
+ * @param $facet_filters_settings
+ * @param $filter
+ */
+function filters_ui_fivestar_delete_field($field, $bundle, &$facet_filters_settings, $filter) {
+    if ($filter['state'] == 'visible') {
+        $tag = $field['settings']['axis'];
+        if (array_key_exists($bundle, $facet_filters_settings[$field['type']][$tag])) {
+            unset($facet_filters_settings[$field['type']][$tag][$bundle]);
+        }
+    }
+}
+
+/**
+ * Add information about field to information structure
+ *
+ * @param $field
+ * @param $bundle
+ * @param $facet_filters_settings
+ * @param $filter
+ */
+function filters_ui_fivestar_add_field($field, $bundle, &$facet_filters_settings, $filter) {
+    if ($filter['state'] == 'visible') {
+        $tag = $field['settings']['axis'];
+        if (!isset($facet_filters_settings[$field['type']][$tag])) {
+            $facet_filters_settings[$field['type']][$tag] = array();
+        }
+        $facet_filters_settings[$field['type']][$tag][$bundle] = array();
+    }
+}
+
+/**
+ * Return information by what current field would be filtered
+ *
+ * @param $field
+ * @return string
+ */
+function filters_ui_fivestar_filter_by($field){
+     $filter_by_label = $field['settings']['axis'];
+     return 'Voting tag ' . $filter_by_label;
+}
