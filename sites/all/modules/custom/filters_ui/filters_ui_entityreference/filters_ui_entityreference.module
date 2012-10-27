@@ -7,7 +7,8 @@
  * @param $ref_filters
  * @return string
  */
-function filters_ui_entityreference_summary($field, $ref_filters) {
+function filters_ui_entityreference_summary($field, $ref_filters)
+{
     $summary = "";
     $filterable_fields = _filters_ui_entityreference_get_referenced_filterable_fields($field);
     if (!empty($filterable_fields)) {
@@ -15,8 +16,9 @@ function filters_ui_entityreference_summary($field, $ref_filters) {
             $summary = 'No filters are chosen';
         } else {
             $summary = "";
-            $filters = "";
+
             foreach ($ref_filters as $ref_type_name => $ref_type_filters) {
+                $filters = "";
                 foreach ($ref_type_filters as $ref_filter_name => $ref_filter) {
                     $instance = field_info_instance("node", $ref_filter_name, $ref_type_name);
                     if ($instance && $ref_filter['state'] == 'visible') {
@@ -42,7 +44,8 @@ function filters_ui_entityreference_summary($field, $ref_filters) {
  * @param $form_state
  * @return mixed
  */
-function filters_ui_entityreference_settings_form($field, $ref_filters, $form, &$form_state) {
+function filters_ui_entityreference_settings_form($field, $ref_filters, $form, &$form_state)
+{
     $filterable_fields = _filters_ui_entityreference_get_referenced_filterable_fields($field);
     if (!empty($filterable_fields)) {
 
@@ -84,7 +87,8 @@ function filters_ui_entityreference_settings_form($field, $ref_filters, $form, &
  * @param $facet_filters_settings
  * @param $filter
  */
-function filters_ui_entityreference_delete_field($field, $bundle, &$facet_filters_settings, $filter) {
+function filters_ui_entityreference_delete_field($field, $bundle, &$facet_filters_settings, $filter)
+{
     //Delete information about referenced filters
     if (isset($filter['referenced_filters'])) {
         if (isset($facet_filters_settings[$field['type']][$field['field_name']]['settings'])) {
@@ -101,7 +105,8 @@ function filters_ui_entityreference_delete_field($field, $bundle, &$facet_filter
  * @param $facet_filters_settings
  * @param $filter
  */
-function filters_ui_entityreference_add_field($field, $bundle, &$facet_filters_settings, $filter) {
+function filters_ui_entityreference_add_field($field, $bundle, &$facet_filters_settings, $filter)
+{
     if (!isset($facet_filters_settings[$field['type']][$field['field_name']])) {
         $facet_filters_settings[$field['type']][$field['field_name']] = array();
     }
@@ -118,7 +123,8 @@ function filters_ui_entityreference_add_field($field, $bundle, &$facet_filters_s
             foreach ($ref_filters as $ref_filter_name => $ref_filter) {
                 $ref_field = field_info_field($ref_filter_name);
                 if ($ref_filter['state'] == 'visible' && $ref_field['type'] != 'date'
-                        && $ref_field['type'] != 'datestamp' && $ref_field['type'] != 'datetime') {
+                    && $ref_field['type'] != 'datestamp' && $ref_field['type'] != 'datetime'
+                ) {
                     $entity_reference_filters_settings[$ref_filter_name] = array();
                 }
             }
@@ -130,7 +136,8 @@ function filters_ui_entityreference_add_field($field, $bundle, &$facet_filters_s
 /**
  * Return list of referenced filterable fields for each referencable_type for some field
  */
-function _filters_ui_entityreference_get_referenced_filterable_fields($field) {
+function _filters_ui_entityreference_get_referenced_filterable_fields($field)
+{
     $referenced_filterable_fields = array();
     if ($field['type'] == 'entityreference' && $field['settings']['target_type'] == 'node') {
         foreach ($field['settings']['handler_settings']['target_bundles'] as $ref_type) {
@@ -139,7 +146,8 @@ function _filters_ui_entityreference_get_referenced_filterable_fields($field) {
             foreach ($ref_instances as $ref_instance) {
                 $ref_field = field_info_field($ref_instance['field_name']);
                 if (is_field_filterable($ref_field) && $ref_field['type'] != 'date'
-                        && $ref_field['type'] != 'datestamp' && $ref_field['type'] != 'datetime') {
+                    && $ref_field['type'] != 'datestamp' && $ref_field['type'] != 'datetime'
+                ) {
                     $filters_list[$ref_instance['field_name']] = $ref_instance['label'];
                 }
             }
@@ -158,6 +166,7 @@ function _filters_ui_entityreference_get_referenced_filterable_fields($field) {
  * @param $field
  * @return string
  */
-function filters_ui_entityreference_filter_by($field){
+function filters_ui_entityreference_filter_by($field)
+{
     return 'Node Reference';
 }

@@ -5,9 +5,9 @@ The first one is used directly by filters admin UI.
 The second one is used for filters settings transferring to apache_solr implementation of facet filters.
 
 The structure of variable facet_collection_filters:
-field_name(machine name) -> state (visible or hidden)
-                         -> referenced_filters (array of referenced    ) -> array of field_name (machine name       )
-                                               (field for current field)                        (of referenced field)
+bundle_name - > array of field_name(machine name) -> state (visible or hidden)
+                                                  -> referenced_filters (array of referenced    ) -> array of field_name (machine name       )
+                                                                        (field for current field)                        (of referenced field)
 
 The structure of variable facet_collection_filters_settings:
 (           -> vocabulary_name(for term_reference)     -> bundle_name                                                                                                          )
