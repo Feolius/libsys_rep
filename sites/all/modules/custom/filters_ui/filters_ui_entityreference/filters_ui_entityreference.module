@@ -170,3 +170,46 @@ function filters_ui_entityreference_filter_by($field)
 {
     return 'Node Reference';
 }
+
+/**
+ * Implements hook_field_update_field().
+ *
+ * @param $field
+ * @param $prior_field
+ * @param $has_data
+ */
+function filters_ui_entityreference_field_update_field($field, $prior_field, $has_data)
+{
+    if ($field['type'] == 'entityreference' && $field['settings']['target_type'] == 'node') {
+        $facet_filters_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
+        //Update information about current field in existing version of facet_collections_filters_settings common variable
+        $old_referenced_bundles = $prior_field['settings']['handler_settings']['target_bundles'];
+        $new_referenced_bundles = $field['settings']['handler_settings']['target_bundles'];
+        $difference = array_diff($old_referenced_bundles, $new_referenced_bundles);
+        if (!empty($difference)) {
+            $intersection = array_intersect($old_referenced_bundles, $new_referenced_bundles);
+            if ($old_referenced_bundles != $intersection) {
+                $deleted_bundles = array_diff($old_referenced_bundles, $intersection);
+                $facet_filters = drupal_json_decode(variable_get('facet_collection_filters'));
+                foreach ($facet_filters as $bundle_name => $filters) {
+                    if (array_key_exists($field['field_name'], $filters)) {
+                        foreach ($deleted_bundles as $del_bundle_name => $del_bundle) {
+                            if (isset($facet_filters[$bundle_name][$field['field_name']]['referenced_filters'][$del_bundle_name])) {
+                                foreach ($facet_filters[$bundle_name][$field['field_name']]['referenced_filters'][$del_bundle_name] as $filter_name => $filter) {
+                                    if ($filter['state'] == 'visible') {
+                                        unset($facet_filters_settings[$field['type']][$field['field_name']['settings']][$filter_name]);
+                                    }
+                                }
+                                unset($facet_filters[$bundle_name][$field['field_name']]['referenced_filters'][$del_bundle_name]);
+                            }
+
+                        }
+                    }
+                }
+                variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
+                variable_set('facet_collection_filters_settings', drupal_json_encode($facet_filters_settings));
+            }
+
+        }
+    }
+}

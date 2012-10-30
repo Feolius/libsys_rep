@@ -10,7 +10,8 @@ bundle_name - > array of field_name(machine name) -> state (visible or hidden)
                                                                         (field for current field)                        (of referenced field)
 
 The structure of variable facet_collection_filters_settings:
-(           -> vocabulary_name(for term_reference)     -> bundle_name                                                                                                          )
+(           -> voting_tag_name(for fivestar)           -> array of bundle_name(bundle_names is keys)                                                                           )
+(           -> vocabulary_name(for term_reference)     -> array of bundle_name(bundle_names is keys)                                                                           )
 (field_type -> field_name(for entityreference)         -> state (TRUE if filter is enabled and FALSE if not)                                                                   )
 (                                                      -> settings(for referenced filters)                   -> array of field_name(for all filterable types except date types))
 (           -> bundle_name(for date types)
