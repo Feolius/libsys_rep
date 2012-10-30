@@ -272,41 +272,14 @@ function facet_collection_facetapi_facet_info($searcher_info) {
             }
         }
     }
-
     variable_set('facet_collection:facet_collection', $facet_collection);
     variable_set('facet_collection:field_type_list', $field_type_list);
     cache_set('facet_collection:listfacets', array_keys($facets), 'cache', CACHE_TEMPORARY);
+
     return $facets;
 }
 
-/**
- * Implements hook_form_alter()
- */
-function facet_collection_form_alter(&$form, &$form_state, $form_id) {
-    if ($form_id == 'apachesolr_index_action_form_delete_confirm') {
-        $form['#submit'][] = 'facet_collection_index_action_form_delete_submit';
-    }
-}
 
-/**
- * Submit callback for apachesolr_index_action_form. We need it to remove persistent variables that contain min and max dates
- */
-function facet_collection_index_action_form_delete_submit($form, &$form_state) {
-    variable_del('facet_collection_min_indexed_date');
-    variable_del('facet_collection_max_indexed_date');
-}
 
-/**
- * Max date callback for facet collection
- */
-function facet_collection_get_max_date() {
-    return strtotime(variable_get('facet_collection_max_indexed_date'));
-}
 
-/**
- * Min date callback for facet collection
- */
-function facet_collection_get_min_date() {
-    return strtotime(variable_get('facet_collection_min_indexed_date'));
-}
 
