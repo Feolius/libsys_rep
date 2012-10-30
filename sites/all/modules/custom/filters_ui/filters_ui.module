@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * @file
+ * UI for filters from module Facet Collection.
+ *
+ */
+
+/**
  * Implements hook_menu().
  */
 function filters_ui_menu()

@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Overview and settings forms and helper functions for Filter UI module.
+ */
+
+/**
  * Determines the rendering order of an array representing a tree.
  *
  * Callback for array_reduce() within filters_ui_table_pre_render().
