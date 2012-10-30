@@ -1,14 +1,17 @@
 <?php
 
 /**
- * Deleting information about field from information structure
- *
- * @param $field
- * @param $bundle
- * @param $facet_filters_settings
- * @param $filter
+ * Implements hook_filters_ui_field_type_info().
  */
-function filters_ui_fivestar_delete_field($field, $bundle, &$facet_filters_settings, $filter)
+function filters_ui_fivestar_filters_ui_field_type_info()
+{
+    return array('fivestar');
+}
+
+/**
+ * Implements hook_filters_ui_delete_field().
+ */
+function filters_ui_fivestar_filters_ui_delete_field($field, $bundle, &$facet_filters_settings, $filter)
 {
     if ($filter['state'] == 'visible') {
         $tag = $field['settings']['axis'];
@@ -19,14 +22,9 @@ function filters_ui_fivestar_delete_field($field, $bundle, &$facet_filters_setti
 }
 
 /**
- * Add information about field to information structure
- *
- * @param $field
- * @param $bundle
- * @param $facet_filters_settings
- * @param $filter
+ * Implements hook_filters_ui_add_field().
  */
-function filters_ui_fivestar_add_field($field, $bundle, &$facet_filters_settings, $filter)
+function filters_ui_fivestar_filters_ui_add_field($field, $bundle, &$facet_filters_settings, $filter)
 {
     if ($filter['state'] == 'visible') {
         $tag = $field['settings']['axis'];
@@ -38,12 +36,9 @@ function filters_ui_fivestar_add_field($field, $bundle, &$facet_filters_settings
 }
 
 /**
- * Return information by what current field would be filtered
- *
- * @param $field
- * @return string
+ * Implements hook_filters_ui_filter_by().
  */
-function filters_ui_fivestar_filter_by($field)
+function filters_ui_fivestar_filters_ui_filter_by($field)
 {
     $filter_by_label = $field['settings']['axis'];
     return 'Voting tag ' . $filter_by_label;
@@ -51,10 +46,6 @@ function filters_ui_fivestar_filter_by($field)
 
 /**
  * Implements hook_field_update_field().
- *
- * @param $field
- * @param $prior_field
- * @param $has_data
  */
 function filters_ui_fivestar_field_update_field($field, $prior_field, $has_data)
 {

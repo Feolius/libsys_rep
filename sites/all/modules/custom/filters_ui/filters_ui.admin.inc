@@ -204,16 +204,19 @@ function theme_filters_ui_table($variables)
  */
 function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bundle)
 {
+
+
     $bundle = field_extract_bundle($entity_type, $bundle);
-
     $admin_path = _field_ui_bundle_admin_path($entity_type, $bundle);
-
     $bundle_instances = field_info_instances($entity_type, $bundle);
+    $filterable_type_list = filters_ui_submodules_info();
+
     $instances = array();
+    unset($instances['date']);
     //At filters overview page we need to see only fields that is filterable
     foreach ($bundle_instances as $instance_name => $bundle_instance) {
         $field = field_info_field($bundle_instance['field_name']);
-        if (is_field_filterable($field)) {
+        if (array_key_exists($field['type'], $filterable_type_list)) {
             $instances[$instance_name] = $bundle_instance;
         }
     }
@@ -273,12 +276,8 @@ function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bu
     // Filter rows.
     foreach ($instances as $name => $instance) {
         $field = field_info_field($instance['field_name']);
-        if (is_field_filterable($field)) {
-            $filter_by_label = '';
-            $function = 'filters_ui_' . $field['type'] . '_filter_by';
-            if (function_exists($function)) {
-                $filter_by_label = $function($field);
-            }
+        if (array_key_exists($field['type'], $filterable_type_list)) {
+            $filter_by_label = module_invoke($filterable_type_list[$field['type']], 'filters_ui_filter_by', $field);
             $table[$name] = array(
                 '#attributes' => array('class' => array('draggable', 'tabledrag-leaf')),
                 '#row_type' => 'field',
@@ -375,11 +374,10 @@ function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bu
                 $table[$name]['state']['settings_edit_form'] = array();
 
                 $settings_form = array();
-                $function = 'filters_ui_' . $field['type'] . '_settings_form';
-                if (function_exists($function)) {
+                $function = $filterable_type_list[$field['type']] . '_filters_ui_settings_form';
+                if($function){
                     $settings_form = $function($field, $node_reference_filters_settings, $form, $form_state);
                 }
-
                 if ($settings_form) {
                     $table[$name]['state']['#cell_attributes'] = array('colspan' => 3);
                     $table[$name]['state']['settings_edit_form'] = array(
@@ -413,11 +411,7 @@ function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bu
                 }
             } else {
                 // Display a summary of the current filter settings.
-                $summary = NULL;
-                $function = 'filters_ui_' . $field['type'] . '_summary';
-                if (function_exists($function)) {
-                    $summary = $function($field, $node_reference_filters_settings);
-                }
+                $summary = module_invoke($filterable_type_list[$field['type']], 'filters_ui_summary', $field, $node_reference_filters_settings);
                 $table[$name]['settings_summary'] = array();
                 $table[$name]['settings_edit'] = array();
                 if ($summary) {
@@ -573,6 +567,7 @@ function filters_ui_filters_overview_form_submit($form, &$form_state)
     //of current bundle
     $facet_filters = drupal_json_decode(variable_get('facet_collection_filters'));
     $facet_filters_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
+    $filterable_type_list = filters_ui_submodules_info();
 
     //Get changed filters settings from forms
     if (!empty($form_values['fields'])) {
@@ -611,10 +606,11 @@ function filters_ui_filters_overview_form_submit($form, &$form_state)
     if (isset($facet_filters[$bundle])) {
         foreach ($facet_filters[$bundle] as $filter_name => $filter) {
             $field = field_info_field($filter_name);
-            $function = 'filters_ui_' . $field['type'] . '_delete_field';
-            if (function_exists($function)) {
+            $function = $filterable_type_list[$field['type']]. '_filters_ui_delete_field';
+            if($function){
                 $function($field, $bundle, $facet_filters_settings, $filter);
             }
+            // module_invoke($filterable_type_list[$field['type']], 'filters_ui_delete_field', $field, $bundle, $facet_filters_settings, $filter);
         }
     }
 
@@ -622,11 +618,11 @@ function filters_ui_filters_overview_form_submit($form, &$form_state)
     //facet_collections_filters_settings common variable
     foreach ($content_type_filters as $filter_name => $filter) {
         $field = field_info_field($filter_name);
-        $function = 'filters_ui_' . $field['type'] . '_add_field';
-        if (function_exists($function)) {
+        $function = $filterable_type_list[$field['type']]. '_filters_ui_add_field';
+        if($function){
             $function($field, $bundle, $facet_filters_settings, $filter);
         }
-
+        //module_invoke($filterable_type_list[$field['type']], 'filters_ui_add_field', $field, $bundle, $facet_filters_settings, $filter);
     }
 
     //Save filters settings at the variables

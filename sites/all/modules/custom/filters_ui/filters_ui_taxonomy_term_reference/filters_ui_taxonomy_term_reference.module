@@ -1,14 +1,17 @@
 <?php
 
 /**
- * Deleting information about field from information structure
- *
- * @param $field
- * @param $bundle
- * @param $facet_filters_settings
- * @param $filter
+ * Implements hook_filters_ui_field_type_info().
  */
-function filters_ui_taxonomy_term_reference_delete_field($field, $bundle, &$facet_filters_settings, $filter)
+function filters_ui_taxonomy_term_reference_filters_ui_field_type_info()
+{
+    return array('taxonomy_term_reference');
+}
+
+/**
+ * Implements hook_filters_ui_delete_field().
+ */
+function filters_ui_taxonomy_term_reference_filters_ui_delete_field($field, $bundle, &$facet_filters_settings, $filter)
 {
     if ($filter['state'] == 'visible') {
         $vocabulary_name = $field['settings']['allowed_values'][0]['vocabulary'];
@@ -19,14 +22,9 @@ function filters_ui_taxonomy_term_reference_delete_field($field, $bundle, &$face
 }
 
 /**
- * Add information about field to information structure
- *
- * @param $field
- * @param $bundle
- * @param $facet_filters_settings
- * @param $filter
+ * Implements hook_filters_ui_add_field().
  */
-function filters_ui_taxonomy_term_reference_add_field($field, $bundle, &$facet_filters_settings, $filter)
+function filters_ui_taxonomy_term_reference_filters_ui_add_field($field, $bundle, &$facet_filters_settings, $filter)
 {
     if ($filter['state'] == 'visible') {
         $vocabulary_name = $field['settings']['allowed_values'][0]['vocabulary'];
@@ -38,12 +36,9 @@ function filters_ui_taxonomy_term_reference_add_field($field, $bundle, &$facet_f
 }
 
 /**
- * Return information by what current field would be filtered
- *
- * @param $field
- * @return string
+ * Implements hook_filters_ui_filter_by().
  */
-function filters_ui_taxonomy_term_reference_filter_by($field)
+function filters_ui_taxonomy_term_reference_filters_ui_filter_by($field)
 {
     $vocabulary = taxonomy_vocabulary_machine_name_load($field['settings']['allowed_values'][0]['vocabulary']);
     return 'Vocabulary ' . $vocabulary->name;
@@ -52,10 +47,6 @@ function filters_ui_taxonomy_term_reference_filter_by($field)
 
 /**
  * Implements hook_field_update_field().
- *
- * @param $field
- * @param $prior_field
- * @param $has_data
  */
 function filters_ui_taxonomy_term_reference_field_update_field($field, $prior_field, $has_data)
 {

@@ -93,7 +93,8 @@ function filters_ui_theme()
 function filters_ui_field_delete_instance($instance)
 {
     $field = field_info_field($instance['field_name']);
-    if (is_field_filterable($field)) {
+    $filterable_type_list = filters_ui_submodules_info();
+    if (array_key_exists($field['type'], $filterable_type_list)) {
         $facet_filters = drupal_json_decode(variable_get('facet_collection_filters'));
         $bundle = $instance['bundle'];
 
@@ -102,10 +103,7 @@ function filters_ui_field_delete_instance($instance)
         if (isset($facet_filters[$bundle])) {
             if (isset($facet_filters[$bundle][$field['field_name']])) {
                 $facet_filters_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
-                $function = 'filters_ui_' . $field['type'] . '_delete_field';
-                if (function_exists($function)) {
-                    $function($field, $bundle, $facet_filters_settings, $facet_filters[$bundle][$field['field_name']]);
-                }
+                module_invoke($filterable_type_list[$field['type']], 'filters_ui_delete_field',$field, $bundle, $facet_filters_settings, $facet_filters[$bundle][$field['field_name']]);
                 unset($facet_filters[$bundle][$field['field_name']]);
                 variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
                 variable_set('facet_collection_filters_settings', drupal_json_encode($facet_filters_settings));
@@ -120,7 +118,8 @@ function filters_ui_field_delete_instance($instance)
 function filters_ui_field_create_instance($instance)
 {
     $field = field_info_field($instance['field_name']);
-    if (is_field_filterable($field)) {
+    $filterable_type_list = filters_ui_submodules_info();
+    if (array_key_exists($field['type'], $filterable_type_list)) {
         $facet_filters = drupal_json_decode(variable_get('facet_collection_filters'));
         $bundle = $instance['bundle'];
         if (!isset($facet_filters[$bundle])) {
@@ -134,20 +133,26 @@ function filters_ui_field_create_instance($instance)
 }
 
 /**
- * Return TRUE if field is filterable
+ * Get information about all field types that should be filtered and modules
+ *
+ * @return array
+ *  An array with list of filterable types
  */
-function is_field_filterable($field)
+function filters_ui_submodules_info()
 {
-    if ($field['type'] == 'taxonomy_term_reference'
-        || ($field['type'] == 'entityreference' && $field['settings']['target_type'] == 'node')
-        || $field['type'] == 'datetime'
-        || $field['type'] == 'date'
-        || $field['type'] == 'datestamp'
-        || $field['type'] == 'fivestar'
-    ) {
-        return TRUE;
+    $filterable_type_list = cache_get('filters_ui_filterable_field_types');
+    if (!$filterable_type_list) {
+        foreach (module_implements('filters_ui_field_type_info') as $module) {
+            $field_types = module_invoke($module, 'filters_ui_field_type_info');
+            foreach ($field_types as $field_type) {
+                $filterable_type_list[$field_type] = $module;
+            }
+        }
+        if (!empty($filterable_type_list)) {
+            cache_set('filters_ui_filterable_field_types', $filterable_type_list);
+        }
+        return $filterable_type_list;
     }
-    return FALSE;
+    return $filterable_type_list->data;
 }
-
 
