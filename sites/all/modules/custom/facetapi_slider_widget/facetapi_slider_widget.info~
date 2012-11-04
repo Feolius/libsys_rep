@@ -1,5 +1,5 @@
-name = Date Range Widget
-description = "Provides facetapi date range widget."
+name = Slider Widget
+description = "Provides facetapi slider widget."
 package = Search Toolkit
 core = 7.x
 dependencies[] = facetapi
