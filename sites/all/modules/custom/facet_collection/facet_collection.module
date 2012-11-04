@@ -275,7 +275,6 @@ function facet_collection_facetapi_facet_info($searcher_info) {
     variable_set('facet_collection:facet_collection', $facet_collection);
     variable_set('facet_collection:field_type_list', $field_type_list);
     cache_set('facet_collection:listfacets', array_keys($facets), 'cache', CACHE_TEMPORARY);
-
     return $facets;
 }
 
