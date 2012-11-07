@@ -1,15 +1,19 @@
 (function ($) {
     $(document).ready(function () {
-        var arrow_left = $('<div class="collection_layout_slider_button_left">' +
-                '<a class="m-icon-big-swapleft active" ' +
-                'href="/node/' + Drupal.settings.collection_arrows.previous_node + '"/>' +
-                '</div>'),
-            arrow_right = $('<div class="collection_layout_slider_button_right">' +
-                '<a class="m-icon-big-swapright active" ' +
-                'href="/node/' + Drupal.settings.collection_arrows.next_node + '"/>' +
-                '</div>');
+        var arrow_left = $('<div/>'),
+        arrow_left_url = Drupal.settings.collection_arrows.previous_node_html,
+        arrow_right = $('<div/>'),
+        arrow_right_url = Drupal.settings.collection_arrows.next_node_html;
+
+        arrow_left.addClass("collection_layout_slider_button_left");
+        arrow_left.append(arrow_left_url);
+
+        arrow_right.addClass("collection_layout_slider_button_right");
+        arrow_right.append(arrow_right_url);
+
         $('body').append(arrow_left);
         $('body').append(arrow_right);
+
     });
     collectionLayout = {
         reposition:function (eventObject) {
