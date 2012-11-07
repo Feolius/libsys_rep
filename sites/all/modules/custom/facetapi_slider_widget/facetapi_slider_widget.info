@@ -1,0 +1,8 @@
+name = Slider Widget
+description = "Provides facetapi slider widget."
+package = Search Toolkit
+core = 7.x
+dependencies[] = facetapi
+files[] = plugins/facetapi/widget_slider.inc
+
+

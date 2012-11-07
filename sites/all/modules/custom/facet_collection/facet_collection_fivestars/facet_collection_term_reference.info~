@@ -1,0 +1,7 @@
+name = Facet collection term reference filters
+description = "Provides facet collection filters for taxonomy term references"
+package = Facet collection
+core = 7.x
+dependencies[] = facet_collection
+
+
