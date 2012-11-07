@@ -67,20 +67,20 @@ function _openlayers_openlayers_layers() {
   $layer->description = 'MapQuest’s rendering of OpenStreetMap.';
   $layer->data = array(
     'baselayer' => TRUE,
-    'attribution' => t('&copy;<a href="@ccbysa">CCBYSA</a> 2010
-      <a href="@openstreetmap">OpenStreetMap.org</a> contributors',
+    'attribution' => t('&copy;<a href="@ccbysa">CCBYSA</a> '.
+      '<a href="@openstreetmap">&copy; OpenStreetMap contributors</a>',
       array(
-        '@openstreetmap' => 'http://www.openstreetmap.org/',
+        '@openstreetmap' => 'http://www.openstreetmap.org/copyright',
         '@ccbysa' => 'http://creativecommons.org/licenses/by-sa/2.0/',
       )
     ) . '. '. t('Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a>.'),
     'projection' => array('900913'),
     'layer_type' => 'openlayers_layer_type_xyz',
     'url' => array(
-      'http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png',
-      'http://otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png',
-      'http://otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png',
-      'http://otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png',
+      '//otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png',
+      '//otile2.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png',
+      '//otile3.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png',
+      '//otile4.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png',
     ),
     'wrapDateLine' => TRUE,
   );
@@ -98,10 +98,10 @@ function _openlayers_openlayers_layers() {
     'projection' => array('900913'),
     'layer_type' => 'openlayers_layer_type_xyz',
     'url' => array(
-      'http://oatile1.mqcdn.com/naip/${z}/${x}/${y}.png',
-      'http://oatile2.mqcdn.com/naip/${z}/${x}/${y}.png',
-      'http://oatile3.mqcdn.com/naip/${z}/${x}/${y}.png',
-      'http://oatile4.mqcdn.com/naip/${z}/${x}/${y}.png',
+      '//oatile1.mqcdn.com/naip/${z}/${x}/${y}.png',
+      '//oatile2.mqcdn.com/naip/${z}/${x}/${y}.png',
+      '//oatile3.mqcdn.com/naip/${z}/${x}/${y}.png',
+      '//oatile4.mqcdn.com/naip/${z}/${x}/${y}.png',
     ),
     'wrapDateLine' => TRUE,
   );
@@ -193,16 +193,16 @@ function _openlayers_openlayers_layers() {
   $layer->description = 'The main OpenStreetMap map';
   $layer->data = array(
     'baselayer' => TRUE,
-    'attribution' => t('&copy;<a href="@ccbysa">CCBYSA</a> 2010
-      <a href="@openstreetmap">OpenStreetMap.org</a> contributors',
+    'attribution' => t('&copy;<a href="@ccbysa">CCBYSA</a> '.
+        '<a href="@openstreetmap">&copy; OpenStreetMap contributors</a>',
       array(
-        '@openstreetmap' => 'http://www.openstreetmap.org/',
+        '@openstreetmap' => 'http://www.openstreetmap.org/copyright',
         '@ccbysa' => 'http://creativecommons.org/licenses/by-sa/2.0/',
       )
     ),
     'projection' => array('900913'),
     'layer_type' => 'openlayers_layer_type_xyz',
-    'url' => 'http://tile.openstreetmap.org/${z}/${x}/${y}.png',
+    'url' => '//tile.openstreetmap.org/${z}/${x}/${y}.png',
     'wrapDateLine' => TRUE,
   );
   $layers[$layer->name] = $layer;
@@ -215,16 +215,16 @@ function _openlayers_openlayers_layers() {
   $layer->description = 'Alternative, community-rendered OpenStreetMap';
   $layer->data = array(
     'baselayer' => TRUE,
-    'attribution' => t('&copy;<a href="@ccbysa">CCBYSA</a> 2010
-      <a href="@openstreetmap">OpenStreetMap.org</a> contributors',
+    'attribution' => t('&copy;<a href="@ccbysa">CCBYSA</a> '.
+        '<a href="@openstreetmap">&copy; OpenStreetMap contributors</a>',
       array(
-        '@openstreetmap' => 'http://www.openstreetmap.org/',
+        '@openstreetmap' => 'http://www.openstreetmap.org/copyright',
         '@ccbysa' => 'http://creativecommons.org/licenses/by-sa/2.0/',
       )
     ),
     'projection' => array('900913'),
     'layer_type' => 'openlayers_layer_type_xyz',
-    'url' => 'http://tah.openstreetmap.org/Tiles/tile/${z}/${x}/${y}.png',
+    'url' => '//tah.openstreetmap.org/Tiles/tile/${z}/${x}/${y}.png',
     'wrapDateLine' => TRUE,
   );
   $layers[$layer->name] = $layer;
@@ -237,16 +237,16 @@ function _openlayers_openlayers_layers() {
   $layer->description = 'OpenStreetMap with highlighted bike lanes';
   $layer->data = array(
     'baselayer' => TRUE,
-    'attribution' => t('&copy;<a href="@ccbysa">CCBYSA</a> 2010
-      <a href="@openstreetmap">OpenStreetMap.org</a> contributors',
+    'attribution' => t('&copy;<a href="@ccbysa">CCBYSA</a> '.
+        '<a href="@openstreetmap">&copy; OpenStreetMap contributors</a>',
       array(
-        '@openstreetmap' => 'http://www.openstreetmap.org/',
+        '@openstreetmap' => 'http://www.openstreetmap.org/copyright',
         '@ccbysa' => 'http://creativecommons.org/licenses/by-sa/2.0/',
       )
     ),
     'projection' => array('900913'),
     'layer_type' => 'openlayers_layer_type_xyz',
-    'url' => 'http://andy.sandbox.cloudmade.com/tiles/cycle/${z}/${x}/${y}.png',
+    'url' => '//andy.sandbox.cloudmade.com/tiles/cycle/${z}/${x}/${y}.png',
     'wrapDateLine' => TRUE,
   );
   $layers[$layer->name] = $layer;
@@ -256,14 +256,14 @@ function _openlayers_openlayers_layers() {
   $layer->api_version = 1;
   $layer->name = 'osm_4326_hybrid';
   $layer->title = 'OSM Overlay';
-  $layer->description = 'Semi-transparent hybrid overlay. Projected into 
+  $layer->description = 'Semi-transparent hybrid overlay. Projected into
     WSG84 for use on non spherical-mercator maps.';
   $layer->data = array(
     'baselayer' => FALSE,
-    'attribution' => t('&copy;<a href="@ccbysa">CCBYSA</a> 2010
-      <a href="@openstreetmap">OpenStreetMap.org</a> contributors',
+    'attribution' => t('&copy;<a href="@ccbysa">CCBYSA</a> '.
+        '<a href="@openstreetmap">&copy; OpenStreetMap contributors</a>',
       array(
-        '@openstreetmap' => 'http://www.openstreetmap.org/',
+        '@openstreetmap' => 'http://www.openstreetmap.org/copyright',
         '@ccbysa' => 'http://creativecommons.org/licenses/by-sa/2.0/',
       )
     ),
@@ -290,7 +290,7 @@ function _openlayers_openlayers_layers() {
     'projection' => array('4326'),
     'baselayer' => TRUE,
     'layer_type' => 'openlayers_layer_type_wms',
-    'base_url' => 'http://labs.metacarta.com/wms-c/Basic.py',
+    'base_url' => '//labs.metacarta.com/wms-c/Basic.py',
     'params' => array(
       'isBaseLayer' => TRUE,
     ),
@@ -300,7 +300,7 @@ function _openlayers_openlayers_layers() {
     ),
   );
   $layers[$layer->name] = $layer;
-  
+
   // GeoJSON example with direct data
   $layer = new stdClass();
   $layer->api_version = 1;
@@ -315,20 +315,20 @@ function _openlayers_openlayers_layers() {
     'vector' => TRUE,
     'geojson_data' => '
       {
-        "type": "Feature", 
+        "type": "Feature",
         "properties": {
           "name": "' . t('Picture This') . '",
           "description": "' . t('Outside of the North Carolina Museum of Art.') . '"
-        }, 
+        },
         "geometry": {
-          "type": "Point", 
+          "type": "Point",
           "coordinates": [
             -78.702798,
             35.809411
           ]
-        }, 
+        },
         "crs": {
-          "type": "name", 
+          "type": "name",
           "properties": {
               "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
           }
@@ -342,8 +342,8 @@ function _openlayers_openlayers_layers() {
 }
 
 /**
- * This function is for the po editor to be able to find these strings, 
- * since in the codebase they are not in t()'s, because they are later 
+ * This function is for the po editor to be able to find these strings,
+ * since in the codebase they are not in t()'s, because they are later
  * run through t() in the layer loader function
  */
 function _openlayers_openlayers_layers_i18n() {
@@ -371,7 +371,7 @@ function _openlayers_openlayers_layers_i18n() {
     t('Google Maps with roads and terrain.'),
     t('MetaCarta basemap of province and water boundaries'),
     t('OpenStreetMap with highlighted bike lanes'),
-    t('Semi-transparent hybrid overlay. Projected into 
+    t('Semi-transparent hybrid overlay. Projected into
       WSG84 for use on non spherical-mercator maps.'),
     t('Standard Google Maps Roads'),
     t('The main OpenStreetMap map'),

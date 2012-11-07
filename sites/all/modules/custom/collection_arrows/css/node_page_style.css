@@ -1,0 +1,43 @@
+[class^="m-icon-big-"] {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    margin: 6px;
+    vertical-align: top;
+    background-image: url(../img/syncfusion-icons.png);
+    background-position: 0 0px;
+    background-repeat: no-repeat;
+}
+.m-icon-big-swapright{
+    background-position: 0 -14px;
+}
+.m-icon-big-swapleft{
+    background-position: -60px -14px;
+}
+
+
+
+
+.collection_layout_slider_button_left {
+    z-index: 1000;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+     -webkit-transition: All 0.5s ease;
+    -moz-transition: All 0.5s ease;
+    -o-transition: All 0.5s ease;
+    -ms-transition: All 0.5s ease;
+    transition: All 0.5s ease;
+}
+
+.collection_layout_slider_button_right {
+    z-index: 1000;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+     -webkit-transition: All 0.5s ease;
+    -moz-transition: All 0.5s ease;
+    -o-transition: All 0.5s ease;
+    -ms-transition: All 0.5s ease;
+    transition: All 0.5s ease;
+}

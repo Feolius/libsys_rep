@@ -1,0 +1,119 @@
+<?php
+
+function collection_arrows_preprocess_panels_onecol(&$variables)
+{
+    $path = current_path();
+    if (arg(0) == 'node' && is_numeric(arg(1)) && (isset($_GET['collection']) && $_GET['collection'] == 'true')) {
+        drupal_add_css(drupal_get_path('module', 'collection_arrows') . '/css/node_page_style.css');
+        drupal_add_js(drupal_get_path('module', 'collection_arrows') . '/js/node_slider_buttons.js');
+        collection_arrows_set_arrows_urls();
+    }
+}
+
+function collection_arrows_menu()
+{
+    $items = array();
+    $items['node/timeline-json'] = array(
+        'title' => 'timeline_json',
+        'access callback' => TRUE,
+        'page callback' => 'collection_arrows_timeline_json_callback',
+        'type' => MENU_CALLBACK,
+    );
+    $items['node/timeline-iframe'] = array(
+        'title' => 'timeline_iframe',
+        'access callback' => TRUE,
+        'page callback' => 'collection_arrows_timeline_frame_callback',
+        'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+
+function collection_arrows_timeline_frame_callback()
+{
+    $start_node_index = 0;
+    $options = new stdClass();
+    $options->start_slide = 77;
+    $options->timeline_lib_url = base_path() . libraries_get_path('timeline') . '/compiled/js/timeline-embed.js';
+    echo theme('timeline_json', array('options' => $options));
+    exit;
+}
+
+function collection_arrows_timeline_json_callback()
+{
+
+    $date = array();
+    $json_class = new stdClass();
+    $json_class->timeline = new stdClass();
+    $json_class->timeline->headline = "";
+    $json_class->timeline->type = "default";
+    $json_class->timeline->startDate = "1000";
+    $json_class->timeline->text = "";
+    $json_class->timeline->date = $date;
+
+    echo drupal_json_output($json_class);
+    exit;
+}
+
+function collection_arrows_theme()
+{
+    return array(
+        'timeline_json' => array(
+            'template' => 'theme/timeline-json-page',
+            'arguments' => array(
+                'options' => null,
+            ),
+        ),
+        'timeline_iframe' => array(
+            'template' => 'theme/timeline-iframe-page',
+        )
+    );
+}
+
+function collection_arrows_preprocess_timeline_json(&$vars)
+{
+    $options = $vars['options'];
+    $vars['start_slide'] = $options->start_slide;
+    $vars['timeline_lib_url'] = $options->timeline_lib_url;
+    $vars['source'] = base_path() . 'node/timeline-json';
+}
+
+function collection_arrows_preprocess_timeline_iframe(&$vars)
+{
+    $vars['iframe_url'] = 'timeline-iframe';
+    $vars['iframe_width'] = '100%';
+    $vars['iframe_height'] = '600px';
+}
+
+function collection_arrows_set_arrows_urls(){
+
+    $params = array();
+    $params['q'] = 'entity_type:node';
+    $params['defType'] = 'lucene';
+    $params['spellcheck'] = FALSE;
+    $params['start'] = 0;
+    $params['rows'] = 3;
+
+    $query = apachesolr_drupal_query('apachesolr', $params);
+
+    $searcher = $query->getSearcher();
+
+    if (module_exists('facetapi')) {
+        // Gets enabled facets, adds filter queries to $params.
+        $adapter = facetapi_adapter_load($searcher);
+        if ($adapter) {
+            // Realm could be added but we want all the facets
+            $adapter->addActiveFilters($query);
+        }
+    }
+
+    $keys = $query->getParam('q');
+
+    $response = $query->search($keys);
+
+
+
+
+    drupal_add_js(array('collection_arrows' => array('next_node' => 55 , 'previous_node' => 66)), 'setting');
+
+
+}
