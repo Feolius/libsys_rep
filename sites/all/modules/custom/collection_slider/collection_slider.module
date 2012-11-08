@@ -1,33 +1,32 @@
 <?php
 
-function collection_arrows_preprocess_panels_onecol(&$variables) {
-    $path = current_path();
-    dpm($variables);
+function collection_slider_preprocess_panels_onecol(&$variables) {
     if (arg(0) == 'node' && is_numeric(arg(1)) && (isset($_GET['collection']) && $_GET['collection'] == 'true')) {
-        drupal_add_css(drupal_get_path('module', 'collection_arrows') . '/css/node_page_style.css');
-        drupal_add_js(drupal_get_path('module', 'collection_arrows') . '/js/node_slider_buttons.js');
-        //collection_arrows_set_arrows_urls();
+        drupal_add_css(drupal_get_path('module', 'collection_slider') . '/css/collection-slider-buttons-style.css');
+        drupal_add_js(drupal_get_path('module', 'collection_slider') . '/js/collection-slider-buttons.js');
+        collection_slider_set_arrows_urls();
     }
 }
 
-function collection_arrows_menu() {
+
+function collection_slider_menu() {
     $items = array();
     $items['node/timeline-json'] = array(
         'title' => 'timeline_json',
         'access callback' => TRUE,
-        'page callback' => 'collection_arrows_timeline_json_callback',
+        'page callback' => 'collection_slider_timeline_json_callback',
         'type' => MENU_CALLBACK,
     );
     $items['node/timeline-iframe'] = array(
         'title' => 'timeline_iframe',
         'access callback' => TRUE,
-        'page callback' => 'collection_arrows_timeline_frame_callback',
+        'page callback' => 'collection_slider_timeline_frame_callback',
         'type' => MENU_CALLBACK,
     );
     return $items;
 }
 
-function collection_arrows_timeline_frame_callback() {
+function collection_slider_timeline_frame_callback() {
     $start_node_index = 0;
     $options = new stdClass();
     $options->start_slide = 77;
@@ -36,7 +35,7 @@ function collection_arrows_timeline_frame_callback() {
     exit;
 }
 
-function collection_arrows_timeline_json_callback() {
+function collection_slider_timeline_json_callback() {
 
     $date = array();
     $json_class = new stdClass();
@@ -51,7 +50,7 @@ function collection_arrows_timeline_json_callback() {
     exit;
 }
 
-function collection_arrows_theme() {
+function collection_slider_theme() {
     return array(
         'timeline_json' => array(
             'template' => 'theme/timeline-json-page',
@@ -65,20 +64,20 @@ function collection_arrows_theme() {
     );
 }
 
-function collection_arrows_preprocess_timeline_json(&$vars) {
+function collection_slider_preprocess_timeline_json(&$vars) {
     $options = $vars['options'];
     $vars['start_slide'] = $options->start_slide;
     $vars['timeline_lib_url'] = $options->timeline_lib_url;
     $vars['source'] = base_path() . 'node/timeline-json';
 }
 
-function collection_arrows_preprocess_timeline_iframe(&$vars) {
+function collection_slider_preprocess_timeline_iframe(&$vars) {
     $vars['iframe_url'] = 'timeline-iframe';
     $vars['iframe_width'] = '100%';
     $vars['iframe_height'] = '600px';
 }
 
-function collection_arrows_set_arrows_urls() {
+function collection_slider_set_arrows_urls() {
 
     $params = array();
     $params['q'] = 'entity_type:node';
@@ -128,4 +127,9 @@ function collection_arrows_set_arrows_urls() {
     }
 
     drupal_add_js(array('collection_arrows' => array('next_node_html' => $next_node_html, 'previous_node_html' => $previous_node_html)), 'setting');
+
+    unset($options['query']['collection']);
+    $back_to_collection_page_html = l('Back to Collection page','collection',$options);
+
+    drupal_add_js(array('collection_arrows' => array('back_to_collection_page_html' => $back_to_collection_page_html)), 'setting');
 }
