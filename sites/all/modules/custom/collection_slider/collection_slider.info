@@ -1,0 +1,7 @@
+name = Collection Slider
+description = Slider for viewing collection of nodes
+package = Adventist DL
+core = 7.x
+dependencies[] = apachesolr
+dependencies[] = panels
+dependencies[] = facetapi

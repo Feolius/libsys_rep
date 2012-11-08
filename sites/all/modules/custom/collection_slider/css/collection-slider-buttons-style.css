@@ -1,24 +1,21 @@
-[class^="m-icon-big-"] {
+[class^="collection-slider-button-icon"] {
     display: inline-block;
     width: 30px;
     height: 30px;
     margin: 6px;
     vertical-align: top;
-    background-image: url(../img/syncfusion-icons.png);
+    background-image: url(../img/collection-slider-buttons-icons.png);
     background-position: 0 0px;
     background-repeat: no-repeat;
 }
-.m-icon-big-swapright{
+.collection-slider-button-icon-swapright{
     background-position: 0 -14px;
 }
-.m-icon-big-swapleft{
+.collection-slider-button-icon-swapleft{
     background-position: -60px -14px;
 }
 
-
-
-
-.collection_layout_slider_button_left {
+.collection_slider_button_left {
     z-index: 1000;
     position: absolute;
     top: 0px;
@@ -30,7 +27,7 @@
     transition: All 0.5s ease;
 }
 
-.collection_layout_slider_button_right {
+.collection_slider_button_right {
     z-index: 1000;
     position: absolute;
     top: 0px;
