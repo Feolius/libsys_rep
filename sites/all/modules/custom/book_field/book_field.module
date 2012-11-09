@@ -632,7 +632,7 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
             if ($item['fid_swf'] != '0') {
                 $file_swf = file_load($item['fid_swf']);
                 $file = file_load($item['fid']);
-                if (imodule_exists('book_thumbnail') && $item['fid_thumb'] != 0) {
+                if (module_exists('book_thumbnail') && $item['fid_thumb'] != 0) {
                     $file_thumb = file_load($item['fid_thumb']);
                     $element[$delta]['#file_thumb'] = $file_thumb;
                 }
@@ -848,20 +848,6 @@ function theme_book_field_flexpaper_view($variables) {
         $out = $out . theme_file_link($variables);
     }
     return $out;
-}
-
-/**
- * Theme function for the link formatter.
- */
-function theme_book_field_link_view($variables) {
-    $file_thumb = (object) $variables['file_thumb'];
-    $file = (object) $variables['file'];
-    $uri = $file->uri;
-    $uri_thumb = $file_thumb->uri;
-    $style = 'compressing';
-    $text = '<img src="' . image_style_url($style, $uri_thumb) . '">';
-    $options['html'] = TRUE;
-    return '<h1>' . $file->filename . '</h1>' . l($text, file_create_url($uri), $options);
 }
 
 /**
