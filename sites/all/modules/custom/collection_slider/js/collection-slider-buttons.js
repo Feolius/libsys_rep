@@ -19,7 +19,7 @@
         back_to_collection.text("/");
 
         $(".breadcrumb").append(back_to_collection);
-        $(".breadcrumb").append(Drupal.settings.collection_arrows.back_to_collection_page_html);
+        $(".breadcrumb").append(Drupal.settings.collection_arrows.back_to_collection_html);
 
     });
     collectionLayout = {

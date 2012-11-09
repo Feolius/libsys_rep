@@ -1,13 +1,12 @@
 <?php
 
-function collection_slider_preprocess_panels_onecol(&$variables) {
+function collection_slider_preprocess_page(&$variables) {
     if (arg(0) == 'node' && is_numeric(arg(1)) && (isset($_GET['collection']) && $_GET['collection'] == 'true')) {
         drupal_add_css(drupal_get_path('module', 'collection_slider') . '/css/collection-slider-buttons-style.css');
         drupal_add_js(drupal_get_path('module', 'collection_slider') . '/js/collection-slider-buttons.js');
         collection_slider_set_arrows_urls();
     }
 }
-
 
 function collection_slider_menu() {
     $items = array();
@@ -129,7 +128,8 @@ function collection_slider_set_arrows_urls() {
     drupal_add_js(array('collection_arrows' => array('next_node_html' => $next_node_html, 'previous_node_html' => $previous_node_html)), 'setting');
 
     unset($options['query']['collection']);
-    $back_to_collection_page_html = l('Back to Collection page','collection',$options);
+    unset($options['attributes']);
+    $back_to_collection_html = l('Back to Collection','collection',$options);
 
-    drupal_add_js(array('collection_arrows' => array('back_to_collection_page_html' => $back_to_collection_page_html)), 'setting');
+    drupal_add_js(array('collection_arrows' => array('back_to_collection_html' => $back_to_collection_html)), 'setting');
 }

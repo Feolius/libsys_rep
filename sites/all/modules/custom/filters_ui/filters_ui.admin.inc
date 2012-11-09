@@ -204,15 +204,12 @@ function theme_filters_ui_table($variables)
  */
 function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bundle)
 {
-
-
     $bundle = field_extract_bundle($entity_type, $bundle);
     $admin_path = _field_ui_bundle_admin_path($entity_type, $bundle);
     $bundle_instances = field_info_instances($entity_type, $bundle);
     $filterable_type_list = filters_ui_submodules_info();
 
     $instances = array();
-    unset($instances['date']);
     //At filters overview page we need to see only fields that is filterable
     foreach ($bundle_instances as $instance_name => $bundle_instance) {
         $field = field_info_field($bundle_instance['field_name']);
@@ -225,7 +222,6 @@ function filters_ui_filters_overview_form($form, &$form_state, $entity_type, $bu
         drupal_set_message(t('There are no filterable fields yet added. You can add suitable fields on the <a href="@link">Manage fields</a> page.', array('@link' => url($admin_path . '/fields'))), 'warning');
         return $form;
     }
-
 
     $form_state += array(
         'formatter_settings_edit' => NULL,
