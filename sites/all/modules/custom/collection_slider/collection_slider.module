@@ -2,7 +2,10 @@
 
 function collection_slider_preprocess_page(&$variables)
 {
-    if (arg(0) == 'node' && is_numeric(arg(1)) && (isset($_GET['collection']) && $_GET['collection'] == 'true')) {
+    if (arg(0) == 'node'
+        && is_numeric(arg(1))
+        && (isset($_GET['collection']) && $_GET['collection'] == 'true')
+        && isset($_GET['curr'])) {
         drupal_add_css(drupal_get_path('module', 'collection_slider') . '/css/collection-slider-buttons-style.css');
         drupal_add_js(drupal_get_path('module', 'collection_slider') . '/js/collection-slider-buttons.js');
         collection_slider_set_arrows_urls();
