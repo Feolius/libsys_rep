@@ -34,19 +34,19 @@
             })
         },
         scrollReposition:function (newtop) {
-            $(".collection_layout_slider_button_left").offset({
+            $(".collection_slider_button_left").offset({
                 top:newtop == undefined ? 500 : newtop
             })
-            $(".collection_layout_slider_button_right").offset({
+            $(".collection_slider_button_right").offset({
                 top:newtop == undefined ? 500 : newtop
             })
         }
     };
     $(".collection_layout_slider_button_left a").ready(function () {
-        $(".collection_layout_slider_button_left a").text('');
+        $(".collection_slider_button_left a").text('');
     });
     $(".collection_layout_slider_button_right a").ready(function () {
-        $(".collection_layout_slider_button_right a").text('');
+        $(".collection_slider_button_right a").text('');
     });
     $(collectionLayout.reposition);
     $(window).resize(collectionLayout.reposition);

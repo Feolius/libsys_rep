@@ -1,6 +1,7 @@
 <?php
 
-function collection_slider_preprocess_page(&$variables) {
+function collection_slider_preprocess_page(&$variables)
+{
     if (arg(0) == 'node' && is_numeric(arg(1)) && (isset($_GET['collection']) && $_GET['collection'] == 'true')) {
         drupal_add_css(drupal_get_path('module', 'collection_slider') . '/css/collection-slider-buttons-style.css');
         drupal_add_js(drupal_get_path('module', 'collection_slider') . '/js/collection-slider-buttons.js');
@@ -8,75 +9,8 @@ function collection_slider_preprocess_page(&$variables) {
     }
 }
 
-function collection_slider_menu() {
-    $items = array();
-    $items['node/timeline-json'] = array(
-        'title' => 'timeline_json',
-        'access callback' => TRUE,
-        'page callback' => 'collection_slider_timeline_json_callback',
-        'type' => MENU_CALLBACK,
-    );
-    $items['node/timeline-iframe'] = array(
-        'title' => 'timeline_iframe',
-        'access callback' => TRUE,
-        'page callback' => 'collection_slider_timeline_frame_callback',
-        'type' => MENU_CALLBACK,
-    );
-    return $items;
-}
-
-function collection_slider_timeline_frame_callback() {
-    $start_node_index = 0;
-    $options = new stdClass();
-    $options->start_slide = 77;
-    $options->timeline_lib_url = base_path() . libraries_get_path('timeline') . '/compiled/js/timeline-embed.js';
-    echo theme('timeline_json', array('options' => $options));
-    exit;
-}
-
-function collection_slider_timeline_json_callback() {
-
-    $date = array();
-    $json_class = new stdClass();
-    $json_class->timeline = new stdClass();
-    $json_class->timeline->headline = "";
-    $json_class->timeline->type = "default";
-    $json_class->timeline->startDate = "1000";
-    $json_class->timeline->text = "";
-    $json_class->timeline->date = $date;
-
-    echo drupal_json_output($json_class);
-    exit;
-}
-
-function collection_slider_theme() {
-    return array(
-        'timeline_json' => array(
-            'template' => 'theme/timeline-json-page',
-            'arguments' => array(
-                'options' => null,
-            ),
-        ),
-        'timeline_iframe' => array(
-            'template' => 'theme/timeline-iframe-page',
-        )
-    );
-}
-
-function collection_slider_preprocess_timeline_json(&$vars) {
-    $options = $vars['options'];
-    $vars['start_slide'] = $options->start_slide;
-    $vars['timeline_lib_url'] = $options->timeline_lib_url;
-    $vars['source'] = base_path() . 'node/timeline-json';
-}
-
-function collection_slider_preprocess_timeline_iframe(&$vars) {
-    $vars['iframe_url'] = 'timeline-iframe';
-    $vars['iframe_width'] = '100%';
-    $vars['iframe_height'] = '600px';
-}
-
-function collection_slider_set_arrows_urls() {
+function collection_slider_set_arrows_urls()
+{
 
     $params = array();
     $params['q'] = 'entity_type:node';
@@ -108,7 +42,7 @@ function collection_slider_set_arrows_urls() {
         $f = $_GET['f'];
         $options['query'] ['f'] = $f;
     }
-    
+
     if ($_GET['curr'] > 0) {
         $options['query']['curr'] = $_GET['curr'] - 1;
         $options['attributes']['class'] = array('collection-slider-button-icon-swapleft', ' active');
@@ -120,7 +54,7 @@ function collection_slider_set_arrows_urls() {
     if ($_GET['curr'] + 1 < $response->response->numFound) {
         $options['query']['curr'] = $_GET['curr'] + 1;
         $options['attributes']['class'] = array('collection-slider-button-icon-swapright', ' active');
-        $next_node_id = $response->response->docs[count($response->response->docs)-1]->entity_id;
+        $next_node_id = $response->response->docs[count($response->response->docs) - 1]->entity_id;
         $next_node_url = 'node/' . $next_node_id . '';
         $next_node_html = l('', $next_node_url, $options);
     }
@@ -129,7 +63,7 @@ function collection_slider_set_arrows_urls() {
 
     unset($options['query']['collection']);
     unset($options['attributes']);
-    $back_to_collection_html = l('Back to Collection','collection',$options);
+    $back_to_collection_html = l('Back to Collection', 'collection', $options);
 
     drupal_add_js(array('collection_arrows' => array('back_to_collection_html' => $back_to_collection_html)), 'setting');
 }
