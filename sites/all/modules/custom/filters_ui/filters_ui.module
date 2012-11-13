@@ -155,4 +155,3 @@ function filters_ui_submodules_info()
     }
     return $filterable_type_list->data;
 }
-

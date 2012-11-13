@@ -1,5 +1,13 @@
 <?php
+/**
+ * @file
+ * And slider arrows at collection node page
+ *
+ */
 
+/**
+ * Implements hook_preprocess_page().
+ */
 function collection_slider_preprocess_page(&$variables)
 {
     if (arg(0) == 'node'
@@ -12,9 +20,12 @@ function collection_slider_preprocess_page(&$variables)
     }
 }
 
+/**
+ * Set the next and previous url on slider arrow using apache_solr
+ */
 function collection_slider_set_arrows_urls()
 {
-
+    //Get apache_solr params from $_GET
     $params = array();
     $params['q'] = 'entity_type:node';
     $params['defType'] = 'lucene';
@@ -39,6 +50,8 @@ function collection_slider_set_arrows_urls()
     $next_node_html = '';
     $previous_node_html = '';
 
+
+    //Build next and previous urls for slider arrows
     $options = array('query' => array());
     $options['query'] ['collection'] = 'true';
     if (isset($_GET['f'])) {
@@ -64,6 +77,7 @@ function collection_slider_set_arrows_urls()
 
     drupal_add_js(array('collection_arrows' => array('next_node_html' => $next_node_html, 'previous_node_html' => $previous_node_html)), 'setting');
 
+    //Build link at collection page
     unset($options['query']['collection']);
     unset($options['attributes']);
     $back_to_collection_html = l('Back to Collection', 'collection', $options);

@@ -1,5 +1,5 @@
 name = Filters UI
-package = Adventist DL
+package = Facet Collection
 core = 7.x
 dependencies[] = field
 dependencies[] = field_ui

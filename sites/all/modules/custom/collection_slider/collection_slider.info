@@ -1,7 +1,6 @@
 name = Collection Slider
-description = Slider for viewing collection of nodes
-package = Adventist DL
+description = "Provide slider arrows for collection node page"
+package = Facet Collection
 core = 7.x
-dependencies[] = apachesolr
-dependencies[] = panels
-dependencies[] = facetapi
+dependencies[] = facet_collection
+

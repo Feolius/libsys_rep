@@ -1,5 +1,5 @@
 name = Filters UI for Term Reference
 description = Allow use filtering by term reference fields
-package = Adventist DL
+package = Facet Collection
 core = 7.x
 dependencies[] = filters_ui
