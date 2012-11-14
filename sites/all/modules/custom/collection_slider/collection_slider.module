@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * And slider arrows at collection node page
@@ -8,12 +9,11 @@
 /**
  * Implements hook_preprocess_page().
  */
-function collection_slider_preprocess_page(&$variables)
-{
+function collection_slider_preprocess_page(&$variables) {
     if (arg(0) == 'node'
-        && is_numeric(arg(1))
-        && (isset($_GET['collection']) && $_GET['collection'] == 'true')
-        && isset($_GET['curr'])) {
+            && is_numeric(arg(1))
+            && (isset($_GET['collection']) && $_GET['collection'] == 'true')
+            && isset($_GET['curr'])) {
         drupal_add_css(drupal_get_path('module', 'collection_slider') . '/css/collection-slider-buttons-style.css');
         drupal_add_js(drupal_get_path('module', 'collection_slider') . '/js/collection-slider-buttons.js');
         collection_slider_set_arrows_urls();
@@ -23,16 +23,14 @@ function collection_slider_preprocess_page(&$variables)
 /**
  * Set the next and previous url on slider arrow using apache_solr
  */
-function collection_slider_set_arrows_urls()
-{
+function collection_slider_set_arrows_urls() {
     //Get apache_solr params from $_GET
     $params = array();
-    $params['q'] = 'entity_type:node';
+    $params['q'] = $_GET['query'];
     $params['defType'] = 'lucene';
     $params['spellcheck'] = FALSE;
     $params['start'] = ($_GET['curr'] > 0) ? $_GET['curr'] - 1 : $_GET['curr'];
     $params['rows'] = ($_GET['curr'] > 0) ? 3 : 2;
-    $params['fl'] = 'entity_id';
 
     $query = apachesolr_drupal_query('apachesolr', $params);
     $searcher = $query->getSearcher();
@@ -40,7 +38,6 @@ function collection_slider_set_arrows_urls()
         // Gets enabled facets, adds filter queries to $params.
         $adapter = facetapi_adapter_load($searcher);
         if ($adapter) {
-            // Realm could be added but we want all the facets
             $adapter->addActiveFilters($query);
         }
     }
@@ -58,7 +55,8 @@ function collection_slider_set_arrows_urls()
         $f = $_GET['f'];
         $options['query'] ['f'] = $f;
     }
-
+    $options['query']['query'] = $_GET['query'];
+    $options['query']['numFound'] = $_GET['numFound'];
     if ($_GET['curr'] > 0) {
         $options['query']['curr'] = $_GET['curr'] - 1;
         $options['attributes']['class'] = array('collection-slider-button-icon-swapleft', ' active');

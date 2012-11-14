@@ -1,0 +1,6 @@
+name = Facet collection search block
+description = "Create cutom search block that send all search requests through collection page"
+package = Facet collection
+core = 7.x
+dependencies[] = facet_collection
+

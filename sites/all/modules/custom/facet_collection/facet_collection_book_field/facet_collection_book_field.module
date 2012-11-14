@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * Implements hook_facet_collection_field_type_info()
+ */
+function facet_collection_book_field_facet_collection_field_type_info() {
+    return array('book_field');
+}
+
+/**
+ * Implements hook_facet_collection_field_facet_groups()
+ */
+function facet_collection_book_field_facet_collection_field_facet_groups($field_info) {
+    //We don't need any facets there
+    $facet_groups['default'] = array();
+    return $facet_groups;
+}
+
+/**
+ * Implements hook_facet_collection_index_field()
+ */
+function facet_collection_book_field_facet_collection_index_field($filedocument, $node, $field_info) {
+    module_load_include('inc', 'apachesolr_attachments', 'apachesolr_attachments.index');
+    $field_name = $field_info['field_name'];
+    $items = field_get_items('node', $node, $field_name);
+    if (!empty($items)) {
+        foreach ($items as $item) {
+            $fid = $item['fid'];
+            $file = file_load($fid);
+            if (!empty($file)) {
+                $filepath = drupal_realpath($file->uri);
+                $text = apachesolr_clean_text(apachesolr_attachments_extract_using_tika($filepath));
+                $content = $filedocument->getField('content');
+                $content_value = $content['value'];
+                $content_boost = $content['boost'];
+                $content_value = $content_value . $text;
+                //unset($filedocument->content);
+                $filedocument->content = $content_value;
+                if($content_boost != FALSE){
+                    $filedocument->setFieldBoost('content', $content_boost);
+                }
+            }
+        }
+    }
+
+
+
+    return $filedocument;
+}

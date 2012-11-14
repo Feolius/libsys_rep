@@ -1,5 +1,5 @@
-name = Facet collection term reference filters
-description = "Provides facet collection filters for taxonomy term references"
+name = Facet collection entityreference(nodereference) filters
+description = "Provides facet collection filters for nodereferences"
 package = Facet collection
 core = 7.x
 dependencies[] = facet_collection

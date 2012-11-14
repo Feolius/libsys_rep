@@ -1,5 +1,5 @@
-name = Facet collection entityreference(nodereference) filters
-description = "Provides facet collection filters for nodereferences"
+name = Facet collection date filters
+description = "Provides facet collection filters for date fields"
 package = Facet collection
 core = 7.x
 dependencies[] = facet_collection
