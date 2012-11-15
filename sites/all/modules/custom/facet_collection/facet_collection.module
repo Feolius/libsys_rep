@@ -61,12 +61,10 @@ function facet_collection_get_params() {
     $q = arg(1);
     if (empty($q)) {
         $params['q'] = 'entity_type:node';
-        $params['defType'] = 'lucene';
     } else {
         $params['q'] = $q;
     }
-
-
+    $params['defType'] = 'lucene';
     $params['spellcheck'] = FALSE;
     return $params;
 }

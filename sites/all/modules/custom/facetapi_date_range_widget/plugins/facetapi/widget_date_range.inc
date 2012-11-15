@@ -31,7 +31,8 @@ class FacetapiWidgetDateRange extends FacetapiWidget {
             'field alias' => $this->facet['field alias'],
             'min date' => $min_date,
             'max date' => $max_date,
-            'facet name' => $facet['name']
+            'facet name' => $facet['name'],
+            'label' => $facet['label'],
         );
         $element = &$this->build[$this->facet['field alias']];
         $element = array(

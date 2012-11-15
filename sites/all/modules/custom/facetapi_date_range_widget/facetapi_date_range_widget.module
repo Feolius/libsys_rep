@@ -149,6 +149,7 @@ function facetapi_date_range_widget_reset_submit($form, &$form_state) {
  * Form callback for date filter
  */
 function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
+    $label = $args['label'];
     $date_now = date_now();
     $date_now_full = date_format_date($date_now, 'custom', 'Y/m/d');
     $date_now_month = date_format_date($date_now, 'custom', 'Y/m');
@@ -163,6 +164,11 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
         $max_date = $_GET['max_' . $facet_name];
     }
     $form = array(
+        'title' => array(
+            '#type' => 'item',
+            '#markup' => '<h3>' . $label . '</h3>',
+            '#weight' => -20,
+        ),
         'min_date' => array(
             '#type' => 'textfield',
             '#description' => t('Left limit'),
@@ -198,7 +204,6 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
             '#submit' => array('facetapi_date_range_widget_reset_submit'),
         ),
     );
-
     return $form;
 }
 
