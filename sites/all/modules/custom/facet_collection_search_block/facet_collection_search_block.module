@@ -70,14 +70,6 @@ function facet_collection_search_block_form_submit($form, &$form_state) {
     }
     $info = search_get_default_module_info();
     $get = json_decode($form_state['values']['get'], TRUE);
-    if(!empty($get['f'])){
-        $f = $get['f'];
-        $f[count($f)] = 'entity_type:node';
-        $get['f'] = $f;
-    }else{
-        $f[0] = 'entity_type:node';
-        $get['f'] = $f;
-    }
     $env = apachesolr_default_environment();
     $query = apachesolr_current_query($env);
     if (!empty($info) && $info['module'] == 'apachesolr_search') {
@@ -93,15 +85,6 @@ function facet_collection_search_block_form_submit($form, &$form_state) {
 function facet_collection_search_block_form_remove_filter($form, &$form_state) {
     $info = search_get_default_module_info();
     $get = json_decode($form_state['values']['get'], TRUE);
-    if(!empty($get['f'])){
-        $f = $get['f'];
-        unset($f[array_search('entity_type:node', $f)]);
-        if(!empty($f)){
-            $get['f'] = $f;
-        }else{
-            unset($get['f']);
-        }
-    }
     if (!empty($info) && $info['module'] == 'apachesolr_search') {
         $form_state['redirect'] = array('collection', array('query' => $get));
     } else {

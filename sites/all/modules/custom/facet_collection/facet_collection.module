@@ -61,11 +61,12 @@ function facet_collection_get_params() {
     $q = arg(1);
     if (empty($q)) {
         $params['q'] = 'entity_type:node';
+        $params['defType'] = 'lucene';
     } else {
         $params['q'] = $q;
     }
 
-    $params['defType'] = 'lucene';
+
     $params['spellcheck'] = FALSE;
     return $params;
 }
@@ -336,11 +337,24 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
             if (!empty($items)) {
                 foreach ($items as $item) {
                     $uri = $item['uri'];
-                     $image_path = drupal_realpath($uri);
-                     $variables['image_path'] = $image_path;
-                     break;
+                    $image_path = drupal_realpath($uri);
+                    $variables['image_path'] = $image_path;
+                    break;
                 }
             }
         }
+    }
+}
+
+/**
+ * Implements hook_apachesolr_query_alter()
+ */
+function facet_collection_apachesolr_query_alter($query) {
+
+    //We should check that only nodes should be shown
+    if (arg(0) == 'collection') {
+        $fq = $query->getParam('fq');
+        $fq = array_merge($fq, array('entity_type:node'));
+        $query->addParam('fq', $fq);
     }
 }
