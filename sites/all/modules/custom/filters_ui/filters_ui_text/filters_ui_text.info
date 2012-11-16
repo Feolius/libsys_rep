@@ -1,0 +1,5 @@
+name = Filters UI for Text Field
+description = Allow use filtering by text fields
+package = Facet Collection
+core = 7.x
+dependencies[] = filters_ui

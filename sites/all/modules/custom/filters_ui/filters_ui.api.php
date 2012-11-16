@@ -49,7 +49,7 @@ function hook_filters_ui_add_field($field, $bundle, &$facet_filters_settings, $f
 
 
 /**
- * Delete information about filter to storage structure.
+ * Delete information about filter from storage structure.
  *
  * @param $field
  *  Field information received by calling field_info_field function.

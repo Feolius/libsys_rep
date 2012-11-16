@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * Implements hook_filters_ui_field_type_info().
+ */
+function filters_ui_book_field_filters_ui_field_type_info()
+{
+    return array('book_field');
+}
+
+/**
+ * Implements hook_filters_ui_delete_field().
+ */
+function filters_ui_book_field_filters_ui_delete_field($field, $bundle, &$facet_filters_settings, $filter)
+{
+    if ($filter['state'] == 'visible') {
+        if (array_key_exists($field['field_name'], $facet_filters_settings[$field['type']])) {
+            unset($facet_filters_settings[$field['type']][$field['field_name']]);
+        }
+    }
+}
+
+/**
+ * Implements hook_filters_ui_add_field().
+ */
+function filters_ui_book_field_filters_ui_add_field($field, $bundle, &$facet_filters_settings, $filter)
+{
+    if ($filter['state'] == 'visible') {
+        $facet_filters_settings[$field['type']][$field['field_name']] = $bundle;
+    }
+}
+
+/**
+ * Implements hook_filters_ui_filter_by().
+ */
+function filters_ui_book_field_filters_ui_filter_by($field)
+{
+    return 'Book';
+}
