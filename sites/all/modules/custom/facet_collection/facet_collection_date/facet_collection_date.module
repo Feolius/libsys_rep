@@ -60,7 +60,13 @@ function facet_collection_date_facet_collection_index_field($filedocument, $node
 function facet_collection_date_facet_collection_facet_content_types($filter_settings, $facet_group, $facet_name, $searcher) {
     $facet_content_types_array = array();
     if(isset($filter_settings['date'])){
-        $facet_content_types_array = array_keys($filter_settings['date']);
+        $facet_content_types_array = array_merge($facet_content_types_array, array_keys($filter_settings['date']));
+    }
+    if(isset($filter_settings['datetime'])){
+        $facet_content_types_array = array_merge($facet_content_types_array, array_keys($filter_settings['datetime']));
+    }
+    if(isset($filter_settings['datestamp'])){
+        $facet_content_types_array = array_merge($facet_content_types_array, array_keys($filter_settings['datestamp']));
     }
     return $facet_content_types_array;
 }

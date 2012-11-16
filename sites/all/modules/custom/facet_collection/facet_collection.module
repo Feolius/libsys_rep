@@ -268,7 +268,6 @@ function facet_collection_facetapi_facet_info($searcher_info) {
     variable_set('facet_collection:facet_collection', $facet_collection);
     variable_set('facet_collection:field_type_list', $field_type_list);
     cache_set('facet_collection:listfacets', array_keys($facets), 'cache', CACHE_TEMPORARY);
-
     return $facets;
 }
 
@@ -316,6 +315,9 @@ function facet_collection_theme() {
  * Process variables for facet-collection-snippet.tpl.php.
  */
 function template_preprocess_apachesolr_search_snippets__node(&$variables) {
+    $module_path = drupal_get_path('module', 'facet_collection');
+    drupal_add_css($module_path . '/CSS/facet_collection_snippet.css');
+    global $base_url;
     $nid = $variables['doc']->entity_id;
     $node = node_load($nid);
     $instances = field_info_instances('node', $node->type);
@@ -335,7 +337,13 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
             if (!empty($items)) {
                 foreach ($items as $item) {
                     $uri = $item['uri'];
-                    $image_path = drupal_realpath($uri);
+                    $style = 'thumbnail';
+                    $styles = image_styles();
+                    if (in_array($style, array_keys($styles))) {
+                        $image_path = image_style_url($style, $uri);
+                    }else{
+                        $image_path = file_create_url($uri);
+                    }
                     $variables['image_path'] = $image_path;
                     break;
                 }
