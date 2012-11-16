@@ -623,7 +623,6 @@ function filters_ui_filters_overview_form_submit($form, &$form_state)
 
     //Save filters settings at the variables
     $facet_filters[$bundle] = $content_type_filters;
-    dpm($facet_filters_settings);
     variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
     variable_set('facet_collection_filters_settings', drupal_json_encode($facet_filters_settings));
 
