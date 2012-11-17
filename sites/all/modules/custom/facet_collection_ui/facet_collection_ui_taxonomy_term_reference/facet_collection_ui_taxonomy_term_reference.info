@@ -1,0 +1,5 @@
+name = Facet Collection UI for Term Reference
+description = Allow use filtering by term reference fields
+package = Facet Collection
+core = 7.x
+dependencies[] = facet_collection_ui

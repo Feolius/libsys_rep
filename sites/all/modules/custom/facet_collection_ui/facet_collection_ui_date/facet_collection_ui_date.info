@@ -1,0 +1,6 @@
+name = Facet Collection UI for Date
+description = Allow use filtering by date fields
+package = Facet Collection
+core = 7.x
+dependencies[] = facet_collection_ui
+dependencies[] = date

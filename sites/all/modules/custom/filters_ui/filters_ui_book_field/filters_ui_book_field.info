@@ -1,6 +1,0 @@
-name = Filters UI for Book Field
-description = Allow use filtering by book fields
-package = Facet Collection
-core = 7.x
-dependencies[] = filters_ui
-dependencies[] = book_field

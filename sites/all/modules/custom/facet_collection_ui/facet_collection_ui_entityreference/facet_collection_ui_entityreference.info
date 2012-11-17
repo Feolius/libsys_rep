@@ -1,0 +1,6 @@
+name = Facet Collection UI for Entity Reference
+description = Allow use filtering by entity reference fields
+package = Facet Collection
+core = 7.x
+dependencies[] = facet_collection_ui
+dependencies[] = entityreference

@@ -1,0 +1,6 @@
+name = Facet Collection UI for FiveStar
+description = Allow use filtering by fivestar fields
+package = Facet Collection
+core = 7.x
+dependencies[] = facet_collection_ui
+dependencies[] = fivestar

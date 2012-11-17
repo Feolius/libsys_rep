@@ -1,0 +1,6 @@
+name = Facet Collection UI
+package = Facet Collection
+core = 7.x
+dependencies[] = field
+dependencies[] = field_ui
+dependencies[] = facet_collection

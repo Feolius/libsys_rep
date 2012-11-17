@@ -1,0 +1,11 @@
+<?php
+
+/**
+ * Implements hook_uninstall().
+ */
+function facet_collection_ui_book_field_uninstall()
+{
+    $facet_filters_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
+    unset($facet_filters_settings['book_field']);
+    variable_set('facet_collection_filters_settings', drupal_json_encode($facet_filters_settings));
+}
