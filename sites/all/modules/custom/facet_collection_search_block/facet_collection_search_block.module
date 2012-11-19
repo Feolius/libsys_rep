@@ -26,13 +26,25 @@ function facet_collection_search_block_block_view($delta = '') {
  * Form callback for search block
  */
 function facet_collection_search_block_form($form, &$form_state) {
+    $search_query_string = arg(1);
+    $current_search_queries = array();
+    $default_value = '';
+    if (!empty($search_query_string)) {
+        $current_search_queries = explode(' AND ', $search_query_string);
+        foreach ($current_search_queries as $key => $query) {
+            $query_parts = explode(':', $query);
+            if(count($query_parts) == 1){
+                $default_value = $current_search_queries[$key];
+            }
+        }
+    }
     $form_id = $form_state['build_info']['form_id'];
     $form[$form_id] = array(
         '#type' => 'textfield',
         '#title' => t('Search'),
         '#title_display' => 'invisible',
         '#size' => 15,
-        '#default_value' => '',
+        '#default_value' => $default_value,
         '#attributes' => array('title' => t('Enter the terms you wish to search for.')),
     );
 
@@ -69,11 +81,25 @@ function facet_collection_search_block_form_submit($form, &$form_state) {
         form_set_error('keys', t('Please enter some keywords.'));
     }
     $info = search_get_default_module_info();
+    $search_query_string = arg(1);
+    $current_search_queries = array();
+    if (!empty($search_query_string)) {
+        $current_search_queries = explode(' AND ', $search_query_string);
+
+        //We should remove prev query
+        foreach ($current_search_queries as $key => $query) {
+            $query_parts = explode(':', $query);
+            if(count($query_parts) == 1){
+                unset($current_search_queries[$key]);
+            }
+        }
+    }
+    $current_search_queries[] = trim($form_state['values'][$form_id]);
+    $search_query = implode(' AND ', $current_search_queries);
+
     $get = json_decode($form_state['values']['get'], TRUE);
-    $env = apachesolr_default_environment();
-    $query = apachesolr_current_query($env);
     if (!empty($info) && $info['module'] == 'apachesolr_search') {
-        $form_state['redirect'] = array('collection/' . trim($form_state['values'][$form_id]), array('query' => $get));
+        $form_state['redirect'] = array('collection/' . $search_query, array('query' => $get));
     } else {
         form_set_error(NULL, t('Search is currently disabled.'), 'error');
     }
@@ -85,8 +111,22 @@ function facet_collection_search_block_form_submit($form, &$form_state) {
 function facet_collection_search_block_form_remove_filter($form, &$form_state) {
     $info = search_get_default_module_info();
     $get = json_decode($form_state['values']['get'], TRUE);
+    $search_query_string = arg(1);
+    $current_search_queries = array();
+    if (!empty($search_query_string)) {
+        $current_search_queries = explode(' AND ', $search_query_string);
+
+        //We should find and remove query
+        foreach ($current_search_queries as $key => $query) {
+            $query_parts = explode(':', $query);
+            if(count($query_parts) == 1){
+                unset($current_search_queries[$key]);
+            }
+        }
+    }
+    $search_query = implode(' AND ', $current_search_queries);
     if (!empty($info) && $info['module'] == 'apachesolr_search') {
-        $form_state['redirect'] = array('collection', array('query' => $get));
+        $form_state['redirect'] = array('collection/' . $search_query, array('query' => $get));
     } else {
         form_set_error(NULL, t('Search is currently disabled.'), 'error');
     }

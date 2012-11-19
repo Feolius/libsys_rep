@@ -21,6 +21,156 @@ function facet_collection_hook_info() {
 }
 
 /**
+ * Implements hook_hook_forms()
+ */
+function facet_collection_forms($form_id, $args) {
+    $forms = array();
+    $textfield_names = array();
+    if (!cache_get('facet_collection:field_search_forms')) {
+        $field_type_list = array_keys(variable_get('facet_collection:field_type_search_list'));
+        $instances = field_info_instances('node');
+        $environment = apachesolr_default_environment();
+        $content_types = apachesolr_get_index_bundles($environment, 'node');
+        foreach ($content_types as $content_type) {
+            foreach ($instances[$content_type] as $instance) {
+                $field = field_info_field($instance['field_name']);
+                if (in_array($field['type'], $field_type_list)) {
+                    $textfield_names[$content_type][] = $instance['field_name'];
+                    $forms['facet_collection_' . $field['field_name'] . '_form'] = array(
+                        'callback' => 'facet_collection_field_search_form',
+                    );
+                }
+            }
+        }
+        cache_set('facet_collection:field_search_field_names', $textfield_names, 'cache', CACHE_TEMPORARY);
+        cache_set('facet_collection:field_search_forms', $forms, 'cache', CACHE_TEMPORARY);
+    } else {
+        $forms = cache_get('facet_collection:field_search_forms');
+        $forms = $forms->data;
+    }
+    return $forms;
+}
+
+/**
+ * Form callback for search forms for searchable fields
+ */
+function facet_collection_field_search_form($form, &$form_state, $args) {
+    $label = $args['label'];
+    $index_field_name = $form_state['build_info']['args'][0]['index_field_name'];
+    $search_query_string = arg(1);
+    $default_value = '';
+    if (!empty($search_query_string)) {
+        $current_search_queries = explode(' AND ', $search_query_string);
+
+        //We should replace previous query by new one
+        foreach ($current_search_queries as $key => $query) {
+            $query_parts = explode(':', $query);
+            if ($query_parts[0] == $index_field_name) {
+                $default_value = $query_parts[1];
+            }
+        }
+    }
+    $form = array(
+        'title' => array(
+            '#type' => 'item',
+            '#markup' => '<h3>' . 'Search by ' . $label . '</h3>',
+            '#weight' => -20,
+        ),
+        'textfield' => array(
+            '#type' => 'textfield',
+            '#size' => 10,
+            '#weight' => -15,
+            '#default_value' => $default_value,
+        ),
+        'submit' => array(
+            '#type' => 'submit',
+            '#submit' => array('facet_collection_search_form_submit'),
+            '#value' => t('Search')
+        ),
+        'clear' => array(
+            '#type' => 'submit',
+            '#submit' => array('facet_collection_search_form_remove_filter'),
+            '#value' => t('Remove filter'),
+        )
+    );
+    return $form;
+}
+
+/**
+ * Submit callback for facet colleciton search form
+ */
+function facet_collection_search_form_submit($form, &$form_state) {
+    global $base_url;
+    $index_field_name = $form_state['build_info']['args'][0]['index_field_name'];
+    $search_query_string = arg(1);
+    $current_search_queries = array();
+    if (!empty($search_query_string)) {
+        $current_search_queries = explode(' AND ', $search_query_string);
+
+        //We should find corresponding query to show value in textfield
+        foreach ($current_search_queries as $key => $query) {
+            $query_parts = explode(':', $query);
+            if ($query_parts[0] == $index_field_name) {
+                unset($current_search_queries[$key]);
+            }
+        }
+    }
+    $value = $form_state['input']['textfield'];
+    if (!empty($value)) {
+        $current_search_queries[] = $index_field_name . ':' . trim($value);
+    }
+    $search_query = implode(' AND ', $current_search_queries);
+    $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
+    $options = array(
+        'query' => $get_params,
+    );
+    if (!empty($search_query)) {
+        $form_state['redirect'] = array(
+            $base_url . '/' . arg(0) . '/' . $search_query, $options, 302
+        );
+    }else{
+        $form_state['redirect'] = array(
+            $base_url . '/' . arg(0), $options, 302
+        );
+    }
+}
+
+/**
+ * Remove  callback for facet colleciton search form
+ */
+function facet_collection_search_form_remove_filter($form, &$form_state) {
+    global $base_url;
+    $index_field_name = $form_state['build_info']['args'][0]['index_field_name'];
+    $search_query_string = arg(1);
+    $current_search_queries = array();
+    if (!empty($search_query_string)) {
+        $current_search_queries = explode(' AND ', $search_query_string);
+
+        //We should find and remove query
+        foreach ($current_search_queries as $key => $query) {
+            $query_parts = explode(':', $query);
+            if ($query_parts[0] == $index_field_name) {
+                unset($current_search_queries[$key]);
+            }
+        }
+    }
+    $search_query = implode(' AND ', $current_search_queries);
+    $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
+    $options = array(
+        'query' => $get_params,
+    );
+    if (!empty($search_query)) {
+        $form_state['redirect'] = array(
+            $base_url . '/' . arg(0) . '/' . $search_query, $options, 302
+        );
+    }else{
+        $form_state['redirect'] = array(
+            $base_url . '/' . arg(0), $options, 302
+        );
+    }
+}
+
+/**
  * Implements hook_menu()
  */
 function facet_collection_menu() {
@@ -84,50 +234,115 @@ function facet_collection_block_info() {
  */
 
 function facet_collection_block_view($delta) {
-
-//We need to collect all facetapi presentations for separate block in one
-//and add titles for each facet.
-    $realm_name = 'block';
-    $content = array();
-    if ($delta == 'content_types_selection') {
-//We need searcher for further actions.
-        $searcher_info = facetapi_get_searcher_info();
-        $searcher = array_shift(array_keys($searcher_info));
-
-//Get adapter and build block realm to grab all build information
-        $adapter = facetapi_adapter_load($searcher);
-
-//We should check facets visibility.
-        if (!cache_get('facet_collection:visibility')) {
-            facet_collection_set_facets_visibility($adapter, $realm_name, $searcher);
-        }
-
-//Get filter settings
-        $filter_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
-
-//Get all facets that can be shown because we need only facets that satisfy all chosen content types.
-
-        $available_facets = facet_collection_get_available_facets($filter_settings);
-
-//Build content using facetapi block presentation for each facet
-        $enabled_facets = $adapter->getEnabledFacets();
-        $builds = facetapi_build_realm($searcher, $realm_name);
-        foreach ($builds as $facet_name => $build) {
-            if (is_array($build) && !empty($available_facets)) {
-                if (in_array($facet_name, $available_facets)) {
-                    $field_alias = $enabled_facets[$facet_name]['field alias'];
-                    $title = $build['#title'];
-                    $build[$field_alias]['#title'] = $title;
-                    $content[] = $build;
-                }
-            }
-        }
-    }
-
+    $search_content = facet_collection_get_search_filters();
+    $facet_content = facet_collection_get_facet_filters();
+    $content = array_merge($facet_content, $search_content);
     return array(
         'subject' => t('Filters'),
         'content' => $content,
     );
+}
+
+/**
+ * Get renderable array that present search forms for fields
+ */
+function facet_collection_get_search_filters() {
+    $content = array();
+    $content_types = facet_collection_get_filtered_content_types();
+    $filter_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
+    $field_type_list = variable_get('facet_collection:field_type_search_list');
+
+    //First we should get all field names with corresponding content type names that
+    //we need for searching.
+    if (!cache_get('facet_collection:field_search_forms:field_search_field_names')) {
+        $instances = field_info_instances('node');
+        $field_types = array_keys($field_type_list);
+        foreach ($content_types as $content_type) {
+            foreach ($instances[$content_type] as $instance) {
+                $field = field_info_field($instance['field_name']);
+                if (in_array($field['type'], $field_types)) {
+                    $textfield_names[$content_type][] = $instance['field_name'];
+                }
+            }
+        }
+        cache_set('facet_collection:field_search_field_names', $textfield_names, 'cache', CACHE_TEMPORARY);
+    } else {
+        $textfield_names = cache_get('facet_collection:field_search_forms:field_search_field_names');
+        $textfield_names = $textfield_names->data;
+    }
+
+    //We shows filters for search field only when one content type is chosen
+    if (count($content_types) == 1) {
+        $content_type = $content_types[0];
+        $field_names = $textfield_names[$content_type];
+        foreach ($field_names as $field_name) {
+
+            //Define whether we show filter for field or not
+            $field_info = field_info_field($field_name);
+            $field_type = $field_info['type'];
+            if (isset($filter_settings[$field_type][$field_name])) {
+                if (isset($field_type_list[$field_type])) {
+                    $modules = $field_type_list[$field_type];
+                    foreach ($modules as $module) {
+                        $index_field_name = module_invoke($module, 'facet_collection_index_field_name', $field_info);
+                        $field_name = $field_info['field_name'];
+                        $instance = field_info_instance('node', $field_name, $content_type);
+                        $args = array(
+                            'label' => $instance['label'],
+                            'index_field_name' => $index_field_name,
+                            'default_value' => '',
+                        );
+                        $content[] = drupal_get_form('facet_collection_' . $field_name . '_form', $args);
+                    }
+                }
+            }
+        }
+    }
+    return $content;
+}
+
+/**
+ * Get renderable array that present all facet filters
+ */
+function facet_collection_get_facet_filters() {
+
+    //We need to collect all facetapi presentations for separate block in one
+    //and add titles for each facet.
+    $realm_name = 'block';
+    $content = array();
+
+    //We need searcher for further actions.
+    $searcher_info = facetapi_get_searcher_info();
+    $searcher = array_shift(array_keys($searcher_info));
+
+//Get adapter and build block realm to grab all build information
+    $adapter = facetapi_adapter_load($searcher);
+
+//We should check facets visibility.
+    if (!cache_get('facet_collection:visibility')) {
+        facet_collection_set_facets_visibility($adapter, $realm_name, $searcher);
+    }
+
+//Get filter settings
+    $filter_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
+
+//Get all facets that can be shown because we need only facets that satisfy all chosen content types.
+    $available_facets = facet_collection_get_available_facets($filter_settings);
+
+//Build content using facetapi block presentation for each facet
+    $enabled_facets = $adapter->getEnabledFacets();
+    $builds = facetapi_build_realm($searcher, $realm_name);
+    foreach ($builds as $facet_name => $build) {
+        if (is_array($build) && !empty($available_facets)) {
+            if (in_array($facet_name, $available_facets)) {
+                $field_alias = $enabled_facets[$facet_name]['field alias'];
+                $title = $build['#title'];
+                $build[$field_alias]['#title'] = $title;
+                $content[] = $build;
+            }
+        }
+    }
+    return $content;
 }
 
 /**
@@ -149,37 +364,15 @@ function facet_collection_set_facets_visibility($adapter, $realm_name, $searcher
  */
 function facet_collection_get_available_facets($filter_settings) {
     $available_facets = array();
-    $field_type_list = variable_get('facet_collection:field_type_list');
+    $field_type_list = variable_get('facet_collection:field_type_facet_list');
     $facet_collection = variable_get('facet_collection:facet_collection');
 
 //Get all facets for collection from cache
     $data = cache_get('facet_collection:listfacets');
     $facet_list = $data->data;
 
-//@todo Get it from settings.
-    $content_types = array('files', 'location', 'people');
-
-//By defaults all content types are shown. If we take content type filters the list of content types will be changed.
-    $content_types_by_filters = FALSE;
-    if (isset($_GET['f'])) {
-
-//Check if there are some filters and if it's true check if this filters are content type filters.
-        $filters = $_GET['f'];
-        foreach ($filters as $filter) {
-            $arr = explode(':', $filter);
-            if ($arr[0] == 'bundle') {
-
-//List of content types will consist on all chosen content types.
-                if ($content_types_by_filters == FALSE) {
-                    $content_types = array();
-                }
-                $content_types_by_filters = TRUE;
-                if ($content_types_by_filters == TRUE) {
-                    $content_types[] = $arr[1];
-                }
-            }
-        }
-    }
+    //Get content types that should be shown
+    $content_types = facet_collection_get_filtered_content_types();
 
 //Perform comparison with content type list of each facet.
 //If it is satisfy all chosen  content types we take this facet
@@ -205,10 +398,46 @@ function facet_collection_get_available_facets($filter_settings) {
 }
 
 /**
+ * Get chosen content types
+ */
+function facet_collection_get_filtered_content_types() {
+    $content_types = &drupal_static(__FUNCTION__);
+    if (empty($content_types)) {
+        $environment = apachesolr_default_environment();
+        $content_types = apachesolr_get_index_bundles($environment, 'node');
+
+//By defaults all content types are shown. If we take content type filters the list of content types will be changed.
+        $content_types_by_filters = FALSE;
+        if (isset($_GET['f'])) {
+
+//Check if there are some filters and if it's true check if this filters are content type filters.
+            $filters = $_GET['f'];
+            foreach ($filters as $filter) {
+                $arr = explode(':', $filter);
+                if ($arr[0] == 'bundle') {
+
+//List of content types will consist on all chosen content types.
+                    if ($content_types_by_filters == FALSE) {
+                        $content_types = array();
+                    }
+                    $content_types_by_filters = TRUE;
+                    if ($content_types_by_filters == TRUE) {
+                        $content_types[] = $arr[1];
+                    }
+                }
+            }
+        }
+    }
+    return $content_types;
+}
+
+/**
  * Implements hook_apachesolr_index_document_build_ENTITY_TYPE()
  */
 function facet_collection_apachesolr_index_document_build_node($filedocument, $node, $env_id) {
-    $field_type_list = variable_get('facet_collection:field_type_list');
+    $field_type_facet_list = variable_get('facet_collection:field_type_facet_list');
+    $field_type_search_list = variable_get('facet_collection:field_type_search_list');
+    $field_type_list = array_merge($field_type_facet_list, $field_type_search_list);
     $node_instances = field_info_instances('node', $node->type);
     foreach ($node_instances as $instance) {
         $field_info = field_info_field($instance['field_name']);
@@ -230,14 +459,23 @@ function facet_collection_apachesolr_index_document_build_node($filedocument, $n
  */
 function facet_collection_facetapi_facet_info($searcher_info) {
     $facets = array();
-    $field_type_list = array();
+    $field_type_facet_list = array();
+    $field_type_search_list = array();
     $facet_collection = array();
 
     //Get information about all field types that should be filtered and modules
     foreach (module_implements('facet_collection_field_type_info') as $module) {
         $field_types = module_invoke($module, 'facet_collection_field_type_info');
-        foreach ($field_types as $field_type) {
-            $field_type_list[$field_type][] = $module;
+        foreach ($field_types as $filter_type => $field_type_array) {
+            if ($filter_type == 'facet') {
+                foreach ($field_type_array as $field_type) {
+                    $field_type_facet_list[$field_type][] = $module;
+                }
+            } elseif ($filter_type == 'search') {
+                foreach ($field_type_array as $field_type) {
+                    $field_type_search_list[$field_type][] = $module;
+                }
+            }
         }
     }
 
@@ -245,8 +483,8 @@ function facet_collection_facetapi_facet_info($searcher_info) {
     $fields = field_info_fields();
     foreach ($fields as $field_info) {
         $field_type = $field_info['type'];
-        if (isset($field_type_list[$field_type])) {
-            $modules = $field_type_list[$field_type];
+        if (isset($field_type_facet_list[$field_type])) {
+            $modules = $field_type_facet_list[$field_type];
             foreach ($modules as $module) {
                 $facet_groups = module_invoke($module, 'facet_collection_field_facet_groups', $field_info);
                 if (!empty($facet_groups)) {
@@ -265,8 +503,16 @@ function facet_collection_facetapi_facet_info($searcher_info) {
             }
         }
     }
+    //Contatins facet names for each groups and for each field type
     variable_set('facet_collection:facet_collection', $facet_collection);
-    variable_set('facet_collection:field_type_list', $field_type_list);
+
+    //Contatns module names that should handle field type using facets
+    variable_set('facet_collection:field_type_facet_list', $field_type_facet_list);
+
+    //Contatns module names that should handle field type using search
+    variable_set('facet_collection:field_type_search_list', $field_type_search_list);
+
+    //Contatins all facets provided facet collection module
     cache_set('facet_collection:listfacets', array_keys($facets), 'cache', CACHE_TEMPORARY);
     return $facets;
 }
@@ -320,13 +566,19 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
     global $base_url;
     $nid = $variables['doc']->entity_id;
     $node = node_load($nid);
+
+    //We take a text for snippet from long text with summary field
     $instances = field_info_instances('node', $node->type);
-    if (isset($instances['body'])) {
-        $items = field_get_items('node', $node, 'body');
-        if (!empty($items)) {
-            foreach ($items as $item) {
-                $text = $item['value'];
-                $variables['text'] = $text;
+    foreach ($instances as $instance) {
+        $field_name = $instance['field_name'];
+        $field_info = field_info_field($field_name);
+        if ($field_info['type'] == 'text_with_summary') {
+            $items = field_get_items('node', $node, $field_name);
+            if (!empty($items)) {
+                foreach ($items as $item) {
+                    $text = $item['value'];
+                    $variables['text'] = $text;
+                }
             }
         }
     }
@@ -341,7 +593,7 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
                     $styles = image_styles();
                     if (in_array($style, array_keys($styles))) {
                         $image_path = image_style_url($style, $uri);
-                    }else{
+                    } else {
                         $image_path = file_create_url($uri);
                     }
                     $variables['image_path'] = $image_path;
@@ -357,7 +609,7 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
  */
 function facet_collection_apachesolr_query_alter($query) {
 
-    //We should check that only nodes should be shown
+    //We should be shure that only nodes should be shown
     if (arg(0) == 'collection') {
         $fq = $query->getParam('fq');
         $fq = array_merge($fq, array('entity_type:node'));

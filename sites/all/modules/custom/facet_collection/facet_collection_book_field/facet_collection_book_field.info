@@ -1,4 +1,4 @@
-name = Facet collection book field indexing
+name = Facet collection book field
 description = "Provides indexing files attached to book field for collection"
 package = Facet Collection
 core = 7.x

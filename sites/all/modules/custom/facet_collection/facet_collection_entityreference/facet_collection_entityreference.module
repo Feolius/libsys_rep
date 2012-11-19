@@ -4,7 +4,7 @@
  * Implements hook_facet_collection_field_type_info()
  */
 function facet_collection_entityreference_facet_collection_field_type_info() {
-    return array('entityreference');
+    return array('facet' => array('entityreference'));
 }
 
 /**
