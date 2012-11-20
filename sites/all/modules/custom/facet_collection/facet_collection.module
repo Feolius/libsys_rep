@@ -108,7 +108,7 @@ function facet_collection_search_form_submit($form, &$form_state) {
         $form_state['redirect'] = array(
             $base_url . '/' . arg(0) . '/' . $search_query, $options, 302
         );
-    }else{
+    } else {
         $form_state['redirect'] = array(
             $base_url . '/' . arg(0), $options, 302
         );
@@ -143,7 +143,7 @@ function facet_collection_search_form_remove_filter($form, &$form_state) {
         $form_state['redirect'] = array(
             $base_url . '/' . arg(0) . '/' . $search_query, $options, 302
         );
-    }else{
+    } else {
         $form_state['redirect'] = array(
             $base_url . '/' . arg(0), $options, 302
         );
@@ -174,11 +174,8 @@ function facet_collection_page() {
     $params = facet_collection_get_params();
     $base_path = arg(0);
     $results = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
-    $build['search_results'] = array(
-        '#theme' => 'search_results',
-        '#results' => $results,
-        '#module' => 'facet_collection'
-    );
+    $hook = 'facet_collection_search_results__alter';
+    $build = theme($hook, array('results' => $results));
     return $build;
 }
 
@@ -534,6 +531,9 @@ function facet_collection_theme() {
             'template' => 'facet-collection-snippet',
             'variables' => array('doc' => NULL, 'snippets' => array()),
         ),
+        'facet_collection_search_results' => array(
+            'variables' => array('results' => NULL),
+        ),
     );
 }
 
@@ -595,4 +595,17 @@ function facet_collection_apachesolr_query_alter($query) {
         $fq = array_merge($fq, array('entity_type:node'));
         $query->addParam('fq', $fq);
     }
+}
+
+/**
+ * Theme function for default presentation of search results
+ */
+function theme_facet_collection_search_results($vars) {
+    $results = $vars['results'];
+    $build['search_results'] = array(
+        '#theme' => 'search_results',
+        '#results' => $results,
+        '#module' => 'facet_collection'
+    );
+    return $build;
 }
