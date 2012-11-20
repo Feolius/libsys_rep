@@ -3,12 +3,6 @@
 function collection_page_menu()
 {
     $items = array();
-    $items['test-collection-page'] = array(
-        'title' => 'Collection',
-        'access callback' => TRUE,
-        'page callback' => 'collection_page_collection_page_callback',
-        'type' => MENU_CALLBACK,
-    );
     $items['timeline-json'] = array(
         'access callback' => TRUE,
         'page callback' => 'collection_page_timeline_json_callback',
@@ -22,14 +16,34 @@ function collection_page_menu()
     return $items;
 }
 
-function collection_page_collection_page_callback()
+/**
+ * Implements hook_theme().
+ */
+function collection_page_theme()
 {
-    $environment = apachesolr_default_environment();
-    $solr = apachesolr_get_solr($environment);
-    $params = facet_collection_get_params();
-    $base_path = arg(0);
-    $results = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
+    return array(
+        'facet_collection_search_results__alter' => array(
+            'variables' => array('results' => NULL),
+        ),
+        'collection_page' => array(
+            'template' => 'theme/collection-page',
+        ),
+        'timeline_json' => array(
+            'template' => 'theme/timeline-json-page',
+            'arguments' => array(
+                'options' => null,
+            ),
+        ),
+        'timeline_iframe' => array(
+            'template' => 'theme/timeline-iframe-page',
+        )
+    );
 
+}
+
+function theme_facet_collection_search_results__alter($variables)
+{
+    $results = $variables['results'];
     $node_ids = '';
     foreach ($results as $result) {
         $node_ids = $node_ids . ',' . $result['node']->entity_id;
@@ -46,7 +60,7 @@ function collection_page_collection_page_callback()
         '#timeline' => array(
             '#title' => t('Timeline View'),
             '#content' => array(
-                '#timeline_iframe' => theme('timeline_iframe')
+                '#timeline_iframe' => theme('timeline_iframe', $results)
             )
         ),
         '#standart' => array(
@@ -78,7 +92,6 @@ function collection_page_timeline_frame_callback()
 
 function collection_page_timeline_json_callback()
 {
-
     $date = array();
 
     //TODO:rewrite result transmission
@@ -95,7 +108,7 @@ function collection_page_timeline_json_callback()
 
         $item = new stdClass();
         $item->headline = $result['title'];
-        $item->startDate = date('Y',strtotime($result['fields']['dm_field_files_date'][0]));
+        $item->startDate = date('Y', strtotime($result['fields']['dm_field_files_date'][0]));
         $item->text = l('read more', 'http:' . $result['link'], array('attributes' => array('target' => '_parent', 'class' => 'active')));
         $item->asset = $asset;
         $date[] = $item;
@@ -111,24 +124,6 @@ function collection_page_timeline_json_callback()
 
     echo drupal_json_output($json_class);
     exit;
-}
-
-function collection_page_theme()
-{
-    return array(
-        'collection_page' => array(
-            'template' => 'theme/collection-page',
-        ),
-        'timeline_json' => array(
-            'template' => 'theme/timeline-json-page',
-            'arguments' => array(
-                'options' => null,
-            ),
-        ),
-        'timeline_iframe' => array(
-            'template' => 'theme/timeline-iframe-page',
-        )
-    );
 }
 
 function collection_page_preprocess_timeline_json(&$vars)
