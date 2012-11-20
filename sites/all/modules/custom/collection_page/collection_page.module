@@ -30,7 +30,13 @@ function collection_page_collection_page_callback()
     $base_path = arg(0);
     $results = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
 
-    variable_set('collection_apache_solr_result',drupal_json_encode($results));
+    $node_ids = '';
+    foreach ($results as $result) {
+        $node_ids = $node_ids . ',' . $result['node']->entity_id;
+    }
+    $node_ids = substr($node_ids, 1);
+
+    variable_set('collection_apache_solr_result', drupal_json_encode($results));
 
     drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_style.css');
     drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_tabs.js');
@@ -46,15 +52,16 @@ function collection_page_collection_page_callback()
         '#standart' => array(
             '#title' => t('Standart View'),
             '#content' => array(
-                '#standart_view' => theme('search_results', array('#theme' => 'search_results','#results' => $results,'#module'=>'collection_page')),
+                '#standart_view' => theme('search_results', array('#theme' => 'search_results', '#results' => $results, '#module' => 'collection_page')),
             )
         ),
         '#location' => array(
             '#title' => t('Location View'),
             '#content' => array(
-                '#location_view' => views_embed_view('location_view', 'page'),
+                '#location_view' => views_embed_view('location_view', 'map', $node_ids),
             )
         ),
+        '#pager' => theme('pager', array('tags' => NULL)),
     );
 
     return theme('collection_page', array('elements' => $content));
@@ -74,6 +81,7 @@ function collection_page_timeline_json_callback()
 
     $date = array();
 
+    //TODO:rewrite result transmission
     $results = drupal_json_decode(variable_get('collection_apache_solr_result'));
 
     foreach ($results as $result) {
@@ -81,14 +89,14 @@ function collection_page_timeline_json_callback()
 //        if (isset($_SESSION['collection_page']['json']['image_url']))
 //            $asset->media = $_SESSION['collection_page']['json']['image_url'][$i];
 //        else
-            $asset->media = "";
+        $asset->media = "";
         $asset->credit = "";
         $asset->caption = "";
 
         $item = new stdClass();
         $item->headline = $result['title'];
-        $item->startDate = "1555";
-        $item->text = l('read more', 'http:' . $result['link'], array('attributes'=> array('target'=>'_parent','class'=>'active')));
+        $item->startDate = date('Y',strtotime($result['fields']['dm_field_files_date'][0]));
+        $item->text = l('read more', 'http:' . $result['link'], array('attributes' => array('target' => '_parent', 'class' => 'active')));
         $item->asset = $asset;
         $date[] = $item;
     }
@@ -97,7 +105,7 @@ function collection_page_timeline_json_callback()
     $json_class->timeline = new stdClass();
     $json_class->timeline->headline = "";
     $json_class->timeline->type = "default";
-    $json_class->timeline->startDate = "1000";
+    $json_class->timeline->startDate = "0";
     $json_class->timeline->text = "";
     $json_class->timeline->date = $date;
 
@@ -136,4 +144,10 @@ function collection_page_preprocess_timeline_iframe(&$vars)
     $vars['iframe_url'] = 'timeline-iframe';
     $vars['iframe_width'] = '100%';
     $vars['iframe_height'] = '600px';
+}
+
+function collection_page_apachesolr_query_alter($query)
+{
+    $query->addParam('fl', 'dm_field_files_date');
+    $query->addFilter('bundle', 'files');
 }

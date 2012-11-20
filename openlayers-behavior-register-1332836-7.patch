@@ -1,0 +1,2571 @@
+diff --git a/js/openlayers.js b/js/openlayers.js
+index 8eefe8d..61b1471 100644
+--- a/js/openlayers.js
++++ b/js/openlayers.js
+@@ -14,58 +14,54 @@
+  * This is a workaround for a bug involving IE and VML support.
+  * See the Drupal Book page describing this problem:
+  * http://drupal.org/node/613002
+- */
+ 
+ document.namespaces;
++ */
+ 
+ (function($) {
+ 
+-Drupal.settings.openlayers = {};
+-Drupal.settings.openlayers.maps = {};
++  //make sure we have all the namespaces we need
++  $.extend(true, Drupal, {
++    settings: {
++      openlayers: {
++        map: {},
++        behaviors: {}
++      }
++    },
++    openlayers: {
++      layer: {},
++      behaviors: {}
++    }
++  });
+ 
+-/**
+- * Minimal OpenLayers map bootstrap.
+- * All additional operations occur in additional Drupal behaviors.
+- */
+-Drupal.behaviors.openlayers = {
+-  'attach': function(context, settings) {
+-    if (typeof(Drupal.settings.openlayers) === 'object' &&
+-        Drupal.settings.openlayers.maps &&
+-        !$(context).data('openlayers')) {
+-      $('.openlayers-map:not(.openlayers-processed)').each(function() {
+-        // By setting the stop_render variable to TRUE, this will
+-        // halt the render process.  If set, one could remove this setting
+-        // then call Drupal.attachBehaviors again to get it started
+-        var map_id = $(this).attr('id');
+-        if (Drupal.settings.openlayers.maps[map_id] && Drupal.settings.openlayers.maps[map_id].stop_render != true) {
+-          var map = Drupal.settings.openlayers.maps[map_id];
+-          $(this).addClass('openlayers-processed');
++  /**
++   * Minimal OpenLayers map bootstrap.
++   * All additional operations occur in additional Drupal openlayers behaviors.
++   */
++  Drupal.behaviors.openlayers = {
++    'attach': function(context, settings) {
++
++      // Set OpenLayers language based on document language,
++      // rather than browser language
++      OpenLayers.Lang.setCode($('html').attr('lang'));
+ 
++      // used to transform our default values
++      var ownProjection = new OpenLayers.Projection('EPSG:4326');
++
++      $('.openlayers-map').once('openlayers', function() {
++        var map_id = $(this).attr('id');
++        var map = Drupal.settings.openlayers.maps[map_id];
++        var $that = $(this);
++        var options = {};
++        if (map) {
+           // Use try..catch for error handling.
+           try {
+-            // Set OpenLayers language based on document language,
+-            // rather than browser language
+-            OpenLayers.Lang.setCode($('html').attr('lang'));
+-
+-            $(this)
+-              // @TODO: move this into markup in theme function, doing this dynamically is a waste.
+-              .css('width', map.width)
+-              .css('height', map.height);
+ 
+-            var options = {};
+             // This is necessary because the input JSON cannot contain objects
+             options.projection = new OpenLayers.Projection('EPSG:' + map.projection);
+             options.displayProjection = new OpenLayers.Projection('EPSG:' + map.displayProjection);
+-
+-            // TODO: work around this scary code
+-            if (map.projection === '900913') {
+-              options.maxExtent = new OpenLayers.Bounds(
+-                -20037508.34, -20037508.34, 20037508.34, 20037508.34);
+-            }
+-            if (map.projection === '4326') {
+-              options.maxExtent = new OpenLayers.Bounds(-180, -90, 180, 90);
+-            }
+-
++            // latitude is not between -90 / +90
++            options.maxExtent = new OpenLayers.Bounds(-180, -85.0511, 180, 85.0511).transform(ownProjection, options.projection);
+             options.maxResolution = 1.40625;
+             options.controls = [];
+ 
+@@ -84,19 +80,29 @@ Drupal.behaviors.openlayers = {
+             }
+ 
+             // Initialize openlayers map
+-            var openlayers = new OpenLayers.Map(map.id, options);
++            // keep this around for detach, use jQuery paradigm. [0] is the raw object
++            map[0] = new OpenLayers.Map(options);
+ 
+             // Run the layer addition first
+-            Drupal.openlayers.addLayers(map, openlayers);
+-
+-            // Attach data to map DOM object
+-            $(this).data('openlayers', {'map': map, 'openlayers': openlayers});
+-
+-            // Finally, attach behaviors
+-            Drupal.attachBehaviors(this);
+-
++            Drupal.openlayers.addLayers(map, map[0]);
++
++            // attach OL behaviors to the map
++            $.each(Drupal.openlayers.behaviors, function (name, behavior) {
++              if ($.isFunction(behavior.attach)) {
++                $that.once(name, function () {
++                  behavior.attach($that, map, map.behaviors[name], map[0]);
++                });
++              }
++            });
+             if ($.browser.msie) {
+-              Drupal.openlayers.redrawVectors();
++              // IE needs to wait the load event for VML to work properly
++              // avoid a redraw
++              $(document).load(function () {
++                map[0].render(map.id);
++              });
++            }
++            else {
++              map[0].render(map.id);
+             }
+           }
+           catch (e) {
+@@ -109,282 +115,229 @@ Drupal.behaviors.openlayers = {
+           }
+         }
+       });
+-    }
+-  }
+-};
++    },
++    // Need to remove all event handlers to avoid leaking.
++    'detach': function (context, settings, trigger) {
++      // we destroy only processed maps
++      $(context).find('.openlayers-map.openlayers-processed').each(function () {
++        var map_id = $(this).attr('id');
++        var map = Drupal.settings.openlayers.maps[map_id];
++        var $that = $(this);
+ 
+-/**
+- * Collection of helper methods.
+- */
+-Drupal.openlayers = {
+-  // Determine path based on format.
+-  'relatePath': function(path, basePath) {
+-    // Check for a full URL or an absolute path.
+-    if (path.indexOf('://') >= 0 || path.indexOf('/') == 0) {
+-      return path;
+-    }
+-    else {
+-      return basePath + path;
+-    }
+-  },
+-  /*
+-   * Redraw Vectors.
+-   * This is necessary because various version of IE cannot draw vectors on
+-   * $(document).ready()
+-   */
+-  'redrawVectors': function() {
+-    $(window).load(
+-      function() {
+-        var map;
+-        for (map in Drupal.settings.openlayers.maps) {
+-          $.each($('#' + map).data('openlayers')
+-            .openlayers.getLayersByClass('OpenLayers.Layer.Vector'),
+-            function(i, layer) {
+-              layer.redraw();
+-            }
+-          );
++        // detach OL behaviors from the map
++        $.each(Drupal.openlayers.behaviors, function (name, behavior) {
++          if ($.isFunction(behavior.detach)) {
++            behavior.detach($that, map, map.behaviors[name], map[0], trigger);
++          }
++        });
++        // only on unload, not serialize
++        if (trigger === 'unload') {
++          // clean up to avoid leaks
++          map[0].destroy();
+         }
+-      }
+-    );
+-  },
++      });
++    }
++  };
++
+   /**
+-   * Add layers to the map
+-   *
+-   * @param map Drupal settings object for the map.
+-   * @param openlayers OpenLayers Map Object.
++   * Collection of helper methods.
+    */
+-  'addLayers': function(map, openlayers) {
++  $.extend(Drupal.openlayers, {
++    // Determine path based on format.
++    'relatePath': function(path, basePath) {
++      // Check for a full URL or an absolute path.
++      if (path.indexOf('://') >= 0 || path.indexOf('/') === 0) {
++        return path;
++      }
++      else {
++        return basePath + path;
++      }
++    },
++    /**
++     * Add layers to the map
++     *
++     * @param map Drupal settings object for the map.
++     * @param openlayers OpenLayers Map Object.
++     */
++    'addLayers': function(map, openlayers) {
++
++      var sorted = [];
++      for (var name in map.layers) {
++        sorted.push({'name': name, 'weight': map.layers[name].weight });
++      }
++      sorted.sort(function(a, b) {
++        var x = a.weight, y = b.weight;
++        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
++      });
+ 
+-    var sorted = [];
+-    for (var name in map.layers) {
+-      sorted.push({'name': name, 'weight': map.layers[name].weight });
+-    }
+-    sorted.sort(function(a, b) {
+-      var x = a.weight, y = b.weight;
+-      return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+-    });
+-
+-    for (var i = 0; i < sorted.length; ++i) {
+-      var layer,
+-        name = sorted[i].name,
+-        options = map.layers[name];
+-
+-      // Add reference to our layer ID
+-      options.drupalID = name;
+-      // Ensure that the layer handler is available
+-      if (options.layer_handler !== undefined &&
+-        Drupal.openlayers.layer[options.layer_handler] !== undefined) {
+-        var layer = Drupal.openlayers.layer[options.layer_handler](map.layers[name].title, map, options);
+-
+-        layer.visibility = !!(!map.layer_activated || map.layer_activated[name]);
+-
+-        if (layer.isBaseLayer === false) {
+-          layer.displayInLayerSwitcher = (!map.layer_switcher || map.layer_switcher[name]);
+-        }
++      for (var i = 0; i < sorted.length; ++i) {
++        var layer,
++          name = sorted[i].name,
++          options = map.layers[name];
+ 
+-        if (map.center.wrapdateline === '1') {
+-          // TODO: move into layer specific settings
+-          layer.wrapDateLine = true;
+-        }
++        // Add reference to our layer ID
++        options.drupalID = name;
++        // Ensure that the layer handler is available
++        if (options.layer_handler !== undefined &&
++          Drupal.openlayers.layer[options.layer_handler] !== undefined) {
++          var layer = Drupal.openlayers.layer[options.layer_handler](map.layers[name].title, map, options);
+ 
+-        openlayers.addLayer(layer);
+-      }
+-    }
++          layer.visibility = !!(!map.layer_activated || map.layer_activated[name]);
+ 
+-    openlayers.setBaseLayer(openlayers.getLayersBy('drupalID', map.default_layer)[0]);
++          if (layer.isBaseLayer === false) {
++            layer.displayInLayerSwitcher = (!map.layer_switcher || map.layer_switcher[name]);
++          }
+ 
+-    // Zoom & center
+-    if (map.center.initial) {
+-      var center = OpenLayers.LonLat.fromString(map.center.initial.centerpoint).transform(
+-            new OpenLayers.Projection('EPSG:4326'),
+-            new OpenLayers.Projection('EPSG:' + map.projection));
+-      var zoom = parseInt(map.center.initial.zoom, 10);
+-      openlayers.setCenter(center, zoom, false, false);
+-    }
++          if (map.center.wrapdateline === '1') {
++            // TODO: move into layer specific settings
++            layer.wrapDateLine = true;
++          }
+ 
+-    // Set the restricted extent if wanted.
+-    // Prevents the map from being panned outside of a specfic bounding box.
+-    if (typeof map.center.restrict !== 'undefined' && map.center.restrict.restrictextent) {
+-      openlayers.restrictedExtent = OpenLayers.Bounds.fromString(
+-          map.center.restrict.restrictedExtent);
+-    }
+-  },
+-  /**
+-   * Abstraction of OpenLayer's feature adding syntax to work with Drupal output.
+-   * Ideally this should be rolled into the PHP code, because we don't want to manually
+-   * parse WKT
+-   */
+-  'addFeatures': function(map, layer, features) {
+-    var newFeatures = [];
+-
+-    // Go through features
+-    for (var key in features) {
+-      var feature = features[key];
+-      var newFeatureObject = this.objectFromFeature(feature);
+-
+-      // If we have successfully extracted geometry add additional
+-      // properties and queue it for addition to the layer
+-      if (newFeatureObject) {
+-        var newFeatureSet = [];
+-
+-        // Check to see if it is a new feature, or an array of new features.
+-        if (typeof(newFeatureObject[0]) === 'undefined') {
+-          newFeatureSet[0] = newFeatureObject;
+-        }
+-        else {
+-          newFeatureSet = newFeatureObject;
++          openlayers.addLayer(layer);
+         }
++      }
+ 
+-        // Go through new features
+-        for (var i in newFeatureSet) {
+-          var newFeature = newFeatureSet[i];
++      openlayers.setBaseLayer(openlayers.getLayersBy('drupalID', map.default_layer)[0]);
+ 
+-          // Transform the geometry if the 'projection' property is different from the map projection
+-          if (feature.projection) {
+-            if (feature.projection !== map.projection) {
+-              var featureProjection = new OpenLayers.Projection('EPSG:' + feature.projection);
+-              var mapProjection = new OpenLayers.Projection('EPSG:' + map.projection);
+-              newFeature.geometry.transform(featureProjection, mapProjection);
+-            }
+-          }
++      // Zoom & center
++      if (map.center.initial) {
++        var center = OpenLayers.LonLat.fromString(map.center.initial.centerpoint).transform(
++              new OpenLayers.Projection('EPSG:4326'),
++              new OpenLayers.Projection('EPSG:' + map.projection));
++        var zoom = parseInt(map.center.initial.zoom, 10);
++        openlayers.setCenter(center, zoom, false, false);
++      }
+ 
+-          // Add attribute data
+-          if (feature.attributes) {
+-            // Attributes belong to features, not single component geometries
+-            // of them. But we're creating a geometry for each component for
+-            // better performance and clustering support. Let's call these
+-            // "pseudofeatures".
+-            //
+-            // In order to identify the real feature each geometry belongs to
+-            // we then add a 'fid' parameter to the "pseudofeature".
+-            // NOTE: 'drupalFID' is only unique within a single layer.
+-            newFeature.attributes = feature.attributes;
+-            newFeature.data = feature.attributes;
+-            newFeature.drupalFID = key;
++      // Set the restricted extent if wanted.
++      // Prevents the map from being panned outside of a specfic bounding box.
++      if (typeof map.center.restrict !== 'undefined' && map.center.restrict.restrictextent) {
++        openlayers.restrictedExtent = OpenLayers.Bounds.fromString(
++            map.center.restrict.restrictedExtent);
++      }
++    },
++    /**
++     * Abstraction of OpenLayer's feature adding syntax to work with Drupal output.
++     * Ideally this should be rolled into the PHP code, because we don't want to manually
++     * parse WKT
++     */
++    'addFeatures': function(map, layer, features) {
++      var newFeatures = [];
++
++      // Go through features
++      for (var key in features) {
++        var feature = features[key];
++        var newFeatureObject = this.objectFromFeature(feature);
++
++        // If we have successfully extracted geometry add additional
++        // properties and queue it for addition to the layer
++        if (newFeatureObject) {
++          var newFeatureSet = [];
++
++          // Check to see if it is a new feature, or an array of new features.
++          if (typeof(newFeatureObject[0]) === 'undefined') {
++            newFeatureSet[0] = newFeatureObject;
+           }
+-
+-          // Add style information
+-          if (feature.style) {
+-            newFeature.style = jQuery.extend({},
+-                OpenLayers.Feature.Vector.style['default'],
+-                feature.style);
++          else {
++            newFeatureSet = newFeatureObject;
+           }
+ 
+-          // Push new features
+-          newFeatures.push(newFeature);
++          // Go through new features
++          for (var i in newFeatureSet) {
++            var newFeature = newFeatureSet[i];
++
++            // Transform the geometry if the 'projection' property is different from the map projection
++            if (feature.projection) {
++              if (feature.projection !== map.projection) {
++                var featureProjection = new OpenLayers.Projection('EPSG:' + feature.projection);
++                var mapProjection = new OpenLayers.Projection('EPSG:' + map.projection);
++                newFeature.geometry.transform(featureProjection, mapProjection);
++              }
++            }
++
++            // Add attribute data
++            if (feature.attributes) {
++              // Attributes belong to features, not single component geometries
++              // of them. But we're creating a geometry for each component for
++              // better performance and clustering support. Let's call these
++              // "pseudofeatures".
++              //
++              // In order to identify the real feature each geometry belongs to
++              // we then add a 'fid' parameter to the "pseudofeature".
++              // NOTE: 'drupalFID' is only unique within a single layer.
++              newFeature.attributes = feature.attributes;
++              newFeature.data = feature.attributes;
++              newFeature.drupalFID = key;
++            }
++
++            // Add style information
++            if (feature.style) {
++              newFeature.style = jQuery.extend({},
++                  OpenLayers.Feature.Vector.style['default'],
++                  feature.style);
++            }
++
++            // Push new features
++            newFeatures.push(newFeature);
++          }
+         }
+       }
+-    }
+ 
+-    // Add new features if there are any
+-    if (newFeatures.length !== 0) {
+-      layer.addFeatures(newFeatures);
+-    }
+-  },
+-  
+-  'getStyleMap': function(map, layername) {
+-    if (map.styles) {
+-      var stylesAdded = {};
+-      
+-      // Grab and map base styles.
+-      for (var style in map.styles) {
+-        stylesAdded[style] = new OpenLayers.Style(map.styles[style]);
++      // Add new features if there are any
++      if (newFeatures.length !== 0) {
++        layer.addFeatures(newFeatures);
+       }
+-      
+-      // Implement layer-specific styles.  First default, then select.
+-      if (map.layer_styles !== undefined && map.layer_styles[layername]) {
+-        var style = map.layer_styles[layername];
+-        stylesAdded['default'] = new OpenLayers.Style(map.styles[style]);
++    },
++    'getStyleMap': function(map, layername) {
++      if (map.styles) {
++        var stylesAdded = {};
++        // Grab and map base styles.
++        for (var style in map.styles) {
++          stylesAdded[style] = new OpenLayers.Style(map.styles[style]);
++        }
++        // Implement layer-specific styles.
++        if (map.layer_styles !== undefined && map.layer_styles[layername]) {
++          var style = map.layer_styles[layername];
++          stylesAdded['default'] = new OpenLayers.Style(map.styles[style]);
++        }
++        return new OpenLayers.StyleMap(stylesAdded);
+       }
+-      if (map.layer_styles_select !== undefined && map.layer_styles_select[layername]) {
+-        var style = map.layer_styles_select[layername];
+-        stylesAdded['select'] = new OpenLayers.Style(map.styles[style]);
++      else {
++        return new OpenLayers.StyleMap({
++          'default': new OpenLayers.Style({
++            pointRadius: 5,
++            fillColor: '#ffcc66',
++            strokeColor: '#ff9933',
++            strokeWidth: 4,
++            fillOpacity: 0.5
++          }),
++          'select': new OpenLayers.Style({
++            fillColor: '#66ccff',
++            strokeColor: '#3399ff'
++          })
++        });
+       }
+-      
+-      return new OpenLayers.StyleMap(stylesAdded);
+-    }
+-    else {
+-      return new OpenLayers.StyleMap({
+-        'default': new OpenLayers.Style({
+-          pointRadius: 5,
+-          fillColor: '#ffcc66',
+-          strokeColor: '#ff9933',
+-          strokeWidth: 4,
+-          fillOpacity: 0.5
+-        }),
+-        'select': new OpenLayers.Style({
+-          fillColor: '#66ccff',
+-          strokeColor: '#3399ff'
+-        })
+-      });
+-    }
+-  },
+-  
+-  'objectFromFeature': function(feature) {
+-    var wktFormat = new OpenLayers.Format.WKT();
+-    // Extract geometry either from wkt property or lon/lat properties
+-    if (feature.wkt) {
+-      return wktFormat.read(feature.wkt);
+-    }
+-    else if (feature.lon) {
+-      return wktFormat.read('POINT(' + feature.lon + ' ' + feature.lat + ')');
++    },
++    'objectFromFeature': function(feature) {
++      var wktFormat = new OpenLayers.Format.WKT();
++      // Extract geometry either from wkt property or lon/lat properties
++      if (feature.wkt) {
++        return wktFormat.read(feature.wkt);
++      }
++      else if (feature.lon) {
++        return wktFormat.read('POINT(' + feature.lon + ' ' + feature.lat + ')');
++      }
++    },
++    /**
++     * Add Control.
++     *
++     * This is a wrapper around adding controls to maps.  It
++     * is not needed but saves some code.
++     */
++    'addControl': function(openlayers, controlName, options) {
++      var control = new OpenLayers.Control[controlName](options);
++      openlayers.addControl(control);
++      control.activate();
++      return control;
+     }
+-  },
+-  
+-  /**
+-   * Add Behavior.
+-   *
+-   * This is a wrapper around adding behaviors for OpenLayers.
+-   * a module does not have to use this, but it helps cut
+-   * down on code.
+-   *
+-   * @param id
+-   *   The identifier of the behavior that is attached to
+-   *   the map.
+-   * @param attach
+-   *   The callback function for the attach part of the
+-   *   Drupal behavior.
+-   * @param detach
+-   *   The callback function for the detach part of the
+-   *   Drupal behavior.
+-   */
+-  'addBehavior': function(id, attach, detach) {
+-    // Add as a Drupal behavior.  Add a prefix, just to be safe.
+-    Drupal.behaviors['openlayers_auto_' + id] = {
+-      attach: function (context, settings) {
+-        var data = $(context).data('openlayers');
+-        
+-        // Ensure that there is a map and that the appropriate
+-        // behavior exists.  Need "data &&" to avoid js crash 
+-        // when data is empty
+-        var localBehavior = data && data.map.behaviors[id];
+-        
+-        // Ensure scope in the attach callback
+-        var that = this;
+-        if (localBehavior) {
+-          $(context).once('openlayers-' + id, function () {
+-            attach.apply(that, [data, data.map.behaviors[id], context, settings]);
+-          });
+-        }
+-      },
+-      // Maybe we need a little more handling here.
+-      detach: detach
+-    };
+-  },
+-  
+-  /**
+-   * Add Control.
+-   *
+-   * This is a wrapper around adding controls to maps.  It
+-   * is not needed but saves some code.
+-   */
+-  'addControl': function(openlayers, controlName, options) {
+-    var control = new OpenLayers.Control[controlName](options);
+-    openlayers.addControl(control);
+-    control.activate();
+-    return control;
+-  }
+-};
+-
+-Drupal.openlayers.layer = {};
+-})(jQuery);
++  });
++}(jQuery));
+diff --git a/modules/openlayers_ui/includes/openlayers_ui.maps.inc b/modules/openlayers_ui/includes/openlayers_ui.maps.inc
+index 08030b2..3f373d3 100644
+--- a/modules/openlayers_ui/includes/openlayers_ui.maps.inc
++++ b/modules/openlayers_ui/includes/openlayers_ui.maps.inc
+@@ -53,7 +53,7 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+   // to turn it on or off.  Show on preview, otherwise look at setting.
+   // Might want to look at disableing the mousewheel zoom since
+   // the map could be very in the way.
+-  $map_preview = (isset($form_state['values']) && $form_state['values']['preview_map']) ? 
++  $map_preview = (isset($form_state['values']) && $form_state['values']['preview_map']) ?
+     $form_state['values']['preview_map'] : $map;
+   if (variable_get('openlayers_ui_preview_map', FALSE) || !empty($form_state['values']['preview_map'])) {
+     $form['preview'] = array(
+@@ -61,7 +61,7 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+       '#type' => 'fieldset',
+       '#title' => t('Preview'),
+       '#description' => t('The following is a preview of your map.  Click <em>Preview</em>
+-        to refresh the map with the new values.  ' . 
++        to refresh the map with the new values.  ' .
+         (!variable_get('openlayers_ui_preview_map', FALSE) ?
+           t('Turn map previews on by default on the !link.',
+           array('!link' => l(t('Settings page'), 'admin/structure/openlayers'))) : ''
+@@ -93,7 +93,7 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+     '#group' => 'ui',
+     '#type' => 'fieldset'
+   );
+-  
++
+   $form['info']['name'] = array(
+     '#type' => 'textfield',
+     '#title' => t('Map Machine Name'),
+@@ -146,13 +146,13 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+     $form['info']['hide_empty_map'] = array(
+       '#type' => 'checkbox',
+       '#title' => t('Hide empty map for Views'),
+-      '#description' => t("Show views empty text or hide the map if there are 
++      '#description' => t("Show views empty text or hide the map if there are
+         no map overlays with features. Otherwise an empty map is displayed."),
+       '#default_value' => isset($defaults['hide_empty_map']) ?
+-        $defaults['hide_empty_map'] : FALSE,  
++        $defaults['hide_empty_map'] : FALSE,
+     );
+   }
+-  
++
+   $default_image_path = drupal_get_path('module', 'openlayers') . '/themes/default_dark/img/';
+   $form['info']['image_path'] = array(
+     '#type' => 'textfield',
+@@ -160,17 +160,17 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+     '#description' => t('<p>The path to a directory of UI graphics. Use any of the
+       following:</p>
+       <ul>
+-        <li><strong>Leave blank</strong> for default graphics as provided 
++        <li><strong>Leave blank</strong> for default graphics as provided
+           by the OpenLayers library. </li>
+-        <li><strong>Relative Drupal path</strong> a path without leading slash and 
++        <li><strong>Relative Drupal path</strong> a path without leading slash and
+           the base path will be prepended, ex. "sites/all/themes/path/to/images/"</li>
+-        <li><strong>Absolute path</strong> a path with leading slash and path will 
++        <li><strong>Absolute path</strong> a path with leading slash and path will
+           start from sites root directory, ex. "/path/to/images/"</li>
+         <li><strong>Full URL</strong> such as "http://example.com/image/"</li>
+       </ul>
+-      <p>Always include trailing slash.  The default path provided with this module 
++      <p>Always include trailing slash.  The default path provided with this module
+       is: %default</p>
+-      <p><strong>This is actually a setting for the OpenLayers 
++      <p><strong>This is actually a setting for the OpenLayers
+       object and will affect all maps on the same page.</strong></p>',
+       array('%default' => $default_image_path)
+     ),
+@@ -188,18 +188,18 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+       <ul>
+         <li><strong>Leave blank</strong> for default hosted OpenLayers which
+           is !link</li>
+-        <li><strong>Relative Drupal path</strong> a path without leading slash and 
++        <li><strong>Relative Drupal path</strong> a path without leading slash and
+           the base path will be prepended, ex. "sites/all/themes/path/to/style.css"</li>
+-        <li><strong>Absolute path</strong> a path with leading slash and path will 
++        <li><strong>Absolute path</strong> a path with leading slash and path will
+           start from sites root directory, ex. "/path/to/style.css"</li>
+         <li><strong>Full URL</strong> such as "http://example.com/style.css"</li>
+       </ul>
+-      <p>The default path provided with this module 
++      <p>The default path provided with this module
+       is: %default</p>
+-      <p><strong>This is actually a setting for the OpenLayers 
++      <p><strong>This is actually a setting for the OpenLayers
+       object and will affect all maps on the same page.</strong></p>',
+       array(
+-        '!link' => l('http://openlayers.org/api/theme/default/style.css', 
++        '!link' => l('http://openlayers.org/api/theme/default/style.css',
+           'http://openlayers.org/api/theme/default/style.css'),
+         '%default' => $default_css_path,
+       )
+@@ -216,23 +216,23 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+       KML).  Use any of the following:</p>
+       <ul>
+         <li><strong>Leave blank</strong> no proxy path.</li>
+-        <li><strong>Relative Drupal path</strong> a path without leading slash and 
++        <li><strong>Relative Drupal path</strong> a path without leading slash and
+           the base path will be prepended, ex. "proxy?request="</li>
+-        <li><strong>Absolute path</strong> a path with leading slash and path will 
++        <li><strong>Absolute path</strong> a path with leading slash and path will
+           start from sites root directory, ex. "/cgi_proxy?request="</li>
+         <li><strong>Full URL</strong> such as "http://example.com/proxy?request="</li>
+       </ul>
+-      <p><strong>This is actually a setting for the OpenLayers 
++      <p><strong>This is actually a setting for the OpenLayers
+       object and will affect all maps on the same page.</strong></p>'
+     ),
+     '#default_value' => !empty($defaults['proxy_host']) ?
+       $defaults['proxy_host'] : '',
+   );
+-  
++
+   // Center
+   $form['center'] = array(
+     '#title' => t('Center & Bounds'),
+-    '#description' => t('Where the map will center itself initially. 
++    '#description' => t('Where the map will center itself initially.
+       <strong>Shift-drag</strong> a box on the map to set the Restricted Extent.'),
+     '#tree' => TRUE,
+     '#type' => 'fieldset',
+@@ -305,7 +305,7 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+     '#group' => 'ui'
+   );
+ 
+-  // TODO: This projection stuff sucks.  See 
++  // TODO: This projection stuff sucks.  See
+   // http://drupal.org/node/1331410
+   //
+   // Grab default from submitted form values on AHAH rebuild.
+@@ -328,11 +328,11 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+     $projection_layers = array_merge(
+       openlayers_ui_get_layer_options('baselayer', $projection),
+       openlayers_ui_get_layer_options('overlay', $projection));
+-      
++
+     $projections[$projection] = theme(
+-      'openlayers_ui_form_projection_description', 
++      'openlayers_ui_form_projection_description',
+       array(
+-        'projection_title' => $projection, 
++        'projection_title' => $projection,
+         'available_layers' => array_keys($projection_layers)
+       )
+     );
+@@ -345,9 +345,9 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+     '#description' => t('<p>Projections are not well supported in
+       this module.  If you need to handle non spherical mercator projections
+       you may be better using the API directly.</p>
+-      <p>Select the EPSG code of the !link_proj for your map.  The list next 
++      <p>Select the EPSG code of the !link_proj for your map.  The list next
+       to each projection is the layers that support this projection.</p>',
+-      array('!link_proj' => l(t('geographical projection'), 
++      array('!link_proj' => l(t('geographical projection'),
+         'http://en.wikipedia.org/wiki/Map_projection'))
+     ),
+     '#collapsible' => TRUE,
+@@ -377,14 +377,14 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+   $form['layerstyles']['projections']['displayProjection'] = array(
+     '#type' => 'textfield',
+     '#title' => t('Display Projection'),
+-    '#description' => t('All interaction with the map - drawing, panning, 
+-      centering, and more - occurs in the display projection. The vast majority 
++    '#description' => t('All interaction with the map - drawing, panning,
++      centering, and more - occurs in the display projection. The vast majority
+       of maps use 4326 (latitude/longitude) for this value.'),
+-    '#default_value' => !empty($defaults['displayProjection']) ? 
++    '#default_value' => !empty($defaults['displayProjection']) ?
+       $defaults['displayProjection'] : '4326',
+     '#maxlength' => 6
+   );
+-  
++
+   // Construct data for theme_openlayers_ui_maps_form_layers
+   $form['layerstyles']['layers']['#tree'] = TRUE;
+   $form['layerstyles']['layers']['baselabels'] = array();
+@@ -419,7 +419,7 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+     $enabled = array_intersect(array_keys($defaults['layers']), $available);
+     $disabled = array_diff($available, $enabled);
+     $overlay_options_keys = array_merge($disabled, $enabled);
+-    
++
+     // Create overlay options.
+     $form['layerstyles']['layer_styles']['#tree'] = TRUE;
+     $form['layerstyles']['layer_styles_select']['#tree'] = TRUE;
+@@ -427,23 +427,23 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+     foreach ($overlay_options_keys as $id) {
+       $description = $overlay_options[$id];
+       $form['layerstyles']['layers']['overlaylabels'][$id] = array('#markup' => $description);
+-      
++
+       // Layer styles tha define the default style of layer.
+       $form['layerstyles']['layer_styles'][$id] = array(
+         '#type' => 'select',
+         '#options' => array('<' . t('use default style') . '>') + openlayers_ui_get_style_options(),
+-        '#default_value' => !empty($defaults['layer_styles'][$id]) ? 
++        '#default_value' => !empty($defaults['layer_styles'][$id]) ?
+           $defaults['layer_styles'][$id] : '',
+       );
+-      
++
+       // Layer select style.
+       $form['layerstyles']['layer_styles_select'][$id] = array(
+         '#type' => 'select',
+         '#options' => array('<' . t('use default style') . '>') + openlayers_ui_get_style_options(),
+-        '#default_value' => !empty($defaults['layer_styles_select'][$id]) ? 
++        '#default_value' => !empty($defaults['layer_styles_select'][$id]) ?
+           $defaults['layer_styles_select'][$id] : '',
+       );
+-      
++
+       // Weight of layer.  This will affect how the layer shows up in the
+       // switcher and is rendered.
+       $form['layerstyles']['layer_weight'][$id] = array(
+@@ -454,7 +454,7 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+         )
+       );
+     }
+-  
++
+     // Checkbox options for overlay layers.
+     $form['layerstyles']['layers']['overlays'] = array(
+       '#type' => 'checkboxes',
+@@ -475,17 +475,17 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+         array_intersect_key($defaults['layer_switcher'], $overlay_options) : array(),
+     );
+   }
+-  
++
+   // Data overlay help.
+   $form['layerstyles']['help_data_overlays'] = array(
+     '#type' => 'item',
+-    '#description' => t('<strong>Add Data Overlays</strong>: You can add regular 
+-      overlays, like <a href="!geojson">GeoJSON</a> or <a href="!kml">KML</a>, 
+-      or you can utilize <a href="!views_url">Views</a> to create data overlays.  
+-      To create a Views-based overlay, you must choose the <strong>OpenLayers 
+-      Data Overlay Display Type</strong>, and then explicitly set the the 
+-      <strong>same for the Format</strong>.  The options in the <em>Format 
+-      Settings</em> will only use fields you have added. To learn more, take 
++    '#description' => t('<strong>Add Data Overlays</strong>: You can add regular
++      overlays, like <a href="!geojson">GeoJSON</a> or <a href="!kml">KML</a>,
++      or you can utilize <a href="!views_url">Views</a> to create data overlays.
++      To create a Views-based overlay, you must choose the <strong>OpenLayers
++      Data Overlay Display Type</strong>, and then explicitly set the the
++      <strong>same for the Format</strong>.  The options in the <em>Format
++      Settings</em> will only use fields you have added. To learn more, take
+       a look at the <a href="!online_url">online documentation on Drupal.org</a>.',
+       array(
+         '!views_url' => url('admin/structure/views'),
+@@ -495,13 +495,13 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+       )
+     ),
+   );
+-  
++
+ 
+   // Styles
+   $form['layerstyles']['styles'] = array(
+     '#type' => 'fieldset',
+     '#title' => t('Default Styles'),
+-    '#description' => t('Define default style designations for layers when there 
++    '#description' => t('Define default style designations for layers when there
+       are no overrides.'),
+     '#tree' => TRUE,
+   );
+@@ -554,26 +554,26 @@ function openlayers_ui_maps_form($form, &$form_state, $map = FALSE, $edit = FALS
+     $form['displays']['views'] = array(
+       '#type' => 'item',
+       '#title' => t('Views'),
+-      '#description' => t('Utilize the <a href="!views_url">Views</a> module to 
+-        display your map as page or in a block.  By creating a new Views Display of 
+-        type <strong>Page</strong> or <strong>Block</strong> you can then choose 
+-        the <strong>OpenLayers Map Format</strong>.  For more details, check out 
++      '#description' => t('Utilize the <a href="!views_url">Views</a> module to
++        display your map as page or in a block.  By creating a new Views Display of
++        type <strong>Page</strong> or <strong>Block</strong> you can then choose
++        the <strong>OpenLayers Map Format</strong>.  For more details, check out
+         the <a href="!online_url">online documentation on Drupal.org</a>.',
+         array(
+           '!views_url' => url('admin/structure/views'),
+           '!online_url' => url('http://drupal.org/node/595872')
+         )
+       ),
+-      '#suffix' => theme('image', array('path' => 
++      '#suffix' => theme('image', array('path' =>
+         'https://img.skitch.com/20111106-c6ukwxgpgykxx8m41yrn8qew4n.png')),
+     );
+     $form['displays']['api'] = array(
+       '#type' => 'item',
+       '#title' => t('API'),
+-      '#description' => t('You can always utilize the API to directly display 
+-        your maps.  The key function to use is <code>openlayers_render_map()</code>.  
+-        Most of the code is well documented.  To learn how to extend the module, 
+-        take a look at the <a href="!online_url">online documentation on 
++      '#description' => t('You can always utilize the API to directly display
++        your maps.  The key function to use is <code>openlayers_render_map()</code>.
++        Most of the code is well documented.  To learn how to extend the module,
++        take a look at the <a href="!online_url">online documentation on
+         Drupal.org</a> as well as the files in the <code>docs/</code> folder.',
+         array('!online_url' => url('http://drupal.org/node/595872'))
+       ),
+@@ -835,9 +835,9 @@ function openlayers_ui_get_behavior_options($type, $defaults) {
+   foreach (openlayers_behaviors() as $key => $plugin) {
+     // Get behavior class
+     $class = ctools_plugin_load_class(
+-      'openlayers', 
+-      'behaviors', 
+-      $key, 
++      'openlayers',
++      'behaviors',
++      $key,
+       'behavior');
+     if (!empty($class)) {
+       $options = isset($defaults['behaviors'][$key]) ?
+@@ -863,7 +863,7 @@ function openlayers_ui_get_behavior_options($type, $defaults) {
+         // Create options items
+         $options = $behavior->options_form($options);
+         if (!empty($options)) {
+-          // HACK.  In order to use ctools form 
++          // HACK.  In order to use ctools form
+           // dependencies, we have to use a hidden
+           // field as it supports processing and IDs.
+           $form[$key]['options_set'][$key . '-prefix'] = array(
+@@ -928,12 +928,11 @@ function openlayers_ui_maps_form_center_map($defaults = array()) {
+       'mapquest_osm',
+     ),
+     'behaviors' => array(
+-      'openlayers_behavior_navigation' => array(),
++      // confilct with drawing behavior
++      //'openlayers_behavior_navigation' => array('zoomWheelEnabled' => 1, 'zoomBoxEnabled' => FALSE),
+       'openlayers_behavior_panzoombar' => array(),
+-      'openlayers_behavior_dragpan' => array(),
+       'openlayers_behavior_mapformvalues' => array(),
+       'openlayers_behavior_boxselect' => array(),
+-      'openlayers_behavior_attribution' => array(),
+     ),
+   );
+   return openlayers_render_map_data($centermap_def);
+diff --git a/openlayers.module b/openlayers.module
+index 0d11659..1130368 100644
+--- a/openlayers.module
++++ b/openlayers.module
+@@ -26,7 +26,7 @@ define('OPENLAYERS_DEFAULT_LIBRARY', 'http://openlayers.org/api/2.11/OpenLayers.
+ function openlayers_help($path, $arg) {
+   switch ($path) {
+     case 'admin/help#openlayers':
+-      $output = '<p>' . t('The OpenLayers module is the base module for the 
++      $output = '<p>' . t('The OpenLayers module is the base module for the
+         OpenLayers suite of modules, and provides the main API.') . '</p>';
+   }
+   return '';
+@@ -106,9 +106,9 @@ function openlayers_include() {
+       drupal_add_js($path);
+     }
+ 
+-    drupal_add_css(drupal_get_path('module', 'openlayers') . 
++    drupal_add_css(drupal_get_path('module', 'openlayers') .
+       '/openlayers.css', 'file');
+-    drupal_add_js(drupal_get_path('module', 'openlayers') . 
++    drupal_add_js(drupal_get_path('module', 'openlayers') .
+       '/js/openlayers.js', 'file');
+   }
+ }
+@@ -140,10 +140,10 @@ function openlayers_build_map($map = array()) {
+   }
+ 
+   // Create ID for map as this will help with alters.
+-  $map['id'] = !isset($map['id']) ? 
++  $map['id'] = !isset($map['id']) ?
+     _openlayers_create_map_id() : $map['id'];
+ 
+-  // Hook to alter map before main processing.  Styles, behaviors, 
++  // Hook to alter map before main processing.  Styles, behaviors,
+   // layers may all be added here.
+   // hook_openlayers_map_preprocess_alter($map)
+   drupal_alter('openlayers_map_preprocess', $map);
+@@ -152,14 +152,14 @@ function openlayers_build_map($map = array()) {
+   $map['styles'] = isset($map['styles']) ? $map['styles'] : array();
+   $map['layer_styles'] = isset($map['layer_styles']) ? $map['layer_styles'] : array();
+   $map['layer_styles_select'] = isset($map['layer_styles_select']) ? $map['layer_styles_select'] : array();
+-  
++
+   // Process map parts.
+   $map['layers'] = _openlayers_layers_process($map['layers'], $map);
+   $map['behaviors'] = _openlayers_behaviors_render($map['behaviors'], $map);
+-  $map['styles'] = _openlayers_styles_process($map['styles'], 
++  $map['styles'] = _openlayers_styles_process($map['styles'],
+     $map['layer_styles'], $map['layer_styles_select'], $map);
+ 
+-  // Hook to alter map one last time.  Final modification to existing 
++  // Hook to alter map one last time.  Final modification to existing
+   // styles, behaviors, layers can happen here, but adding new styles,
+   // behaviors will not get rendered.
+   // hook_openlayers_map_alter($map)
+@@ -189,7 +189,7 @@ function openlayers_render_map_data($map = array(), $map_name = '') {
+   // Run map through build process
+   $map = openlayers_build_map($map);
+ 
+-  // Given hide_empty_map flag, check if the map has any features 
++  // Given hide_empty_map flag, check if the map has any features
+   // defined. If not, assume it is an empty map and shouldn't be displayed.
+   if (isset($map['hide_empty_map']) && $map['hide_empty_map'] == TRUE) {
+     $empty = TRUE;
+@@ -202,7 +202,7 @@ function openlayers_render_map_data($map = array(), $map_name = '') {
+       return '';
+     }
+   }
+-  
++
+   // Return themed map if no errors found
+   if (empty($map['errors'])) {
+     $js = array('openlayers' => array('maps' => array($map['id'] => $map)));
+@@ -230,12 +230,12 @@ function openlayers_render_map_data($map = array(), $map_name = '') {
+  *   Map HTML.
+  */
+ function openlayers_render_map($map = '') {
+-  
++
+   // If it's an array, then we have been passed the map data array
+   if (is_array($map)) {
+     return openlayers_render_map_data($map);
+   }
+-  
++
+   // If it's a string, then we are passing a map name instead of the whole map object
+   // so we need to load the object
+   if (!$map || is_string($map)) {
+@@ -245,11 +245,11 @@ function openlayers_render_map($map = '') {
+     }
+     $map = openlayers_map_load($map_name);
+   }
+-  
++
+   if (!isset($map_name)) {
+     $map_name = $map->name;
+   }
+-  
++
+   return openlayers_render_map_data($map->data, $map_name);
+ }
+ 
+@@ -274,16 +274,16 @@ function openlayers_get_layer_object($layer, $map = array()) {
+ 
+   // Attempt to get ctool class
+   // class is renamed klass because of PHP keywords
+-  if (isset($layer_types[$layer->data['layer_type']]) && 
++  if (isset($layer_types[$layer->data['layer_type']]) &&
+     $klass = ctools_plugin_get_class(
+-      $layer_types[$layer->data['layer_type']], 
++      $layer_types[$layer->data['layer_type']],
+       'layer_type')
+   ) {
+     $layer_object = new $klass($layer, $map);
+     return $layer_object;
+   }
+   else {
+-    watchdog('openlayers', 'Layer !layer_name is unavailable because its 
++    watchdog('openlayers', 'Layer !layer_name is unavailable because its
+       layer type or the module that provides its layer type is missing',
+       array('!layer_name' => $layer->title),
+       WATCHDOG_ERROR);
+@@ -410,7 +410,7 @@ function openlayers_layer_sanity_check($layer, $projection = FALSE, $strict = FA
+     return !$strict;
+   }
+ 
+-  if ($projection && empty($layer->data['vector']) && 
++  if ($projection && empty($layer->data['vector']) &&
+     (!in_array($projection, $layer->data['projection']))) {
+     watchdog('openlayers',
+       'The layer %layer_name cannot be reprojected to the map projection: EPSG: %map_proj',
+@@ -510,7 +510,7 @@ function openlayers_styles($reset = FALSE) {
+   if ($reset) {
+     ctools_export_load_object_reset('openlayers_styles');
+   }
+-  
++
+   $styles = ctools_export_load_object('openlayers_styles', 'all', array());
+   return $styles;
+ }
+@@ -518,7 +518,7 @@ function openlayers_styles($reset = FALSE) {
+ /**
+  * Load a style object by name.
+  *
+- * This function can also be used as a 
++ * This function can also be used as a
+  * menu loader for a style.
+  *
+  * @ingroup openlayers_api
+@@ -587,7 +587,7 @@ function openlayers_maps($reset = FALSE) {
+   if ($reset) {
+     ctools_export_load_object_reset('openlayers_maps');
+   }
+-  
++
+   $maps = ctools_export_load_object(
+     'openlayers_maps', 'all', array());
+   return $maps;
+@@ -596,7 +596,7 @@ function openlayers_maps($reset = FALSE) {
+ /**
+  * Given a map name, get full map object.
+  *
+- * This function can also be used as a 
++ * This function can also be used as a
+  * menu loader for a style.
+  *
+  * @ingroup openlayers_api
+@@ -613,7 +613,7 @@ function openlayers_map_load($name = '', $reset = FALSE) {
+   if ($reset) {
+     ctools_export_load_object_reset('openlayers_maps');
+   }
+-  
++
+   $maps = ctools_export_load_object(
+     'openlayers_maps', 'names', array($name));
+   if (empty($maps[$name])) {
+@@ -732,8 +732,8 @@ function openlayers_error_check_map($map, $log_errors = TRUE) {
+     // Check layer projections
+     foreach ($map['layers'] as $layer) {
+       openlayers_layer_sanity_check(
+-        array('data' => $layer), 
+-        $map['projection'], 
++        array('data' => $layer),
++        $map['projection'],
+         TRUE);
+     }
+   }
+@@ -758,7 +758,7 @@ function openlayers_error_check_map($map, $log_errors = TRUE) {
+  * @ingroup openlayers_api
+  *
+  * @param $projection
+- *   String of the projection value.  Currently 
++ *   String of the projection value.  Currently
+  *   supports 900913, 4326.
+  * @return
+  *   Array of maxExtent in OpenLayers toArray() format.
+@@ -1015,11 +1015,11 @@ function openlayers_boxes_plugins() {
+ 
+ /**
+  * Alias Functions
+- * 
++ *
+  * These functions temporarily map the alias the renamed 'map' functions to their
+  * previous 'preset' functions to allow time for contrib modules to catch up.
+  * These will eventually be removed
+- * 
++ *
+  * These should be removed in 7.x-3.x
+  */
+ function openlayers_build_preset($map = array())                        { return openlayers_build_map($map); }
+diff --git a/plugins/behaviors/openlayers_behavior_argparser.js b/plugins/behaviors/openlayers_behavior_argparser.js
+index d30c88d..69345fd 100644
+--- a/plugins/behaviors/openlayers_behavior_argparser.js
++++ b/plugins/behaviors/openlayers_behavior_argparser.js
+@@ -2,11 +2,14 @@
+  * @file
+  * JS Implementation of OpenLayers behavior.
+  */
+- 
++
+ /**
+  * ArgParser Behavior.  Implements the ArgParser OpenLayers
+  * Control.
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_argparser', function (data, options) {
+-  Drupal.openlayers.addControl(data.openlayers, 'ArgParser');
+-});
++Drupal.openlayers.behaviors.openlayers_behavior_argparser = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    Drupal.openlayers.addControl(openlayers, 'ArgParser');
++  }
++};
+diff --git a/plugins/behaviors/openlayers_behavior_attribution.js b/plugins/behaviors/openlayers_behavior_attribution.js
+index 5c32ad9..875169d 100644
+--- a/plugins/behaviors/openlayers_behavior_attribution.js
++++ b/plugins/behaviors/openlayers_behavior_attribution.js
+@@ -2,11 +2,14 @@
+  * @file
+  * JS Implementation of OpenLayers behavior.
+  */
+- 
++
+ /**
+  * Attribution Behavior.  Implements the Attribution OpenLayers
+  * Control.
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_attribution', function (data, options) {
+-  Drupal.openlayers.addControl(data.openlayers, 'Attribution');
+-});
++Drupal.openlayers.behaviors.openlayers_behavior_attribution = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    Drupal.openlayers.addControl(openlayers, 'Attribution');
++  }
++};
+diff --git a/plugins/behaviors/openlayers_behavior_boxselect.js b/plugins/behaviors/openlayers_behavior_boxselect.js
+index fa9de6f..257f9fc 100644
+--- a/plugins/behaviors/openlayers_behavior_boxselect.js
++++ b/plugins/behaviors/openlayers_behavior_boxselect.js
+@@ -6,44 +6,47 @@
+ (function ($) {
+   /**
+    * Box Select Behavior.  Allows user to select a bounding box.
+-   * 
++   *
+    * TODO: This is currently hard coded for the center UI form.
+    */
+-  Drupal.openlayers.addBehavior('openlayers_behavior_boxselect', function (data, options) {
+-    // Callback to set extent into a specific form item.
+-    function setRestrictedExtent(box) {
+-      var bounding_box = box.geometry.getBounds().toBBOX();
+-      $('#edit-center-restrict-restrictedextent').val(bounding_box);
+-      for (var i = 0; i < selections_layer.features.length; i++) {
+-        if (selections_layer.features[i] != box) {
+-          selections_layer.features[i].destroy();
++  Drupal.openlayers.behaviors.openlayers_behavior_boxselect = {
++    attach: function (context, map, behavior, openlayers) {
++      if (!behavior) {return;}
++      // Callback to set extent into a specific form item.
++      function setRestrictedExtent(box) {
++        var bounding_box = box.feature.geometry.getBounds().toBBOX();
++        $('#edit-center-restrict-restrictedextent').val(bounding_box);
++        for (var i = 0; i < selections_layer.features.length; i++) {
++          if (selections_layer.features[i].geometry != box.feature.geometry) {
++            selections_layer.features[i].destroy();
++          }
+         }
+       }
+-    }
+ 
+-    // Create layer to draw with and handle events.
+-    var selections_layer = new OpenLayers.Layer.Vector('Temporary Box Layer');
+-    var control = new OpenLayers.Control.DrawFeature(selections_layer,
+-      OpenLayers.Handler.RegularPolygon, {
+-        featureAdded: setRestrictedExtent
++      // Create layer to draw with and handle events.
++      var selections_layer = new OpenLayers.Layer.Vector('Temporary Box Layer');
++      var control = new OpenLayers.Control.DrawFeature(
++        selections_layer,
++        OpenLayers.Handler.RegularPolygon,
++        {
++          handlerOptions: {
++            'keyMask': OpenLayers.Handler.MOD_SHIFT,
++            'sides': 4,
++            'irregular': true
++        }
++      });
++      control.events.on({'featureadded': setRestrictedExtent});
++      openlayers.addLayer(selections_layer);
++      openlayers.addControl(control);
++
++      // If there already is a value, then update the map appropriately.
++      if ($('#edit-center-restrict-restrictedextent').val()) {
++        var bounds = $('#edit-center-restrict-restrictedextent').val();
++        var geometry = new OpenLayers.Bounds.fromString(bounds).toGeometry();
++        var feature = new OpenLayers.Feature.Vector(geometry);
++        selections_layer.addFeatures([feature]);
+       }
+-    );
+-    control.handler.setOptions({
+-      'keyMask': OpenLayers.Handler.MOD_SHIFT,
+-      'sides': 4,
+-      'irregular': true
+-    });
+-    control.events.on({'featureAdded': this.setRestrictedExtent});
+-    data.openlayers.addLayer(selections_layer);
+-    data.openlayers.addControl(control);
+-    
+-    // If there already is a value, then update the map appropriately.
+-    if ($('#edit-center-restrict-restrictedextent').val()) {
+-      bounds = $('#edit-center-restrict-restrictedextent').val();
+-      geometry = new OpenLayers.Bounds.fromString(bounds).toGeometry();
+-      feature = new OpenLayers.Feature.Vector(geometry);
+-      selections_layer.addFeatures([feature]);
++      control.activate();
+     }
+-    control.activate();
+-  });
++  };
+ }(jQuery));
+diff --git a/plugins/behaviors/openlayers_behavior_cluster.js b/plugins/behaviors/openlayers_behavior_cluster.js
+index 69bdbcc..7272b5b 100644
+--- a/plugins/behaviors/openlayers_behavior_cluster.js
++++ b/plugins/behaviors/openlayers_behavior_cluster.js
+@@ -6,32 +6,34 @@
+ /**
+  * OpenLayers Cluster Behavior.
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_cluster', function (data, options) {
+-  var map = data.openlayers;
+-  var distance = parseInt(options.distance, 10);
+-  var threshold = parseInt(options.threshold, 10);
+-  var layers = [];
+-  for (var i in options.clusterlayer) {
+-    var selectedLayer = map.getLayersBy('drupalID', options.clusterlayer[i]);
+-    if (typeof selectedLayer[0] != 'undefined') {
+-      layers.push(selectedLayer[0]);
++Drupal.openlayers.behaviors.openlayers_behavior_cluster = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    var distance = parseInt(behavior.distance, 10);
++    var threshold = parseInt(behavior.threshold, 10);
++    var layers = [];
++    for (var i in behavior.clusterlayer) {
++      var selectedLayer = openlayers.getLayersBy('drupalID', behavior.clusterlayer[i]);
++      if (typeof selectedLayer[0] != 'undefined') {
++        layers.push(selectedLayer[0]);
++      }
+     }
+-  }
+ 
+-  // Go through chosen layers
+-  for (var i in layers) {
+-    var layer = layers[i];
+-    // Ensure vector layer
+-    if (layer.CLASS_NAME == 'OpenLayers.Layer.Vector') {
+-      var cluster = new OpenLayers.Strategy.Cluster(options);
+-      layer.addOptions({ 'strategies': [cluster] });
+-      cluster.setLayer(layer);
+-      cluster.features = layer.features.slice();
+-      cluster.activate();
+-      cluster.cluster();
++    // Go through chosen layers
++    for (var i in layers) {
++      var layer = layers[i];
++      // Ensure vector layer
++      if (layer.CLASS_NAME == 'OpenLayers.Layer.Vector') {
++        var cluster = new OpenLayers.Strategy.Cluster(behavior);
++        layer.addOptions({ 'strategies': [cluster] });
++        cluster.setLayer(layer);
++        cluster.features = layer.features.slice();
++        cluster.activate();
++        cluster.cluster();
++      }
+     }
+   }
+-});
++};
+ 
+ /**
+  * Override of callback used by 'popup' behaviour to support clusters
+diff --git a/plugins/behaviors/openlayers_behavior_dragpan.js b/plugins/behaviors/openlayers_behavior_dragpan.js
+index ccc5b04..39b6aad 100644
+--- a/plugins/behaviors/openlayers_behavior_dragpan.js
++++ b/plugins/behaviors/openlayers_behavior_dragpan.js
+@@ -7,6 +7,9 @@
+  * DragPan Behavior.  Implements the DragPan OpenLayers
+  * Control.
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_dragpan', function (data, options) {
+-  Drupal.openlayers.addControl(data.openlayers, 'DragPan');
+-});
++Drupal.openlayers.behaviors.openlayers_behavior_dragpan = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    Drupal.openlayers.addControl(openlayers, 'DragPan');
++  }
++};
+diff --git a/plugins/behaviors/openlayers_behavior_drawfeatures.css b/plugins/behaviors/openlayers_behavior_drawfeatures.css
+index 4c46b8c..7c063de 100644
+--- a/plugins/behaviors/openlayers_behavior_drawfeatures.css
++++ b/plugins/behaviors/openlayers_behavior_drawfeatures.css
+@@ -4,10 +4,62 @@
+  * CSS for OpenLayers Draw Features Behavior
+  */
+ 
+-.olControlEditingToolbar .olControlModifyFeatureItemActive {
+-  background-position: -0px -23px;
++/**
++ * Editing and navigation icons.
++ * (using the editing_tool_bar.png sprint image)
++ */
++.olControlDrupalEditingToolbar {
++    margin: 5px 5px 0 0;
+ }
+-
+-.olControlEditingToolbar .olControlModifyFeatureItemInactive {
++.olControlDrupalEditingToolbar div {
++    background-image: url("../../img/default_theme/editing_tool_bar.png");
++    background-repeat: no-repeat;
++    margin: 0 0 5px 5px;
++    width: 24px;
++    height: 22px;
++    cursor: pointer
++}
++/* positions */
++.olControlDrupalEditingToolbar {
++    right: 0;
++    top: 0;
++}
++.olControlNavToolbar {
++    top: 295px;
++    left: 9px;
++}
++/* layouts */
++.olControlDrupalEditingToolbar div {
++    float: right;
++}
++/* individual controls */
++.olControlDrupalEditingToolbar .olControlNavigationItemInactive {
++    background-position: -103px -1px;
++}
++.olControlDrupalEditingToolbar .olControlNavigationItemActive  {
++    background-position: -103px -24px;
++}
++.olControlDrupalEditingToolbar .olControlDrawFeaturePointItemInactive {
++    background-position: -77px -1px;
++}
++.olControlDrupalEditingToolbar .olControlDrawFeaturePointItemActive {
++    background-position: -77px -24px;
++}
++.olControlDrupalEditingToolbar .olControlDrawFeaturePathItemInactive {
++    background-position: -51px -1px;
++}
++.olControlDrupalEditingToolbar .olControlDrawFeaturePathItemActive {
++    background-position: -51px -24px;
++}
++.olControlDrupalEditingToolbar .olControlDrawFeaturePolygonItemInactive{
++    background-position: -26px -1px;
++}
++.olControlDrupalEditingToolbar .olControlDrawFeaturePolygonItemActive {
++    background-position: -26px -24px;
++}
++.olControlDrupalEditingToolbar .olControlModifyFeatureItemActive {
++  background-position: -0px -24px;
++}
++.olControlDrupalEditingToolbar .olControlModifyFeatureItemInactive {
+   background-position: -0px -0px;
+ }
+diff --git a/plugins/behaviors/openlayers_behavior_drawfeatures.inc b/plugins/behaviors/openlayers_behavior_drawfeatures.inc
+index e650e24..9882ddf 100644
+--- a/plugins/behaviors/openlayers_behavior_drawfeatures.inc
++++ b/plugins/behaviors/openlayers_behavior_drawfeatures.inc
+@@ -27,19 +27,18 @@ class openlayers_behavior_drawfeatures extends openlayers_behavior {
+    */
+   function options_init() {
+     return array(
+-      'element_id' => '',
+       'feature_types' => array(),
+-      'feature_limit' => 0,
++      'allow_edit' => 1,
+     );
+   }
+ 
+-  function options_form($defaults) {  
++  function options_form($defaults) {
+     $features = array(
+       'point' => t('Point'),
+       'path' => t('Path'),
+       'polygon' => t('Polygon'),
+     );
+-      
++
+     return array(
+       'feature_types' => array(
+         '#title' => t('Available Features'),
+@@ -48,21 +47,12 @@ class openlayers_behavior_drawfeatures extends openlayers_behavior {
+         '#description' => t('Select what features are available to draw.'),
+         '#default_value' => isset($defaults['feature_types']) ? $defaults['feature_types'] : array(),
+       ),
+-      'feature_limit' => array(
+-        '#title' => t('Number of features'),
+-        '#type' => 'textfield',
+-        '#description' => t('The number of features that are allowed to be 
+-          drawn. Leave blank or at 0 for unlimited.'),
+-        '#default_value' => isset($defaults['feature_limit']) ? 
+-          $defaults['feature_limit'] : 0,
++      'allow_edit' => array(
++        '#title' => t('Allow shape modification'),
++        '#type' => 'checkbox',
++        '#description' => t('Can you edit and delete shapes.'),
++        '#default_value' => isset($defaults['allow_edit']) ? $defaults['allow_edit'] : 1,
+       ),
+-      'element_id' => array(
+-        '#type' => 'textfield',
+-        '#default_value' => (isset($defaults['element_id'])) ?
+-          $defaults['element_id'] : '',
+-        '#title' => t('Element ID'),
+-        '#description' => t('The DOM element ID that will be passed the value of the features.  This will probably be a textfield or textarea.'),
+-      )
+     );
+   }
+ 
+@@ -70,9 +60,9 @@ class openlayers_behavior_drawfeatures extends openlayers_behavior {
+    * Render.
+    */
+   function render(&$map) {
+-    drupal_add_css(drupal_get_path('module', 'openlayers')  . 
++    drupal_add_css(drupal_get_path('module', 'openlayers')  .
+       '/plugins/behaviors/openlayers_behavior_drawfeatures.css');
+-    drupal_add_js(drupal_get_path('module', 'openlayers') . 
++    drupal_add_js(drupal_get_path('module', 'openlayers') .
+       '/plugins/behaviors/openlayers_behavior_drawfeatures.js');
+     return $this->options;
+   }
+diff --git a/plugins/behaviors/openlayers_behavior_drawfeatures.js b/plugins/behaviors/openlayers_behavior_drawfeatures.js
+index 6c24efe..49d52e7 100644
+--- a/plugins/behaviors/openlayers_behavior_drawfeatures.js
++++ b/plugins/behaviors/openlayers_behavior_drawfeatures.js
+@@ -1,144 +1,188 @@
++
+ /**
+  * @file
+  * DrawFeatures Behavior
+  */
++/**
++ * Class: OpenLayers.Control.DrupalEditingToolbar
++ * The DrupalEditingToolbar is a panel of 4 controls to draw polygons, lines,
++ * points, or to navigate the map by panning. You can select which tool to enable
++ * with options.tools.
++ *
++ * Inherits from:
++ *  - <OpenLayers.Control.Panel>
++ */
++OpenLayers.Control.DrupalEditingToolbar = OpenLayers.Class(
++  OpenLayers.Control.Panel, {
+ 
+-(function($) {
+-  /**
+-   * Behavior for Draw Features.
+-   *
+-   * TODO: Update this to use the addBehaviors helper function.
+-   */
+-  Drupal.behaviors.openlayers_behavior_drawfeatures = {
+-    'attach': function(context, settings) {
+-    
+-      // Update function to write to element.
+-      function openlayers_behavior_drawfeatures_update(features) {
+-        WktWriter = new OpenLayers.Format.WKT();
+-        while (features.type == 'featureadded' && this.feature_limit &&
+-          (this.feature_limit < features.object.features.length)) {
+-          features.feature.layer.removeFeatures(features.object.features.shift());
+-        }
+-  
+-        var features_copy = features.object.clone();
+-        for (var i in features_copy.features) {
+-          features_copy.features[i].geometry.transform(
+-            features.object.map.projection,
+-            new OpenLayers.Projection('EPSG:4326')
+-          );
+-        }
+-        this.element.val(WktWriter.write(features_copy.features));
+-      }
+-  
+-      // Start behavior process
+-      var data = $(context).data('openlayers');
+-      var behavior = data && data.map.behaviors['openlayers_behavior_drawfeatures'];
+-      if (!$(context).hasClass('openlayers-drawfeatures-processed') && behavior) {
+-        // Create element
+-        var feature_types = data.map.behaviors['openlayers_behavior_drawfeatures'].feature_types;
+-        this.element = $('#' + data.map.behaviors['openlayers_behavior_drawfeatures'].element_id);
+-        
+-        // Handle vector layer for drawing on
+-        this.feature_limit = data.map.behaviors['openlayers_behavior_drawfeatures'].feature_limit;
+-        var dataLayer = new OpenLayers.Layer.Vector(Drupal.t('Feature Layer'), {
+-          projection: new OpenLayers.Projection('EPSG:4326'),
+-          drupalID: 'openlayers_drawfeatures_layer'
+-        });
+-        dataLayer.styleMap = Drupal.openlayers.getStyleMap(data.map, 'openlayers_drawfeatures_layer');
+-        data.openlayers.addLayer(dataLayer);
+-  
+-        // If there is data in there now, use to populate the layer.
+-        if (this.element.text() != '') {
+-          var wktFormat = new OpenLayers.Format.WKT();
+-          var features = wktFormat.read(this.element.text());
+-          if (features.constructor == Array) {
+-            for (var i in features) {
+-              features[i].geometry = features[i].geometry.transform(
+-                new OpenLayers.Projection('EPSG:4326'),
+-                data.openlayers.projection
+-              );
+-            }
+-          }
+-          else {
+-            features.geometry = features.geometry.transform(
+-              new OpenLayers.Projection('EPSG:4326'),
+-              data.openlayers.projection
++    /**
++     * Constructor: OpenLayers.Control.DrupalEditingToolbar
++     * Create an editing toolbar for a given layer.
++     *
++     * Parameters:
++     * layer - {<OpenLayers.Layer.Vector>}
++     * options - {Object}
++     */
++    initialize: function(layer, options) {
++        OpenLayers.Control.Panel.prototype.initialize.apply(this, [options]);
++
++        var controls = [];
++        var tools = options.tools;
++        var tool = null;
++
++        controls.push(new OpenLayers.Control.Navigation());
++
++        if (tools && tools.length) {
++          for (var i = 0, il = tools.length; i < il; i += 1) {
++            tool = tools[i][0].toUpperCase() + tools[i].slice(1);
++            controls.push(
++              new OpenLayers.Control.DrawFeature(layer, OpenLayers.Handler[tool], {'displayClass': 'olControlDrawFeature' + tool})
+             );
+-            features = [features];
+           }
+-          dataLayer.addFeatures(features);
+         }
+-  
+-        // Registering events late, because adding data
+-        // would result in a reprojection loop
+-        dataLayer.events.register('featureadded', this,
+-          openlayers_behavior_drawfeatures_update);
+-        dataLayer.events.register('featureremoved', this,
+-          openlayers_behavior_drawfeatures_update);
+-        dataLayer.events.register('featuremodified', this,
+-          openlayers_behavior_drawfeatures_update);
+-  
+-        // Use the Editing Toolbar for creating features.
+-        var control = new OpenLayers.Control.EditingToolbar(dataLayer);
+-        data.openlayers.addControl(control);
+-        control.activate();
+-  
+-        // Build an array of the requested feature classes
+-        var feature_classmap = {
+-          'point': 'OpenLayers.Handler.Point',
+-          'path': 'OpenLayers.Handler.Path',
+-          'polygon': 'OpenLayers.Handler.Polygon'
+-        };
+-  
+-        var feature_classes = [];
+-        for (var i in feature_types) {
+-          if (feature_types[i] !== 0) {
+-            feature_classes.push(feature_classmap[feature_types[i]]);
+-          }
+-        }
+-  
+-        // Reconstruct editing toolbar controls so to only contain
+-        // the tools for the requested feature types / classes
+-        // plus the navigation tool
+-        control.controls = $.map(control.controls,
+-          function(control) {
+-            return (control.CLASS_NAME == 'OpenLayers.Control.Navigation' ||
+-              $.inArray(control.handler.CLASS_NAME, feature_classes) != -1)
+-              ? control : null;
+-          }
+-        );
+-  
+-        control.activateControl(control.getControlsByClass('OpenLayers.Control.Navigation')[0]);
+-        control.redraw();
+-  
+-        this.element.parents('form').bind('submit',
+-          {
+-            control: control,
+-            dataLayer: dataLayer
+-          }, function(evt) {
+-            $.map(evt.data.control.controls, function(c) { c.deactivate(); });
+-            dataLayer.events.triggerEvent('featuremodified');
+-          }
+-        );
+-  
+-        // Add modify feature tool
+-        control.addControls(new OpenLayers.Control.ModifyFeature(
+-          dataLayer, {
+-            displayClass: 'olControlModifyFeature',
++
++        if (options.edit !== 0) {
++          // add an Edit feature
++          controls.push(new OpenLayers.Control.ModifyFeature(layer, {
+             deleteCodes: [46, 68, 100],
+             handleKeypress: function(evt) {
+-              if (this.feature && $.inArray(evt.keyCode, this.deleteCodes) > -1) {
++              if (this.feature && OpenLayers.Util.indexOf(this.deleteCodes, evt.keyCode) > -1) {
+                 // We must unselect the feature before we delete it
+                 var feature_to_delete = this.feature;
+                 this.selectControl.unselectAll();
+                 this.layer.removeFeatures([feature_to_delete]);
+               }
+             }
+-          }
+-          )
+-        );
+-        $(context).addClass('openlayers-drawfeatures-processed');
+-      }
++          }));
++        }
++
++        this.addControls(controls);
++    },
++
++    /**
++     * Method: draw
++     * calls the default draw, and then activates mouse defaults.
++     *
++     * Returns:
++     * {DOMElement}
++     */
++    draw: function() {
++        var div = OpenLayers.Control.Panel.prototype.draw.apply(this, arguments);
++        if (this.defaultControl === null) {
++            this.defaultControl = this.controls[0];
++        }
++        return div;
++    },
++
++    CLASS_NAME: "OpenLayers.Control.DrupalEditingToolbar"
++});
++
++(function ($) {
++  var dataProjection = new OpenLayers.Projection('EPSG:4326');
++
++  // helper to create a WKT Format object with set projections
++  function formatObject (format, inp, outp) {
++    format = format || 'WKT';
++    if (OpenLayers.Format.hasOwnProperty(format)) {
++      return new OpenLayers.Format[format]({
++        internalProjection: inp,
++        externalProjection: outp || dataProjection
++      });
++    }
++    throw "Bad format: '"+ format +"'. Check OL Docs";
++  }
++
++  // Serialize our drawings and trigger a change event on the map
++  // 'this' is bound to 'context'
++  function triggerFeatureUpdate (features) {
++    var WktWriter = formatObject('WKT', features.object.map.projection);
++    var value = '';
++    // external JS can restrict the number of features or map options by
++    // interacting with the openlayer object of this map.
++    var toSerialize = features.object.features;
++    // don't serialize empty feature
++    if (toSerialize.length) {
++      // for a single shape avoid GEOMETRYCOLLECTION
++      if (toSerialize.length === 1) { toSerialize = toSerialize[0]; }
++      value = WktWriter.write(toSerialize);
++    }
++    // let other modules catch the change event
++    $(this).trigger('change', [features.type, value, features]);
++  }
++
++  // Help a little with center and viewport update
++  function triggerViewportUpdate (viewport) {
++    var object = viewport.object;
++    var to = object.displayProjection;
++    var from = object.projection;
++    var data = {
++      center: object.center.clone().transform(from, to),
++      zoom: object.getZoomForExtent(object.getExtent()),
++      bounds: object.getExtent().clone().transform(from, to)
++    };
++    $(this).trigger('change', [viewport.type, data, viewport]);
++  }
++
++  // @TODO add a way to cache center and zoom settings between ajax Calls
++
++  Drupal.openlayers.behaviors.openlayers_behavior_drawfeatures = {
++    attach: function (context, map, behavior, openlayers) {
++      if (!behavior) {return;}
++      var layerOptions = {
++        projection: dataProjection,
++        drupalID: 'openlayers_behavior_drawfeatures'
++      };
++      var dataLayer = new OpenLayers.Layer.Vector(Drupal.t('Drawing layer'), layerOptions);
++      dataLayer.styleMap = Drupal.openlayers.getStyleMap(map, 'openlayers_behavior_drawfeatures');
++      openlayers.addLayer(dataLayer);
++
++      var options = {
++        tools: [],
++        edit: behavior.allow_edit
++      };
++      $.each(behavior.feature_types, function (key, value) {
++        if (value) {
++          options.tools.push(key);
++        }
++      });
++
++      // create toolbar don't use EditingToolbar, we're choosing our tools
++      var control = new OpenLayers.Control.DrupalEditingToolbar(dataLayer, options);
++      openlayers.addControl(control);
++      control.activate();
++
++      // trigger a custom change event on the map to make it easier to use
++      dataLayer.events.register('featureadded', context, triggerFeatureUpdate);
++      dataLayer.events.register('featureremoved', context, triggerFeatureUpdate);
++      dataLayer.events.register('afterfeaturemodified', context, triggerFeatureUpdate);
++      // trigger a change event when moving the view
++      openlayers.events.register('moveend', context, triggerViewportUpdate);
++
++      // we let external JS set features more easily than with straight OL code.
++      $(context).bind('setFeatures', function (e, format, geoString) {
++        var reader = formatObject(format, openlayers.projection);
++        if (reader && geoString) {
++          var features = reader.read(geoString);
++          features && dataLayer.addFeatures(features);
++        }
++      });
++      // Set position and zoomlevel
++      $(context).bind('setMap', function (e, mapData) {
++        console.log(mapData);
++        if (mapData && mapData.center) {
++          openlayers.setCenter(mapData.center.transform(openlayers.displayProjection, openlayers.projection), mapData.zoomLevel);
++        }
++      });
++
++      // on submit recalculate everything to be up to date
++      var formData = {
++        'control': control,
++        'dataLayer': dataLayer
++      };
++      $(context).parents('form').bind('submit', formData, function (e) {
++        $.map(e.data.control.controls, function(c) { c.deactivate(); });
++        dataLayer.events.triggerEvent('featuremodified');
++      });
+     }
+   };
+-})(jQuery);
++}(jQuery));
+diff --git a/plugins/behaviors/openlayers_behavior_fullscreen.js b/plugins/behaviors/openlayers_behavior_fullscreen.js
+index 3b166ea..fffda7d 100644
+--- a/plugins/behaviors/openlayers_behavior_fullscreen.js
++++ b/plugins/behaviors/openlayers_behavior_fullscreen.js
+@@ -6,28 +6,30 @@
+ /**
+  * Attribution Behavior
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_fullscreen', function (data, options) {
+-  // Create new panel control and add.
+-  var fullscreenPanel = new OpenLayers.Control.Panel({
+-    displayClass: 'openlayers_behavior_fullscreen_button_panel'
+-  });
+-  data.openlayers.addControl(fullscreenPanel);
++Drupal.openlayers.behaviors.openlayers_behavior_fullscreen = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    // Create new panel control and add.
++    var fullscreenPanel = new OpenLayers.Control.Panel({
++      displayClass: 'openlayers_behavior_fullscreen_button_panel'
++    });
++    openlayers.addControl(fullscreenPanel);
+ 
+-  // Create toggleing control and cutton.
+-  var toggler = OpenLayers.Function.bind(
+-    Drupal.openlayers.fullscreenToggle, data);
+-  var button = new OpenLayers.Control.Button({
+-    displayClass: 'openlayers_behavior_fullscreen_button',
+-    title: Drupal.t('Fullscreen'),
+-    trigger: toggler
+-  });
+-  fullscreenPanel.addControls([button]);
++    // Create toggleing control and cutton.
++    var toggler = OpenLayers.Function.bind(Drupal.openlayers.fullscreenToggle, data);
++    var button = new OpenLayers.Control.Button({
++      displayClass: 'openlayers_behavior_fullscreen_button',
++      title: Drupal.t('Fullscreen'),
++      trigger: toggler
++    });
++    fullscreenPanel.addControls([button]);
+ 
+-  // Make fullscreen by default if activited.
+-  if (options.activated == true) {
+-    toggler();
++    // Make fullscreen by default if activited.
++    if (options.activated == true) {
++      toggler();
++    }
+   }
+-});
++};
+ 
+ (function ($) {
+   /**
+diff --git a/plugins/behaviors/openlayers_behavior_geolocate.js b/plugins/behaviors/openlayers_behavior_geolocate.js
+index 13d747f..72f8ab0 100644
+--- a/plugins/behaviors/openlayers_behavior_geolocate.js
++++ b/plugins/behaviors/openlayers_behavior_geolocate.js
+@@ -7,19 +7,22 @@
+  * Geolocate Control.  Implements the Geolocate OpenLayers
+  * Control.
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_geolocate', function (data, options) {
+-  // Create Geolocate control
+-  var geolocate = new OpenLayers.Control.Geolocate(options);
+-  data.openlayers.addControl(geolocate);
++Drupal.openlayers.behaviors.openlayers_behavior_geolocate = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    // Create Geolocate control
++    var geolocate = new OpenLayers.Control.Geolocate(behavior);
++    openlayers.addControl(geolocate);
+ 
+-  // Add some event handling
+-  geolocate.events.register('locationupdated', this, function(e) {
+-    data.openlayers.setCenter(new OpenLayers.Geometry.Point(e.point.x, e.point.y), options.zoom_level);
+-  });
+-  geolocate.events.register('locationfailed', this, function(e) {
+-    OpenLayers.Console.log(Drupal.t('Location detection failed'));
+-  });
++    // Add some event handling
++    geolocate.events.register('locationupdated', this, function(e) {
++      openlayers.setCenter(new OpenLayers.Geometry.Point(e.point.x, e.point.y), behavior.zoom_level);
++    });
++    geolocate.events.register('locationfailed', this, function(e) {
++      OpenLayers.Console.log(Drupal.t('Location detection failed'));
++    });
+ 
+-  // Activiate!
+-  geolocate.activate();
+-});
++    // Activiate!
++    geolocate.activate();
++  }
++};
+diff --git a/plugins/behaviors/openlayers_behavior_keyboarddefaults.js b/plugins/behaviors/openlayers_behavior_keyboarddefaults.js
+index 0606631..2ef0062 100644
+--- a/plugins/behaviors/openlayers_behavior_keyboarddefaults.js
++++ b/plugins/behaviors/openlayers_behavior_keyboarddefaults.js
+@@ -8,6 +8,9 @@
+  * Keyboard Defaults Behavior.  Implements the KeyboardDefaults OpenLayers
+  * Control.
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_keyboarddefaults', function (data, options) {
+-  Drupal.openlayers.addControl(data.openlayers, 'KeyboardDefaults');
+-});
++Drupal.openlayers.behaviors.openlayers_behavior_keyboarddefaults = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    Drupal.openlayers.addControl(openlayers, 'KeyboardDefaults');
++  }
++};
+diff --git a/plugins/behaviors/openlayers_behavior_layerswitcher.js b/plugins/behaviors/openlayers_behavior_layerswitcher.js
+index ae56e73..cbf3270 100644
+--- a/plugins/behaviors/openlayers_behavior_layerswitcher.js
++++ b/plugins/behaviors/openlayers_behavior_layerswitcher.js
+@@ -6,7 +6,10 @@
+ /**
+  * Layer Switcher Behavior
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_layerswitcher', function (data, options) {
+-  options.ascending = !! options.ascending;
+-  Drupal.openlayers.addControl(data.openlayers, 'LayerSwitcher', options);
+-});
++Drupal.openlayers.behaviors.openlayers_behavior_layerswitcher = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    behavior.ascending = !! behavior.ascending;
++    Drupal.openlayers.addControl(openlayers, 'LayerSwitcher', behavior);
++  }
++};
+diff --git a/plugins/behaviors/openlayers_behavior_mapformvalues.js b/plugins/behaviors/openlayers_behavior_mapformvalues.js
+index 3d9b761..a9e7f1d 100644
+--- a/plugins/behaviors/openlayers_behavior_mapformvalues.js
++++ b/plugins/behaviors/openlayers_behavior_mapformvalues.js
+@@ -7,38 +7,42 @@
+   /**
+    * Map Form Values Behavior
+    */
+-  Drupal.openlayers.addBehavior('openlayers_behavior_mapformvalues', function (data, options) {
+-    function updateForm(evt) {
+-      if (evt.object.centerpoint_form) {
+-        center = evt.object.getCenter().transform(
+-          evt.object.projection,
+-          new OpenLayers.Projection('EPSG:4326')).toShortString();
+-          evt.object.centerpoint_form.val(center);
++  Drupal.openlayers.behaviors.openlayers_behavior_mapformvalues = {
++    attach: function (context, map, behavior, openlayers) {
++      if (!behavior) {return;}
++      function updateForm(evt) {
++        if (evt.object.centerpoint_form) {
++          var center = evt.object.getCenter().transform(
++            evt.object.projection,
++            new OpenLayers.Projection('EPSG:4326')).toShortString();
++            evt.object.centerpoint_form.val(center);
++        }
++        if (evt.object.zoom_form) {
++          var zoom = evt.object.getZoom();
++          evt.object.zoom_form.val(zoom);
++        }
+       }
+-      if (evt.object.zoom_form) {
+-        zoom = evt.object.getZoom();
+-        evt.object.zoom_form.val(zoom);
++
++      var centerpoint_form = $(behavior.center_form);
++      var zoom_form = $(behavior.zoom_form);
++
++      if (centerpoint_form.length) {
++        openlayers.centerpoint_form = centerpoint_form;
++        var center_point = centerpoint_form.val();
++        openlayers.setCenter(
++          OpenLayers.LonLat.fromString(center_point).transform(
++            new OpenLayers.Projection('EPSG:4326'),
++            openlayers.projection)
++          );
+       }
+-    }
+-    centerpoint_form = $(options.center_form);
+-    zoom_form = $(options.zoom_form);
+ 
+-    if (centerpoint_form.length) {
+-      data.openlayers.centerpoint_form = centerpoint_form;
+-      center_point = centerpoint_form.val();
+-      data.openlayers.setCenter(
+-        OpenLayers.LonLat.fromString(center_point).transform(
+-          new OpenLayers.Projection('EPSG:4326'),
+-          data.openlayers.projection)
+-        );
+-    }
++      if (zoom_form.length) {
++        openlayers.zoom_form = zoom_form;
++        var zoom = zoom_form.val();
++        openlayers.zoomTo(parseInt(zoom, 10));
++      }
+ 
+-    if (zoom_form.length) {
+-      data.openlayers.zoom_form = zoom_form;
+-      zoom = zoom_form.val();
+-      data.openlayers.zoomTo(parseInt(zoom));
++      openlayers.events.on({'moveend': updateForm});
+     }
+-
+-    data.openlayers.events.on({'moveend': updateForm});
+-  });
++  };
+ }(jQuery));
+diff --git a/plugins/behaviors/openlayers_behavior_mouseposition.js b/plugins/behaviors/openlayers_behavior_mouseposition.js
+index 761219e..5896a38 100644
+--- a/plugins/behaviors/openlayers_behavior_mouseposition.js
++++ b/plugins/behaviors/openlayers_behavior_mouseposition.js
+@@ -6,6 +6,9 @@
+ /**
+ * Mouse Position Behavior
+ */
+-Drupal.openlayers.addBehavior('openlayers_behavior_mouseposition', function (data, options) {
+-  Drupal.openlayers.addControl(data.openlayers, 'MousePosition');
+-});
++Drupal.openlayers.behaviors.openlayers_behavior_mouseposition = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    Drupal.openlayers.addControl(openlayers, 'MousePosition');
++  }
++};
+diff --git a/plugins/behaviors/openlayers_behavior_navigation.js b/plugins/behaviors/openlayers_behavior_navigation.js
+index 682492e..2efa48e 100644
+--- a/plugins/behaviors/openlayers_behavior_navigation.js
++++ b/plugins/behaviors/openlayers_behavior_navigation.js
+@@ -6,7 +6,10 @@
+ /**
+  * Navigation Behavior
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_navigation', function (data, options) {
+-  options.documentDrag = !!options.documentDrag;
+-  Drupal.openlayers.addControl(data.openlayers, 'Navigation', options);
+-});
++Drupal.openlayers.behaviors.openlayers_behavior_navigation = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    behavior.documentDrag = !!behavior.documentDrag;
++    Drupal.openlayers.addControl(openlayers, 'Navigation', behavior);
++  }
++};
+diff --git a/plugins/behaviors/openlayers_behavior_panzoom.js b/plugins/behaviors/openlayers_behavior_panzoom.js
+index 84d07dd..5bee32d 100644
+--- a/plugins/behaviors/openlayers_behavior_panzoom.js
++++ b/plugins/behaviors/openlayers_behavior_panzoom.js
+@@ -6,6 +6,9 @@
+ /**
+  * Pan Zoom Bar Behavior
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_panzoom', function (data, options) {
+-  Drupal.openlayers.addControl(data.openlayers, 'PanZoom');
+-});
++Drupal.openlayers.behaviors.openlayers_behavior_panzoom = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    Drupal.openlayers.addControl(openlayers, 'PanZoom');
++  }
++};
+diff --git a/plugins/behaviors/openlayers_behavior_panzoombar.js b/plugins/behaviors/openlayers_behavior_panzoombar.js
+index 01f8aec..fff716e 100644
+--- a/plugins/behaviors/openlayers_behavior_panzoombar.js
++++ b/plugins/behaviors/openlayers_behavior_panzoombar.js
+@@ -6,6 +6,9 @@
+ /**
+  * Pan Zoom Bar Behavior
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_panzoombar', function (data, options) {
+-  Drupal.openlayers.addControl(data.openlayers, 'PanZoomBar');
+-});
++Drupal.openlayers.behaviors.openlayers_behavior_panzoombar = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    Drupal.openlayers.addControl(openlayers, 'PanZoomBar');
++  }
++};
+diff --git a/plugins/behaviors/openlayers_behavior_permalink.js b/plugins/behaviors/openlayers_behavior_permalink.js
+index 4c15112..1ee2af1 100644
+--- a/plugins/behaviors/openlayers_behavior_permalink.js
++++ b/plugins/behaviors/openlayers_behavior_permalink.js
+@@ -6,6 +6,9 @@
+ /**
+  * Permalink Behavior
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_permalink', function (data, options) {
+-  Drupal.openlayers.addControl(data.openlayers, 'Permalink');
+-});
++Drupal.openlayers.behaviors.openlayers_behavior_permalink = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    Drupal.openlayers.addControl(openlayers, 'Permalink');
++  }
++};
+diff --git a/plugins/behaviors/openlayers_behavior_popup.js b/plugins/behaviors/openlayers_behavior_popup.js
+index ab87490..cb782b6 100644
+--- a/plugins/behaviors/openlayers_behavior_popup.js
++++ b/plugins/behaviors/openlayers_behavior_popup.js
+@@ -4,6 +4,74 @@
+  */
+ 
+ /**
++ * OpenLayers Popup Behavior
++ */
++Drupal.openlayers.behaviors.openlayers_behavior_popup = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    var layers = [], popupSelect, selectedFeature, selectedLayer;
++
++    // Object used to filter layers list.
++    // Openlayers expect an object with a 'test' method for filtering with getLayersBy
++    var filterLayers = {
++      test: function (layer) {
++        return behavior.layers.hasOwnProperty(layer) && !!behavior.layers[layer];
++      }
++    };
++
++    // Create FramedCloud popup and
++    // run attachBehaviors on markup inside the popup.
++    // @TODO move to openlayers.js
++    function showPopup (feature) {
++      var contentHTML = Drupal.theme('openlayersPopup', feature);
++      var position = feature.geometry.getBounds().getCenterLonLat();
++      // we need that to avoid flicker on marker over
++      // @TODO Handle offset markers properly
++      var icon = null; //new OpenLayers.Icon();
++      // create popup and assign to feature and map.
++      var popup = new OpenLayers.Popup.FramedCloud('popup', position, null, contentHTML, icon, true, closePopup);
++      feature.popup = popup;
++      feature.layer.map.addPopup(popup);
++      // wait for html to show up and narrow context for behaviors
++      Drupal.attachBehaviors(popup.contentDiv);
++      selectedFeature = feature;
++    }
++
++    // @TODO move to openlayers.js
++    function closePopup (e) {
++      // unselect the marker
++      popupSelect.unselect(selectedFeature);
++    }
++
++    // @TODO move to openlayers.js
++    function destroyPopup (feature) {
++      // clean up Drupal behaviors before removing the popup
++      Drupal.detachBehaviors(feature.popup.contentDiv, null, 'unload');
++      // Remove popup if feature is unselected.
++      feature.layer.map.removePopup(feature.popup);
++      feature.popup.destroy();
++      feature.popup = null;
++    }
++
++    // For backwards compatibility, if layers is not
++    // defined, then include all vector layers
++    if (!behavior.layers) {
++      layers = openlayers.getLayersByClass('OpenLayers.Layer.Vector');
++    }
++    else {
++      layers = openlayers.getLayersBy('drupalID', filterLayers);
++    }
++
++    popupSelect = new OpenLayers.Control.SelectFeature(layers, {
++      onSelect: showPopup,
++      onUnselect: destroyPopup
++    });
++    openlayers.addControl(popupSelect);
++    popupSelect.activate();
++  }
++};
++
++/**
+  * Javascript Drupal Theming function for inside of Popups
+  *
+  * To override
+@@ -15,75 +83,13 @@
+  */
+ Drupal.theme.prototype.openlayersPopup = function(feature) {
+   var output = '';
+-  
++
+   if (feature.attributes.name) {
+     output += '<div class="openlayers-popup openlayers-tooltip-name">' + feature.attributes.name + '</div>';
+   }
+   if (feature.attributes.description) {
+     output += '<div class="openlayers-popup openlayers-tooltip-description">' + feature.attributes.description + '</div>';
+   }
+-  
++
+   return output;
+ };
+-
+-// Make sure the namespace exists
+-Drupal.openlayers.popup = Drupal.openlayers.popup || {};
+-
+-/**
+- * OpenLayers Popup Behavior
+- */
+-Drupal.openlayers.addBehavior('openlayers_behavior_popup', function (data, options) {
+-  var map = data.openlayers;
+-  var layers = [];
+-
+-  // For backwards compatiability, if layers is not
+-  // defined, then include all vector layers
+-  if (typeof options.layers == 'undefined' || options.layers.length == 0) {
+-    layers = map.getLayersByClass('OpenLayers.Layer.Vector');
+-  }
+-  else {
+-    for (var i in options.layers) {
+-      var selectedLayer = map.getLayersBy('drupalID', options.layers[i]);
+-      if (typeof selectedLayer[0] != 'undefined') {
+-        layers.push(selectedLayer[0]);
+-      }
+-    }
+-  }
+-
+-  var popupSelect = new OpenLayers.Control.SelectFeature(layers,
+-    {
+-      onSelect: function(feature) {
+-        // Create FramedCloud popup.
+-        popup = new OpenLayers.Popup.FramedCloud(
+-          'popup',
+-          feature.geometry.getBounds().getCenterLonLat(),
+-          null,
+-          Drupal.theme('openlayersPopup', feature),
+-          null,
+-          true,
+-          function(evt) {
+-            Drupal.openlayers.popup.popupSelect.unselect(
+-              Drupal.openlayers.popup.selectedFeature
+-            );
+-          }
+-        );
+-
+-        // Assign popup to feature and map.
+-        feature.popup = popup;
+-        feature.layer.map.addPopup(popup);
+-        Drupal.attachBehaviors();
+-        Drupal.openlayers.popup.selectedFeature = feature;
+-      },
+-      onUnselect: function(feature) {
+-        // Remove popup if feature is unselected.
+-        feature.layer.map.removePopup(feature.popup);
+-        feature.popup.destroy();
+-        feature.popup = null;
+-      }
+-    }
+-  );
+-
+-  map.addControl(popupSelect);
+-  popupSelect.activate();
+-  Drupal.openlayers.popup.popupSelect = popupSelect;
+-});
+diff --git a/plugins/behaviors/openlayers_behavior_scaleline.js b/plugins/behaviors/openlayers_behavior_scaleline.js
+index 579b305..dc42f46 100644
+--- a/plugins/behaviors/openlayers_behavior_scaleline.js
++++ b/plugins/behaviors/openlayers_behavior_scaleline.js
+@@ -6,6 +6,9 @@
+ /**
+  * Scale Line Behavior
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_scaleline', function (data, options) {
+-  Drupal.openlayers.addControl(data.openlayers, 'ScaleLine');
+-});
++Drupal.openlayers.behaviors.openlayers_behavior_scaleline = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    Drupal.openlayers.addControl(openlayers, 'ScaleLine');
++  }
++};
+diff --git a/plugins/behaviors/openlayers_behavior_tooltip.js b/plugins/behaviors/openlayers_behavior_tooltip.js
+index 0b7301e..f9e2b1e 100644
+--- a/plugins/behaviors/openlayers_behavior_tooltip.js
++++ b/plugins/behaviors/openlayers_behavior_tooltip.js
+@@ -4,6 +4,70 @@
+  */
+ 
+ /**
++ * OpenLayers Tooltip Behavior
++ */
++Drupal.openlayers.behaviors.openlayers_behavior_tooltip = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    var layers = [], tooltipSelect, selectedFeature, selectedLayer;
++
++    // Object used to filter layers list.
++    // Openlayers expect an object with a 'test' method for filtering with getLayersBy
++    var filterLayers = {
++      test: function (layer) {
++        return behavior.layers.hasOwnProperty(layer) && !!behavior.layers[layer];
++      }
++    };
++
++    // Create FramedCloud tooltip and
++    // run attachBehaviors on markup inside the tooltip.
++    // @TODO move to openlayers.js
++    function showTooltip (feature) {
++      var contentHTML = Drupal.theme('openlayersTooltip', feature);
++      var position = feature.geometry.getBounds().getCenterLonLat();
++      // we need that to avoid flicker on marker over
++      // @TODO Handle offset markers properly
++      var icon = null; //new OpenLayers.Icon();
++      // create tooltip and assign to feature and map.
++      var tooltip = new OpenLayers.Popup.FramedCloud('tooltip', position, null, contentHTML, icon);
++      feature.tooltip = tooltip;
++      feature.layer.map.addPopup(tooltip);
++      // wait for html to show up and narrow context for behaviors
++      Drupal.attachBehaviors(tooltip.contentDiv);
++      selectedFeature = feature;
++    }
++
++    // @TODO move to openlayers.js
++    function destroyTooltip (feature) {
++      // clean up Drupal behaviors before removing the popup
++      Drupal.detachBehaviors(feature.tooltip.contentDiv, null, 'unload');
++      // Remove tooltip if feature is unselected.
++      feature.layer.map.removePopup(feature.tooltip);
++      feature.tooltip.destroy();
++      feature.tooltip = null;
++    }
++
++    // For backwards compatibility, if layers is not
++    // defined, then include all vector layers
++    if (!behavior.layers) {
++      layers = openlayers.getLayersByClass('OpenLayers.Layer.Vector');
++    }
++    else {
++      layers = openlayers.getLayersBy('drupalID', filterLayers);
++    }
++    tooltipSelect = new OpenLayers.Control.SelectFeature(layers, {
++      hover: true,
++      multiple: false,
++      highlightOnly: true,
++      overFeature: showTooltip,
++      outFeature: destroyTooltip
++    });
++    openlayers.addControl(tooltipSelect);
++    tooltipSelect.activate();
++  }
++};
++
++/**
+  * Javascript Drupal Theming function for inside of Tooltips
+  *
+  * To override
+@@ -25,63 +89,3 @@ Drupal.theme.prototype.openlayersTooltip = function(feature) {
+ 
+   return output;
+ };
+-
+-/**
+- * OpenLayers Tooltip Behavior
+- */
+-Drupal.openlayers.addBehavior('openlayers_behavior_tooltip', function (data, options) {
+-  var map = data.openlayers;
+-  var layers = [];
+-
+-  // For backwards compatiability, if layers is not
+-  // defined, then include all vector layers
+-  if (typeof options.layers == 'undefined' || options.layers.length == 0) {
+-    layers = map.getLayersByClass('OpenLayers.Layer.Vector');
+-  }
+-  else {
+-    for (var i in options.layers) {
+-      var selectedLayer = map.getLayersBy('drupalID', options.layers[i]);
+-      if (typeof selectedLayer[0] != 'undefined') {
+-        layers.push(selectedLayer[0]);
+-      }
+-    }
+-  }
+-
+-  // Define feature select events for selected layers.
+-  var popupSelect = new OpenLayers.Control.SelectFeature(layers,
+-    {
+-      hover: true,
+-      clickout: false,
+-      multiple: false,
+-      onSelect: function(feature) {
+-        // Create FramedCloud popup for tooltip.
+-        var output = Drupal.theme('openlayersTooltip', feature);
+-        if (typeof output != 'undefined') {
+-          popup = new OpenLayers.Popup.FramedCloud(
+-            'tooltip',
+-            feature.geometry.getBounds().getCenterLonLat(),
+-            null,
+-            output,
+-            null,
+-            true
+-          );
+-          feature.popup = popup;
+-          feature.layer.map.addPopup(popup);
+-          Drupal.attachBehaviors();
+-        }
+-      },
+-      onUnselect: function(feature) {
+-        // Remove popup.
+-        if (typeof feature.popup != 'undefined') {
+-          feature.layer.map.removePopup(feature.popup);
+-          feature.popup.destroy();
+-          feature.popup = null;
+-        }
+-      }
+-    }
+-  );
+-
+-  // Actiate the popups
+-  map.addControl(popupSelect);
+-  popupSelect.activate();
+-});
+diff --git a/plugins/behaviors/openlayers_behavior_zoombox.js b/plugins/behaviors/openlayers_behavior_zoombox.js
+index bb468d6..0be2703 100644
+--- a/plugins/behaviors/openlayers_behavior_zoombox.js
++++ b/plugins/behaviors/openlayers_behavior_zoombox.js
+@@ -6,6 +6,9 @@
+ /**
+  * Zoom Box Behavior
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_zoombox', function (data, options) {
+-  Drupal.openlayers.addControl(data.openlayers, 'ZoomBox');
+-});
++Drupal.openlayers.behaviors.openlayers_behavior_zoombox = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    Drupal.openlayers.addControl(openlayers, 'ZoomBox');
++  }
++};
+diff --git a/plugins/behaviors/openlayers_behavior_zoompanel.js b/plugins/behaviors/openlayers_behavior_zoompanel.js
+index 2018cf7..8a1ae4a 100644
+--- a/plugins/behaviors/openlayers_behavior_zoompanel.js
++++ b/plugins/behaviors/openlayers_behavior_zoompanel.js
+@@ -6,6 +6,9 @@
+ /**
+  * ZoomPanel Behavior
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_zoompanel', function (data, options) {
+-  Drupal.openlayers.addControl(data.openlayers, 'ZoomPanel');
+-});
++Drupal.openlayers.behaviors.openlayers_behavior_zoompanel = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    Drupal.openlayers.addControl(openlayers, 'ZoomPanel');
++  }
++};
+diff --git a/plugins/behaviors/openlayers_behavior_zoomtolayer.js b/plugins/behaviors/openlayers_behavior_zoomtolayer.js
+index 574f5a9..3456d56 100644
+--- a/plugins/behaviors/openlayers_behavior_zoomtolayer.js
++++ b/plugins/behaviors/openlayers_behavior_zoomtolayer.js
+@@ -6,35 +6,37 @@
+ /**
+  * OpenLayers Zoom to Layer Behavior
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_zoomtolayer', function (data, options) {
+-  var map = data.openlayers;
+-  var layers = map.getLayersBy('drupalID', options.zoomtolayer);
++Drupal.openlayers.behaviors.openlayers_behavior_zoomtolayer = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    var layerextent, layers = openlayers.getLayersBy('drupalID', behavior.zoomtolayer);
+ 
+-  // Go through selected layers to get full extent.
+-  for (var i in layers) {
+-    if (layers[i].features !== undefined) {
+-      // For KML layers, we need to wait until layer is loaded.  Ideally
+-      // we could check for any layer that is loading from an external
+-      // source, but for now, just check KML
+-      if (layers[i].layer_handler == 'kml') {
+-        layers[i].events.register('loadend', layers[i], function() {
++    // Go through selected layers to get full extent.
++    for (var i in layers) {
++      if (layers[i].features) {
++        // For KML layers, we need to wait until layer is loaded.  Ideally
++        // we could check for any layer that is loading from an external
++        // source, but for now, just check KML
++        if (layers[i].layer_handler == 'kml') {
++          layers[i].events.register('loadend', layers[i], function() {
++            layerextent = layers[i].getDataExtent();
++            openlayers.zoomToExtent(layerextent);
++          });
++        }
++        else {
+           layerextent = layers[i].getDataExtent();
+-          map.zoomToExtent(layerextent);
+-        });
+-      }
+-      else {
+-        layerextent = layers[i].getDataExtent();
+-        // Check for valid layer extent
+-        if (layerextent != null) {
+-          map.zoomToExtent(layerextent);
++          // Check for valid layer extent
++          if (layerextent != null) {
++            openlayers.zoomToExtent(layerextent);
+ 
+-          // If unable to find width due to single point,
+-          // zoom in with point_zoom_level option.
+-          if (layerextent.getWidth() == 0.0) {
+-            map.zoomTo(options.point_zoom_level);
++            // If unable to find width due to single point,
++            // zoom in with point_zoom_level option.
++            if (layerextent.getWidth() == 0.0) {
++              openlayers.zoomTo(behavior.point_zoom_level);
++            }
+           }
+         }
+       }
+     }
+   }
+-});
++};
+diff --git a/plugins/behaviors/openlayers_behavior_zoomtomaxextent.js b/plugins/behaviors/openlayers_behavior_zoomtomaxextent.js
+index 24f3e05..b6d354b 100644
+--- a/plugins/behaviors/openlayers_behavior_zoomtomaxextent.js
++++ b/plugins/behaviors/openlayers_behavior_zoomtomaxextent.js
+@@ -6,10 +6,13 @@
+ /**
+  * Zoom Max Extent Behavior
+  */
+-Drupal.openlayers.addBehavior('openlayers_behavior_zoomtomaxextent', function (data, options) {
+-  options.allowSelection = options.allowSelection || true;
+-  var panel = Drupal.openlayers.addControl(data.openlayers, 'Panel', options);
++Drupal.openlayers.behaviors.openlayers_behavior_zoomtomaxextent = {
++  attach: function (context, map, behavior, openlayers) {
++    if (!behavior) {return;}
++    behavior.allowSelection = !! behavior.allowSelection;
++    var panel = Drupal.openlayers.addControl(openlayers, 'Panel', behavior);
+ 
+-  var button = new OpenLayers.Control.ZoomToMaxExtent();
+-  panel.addControls([button]);
+-});
++    var button = new OpenLayers.Control.ZoomToMaxExtent();
++    panel.addControls([button]);
++  }
++};
