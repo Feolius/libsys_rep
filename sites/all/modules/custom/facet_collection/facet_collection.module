@@ -1,26 +1,6 @@
 <?php
 
 /**
- * Implements hook_hook_info()
- */
-function facet_collection_hook_info() {
-    $hooks = array(
-        'facet_collection_field_type_info' => array(
-            'group' => 'facet_collection',
-        ),
-        'facet_collection_field_facet_groups' => array(
-            'group' => 'facet_collection',
-        ),
-        'facet_collection_index_field' => array(
-            'group' => 'facet_collection'
-        ),
-        'facet_collection_facet_content_types' => array(
-            'group' => 'facet_collection'
-        )
-    );
-}
-
-/**
  * Implements hook_hook_forms()
  */
 function facet_collection_forms($form_id, $args) {

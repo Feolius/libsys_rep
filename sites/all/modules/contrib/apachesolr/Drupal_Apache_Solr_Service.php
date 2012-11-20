@@ -781,7 +781,7 @@ class DrupalApacheSolrService {
     }
     // PHP's built in http_build_query() doesn't give us the format Solr wants.
     $queryString = $this->httpBuildQuery($params);
-    // Check string length of the query string, change method to POST
+      // Check string length of the query string, change method to POST
     // if longer than 4000 characters (typical server handles 4096 max).
     // @todo - make this a per-server setting.
     if (strlen($queryString) > variable_get('apachesolr_search_post_threshold', 4000)) {

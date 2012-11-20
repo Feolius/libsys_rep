@@ -15,12 +15,12 @@ function facet_collection_date_facet_collection_field_type_info() {
 function facet_collection_date_facet_collection_field_facet_groups($field_info) {
     $facets = array();
     $field_name = $field_info['field_name'];
-    $facet_name = 'collection_date_facet';
+    $facet_name = 'collection_' . $field_name;
     $label = 'Date';
-    $index_field_name = 'dm_facet_collection_date';
+    $index_field_name = 'dm_facet_collection_' . $field_name;
     $query_types = array('date');
     $default_widget = 'facetapi_date_range_widget';
-    $min_callback = 'facet_collection_get_min_date';
+    $min_callback = 'apachesolr_get_min_date';
     $max_callback = 'facet_collection_get_max_date';
 
     $facets[$facet_name] = array(
@@ -49,7 +49,8 @@ function facet_collection_date_facet_collection_field_facet_groups($field_info) 
  * Implements hook_facet_collection_index_field()
  */
 function facet_collection_date_facet_collection_index_field($filedocument, $node, $field_info) {
-    $fields = facet_collection_date_indexing_callback($node, 'dm_facet_collection_date', $field_info);
+    $field_name = $field_info['field_name'];
+    $fields = facet_collection_date_indexing_callback($node, 'dm_facet_collection_' . $field_name, $field_info);
     foreach ($fields as $field) {
         $filedocument->setMultiValue($field['key'], $field['value']);
     }
@@ -60,16 +61,19 @@ function facet_collection_date_facet_collection_index_field($filedocument, $node
  * Implements hook_facet_collection_facet_content_types()
  */
 function facet_collection_date_facet_collection_facet_content_types($filter_settings, $facet_group, $facet_name, $searcher) {
+    $facet = facetapi_facet_load($facet_name, $searcher);
+    $field_name = $facet['field api name'];
     $facet_content_types_array = array();
-    if (isset($filter_settings['date'])) {
-        $facet_content_types_array = array_merge($facet_content_types_array, array_keys($filter_settings['date']));
+    if (isset($filter_settings['date'][$field_name])) {
+        $facet_content_types_array = array_merge($facet_content_types_array, array($filter_settings['date'][$field_name]));
     }
-    if (isset($filter_settings['datetime'])) {
-        $facet_content_types_array = array_merge($facet_content_types_array, array_keys($filter_settings['datetime']));
+    if (isset($filter_settings['datetime'][$field_name])) {
+        $facet_content_types_array = array_merge($facet_content_types_array, array($filter_settings['datetime'][$field_name]));
     }
-    if (isset($filter_settings['datestamp'])) {
-        $facet_content_types_array = array_merge($facet_content_types_array, array_keys($filter_settings['datestamp']));
+    if (isset($filter_settings['datestamp'][$field_name])) {
+        $facet_content_types_array = array_merge($facet_content_types_array, array($filter_settings['datestamp'][$field_name]));
     }
+
     return $facet_content_types_array;
 }
 
@@ -136,36 +140,6 @@ function facet_collection_date_indexing_callback($node, $index_key, $field_info)
                     );
                 }
             }
-
-//We store min and max date in persistent variables because we need min and max callbacks for facet
-//that returns this values
-//Check if current date is min or max from all indexed dates
-            $max_date = variable_get('facet_collection_max_indexed_date');
-            $min_date = variable_get('facet_collection_min_indexed_date');
-            if (!empty($max_date)) {
-                $max_date_obj = new DateObject($max_date);
-                if ($max_date_obj < $date_end) {
-                    $date_array = $date_end->toArray(TRUE);
-                    $date_ISO = $date_end->toISO($date_array);
-                    variable_set('facet_collection_max_indexed_date', $date_ISO);
-                }
-            } else {
-                $date_array = $date_end->toArray(TRUE);
-                $date_ISO = $date_end->toISO($date_array);
-                variable_set('facet_collection_max_indexed_date', $date_ISO);
-            }
-            if (!empty($min_date)) {
-                $min_date_obj = new DateObject($min_date);
-                if ($date_start < $min_date_obj) {
-                    $date_array = $date_start->toArray(TRUE);
-                    $date_ISO = $date_start->toISO($date_array);
-                    variable_set('facet_collection_min_indexed_date', $date_ISO);
-                }
-            } else {
-                $date_array = $date_start->toArray(TRUE);
-                $date_ISO = $date_start->toISO($date_array);
-                variable_set('facet_collection_min_indexed_date', $date_ISO);
-            }
         }
     }
     return $fields;
@@ -174,30 +148,20 @@ function facet_collection_date_indexing_callback($node, $index_key, $field_info)
 /**
  * Max date callback for facet collection
  */
-function facet_collection_get_max_date() {
-    return strtotime(variable_get('facet_collection_max_indexed_date'));
-}
-
-/**
- * Min date callback for facet collection
- */
-function facet_collection_get_min_date() {
-    return strtotime(variable_get('facet_collection_min_indexed_date'));
-}
-
-/**
- * Implements hook_form_alter()
- */
-function facet_collection_form_alter(&$form, &$form_state, $form_id) {
-    if ($form_id == 'apachesolr_index_action_form_delete_confirm') {
-        $form['#submit'][] = 'facet_collection_index_action_form_delete_submit';
+function facet_collection_get_max_date($facet) {
+    $table = 'field_data_' . $facet['field api name'];
+    try {
+        $column = $facet['field api name'] . '_value2';
+        $query = db_select($table, 't');
+        $query->addExpression('MAX(' . $column . ')', 'max');
+        $query_max = $query->execute()->fetch()->max;
+    } catch (PDOException $e) {
+        $column = $facet['field api name'] . '_value';
+        $query = db_select($table, 't');
+        $query->addExpression('MAX(' . $column . ')', 'max');
+        $query_max = $query->execute()->fetch()->max;
     }
+    return strtotime($query_max);
 }
 
-/**
- * Submit callback for apachesolr_index_action_form. We need it to remove persistent variables that contain min and max dates
- */
-function facet_collection_index_action_form_delete_submit($form, &$form_state) {
-    variable_del('facet_collection_min_indexed_date');
-    variable_del('facet_collection_max_indexed_date');
-}
+
