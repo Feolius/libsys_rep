@@ -1,20 +1,14 @@
 <div id="collection_page_tabs">
     <ul>
-        <li><a href="#tabs-1"><?php print $elements['#standart']['#title']?></a></li>
-        <li><a href="#tabs-2"><?php print $elements['#timeline']['#title']?></a></li>
-        <li><a href="#tabs-3"><?php print $elements['#location']['#title']?></a></li>
-
+        <?php foreach ($elements as $element): ?>
+        <li><a href=<?php print '#tab-' . $element['#id'] ?>><?php print $element['#title']?></a></li>
+        <? endforeach; ?>
     </ul>
-    <div id="tabs-1"><?php print $elements['#standart']['#content']['#standart_view']?></div>
-    <div id="tabs-2">
-        <?php print $elements['#timeline']['#content']['#timeline_iframe']?>
-        <?php print $elements['#pager']; ?>
+    <?php foreach ($elements as $element): ?>
+    <div id=<?php print 'tab-' . $element['#id'] ?>>
+        <?foreach ($element['#content'] as $content): ?>
+        <?php print $content ?>
+        <? endforeach; ?>
     </div>
-    <div id="tabs-3">
-        <?php print $elements['#location']['#content']['#location_view']?>
-        <?php print $elements['#pager']; ?>
-    </div>
-
-
+    <? endforeach; ?>
 </div>
-

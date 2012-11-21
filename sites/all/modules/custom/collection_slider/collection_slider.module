@@ -9,11 +9,13 @@
 /**
  * Implements hook_preprocess_page().
  */
-function collection_slider_preprocess_page(&$variables) {
+function collection_slider_preprocess_page(&$variables)
+{
     if (arg(0) == 'node'
-            && is_numeric(arg(1))
-            && (isset($_GET['collection']) && $_GET['collection'] == 'true')
-            && isset($_GET['curr'])) {
+        && is_numeric(arg(1))
+        && (isset($_GET['collection']) && $_GET['collection'] == 'true')
+        && isset($_GET['curr'])
+    ) {
         drupal_add_css(drupal_get_path('module', 'collection_slider') . '/css/collection-slider-buttons-style.css');
         drupal_add_js(drupal_get_path('module', 'collection_slider') . '/js/collection-slider-buttons.js');
         collection_slider_set_arrows_urls();
@@ -23,7 +25,8 @@ function collection_slider_preprocess_page(&$variables) {
 /**
  * Set the next and previous url on slider arrow using apache_solr
  */
-function collection_slider_set_arrows_urls() {
+function collection_slider_set_arrows_urls()
+{
     //Get apache_solr params from $_GET
     $params = array();
     $params['q'] = $_GET['query'];
@@ -47,7 +50,6 @@ function collection_slider_set_arrows_urls() {
     $next_node_html = '';
     $previous_node_html = '';
 
-
     //Build next and previous urls for slider arrows
     $options = array('query' => array());
     $options['query'] ['collection'] = 'true';
@@ -57,6 +59,7 @@ function collection_slider_set_arrows_urls() {
     }
     $options['query']['query'] = $_GET['query'];
     $options['query']['numFound'] = $_GET['numFound'];
+
     if ($_GET['curr'] > 0) {
         $options['query']['curr'] = $_GET['curr'] - 1;
         $options['attributes']['class'] = array('collection-slider-button-icon-swapleft', ' active');

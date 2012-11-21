@@ -43,75 +43,163 @@ function collection_page_theme()
 
 function theme_facet_collection_search_results__alter($variables)
 {
+    $_SESSION['collection_page_apache_solr_results'] = $variables['results'];
     $results = $variables['results'];
-    $node_ids = '';
-    foreach ($results as $result) {
-        $node_ids = $node_ids . ',' . $result['node']->entity_id;
-    }
-    $node_ids = substr($node_ids, 1);
-
-    variable_set('collection_apache_solr_result', drupal_json_encode($results));
 
     drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_style.css');
     drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_tabs.js');
     drupal_add_library('system', 'ui.tabs');
 
-    $content = array(
-        '#timeline' => array(
-            '#title' => t('Timeline View'),
-            '#content' => array(
-                '#timeline_iframe' => theme('timeline_iframe', $results)
-            )
+    $bundle = '';
+    if (isset($_GET['f'])) {
+        foreach ($_GET['f'] as $filter) {
+            $exploded_filter = explode(':', $filter);
+            if ($exploded_filter[0] == 'bundle') {
+                $bundle = $exploded_filter[1];
+            }
+        }
+    }
+    $standart_view_content = array(
+        '#id' => 'standart-view',
+        '#title' => t('Standart View'),
+        '#content' => array(
+            '#view' => theme('search_results', array('#theme' => 'search_results', '#results' => $results, '#module' => 'collection_page')),
         ),
-        '#standart' => array(
-            '#title' => t('Standart View'),
-            '#content' => array(
-                '#standart_view' => theme('search_results', array('#theme' => 'search_results', '#results' => $results, '#module' => 'collection_page')),
-            )
-        ),
-        '#location' => array(
-            '#title' => t('Location View'),
-            '#content' => array(
-                '#location_view' => views_embed_view('location_view', 'map', $node_ids),
-            )
-        ),
-        '#pager' => theme('pager', array('tags' => NULL)),
     );
-
+    $timeline_view_content = array(
+        '#id' => 'timeline-view',
+        '#title' => t('Timeline View'),
+        '#content' => array(
+            '#view' => theme('timeline_iframe'),
+            '#pager' => theme('pager', array('tags' => NULL)),
+        ),
+    );
+    switch ($bundle) {
+        case 'files':
+            $node_ids = '';
+            foreach ($results as $result) {
+                $node = node_load($result['node']->entity_id);
+                $instances = field_info_instances('node', $node->type);
+                foreach ($instances as $field_name => $instance) {
+                    $field_info = field_info_field($field_name);
+                    if ($field_info['type'] == 'entityreference') {
+                        $items = field_get_items('node', $node, $field_info['field_name']);
+                        if (!empty($items)) {
+                            $node_ids = implode(',', array($node_ids, $items[0]['target_id']));
+                        }
+                    }
+                }
+            }
+            $node_ids = substr($node_ids, 1);
+            $location_view_content = array(
+                '#id' => 'location-view',
+                '#title' => t('Location View'),
+                '#content' => array(
+                    '#view' => views_embed_view('location_view', 'map', $node_ids),
+                    '#pager' => theme('pager', array('tags' => NULL)),
+                ),
+            );
+            $content = array(
+                '#standart' => $standart_view_content,
+                '#timeline' => $timeline_view_content,
+                '#location' => $location_view_content,
+            );
+            break;
+        case 'location' :
+            $node_ids = '';
+            foreach ($results as $result) {
+                $node_ids = implode(',', array($node_ids, $result['node']->entity_id));
+            }
+            $node_ids = substr($node_ids, 1);
+            $location_view_content = array(
+                '#id' => 'location-view',
+                '#title' => t('Location View'),
+                '#content' => array(
+                    '#view' => views_embed_view('location_view', 'map', $node_ids),
+                    '#pager' => theme('pager', array('tags' => NULL)),
+                ),
+            );
+            $content = array(
+                '#standart' => $standart_view_content,
+                '#location' => $location_view_content,
+            );
+            break;
+        case 'people':
+            $content = array(
+                '#standart' => $standart_view_content,
+                '#timeline' => $timeline_view_content,
+            );
+            break;
+        default:
+            $content = array(
+                '#standart' => $standart_view_content,
+            );
+            break;
+    }
     return theme('collection_page', array('elements' => $content));
 }
 
+/**
+ * Page callback for Timeline View on Collection Page.
+ */
 function collection_page_timeline_frame_callback()
 {
     $options = new stdClass();
     $options->start_slide = 0;
-    $options->timeline_lib_url = base_path() . libraries_get_path('timeline') . '/compiled/js/timeline-embed.js';
+    $options->timeline_lib_url = $GLOBALS['base_url'] . '/' . libraries_get_path('timeline') . '/compiled/js/timeline-embed.js';
     echo theme('timeline_json', array('options' => $options));
     exit;
 }
 
+/**
+ * Page callback for data for TimeLine View
+ */
 function collection_page_timeline_json_callback()
 {
     $date = array();
-
-    //TODO:rewrite result transmission
-    $results = drupal_json_decode(variable_get('collection_apache_solr_result'));
+    $results = $_SESSION['collection_page_apache_solr_results'];
 
     foreach ($results as $result) {
         $asset = new stdClass();
-//        if (isset($_SESSION['collection_page']['json']['image_url']))
-//            $asset->media = $_SESSION['collection_page']['json']['image_url'][$i];
-//        else
+        $timeline_item = new stdClass();
         $asset->media = "";
         $asset->credit = "";
         $asset->caption = "";
 
-        $item = new stdClass();
-        $item->headline = $result['title'];
-        $item->startDate = date('Y', strtotime($result['fields']['dm_field_files_date'][0]));
-        $item->text = l('read more', 'http:' . $result['link'], array('attributes' => array('target' => '_parent', 'class' => 'active')));
-        $item->asset = $asset;
-        $date[] = $item;
+        $node = node_load($result['node']->entity_id);
+
+        $instances = field_info_instances('node', $node->type);
+        foreach ($instances as $field_name => $instance) {
+            $field_info = field_info_field($field_name);
+            if ($field_info['type'] == 'image') {
+                $items = field_get_items('node', $node, $field_info['field_name']);
+                if (!empty($items)) {
+                    foreach ($items as $item) {
+                        $uri = $item['uri'];
+                        $style = 'thumbnail';
+                        $styles = image_styles();
+                        if (in_array($style, array_keys($styles))) {
+                            $image_path = image_style_url($style, $uri);
+                        } else {
+                            $image_path = file_create_url($uri);
+                        }
+                        $asset->media = $image_path;
+                        break;
+                    }
+                }
+            } else if ($field_info['type'] == 'date'
+                || $field_info['type'] == 'datetime'
+                || $field_info['type'] == 'datestamp'
+            ) {
+                $timeline_item->startDate = date('Y', strtotime($result['fields']['dm_facet_collection_' . $field_info['field_name']][0]));
+            }
+        }
+
+
+        $timeline_item->headline = $result['title'];
+        $timeline_item->text = l('read more', $GLOBALS['base_url'] . $result['link'], array('attributes' => array('target' => '_parent', 'class' => 'active')));
+        $timeline_item->asset = $asset;
+        $date[] = $timeline_item;
     }
 
     $json_class = new stdClass();
@@ -121,28 +209,54 @@ function collection_page_timeline_json_callback()
     $json_class->timeline->startDate = "0";
     $json_class->timeline->text = "";
     $json_class->timeline->date = $date;
-
     echo drupal_json_output($json_class);
     exit;
 }
 
+
+/**
+ * Preprocess for data page for Timeline View
+ */
 function collection_page_preprocess_timeline_json(&$vars)
 {
     $options = $vars['options'];
     $vars['start_slide'] = $options->start_slide;
     $vars['timeline_lib_url'] = $options->timeline_lib_url;
-    $vars['source'] = base_path() . 'timeline-json';
+    $vars['source'] = $GLOBALS['base_url'] . '/timeline-json';
 }
 
+
+/**
+ * Preprocess for iframe in Timeline View
+ */
 function collection_page_preprocess_timeline_iframe(&$vars)
 {
-    $vars['iframe_url'] = 'timeline-iframe';
+    $vars['iframe_url'] = $GLOBALS['base_url'] . '/timeline-iframe';
     $vars['iframe_width'] = '100%';
     $vars['iframe_height'] = '600px';
 }
 
+/**
+ * Implements hook_apachesolr_query_alter().
+ */
 function collection_page_apachesolr_query_alter($query)
 {
-    $query->addParam('fl', 'dm_field_files_date');
-    $query->addFilter('bundle', 'files');
+    if (isset($_GET['f'])) {
+        foreach ($_GET['f'] as $filter) {
+            $exploded_filter = explode(':', $filter);
+            if ($exploded_filter[0] == 'bundle') {
+                $bundle = $exploded_filter[1];
+            }
+        }
+        if (!empty($bundle)) {
+            $instances = field_info_instances('node', $bundle);
+            foreach ($instances as $instance) {
+                $field = field_info_field($instance['field_name']);
+                if ($field['type'] == 'date' || $field['type'] == 'datetime' || $field['type'] == 'datestamp') {
+                    $query->addParam('fl', 'dm_facet_collection_' . $field['field_name']);
+                }
+            }
+        }
+    }
+
 }
