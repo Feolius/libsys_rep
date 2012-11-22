@@ -1,3 +1,5 @@
 name = Collection Page
-package = Adventist DL
+description = "Provides three type of views on collection page - Timeline , Location and Default views"
+package = Facet Collection
 core = 7.x
+dependencies[] = facet_collection

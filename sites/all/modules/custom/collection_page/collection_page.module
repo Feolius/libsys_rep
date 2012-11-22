@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * @file
+ * The main file of Collection Page module.
+ * Provides three types of view for collection page -
+ * timeline, location and default views. *
+ */
+
+/**
+ * Implements hook_menu().
+ */
 function collection_page_menu()
 {
     $items = array();
@@ -41,15 +51,25 @@ function collection_page_theme()
 
 }
 
+/**
+ * Alters default theme of facet collection page
+ *
+ * @param $variables
+ * @return string
+ */
 function theme_facet_collection_search_results__alter($variables)
 {
+    //Put apache_solr request results into SESSION for process those in timeline data callback
     $_SESSION['collection_page_apache_solr_results'] = $variables['results'];
     $results = $variables['results'];
 
+    //Include on page supports files for building tabs and inserting into them needed views
+    //like timeline, default or location views
     drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_style.css');
     drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_tabs.js');
     drupal_add_library('system', 'ui.tabs');
 
+    //Define for what bundle current apache_solr request was executed
     $bundle = '';
     if (isset($_GET['f'])) {
         foreach ($_GET['f'] as $filter) {
@@ -74,8 +94,10 @@ function theme_facet_collection_search_results__alter($variables)
             '#pager' => theme('pager', array('tags' => NULL)),
         ),
     );
+    //Build content for different bundles
     switch ($bundle) {
         case 'files':
+            //Collect NIDs of referenced location nodes for bunlde Files
             $node_ids = '';
             foreach ($results as $result) {
                 $node = node_load($result['node']->entity_id);
@@ -91,6 +113,7 @@ function theme_facet_collection_search_results__alter($variables)
                 }
             }
             $node_ids = substr($node_ids, 1);
+            //Build location view using special view with openlayers map
             $location_view_content = array(
                 '#id' => 'location-view',
                 '#title' => t('Location View'),
@@ -103,14 +126,17 @@ function theme_facet_collection_search_results__alter($variables)
                 '#standart' => $standart_view_content,
                 '#timeline' => $timeline_view_content,
                 '#location' => $location_view_content,
+
             );
             break;
         case 'location' :
+            //Collect NIDs of nodes for bundle Location
             $node_ids = '';
             foreach ($results as $result) {
                 $node_ids = implode(',', array($node_ids, $result['node']->entity_id));
             }
             $node_ids = substr($node_ids, 1);
+            //Build location view using special view with openlayers map
             $location_view_content = array(
                 '#id' => 'location-view',
                 '#title' => t('Location View'),
@@ -131,11 +157,21 @@ function theme_facet_collection_search_results__alter($variables)
             );
             break;
         default:
+            //If bundle for filtering was not chosen show only default view
             $content = array(
                 '#standart' => $standart_view_content,
             );
             break;
     }
+    $timeline_library = libraries_get_path('timeline');
+    if (isset($content['#timeline']) && empty($timeline_library)) {
+        unset($content['#timeline']);
+    }
+    $location_view = views_embed_view('location_view', 'map');
+    if (isset($content['#location']) && empty($location_view)) {
+        unset($content['#location']);
+    }
+
     return theme('collection_page', array('elements' => $content));
 }
 
@@ -166,8 +202,10 @@ function collection_page_timeline_json_callback()
         $asset->credit = "";
         $asset->caption = "";
 
+        //For each node, which was filtered by apache_solr using chosen filters
+        //get image,as media content, and date, as date for time line.
+        //There would taken the last image field in node and the last date field in node.
         $node = node_load($result['node']->entity_id);
-
         $instances = field_info_instances('node', $node->type);
         foreach ($instances as $field_name => $instance) {
             $field_info = field_info_field($field_name);
@@ -191,7 +229,7 @@ function collection_page_timeline_json_callback()
                 || $field_info['type'] == 'datetime'
                 || $field_info['type'] == 'datestamp'
             ) {
-                $timeline_item->startDate = date('Y', strtotime($result['fields']['dm_facet_collection_' . $field_info['field_name']][0]));
+                $timeline_item->startDate = date('Y,m,d', strtotime($result['fields']['dm_facet_collection_' . $field_info['field_name']][0]));
             }
         }
 
@@ -241,6 +279,10 @@ function collection_page_preprocess_timeline_iframe(&$vars)
  */
 function collection_page_apachesolr_query_alter($query)
 {
+    //Add date field from facet collection in apache_sorl request params.
+    //That field would used in Timeline View.
+    //There would taken the last date field in current filtering bundle.
+    //If bundle was not defined, field would not be added to params.
     if (isset($_GET['f'])) {
         foreach ($_GET['f'] as $filter) {
             $exploded_filter = explode(':', $filter);

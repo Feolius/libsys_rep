@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Definition of views_handler_field_taxonomy.
+ */
+
+/**
  * Field handler to provide simple renderer that allows linking to a taxonomy
  * term.
  *
@@ -25,8 +30,8 @@ class views_handler_field_taxonomy extends views_handler_field {
 
   function option_definition() {
     $options = parent::option_definition();
-    $options['link_to_taxonomy'] = array('default' => FALSE);
-    $options['convert_spaces'] = array('default' => FALSE);
+    $options['link_to_taxonomy'] = array('default' => FALSE, 'bool' => TRUE);
+    $options['convert_spaces'] = array('default' => FALSE, 'bool' => TRUE);
     return $options;
   }
 
@@ -69,6 +74,7 @@ class views_handler_field_taxonomy extends views_handler_field {
     if (!empty($this->options['convert_spaces'])) {
       $data = str_replace(' ', '-', $data);
     }
+
     return $data;
   }
 
