@@ -8,3 +8,5 @@ sites/*/private
 # Ignore paths that contain netbeans project metadata
 
 nbproject
+.idea
+.DS_Store
