@@ -29,7 +29,7 @@ function facet_collection_search_block_form($form, &$form_state) {
     $search_query_string = arg(1);
     $current_search_queries = array();
     $default_value = '';
-    if (!empty($search_query_string)) {
+    if (!empty($search_query_string) && arg(0) == 'collection') {
         $current_search_queries = explode(' AND ', $search_query_string);
         foreach ($current_search_queries as $key => $query) {
             $query_parts = explode(':', $query);
@@ -96,7 +96,6 @@ function facet_collection_search_block_form_submit($form, &$form_state) {
     }
     $current_search_queries[] = trim($form_state['values'][$form_id]);
     $search_query = implode(' AND ', $current_search_queries);
-
     $get = json_decode($form_state['values']['get'], TRUE);
     if (!empty($info) && $info['module'] == 'apachesolr_search') {
         $form_state['redirect'] = array('collection/' . $search_query, array('query' => $get));
@@ -125,8 +124,14 @@ function facet_collection_search_block_form_remove_filter($form, &$form_state) {
         }
     }
     $search_query = implode(' AND ', $current_search_queries);
+    if(empty($search_query)){
+        $redirect_path = 'collection';
+    }else{
+        $redirect_path = 'collection/' . $search_query;
+    }
+    dpm($redirect_path);
     if (!empty($info) && $info['module'] == 'apachesolr_search') {
-        $form_state['redirect'] = array('collection/' . $search_query, array('query' => $get));
+        $form_state['redirect'] = array($redirect_path, array('query' => $get));
     } else {
         form_set_error(NULL, t('Search is currently disabled.'), 'error');
     }

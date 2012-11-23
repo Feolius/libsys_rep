@@ -290,7 +290,8 @@ function facet_collection_get_facet_filters() {
 
     //We need searcher for further actions.
     $searcher_info = facetapi_get_searcher_info();
-    $searcher = array_shift(array_keys($searcher_info));
+    $searchers = array_keys($searcher_info);
+    $searcher = array_shift($searchers);
 
 //Get adapter and build block realm to grab all build information
     $adapter = facetapi_adapter_load($searcher);
@@ -541,27 +542,44 @@ function facet_collection_theme() {
  * Process variables for facet-collection-snippet.tpl.php.
  */
 function template_preprocess_apachesolr_search_snippets__node(&$variables) {
+    $snippets = $variables['snippets'];
+
     $module_path = drupal_get_path('module', 'facet_collection');
     drupal_add_css($module_path . '/CSS/facet_collection_snippet.css');
-    global $base_url;
+    $text = '';
     $nid = $variables['doc']->entity_id;
     $node = node_load($nid);
-
-    //We take a text for snippet from long text with summary field
     $instances = field_info_instances('node', $node->type);
-    foreach ($instances as $instance) {
-        $field_name = $instance['field_name'];
-        $field_info = field_info_field($field_name);
-        if ($field_info['type'] == 'text_with_summary') {
-            $items = field_get_items('node', $node, $field_name);
-            if (!empty($items)) {
-                foreach ($items as $item) {
-                    $text = $item['value'];
-                    $variables['text'] = $text;
+    if (empty($snippets)) {
+         //We take a text for snippet from long text with summary field
+        foreach ($instances as $instance) {
+            $field_name = $instance['field_name'];
+            $field_info = field_info_field($field_name);
+            if ($field_info['type'] == 'text_with_summary') {
+                $items = field_get_items('node', $node, $field_name);
+                if (!empty($items)) {
+                    foreach ($items as $item) {
+                        $text = $item['value'];
+                    }
                 }
             }
         }
+    } else {
+        if (isset($snippets['content'])) {
+            $text .= $snippets['content'];
+            unset($snippets['content']);
+        }
+        if (isset($snippets['teaser'])) {
+            $text .= (strlen($result) > 0) ? ' ... ' : '';
+            $text .= $snippets['teaser'];
+            unset($snippets['teaser']);
+        }
+        if (count($snippets)) {
+            $text .= (strlen($result) > 0) ? ' ... ' : '';
+            $text .= implode(' ... ', $snippets);
+        }
     }
+    $variables['text'] = $text;
     foreach ($instances as $field_name => $instance) {
         $field_info = field_info_field($field_name);
         if ($field_info['type'] == 'image') {
@@ -588,9 +606,28 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
  * Implements hook_apachesolr_query_alter()
  */
 function facet_collection_apachesolr_query_alter($query) {
-
-    //We should be shure that only nodes should be shown
     if (arg(0) == 'collection') {
+        //First we should determine wether we need highlight or not
+        //If there is query from search block we enable highlight
+        $q = $query->getParam('q');
+        $q_parts = explode('AND', $q);
+        //Flag whether the query from search block found or not
+        $query_found = FALSE;
+        foreach ($q_parts as $q_part) {
+            $q_part_arr = explode(':', $q_part);
+            if (count($q_part_arr) == 1) {
+                //It means that we have query from search block and we need highlight for this query
+                $query->addParam('hl.q', $q_part);
+                $query_found = TRUE;
+            }
+        }
+        //If we've not found the query from search block we shouldn't highlight anything
+        if ($query_found == FALSE) {
+            $query->addParam('hl', 'false');
+            $query->removeParam('hl.fl');
+        }
+
+        //We should be shure that only nodes should be shown
         $fq = $query->getParam('fq');
         $fq = array_merge($fq, array('entity_type:node'));
         $query->addParam('fq', $fq);
