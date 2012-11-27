@@ -86,6 +86,7 @@ function facet_collection_date_indexing_callback($node, $index_key, $field_info)
     $fields = array();
     $field = $node->$field_name;
     list($lang, $values) = each($field);
+    dpm($values);
     foreach ($values as $value) {
         if (isset($value['value2'])) {
             $date_start = new DateObject($value['value']);
@@ -140,6 +141,13 @@ function facet_collection_date_indexing_callback($node, $index_key, $field_info)
                     );
                 }
             }
+        } else {
+            $date = date_create($value['value']);
+            $index_value = apachesolr_date_iso($date->format('U'));
+            $fields[] = array(
+                'key' => $index_key,
+                'value' => $index_value,
+            );
         }
     }
     return $fields;
@@ -163,5 +171,4 @@ function facet_collection_get_max_date($facet) {
     }
     return strtotime($query_max);
 }
-
 

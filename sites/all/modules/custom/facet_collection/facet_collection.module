@@ -551,15 +551,24 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
     $node = node_load($nid);
     $instances = field_info_instances('node', $node->type);
     if (empty($snippets)) {
-         //We take a text for snippet from long text with summary field
+        //We take a text for snippet from long text with summary field
         foreach ($instances as $instance) {
             $field_name = $instance['field_name'];
             $field_info = field_info_field($field_name);
+            $node_teaser = node_view($node, 'teaser');
+
+            //If there is a trim display in node teaser we take it
             if ($field_info['type'] == 'text_with_summary') {
-                $items = field_get_items('node', $node, $field_name);
-                if (!empty($items)) {
-                    foreach ($items as $item) {
-                        $text = $item['value'];
+                if (isset($node_teaser[$field_name])) {
+                    $text = $node_teaser[$field_name][0]['#markup'];
+                } else {
+                    ;
+                    //Else we should get full text
+                    $items = field_get_items('node', $node, $field_name);
+                    if (!empty($items)) {
+                        foreach ($items as $item) {
+                            $text = $item['value'];
+                        }
                     }
                 }
             }
