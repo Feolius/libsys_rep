@@ -1,0 +1,15 @@
+name = jPlayer Waveform
+description = Provides an HTML5-compatible with Flash-fallback audio player with waveform display.
+package = Media
+core = 7.x
+dependencies[] = file
+configure = admin/config/media/jplayer_waveform
+
+files[] = jplayer_waveform.install
+files[] = jplayer_waveform.module
+files[] = includes/jplayer_waveform.admin.inc
+files[] = includes/jplayer_waveform.theme.inc
+files[] = includes/jplayer_waveform.views.inc
+files[] = includes/jplayer_style_plugin.inc
+files[] = theme/jplayer_waveform.tpl.php
+

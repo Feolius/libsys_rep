@@ -1,0 +1,5 @@
+name = Test Video Field Bug
+description = "Module for collection and analysing data about video field bug"
+package = Adventist DL
+core = 7.x
+
