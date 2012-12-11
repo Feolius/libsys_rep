@@ -21,7 +21,8 @@ function facetapi_date_range_widget_facetapi_widgets() {
 function facetapi_date_range_widget_forms($form_id, $args) {
     $forms = array();
     $searcher_info = facetapi_get_searcher_info();
-    $searcher = array_shift(array_keys($searcher_info));
+    $searchers = array_keys($searcher_info);
+    $searcher = array_shift($searchers);
     $adapter = facetapi_adapter_load($searcher);
     $enabled_facets = $adapter->getEnabledFacets();
     foreach($enabled_facets as $enabled_facet){

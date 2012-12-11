@@ -5,134 +5,143 @@
  */
 
 function facet_collection_search_block_block_info() {
-    $blocks['facet_collection_search_block'] = array(
-        'info' => t('Search block for collection')
-    );
-    return $blocks;
+  $blocks['facet_collection_search_block'] = array(
+      'info' => t('Search block for collection')
+  );
+  return $blocks;
 }
 
 /**
  * Implements hook_block_view().
  */
 function facet_collection_search_block_block_view($delta = '') {
-    if (user_access('search content')) {
-        $block['subject'] = t('Search');
-        $block['content'] = drupal_get_form('facet_collection_search_block_form');
-        return $block;
-    }
+  if (user_access('search content')) {
+    $block['subject'] = t('Search');
+    $block['content'] = drupal_get_form('facet_collection_search_block_form');
+    return $block;
+  }
 }
 
 /**
  * Form callback for search block
  */
 function facet_collection_search_block_form($form, &$form_state) {
-    $search_query_string = arg(1);
-    $current_search_queries = array();
-    $default_value = '';
-    if (!empty($search_query_string) && arg(0) == 'collection') {
-        $current_search_queries = explode(' AND ', $search_query_string);
-        foreach ($current_search_queries as $key => $query) {
-            $query_parts = explode(':', $query);
-            if(count($query_parts) == 1){
-                $default_value = $current_search_queries[$key];
-            }
-        }
+  $search_query_string = arg(1);
+  $current_search_queries = array();
+  $default_value = '';
+  if (!empty($search_query_string) && arg(0) == 'collection') {
+    $current_search_queries = explode(' AND ', $search_query_string);
+    foreach ($current_search_queries as $key => $query) {
+      $query_parts = explode(':', $query);
+      if (count($query_parts) == 1) {
+        $default_value = $current_search_queries[$key];
+      }
     }
-    $form_id = $form_state['build_info']['form_id'];
-    $form[$form_id] = array(
-        '#type' => 'textfield',
-        '#title' => t('Search'),
-        '#title_display' => 'invisible',
-        '#size' => 15,
-        '#default_value' => $default_value,
-        '#attributes' => array('title' => t('Enter the terms you wish to search for.')),
-    );
+  }
+  $form_id = $form_state['build_info']['form_id'];
+  $form[$form_id] = array(
+      '#type' => 'textfield',
+      '#title' => t('Search'),
+      '#title_display' => 'invisible',
+      '#size' => 15,
+      '#default_value' => $default_value,
+      '#attributes' => array('title' => t('Enter the terms you wish to search for.')),
+  );
 
-    $form['actions'] = array('#type' => 'actions');
-    $form['basic']['get'] = array(
-        '#type' => 'hidden',
-        '#default_value' => json_encode(array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1))),
-    );
-    $form['submit'] = array(
-        '#type' => 'submit',
-        '#submit' => array('facet_collection_search_block_form_submit'),
-        '#value' => t('Search')
-    );
-    if (arg(0) == 'collection') {
-        $clear_access = TRUE;
-    } else {
-        $clear_access = FALSE;
-    }
-    $form['clear'][] = array(
-        '#type' => 'submit',
-        '#submit' => array('facet_collection_search_block_form_remove_filter'),
-        '#value' => t('Remove filter'),
-        '#access' => $clear_access
-    );
-    return $form;
+  $form['actions'] = array('#type' => 'actions');
+  $form['basic']['get'] = array(
+      '#type' => 'hidden',
+      '#default_value' => json_encode(array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1))),
+  );
+  $form['submit'] = array(
+      '#type' => 'submit',
+      '#submit' => array('facet_collection_search_block_form_submit'),
+      '#value' => t('Search')
+  );
+  if (arg(0) == 'collection') {
+    $clear_access = TRUE;
+  } else {
+    $clear_access = FALSE;
+  }
+  $form['clear'][] = array(
+      '#type' => 'submit',
+      '#submit' => array('facet_collection_search_block_form_remove_filter'),
+      '#value' => t('Remove filter'),
+      '#access' => $clear_access
+  );
+  return $form;
 }
 
 /**
  * Submit callback for search block form
  */
 function facet_collection_search_block_form_submit($form, &$form_state) {
-    $form_id = $form['form_id']['#value'];
-    if ($form_state['values'][$form_id] == '') {
-        form_set_error('keys', t('Please enter some keywords.'));
-    }
-    $info = search_get_default_module_info();
-    $search_query_string = arg(1);
-    $current_search_queries = array();
-    if (!empty($search_query_string)) {
-        $current_search_queries = explode(' AND ', $search_query_string);
+  $form_id = $form['form_id']['#value'];
+  if ($form_state['values'][$form_id] == '') {
+    form_set_error('keys', t('Please enter some keywords.'));
+  }
+  $info = search_get_default_module_info();
+  $search_query_string = arg(1);
+  $current_search_queries = array();
+  if (!empty($search_query_string)) {
+    $current_search_queries = explode(' AND ', $search_query_string);
 
-        //We should remove prev query
-        foreach ($current_search_queries as $key => $query) {
-            $query_parts = explode(':', $query);
-            if(count($query_parts) == 1){
-                unset($current_search_queries[$key]);
-            }
-        }
+    //We should remove prev query
+    foreach ($current_search_queries as $key => $query) {
+      //Also remove default query *:*
+      if ($query == '*:*') {
+        unset($current_search_queries[$key]);
+      }
+      $query_parts = explode(':', $query);
+      if (count($query_parts) == 1) {
+        unset($current_search_queries[$key]);
+      }
     }
-    $current_search_queries[] = trim($form_state['values'][$form_id]);
-    $search_query = implode(' AND ', $current_search_queries);
-    $get = json_decode($form_state['values']['get'], TRUE);
-    if (!empty($info) && $info['module'] == 'apachesolr_search') {
-        $form_state['redirect'] = array('collection/' . $search_query, array('query' => $get));
-    } else {
-        form_set_error(NULL, t('Search is currently disabled.'), 'error');
-    }
+  }
+  $current_search_queries[] = trim($form_state['values'][$form_id]);
+  $search_query_string = implode(' AND ', $current_search_queries);
+  $get = json_decode($form_state['values']['get'], TRUE);
+  if (!empty($search_query_string)) {
+    $redirect_path = 'collection/' . $search_query_string;
+  }
+  if (!empty($info) && $info['module'] == 'apachesolr_search') {
+    $form_state['redirect'] = array($redirect_path, array('query' => $get));
+  } else {
+    form_set_error(NULL, t('Search is currently disabled.'), 'error');
+  }
 }
 
 /**
  * Clear callback for search block form
  */
 function facet_collection_search_block_form_remove_filter($form, &$form_state) {
-    $info = search_get_default_module_info();
-    $get = json_decode($form_state['values']['get'], TRUE);
-    $search_query_string = arg(1);
-    $current_search_queries = array();
-    if (!empty($search_query_string)) {
-        $current_search_queries = explode(' AND ', $search_query_string);
-
-        //We should find and remove query
-        foreach ($current_search_queries as $key => $query) {
-            $query_parts = explode(':', $query);
-            if(count($query_parts) == 1){
-                unset($current_search_queries[$key]);
-            }
-        }
+  $info = search_get_default_module_info();
+  $get = json_decode($form_state['values']['get'], TRUE);
+  $search_query_string = arg(1);
+  $current_search_queries = array();
+  if (!empty($search_query_string)) {
+    $current_search_queries = explode(' AND ', $search_query_string);
+    //We should find and remove query
+    foreach ($current_search_queries as $key => $query) {
+      //Also remove default query *:*
+      if ($query == '*:*') {
+        unset($current_search_queries[$key]);
+      }
+      $query_parts = explode(':', $query);
+      if (count($query_parts) == 1) {
+        unset($current_search_queries[$key]);
+      }
     }
-    $search_query = implode(' AND ', $current_search_queries);
-    if(empty($search_query)){
-        $redirect_path = 'collection';
-    }else{
-        $redirect_path = 'collection/' . $search_query;
-    }
-    dpm($redirect_path);
-    if (!empty($info) && $info['module'] == 'apachesolr_search') {
-        $form_state['redirect'] = array($redirect_path, array('query' => $get));
-    } else {
-        form_set_error(NULL, t('Search is currently disabled.'), 'error');
-    }
+  }
+  $search_query_string = implode(' AND ', $current_search_queries);
+  if (empty($search_query_string)) {
+    $redirect_path = 'collection';
+  } else {
+    $redirect_path = 'collection/' . $search_query_string;
+  }
+  if (!empty($info) && $info['module'] == 'apachesolr_search') {
+    $form_state['redirect'] = array($redirect_path, array('query' => $get));
+  } else {
+    form_set_error(NULL, t('Search is currently disabled.'), 'error');
+  }
 }

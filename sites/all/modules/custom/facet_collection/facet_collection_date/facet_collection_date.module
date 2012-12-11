@@ -16,12 +16,14 @@ function facet_collection_date_facet_collection_field_facet_groups($field_info) 
     $facets = array();
     $field_name = $field_info['field_name'];
     $facet_name = 'collection_' . $field_name;
-    $label = 'Date';
     $index_field_name = 'dm_facet_collection_' . $field_name;
     $query_types = array('date');
     $default_widget = 'facetapi_date_range_widget';
     $min_callback = 'apachesolr_get_min_date';
     $max_callback = 'facet_collection_get_max_date';
+    $bundle = $field_info['bundles']['node'][0];
+    $instance = field_info_instance('node', $field_name, $bundle);
+    $label = $instance['label'];
 
     $facets[$facet_name] = array(
         'name' => $facet_name,
