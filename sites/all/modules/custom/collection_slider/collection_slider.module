@@ -86,7 +86,7 @@ function collection_slider_set_arrows_urls()
     unset($collection_get_options['collection']);
     unset($collection_get_options['q']);
 
-    if ($_GET['query'] != 'entity_type:node') {
+    if ($_GET['query'] != '*:*') {
         $back_to_collection_html = l('Back to Collection', 'collection/' . $_GET['query'], array('query' => $collection_get_options));
     } else {
         $back_to_collection_html = l('Back to Collection', 'collection', array('query' => $collection_get_options));

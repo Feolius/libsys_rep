@@ -3,6 +3,7 @@ description = Provides an HTML5-compatible with Flash-fallback audio player with
 package = Media
 core = 7.x
 dependencies[] = file
+dependencies[] = getid3
 configure = admin/config/media/jplayer_waveform
 
 files[] = jplayer_waveform.install
