@@ -456,6 +456,14 @@ function jplayer_waveform_node_update($node)
 
 
 /**
+ * Implement hook_file_delete().
+ */
+function jplayer_waveform_file_delete($file)
+{
+    dpm($file);
+}
+
+/**
  * Load the Waveform library.
  *
  * @return

@@ -314,26 +314,27 @@ class Waveform
         // how much detail we want. Larger number means less detail
         // (basically, how many bytes/frames to skip processing)
         // the lower the number means longer processing time
-        define("DETAIL", 2);
+        define("DETAIL", 1);
 
         // create original image width based on amount of detail
         $img = imagecreatetruecolor(sizeof($data) / DETAIL, $height);
         imagealphablending($img, false);
         imagesavealpha($img, true);
 
-        // fill background of image
-
-        $transparent = imagecolorallocatealpha($img, 0, 0, 0, 127);
-        //imagefilledrectangle($img, 0, 0, sizeof($data) / DETAIL, $height, $transparent);
-        imagefill($img, 1, 1, $transparent);
-
         // generate background color
         list($r, $g, $b) = self::html2rgb($color);
         $color = imagecolorallocate($img, $r, $g, $b);
+        $transparent = imagecolorallocatealpha($img, 0, 0, 0, 127);
 
+        if ($invert) {
+            imagefill($img, 1, 1, $color);
+        } else {
+            imagefill($img, 1, 1, $transparent);
+        }
+
+        $frames_in_pixel = round(sizeof($data) / $width);
         // loop through frames/bytes of wav data as genearted above
         for ($d = 0; $d < sizeof($data); $d += DETAIL) {
-
             // relative value based on height of image being generated
             // data values can range between 0 and 255
             $v = (int)($data[$d] / 255 * $height);
@@ -341,17 +342,15 @@ class Waveform
 
             // draw the line on the image using the $v value and centering it vertically on the canvas
             if ($invert) {
-                imageline($img, $x, 0, $x, ($height - $v), $color);
-                imageline($img, $x, $height - ($height - $v), $x, $height, $color);
+                imagefilledrectangle($img, $x, 0 + ($height - $v), $x + $frames_in_pixel, $height - ($height - $v), $transparent);
             } else {
-                imageline($img, $x, 0 + ($height - $v), $x, $height - ($height - $v), $color);
+                imagefilledrectangle($img, $x, 0 + ($height - $v), $x + $frames_in_pixel, $height - ($height - $v), $color);
             }
-
         }
 
-        // want it resized?
-        if ($width) {
+        //  want it resized?
 
+        if ($width) {
             // resample the image to the proportions defined in the form
             $rimg = imagecreatetruecolor($width, $height);
             imagealphablending($rimg, false);
@@ -359,11 +358,8 @@ class Waveform
 
             imagecopyresampled($rimg, $img, 0, 0, 0, 0, $width, $height, sizeof($data) / DETAIL, $height);
             return $rimg;
-
         } else {
-
             return $img;
-
         }
 
     }
