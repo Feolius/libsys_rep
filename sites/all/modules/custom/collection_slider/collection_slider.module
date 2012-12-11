@@ -79,9 +79,14 @@ function collection_slider_set_arrows_urls()
     drupal_add_js(array('collection_arrows' => array('next_node_html' => $next_node_html, 'previous_node_html' => $previous_node_html)), 'setting');
 
     //Build link at collection page
-    unset($options['query']['collection']);
-    unset($options['attributes']);
-    $back_to_collection_html = l('Back to Collection', 'collection', $options);
+    $collection_get_options = $_GET;
+    unset($collection_get_options['query']);
+    unset($collection_get_options['numFound']);
+    unset($collection_get_options['curr']);
+    unset($collection_get_options['collection']);
+    unset($collection_get_options['q']);
+
+    $back_to_collection_html = l('Back to Collection', 'collection/' . $_GET['query'], array('query'=>$collection_get_options));
 
     drupal_add_js(array('collection_arrows' => array('back_to_collection_html' => $back_to_collection_html)), 'setting');
 }
