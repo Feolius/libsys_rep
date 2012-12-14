@@ -119,8 +119,8 @@ function facet_collection_search_form_submit($form, &$form_state) {
     $redirect_path = $base_url . '/' . arg(0);
   }
   $form_state['redirect'] = array(
-        $redirect_path, $options, 302
-    );
+      $redirect_path, $options, 302
+  );
 }
 
 /**
@@ -173,7 +173,24 @@ function facet_collection_menu() {
       'page arguments' => array(),
       'access arguments' => array('search content'),
   );
+  //This paths are used for displaing collection teasers
+  $items['collection-teaser/node'] = array(
+      'type' => MENU_CALLBACK,
+      'page callback' => 'facet_collection_collection_teaser',
+      'access arguments' => array('access content'),
+  );
   return $items;
+}
+
+/**
+ * Page callback for returning collection teaser for the node
+ */
+function facet_collection_collection_teaser($nid){
+  $node = node_load($nid);
+  $node_teaser = node_view($node, 'collection_teaser');
+  $render = render($node_teaser);
+  print $render;
+  exit;
 }
 
 /**
@@ -559,8 +576,10 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
 
   $module_path = drupal_get_path('module', 'facet_collection');
   drupal_add_css($module_path . '/CSS/facet_collection_snippet.css');
+  drupal_add_js($module_path . '/js/collection-teaser.js');
   $text = '';
   $nid = $variables['doc']->entity_id;
+  $variables['nid'] = $nid;
   $node = node_load($nid);
   $instances = field_info_instances('node', $node->type);
   if (empty($snippets)) {
@@ -667,4 +686,15 @@ function theme_facet_collection_search_results($vars) {
       '#module' => 'facet_collection'
   );
   return $build;
+}
+
+/**
+ * Implements hook_entity_info_alter()
+ * We need it for adding additional node view mode 'collection teaser'
+ */
+function facet_collection_entity_info_alter(&$entity_info) {
+  $entity_info['node']['view modes']['collection_teaser'] = array(
+      'label' => t('Collection teaser'),
+      'custom settings' => TRUE,
+  );
 }
