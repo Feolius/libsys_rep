@@ -652,33 +652,41 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
           foreach ($query_parts as $query_part) {
             $query_part_arr = explode(':', $query_part);
             if (count($query_part_arr) == 1) {
-              $settings['search'] = $query_part_arr[0];
+              $main_query = $query_part_arr[0];
             }
           }
         }
+        //Add buttons that allow to jump by terms
         $buttons = array();
-        drupal_add_js(array('book_field' => $settings), 'setting');
-        if (!empty($settings['search'])) {
-          $search_string = $settings['search'];
-          $terms = explode(' ', $search_string);
-          if (count($terms) > 1) {
-            foreach ($terms as $term) {
-              $buttons[$term . '_button'] = array(
-                  '#type' => 'button',
-                  '#value' => $term,
-                  '#attributes' => array(
-                      'class' => array('flexpaper-highlight-button')
-                  )
-              );
+        if (!empty($main_query)) {
+          if (substr($main_query, 0, 1) == '"' && substr($main_query, -1) == '"') {
+            //We need only one button if user want to see the whole string
+            $main_query = substr($main_query, 1);
+            $main_query = substr($main_query, 0, -1);
+            $settings['search'] = $main_query;
+          } else {
+            //We should divide string and make button for each word
+            $terms = explode(' ', $main_query);
+            if (count($terms) > 1) {
+              foreach ($terms as $term) {
+                $buttons[$term . '_button'] = array(
+                    '#type' => 'button',
+                    '#value' => $term,
+                    '#attributes' => array(
+                        'class' => array('flexpaper-highlight-button')
+                    )
+                );
+              }
             }
           }
           $buttons['search_string_button'] = array(
               '#type' => 'button',
-              '#value' => $search_string,
+              '#value' => $main_query,
               '#attributes' => array(
                   'class' => array('flexpaper-highlight-button')
               )
           );
+          $settings['search'] = $main_query;
         }
         $element[$delta] = array(
             'flexpaper' => array(
@@ -696,6 +704,7 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
           $element[$delta]['flexpaper']['#file_thumb'] = $file_thumb;
         }
         $element[$delta] = array_merge($buttons, $element[$delta]);
+        drupal_add_js(array('book_field' => $settings), 'setting');
       } elseif ($item['fid'] != 0) {
         $file = file_load($item['fid']);
         if (module_exists('book_thumbnail') && $item['fid_thumb'] != 0) {
