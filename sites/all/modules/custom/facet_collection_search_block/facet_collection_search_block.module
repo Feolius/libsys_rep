@@ -49,9 +49,14 @@ function facet_collection_search_block_form($form, &$form_state) {
   );
 
   $form['actions'] = array('#type' => 'actions');
+  if (arg(0) == 'collection'){
+    $get_value = json_encode(array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1)));
+  }else{
+    $get_value = json_encode(array());
+  }
   $form['basic']['get'] = array(
       '#type' => 'hidden',
-      '#default_value' => json_encode(array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1))),
+      '#default_value' => $get_value,
   );
   $form['submit'] = array(
       '#type' => 'submit',

@@ -643,32 +643,59 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
             'paths' => array($swf_path),
             'FlexPaperViewerPath' => $FlexPaperViewerPath,
         );
-        drupal_add_js(array('book_field' => $settings), 'setting');
+
 
         //Determine if we need highlighting
         if (isset($_GET['query'])) {
           $query = $_GET['query'];
           $query_parts = explode(' AND ', $query);
-          foreach ($query_parts as $query_part){
+          foreach ($query_parts as $query_part) {
             $query_part_arr = explode(':', $query_part);
-            if (count($query_part_arr) == 1){
-              drupal_add_js(array('book_field' => array('search' => array($query_part_arr[0]))), 'setting');
+            if (count($query_part_arr) == 1) {
+              $settings['search'] = $query_part_arr[0];
             }
           }
         }
+        $buttons = array();
+        drupal_add_js(array('book_field' => $settings), 'setting');
+        if (!empty($settings['search'])) {
+          $search_string = $settings['search'];
+          $terms = explode(' ', $search_string);
+          if (count($terms) > 1) {
+            foreach ($terms as $term) {
+              $buttons[$term . '_button'] = array(
+                  '#type' => 'button',
+                  '#value' => $term,
+                  '#attributes' => array(
+                      'class' => array('flexpaper-highlight-button')
+                  )
+              );
+            }
+          }
+          $buttons['search_string_button'] = array(
+              '#type' => 'button',
+              '#value' => $search_string,
+              '#attributes' => array(
+                  'class' => array('flexpaper-highlight-button')
+              )
+          );
+        }
         $element[$delta] = array(
-            '#attached' => array(
-                'css' => array($module_path . '/book_field.css'),
-                'js' => array($module_path . '/flexpaper_flash.js', $module_path . '/book_field.js'),
-            ),
-            '#theme' => 'book_field_flexpaper_view',
-            '#file_swf' => $file_swf,
-            '#file' => $file,
+            'flexpaper' => array(
+                '#attached' => array(
+                    'css' => array($module_path . '/book_field.css'),
+                    'js' => array($module_path . '/flexpaper_flash.js', $module_path . '/book_field.js'),
+                ),
+                '#theme' => 'book_field_flexpaper_view',
+                '#file_swf' => $file_swf,
+                '#file' => $file,
+            )
         );
         if (module_exists('book_thumbnail') && $item['fid_thumb'] != 0) {
           $file_thumb = file_load($item['fid_thumb']);
-          $element[$delta]['#file_thumb'] = $file_thumb;
+          $element[$delta]['flexpaper']['#file_thumb'] = $file_thumb;
         }
+        $element[$delta] = array_merge($buttons, $element[$delta]);
       } elseif ($item['fid'] != 0) {
         $file = file_load($item['fid']);
         if (module_exists('book_thumbnail') && $item['fid_thumb'] != 0) {
