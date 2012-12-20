@@ -18,7 +18,7 @@
             </ul>
 
             <div class="jp-progress">
-                <canvas id="jp-waveform-canvas">
+                <canvas class="jp-waveform-canvas">
                     <img class="jp-waveform-image" src="<?php print $waveform_image;?>">
                 </canvas>
                 <div class="jp-seek-bar">

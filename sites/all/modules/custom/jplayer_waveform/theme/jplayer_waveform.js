@@ -22,8 +22,8 @@
             $.jPlayer.timeFormat.sepMin = Drupal.settings.jplayer_waveform.sepMin;
             $.jPlayer.timeFormat.sepSec = Drupal.settings.jplayer_waveform.sepSec;
 
-            // INITIALISE
 
+            // Initialise the player
             $('.jp-jplayer:not(.jp-jplayer-processed)', context).each(function () {
                 $(this).addClass('jp-jplayer-processed');
                 var wrapper = this.parentNode;
@@ -32,8 +32,6 @@
                 var playerSettings = Drupal.settings.jplayer_waveform.jplayerInstances[playerId];
                 var type = $(this).parent().attr('class');
                 player.playerType = $(this).parent().attr('class');
-                var waveform = $('div.jp-progress', $(player));
-                var loaded = $('div.jp-seek-bar', $(player));
 
                 // Initialise single player
                 $(player).jPlayer({
@@ -67,10 +65,19 @@
                     volume:playerSettings.volume,
                     muted:playerSettings.muted
                 });
+            });
+            //Initialize interface
+            $('.jp-interface', context).each(function () {
+                var progress_bar = $(this).find('.jp-progress');
+                var seek_bar = $(this).find('.jp-seek-bar');
+                var interfaceID = $(this).attr('id');
+                //Delete the '_interface' from interfaceID to get the player id
+                var playerID = interfaceID.split('_')[0];
+
                 /**
                  * Disable drag-drop
                  */
-                waveform.mousedown(function (e) {
+                progress_bar.mousedown(function (e) {
                     e.stopPropagation();
                     e.preventDefault();
                     return false;
@@ -79,14 +86,14 @@
                 /**
                  * Progress
                  */
-                waveform.mouseup(function (e) {
+                progress_bar.mouseup(function (e) {
 
                     e.stopPropagation();
                     e.preventDefault();
 
-
-                    var coords = waveform.offset();
-                    var percent = (e.pageX - coords.left) * 100 / loaded.width();
+                    var coords = progress_bar.offset();
+                    var percent = (e.pageX - coords.left) * 100 / seek_bar.width();
+                    var player = $('[id=' + playerID + ']');
                     if (percent < 0) percent = 0;
                     if (percent > 100) percent = 100;
 
@@ -96,48 +103,49 @@
                     return false;
 
                 });
-
-//                function drawWaveform(playerID) {
-//                    if(widht == null){
-//                        width =  $('#jp-progress').width();
-//                    }
-//                    if(height == null){
-//                        height =  $('#jp-progress').height();
-//                    }
-//
-//                    var canvas = document.getElementById('jp-waveform-canvas');
-//                    var context = canvas.getContext('2d');
-//                    var data = Drupal.settings.canvas_test.waveform_data;
-//                    var frame_per_pixel = (data.length / width);
-//                    var v = 0.0, d = 0;
-//                    context.fillStyle = "rgba(0, 100, 0, 1)";
-//                    context.fillRect(0, 0, width, height);
-//                    for (d = 0; d < width; d++) {
-//                        v = (Array.max(data.slice(d * frame_per_pixel, (d + 1) * frame_per_pixel)) / 255.0 * height);
-//                        context.clearRect(d, height - v, 1, 2 * v - height);
-//                    }
-//                }
-//
-//                Array.max = function (array) {
-//                    return Math.max.apply(Math, array);
-//                };
-
+                //Draw the waveform using canvas
+                drawCanvasWaveform(playerID);
             });
-
-//            //Draw the waveform using canvas
-//            drawWabeform();
-//
-//            $(window).resize(function () {
-//                var width = $(window).width() * 0.8;
-//                var height = $(window).height() * 0.2;
-//                $('canvas').width(width);
-//                $('canvas').height(height);
-//                draw(width, height);
-//            });
-
-
         }
+    };
 
+    $(window).resize(function () {
+        $('.jp-jplayer').each(function () {
+            var playerID = $(this).attr('id');
+            drawCanvasWaveform(playerID);
+        });
+    });
+
+    function drawCanvasWaveform(playerID) {
+        //Get the progress bar in the interface part of jplayer_waveform DOM object
+        var interface = $('[id=' + playerID + '_interface]');
+        var progress_bar = $(interface).find('.jp-progress');
+        var width = $(progress_bar).width();
+        var height = $(progress_bar).height();
+
+        //Get the canvas DOM object from interface of jplayer_waveform
+        var canvas = $(interface).find('.jp-waveform-canvas').get(0);
+        var context = canvas.getContext('2d');
+
+        //Get data from player settings for drawing canvas waveform
+        var playerSettings = Drupal.settings.jplayer_waveform.jplayerInstances[playerID];
+        var waveformData = playerSettings.waveformData;
+        var framePerPixel = (waveformData.length / width);
+        var frameSize = 0.0, x = 0;
+
+        //Set the backgroud color
+        context.fillStyle = playerSettings.backgroundColor;
+        context.fillRect(0, 0, width, height);
+
+        //Draw the waveform using canvas
+        for (x = 0; x < width; x++) {
+            frameSize = (Array.max(waveformData.slice(x * framePerPixel, (x + 1) * framePerPixel)) / 255.0 * height);
+            context.clearRect(x, height - frameSize, 1, 2 * frameSize - height);
+        }
+    }
+
+    Array.max = function (array) {
+        return Math.max.apply(Math, array);
     };
 
 })(jQuery);

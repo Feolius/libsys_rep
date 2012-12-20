@@ -50,15 +50,13 @@ function template_preprocess_jplayer_waveform(&$vars)
                 'repeat' => $vars['settings']['repeat'],
                 'backgroundColor' => $vars['settings']['backgroundColor'],
                 'continuous' => $vars['settings']['continuous'],
-                'waveform_data' => $waveform_data,
+                'waveformData' => $waveform_data,
             ),
         ),
     );
     drupal_add_js(array('jplayer_waveform' => $player), 'setting');
 
-
     $vars['dynamic'] = jplayer_waveform_add_core_js();
-
 }
 
 
