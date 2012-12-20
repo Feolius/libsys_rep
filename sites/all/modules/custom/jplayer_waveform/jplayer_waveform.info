@@ -8,6 +8,7 @@ configure = admin/config/media/jplayer_waveform
 
 files[] = jplayer_waveform.install
 files[] = jplayer_waveform.module
+files[] = jplayer_waveform.lib.php
 files[] = includes/jplayer_waveform.admin.inc
 files[] = includes/jplayer_waveform.theme.inc
 files[] = includes/jplayer_waveform.views.inc

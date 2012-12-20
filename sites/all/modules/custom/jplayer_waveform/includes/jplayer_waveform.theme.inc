@@ -14,15 +14,28 @@ function template_preprocess_jplayer_waveform(&$vars)
     $vars['player_id'] = _jplayer_waveform_check_id('jplayer-' . $vars['entity_type'] . '-' . $ids[0] . '-' . str_replace('_', '-', $vars['field_name']));
 
     // Get the field info so we can figure out what type it is.
-    $field_info = field_info_field($vars['field_name']);
-    $player = jplayer_waveform_prepair_audio($vars['items']);
+    $player = jplayer_waveform_prepare_audio($vars['items']);
     $vars['type'] = 'audio';
-    foreach ($player['file'] as $file_path) {
-        $vars['waveform_image'] = file_create_url("public://jplayer_waveform_images/" . urldecode(drupal_basename($file_path)) . '.png');
-        break;
+
+    //Get waveform data from database
+    $result = db_select('jplayer_waveform_audio_data', 'jplayer_db')
+        ->fields('jplayer_db', array('data'))
+        ->condition('fid', $player['fid'])
+        ->execute();
+    $result = $result->fetchAll();
+
+    if (empty($result)) {
+        $waveform_data = jplayer_waveform_generate_waveform_data($player['fid']);
+    } else {
+        $waveform_data = unserialize($result[0]->data);
+    }
+    $public_folder_path = file_stream_wrapper_get_instance_by_uri('public://')->realpath();
+    if (!file_exists($public_folder_path . '/jplayer_waveform_images/' . $player['fid'] . '.png') && $waveform_data != FALSE) {
+        jplayer_waveform_create_waveform_image($waveform_data, $player['fid'], $vars['settings']['backgroundColor']);
     }
 
-    $vars['media_info'] = $player['file_meta_info'];
+    $vars['waveform_image'] = file_create_url("public://jplayer_waveform_images/" . $player['fid'] . '.png');
+    $vars['media_info'] = $player['$file_id3_info'];
     // Add player settings
     $player = array(
         'jplayerInstances' => array(
@@ -37,14 +50,17 @@ function template_preprocess_jplayer_waveform(&$vars)
                 'repeat' => $vars['settings']['repeat'],
                 'backgroundColor' => $vars['settings']['backgroundColor'],
                 'continuous' => $vars['settings']['continuous'],
+                'waveform_data' => $waveform_data,
             ),
         ),
     );
-    drupal_add_js($player, 'setting');
+    drupal_add_js(array('jplayer_waveform' => $player), 'setting');
+
 
     $vars['dynamic'] = jplayer_waveform_add_core_js();
 
 }
+
 
 /**
  * Prepair the audio files from node ready for jPlayer.
@@ -54,13 +70,14 @@ function template_preprocess_jplayer_waveform(&$vars)
  * @return
  *   a settings array of data being passed to jPlayer instance
  */
-function jplayer_waveform_prepair_audio($raw_file = array())
+function jplayer_waveform_prepare_audio($raw_file = array())
 {
     $audio_extensions = array('mp3', 'm4a', 'oga', 'webma', 'wav');
 
     $file = array();
-    $file_meta_info = array();
+    $file_id3_info = array();
     $extensions = array();
+    $fid = 0;
 
 
     // Look through all the files provided and see what we have
@@ -69,6 +86,8 @@ function jplayer_waveform_prepair_audio($raw_file = array())
         if (!isset($item['url'])) {
             $item['url'] = file_create_url($item['uri']);
         }
+
+        $fid = $item['fid'];
 
         // Get file extension
         if (!isset($item['ext'])) {
@@ -99,14 +118,14 @@ function jplayer_waveform_prepair_audio($raw_file = array())
                     break;
                 }
                 if (!empty($id3_data)) {
-                    $file_meta_info = implode(' - ', $id3_data);
+                    $file_id3_info = implode(' - ', $id3_data);
                 }
             }
             $file[$item['ext']] = $item['url'];
             $extensions[] = $item['ext'];
         }
     }
-    return array('file' => $file, 'file_meta_info' => $file_meta_info, 'extensions' => implode(',', $extensions));
+    return array('fid' => $fid, 'file' => $file, '$file_id3_info' => $file_id3_info, 'extensions' => implode(',', $extensions));
 }
 
 /**

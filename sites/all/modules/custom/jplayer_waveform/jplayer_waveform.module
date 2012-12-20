@@ -245,7 +245,7 @@ function jplayer_waveform_field_formatter_settings_summary($field, $instance, $v
  */
 function jplayer_waveform_library()
 {
-    $path = variable_get('jplayer_directory', 'sites/all/libraries/jplayer');
+    $path = variable_get('jplayer_waveform_directory', 'sites/all/libraries/jplayer');
     $libraries = array();
     $libraries['jplayer'] = array(
         'title' => 'jPlayer',
@@ -274,7 +274,7 @@ function jplayer_waveform_get_version($directory = NULL)
     $version = 0;
 
     if (!isset($directory)) {
-        $directory = variable_get('jplayer_directory', 'sites/all/libraries/jplayer');
+        $directory = variable_get('jplayer_waveform_directory', 'sites/all/libraries/jplayer');
     }
 
     if (file_exists($directory . '/jquery.jplayer.min.js')) {
@@ -317,20 +317,20 @@ function jplayer_waveform_add_core_js()
 
     // Add global settings
     $settings = array(
-        'jPlayer' => array(
-            'swfPath' => base_path() . variable_get('jplayer_directory', 'sites/all/libraries/jplayer'),
-            'showHour' => (boolean)variable_get('jplayer_showHour', FALSE),
-            'showMin' => (boolean)variable_get('jplayer_showMin', TRUE),
-            'showSec' => (boolean)variable_get('jplayer_showSec', TRUE),
-            'padHour' => (boolean)variable_get('jplayer_padHour', FALSE),
-            'padMin' => (boolean)variable_get('jplayer_padMin', TRUE),
-            'padSec' => (boolean)variable_get('jplayer_padSec', TRUE),
-            'sepHour' => variable_get('jplayer_sepHour', ':'),
-            'sepMin' => variable_get('jplayer_sepMin', ':'),
-            'sepSec' => variable_get('jplayer_sepSec', ''),
+        'jplayer_waveform' => array(
+            'swfPath' => base_path() . variable_get('jplayer_waveform_directory', 'sites/all/libraries/jplayer'),
+            'showHour' => (boolean)variable_get('jplayer_waveform_showHour', FALSE),
+            'showMin' => (boolean)variable_get('jplayer_waveform_showMin', TRUE),
+            'showSec' => (boolean)variable_get('jplayer_waveform_showSec', TRUE),
+            'padHour' => (boolean)variable_get('jplayer_waveform_padHour', FALSE),
+            'padMin' => (boolean)variable_get('jplayer_waveform_padMin', TRUE),
+            'padSec' => (boolean)variable_get('jplayer_waveform_padSec', TRUE),
+            'sepHour' => variable_get('jplayer_waveform_sepHour', ':'),
+            'sepMin' => variable_get('jplayer_waveform_sepMin', ':'),
+            'sepSec' => variable_get('jplayer_waveform_sepSec', ''),
         ),
     );
-    drupal_add_js($settings, array('type' => 'setting'));
+    drupal_add_js($settings, 'setting');
 
     $return = array(
         '#attached' => array(
@@ -375,24 +375,27 @@ function jplayer_waveform_field_update_instance($instance, $prior_instance)
     if ($field['type'] == 'file') {
         foreach ($instance['display'] as $display_name => $display) {
             if ($display['type'] == 'jplayer_waveform_player'
-                && (!isset($prior_instance['display'][$display_name])
-                    || $prior_instance['display'][$display_name]['type'] != 'jplayer_waveform_player')
+                && (!isset($prior_instance['display'][$display_name]) || $prior_instance['display'][$display_name]['settings']['backgroundColor'] != $display['settings']['backgroundColor'])
+//                && (!isset($prior_instance['display'][$display_name])
+//                    || $prior_instance['display'][$display_name]['type'] != 'jplayer_waveform_player')
             ) {
-                $nodes = node_load_multiple(array(), array('type' => $instance['bundle']));
-                foreach ($nodes as $node) {
-                    $items = field_get_items('node', $node, $instance['field_name']);
-                    if (!empty($items)) {
-                        foreach ($items as $item) {
-                            if ($item['filemime'] == 'audio/mpeg') {
-                                $public_folder_path = file_stream_wrapper_get_instance_by_uri('public://')->realpath();
-                                if (!file_exists($public_folder_path . '/jplayer_waveform_images/' . drupal_basename($item['uri']) . '.png')) {
-                                    jplayer_waveform_create_waveform_image($item['uri']);
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
+                //TODO write a code
+                dpm($instance);
+//                $nodes = node_load_multiple(array(), array('type' => $instance['bundle']));
+//                foreach ($nodes as $node) {
+//                    $items = field_get_items('node', $node, $instance['field_name']);
+//                    if (!empty($items)) {
+//                        foreach ($items as $item) {
+//                            if ($item['filemime'] == 'audio/mpeg') {
+//                                $public_folder_path = file_stream_wrapper_get_instance_by_uri('public://')->realpath();
+//                                if (!file_exists($public_folder_path . '/jplayer_waveform_images/' . drupal_basename($item['uri']) . '.png')) {
+//                                    jplayer_waveform_generate_waveform_data($item['fid']);
+//                                }
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
             }
         }
     }
@@ -414,7 +417,7 @@ function jplayer_waveform_node_insert($node)
                         foreach ($items as $item) {
                             $file = file_load($item['fid']);
                             if ($file->filemime == 'audio/mpeg') {
-                                jplayer_waveform_create_waveform_image($file->uri);
+                                jplayer_waveform_generate_waveform_data($file->fid);
                                 break;
                             }
                         }
@@ -442,7 +445,7 @@ function jplayer_waveform_node_update($node)
                         foreach ($items as $item) {
                             $file = file_load($item['fid']);
                             if ($file->filemime == 'audio/mpeg') {
-                                jplayer_waveform_create_waveform_image($file->uri);
+                                jplayer_waveform_generate_waveform_data($file->fid);
                                 break;
                             }
                         }
@@ -460,26 +463,14 @@ function jplayer_waveform_node_update($node)
  */
 function jplayer_waveform_file_delete($file)
 {
-    dpm($file);
-}
-
-/**
- * Load the Waveform library.
- *
- * @return
- *   Boolean indicating if the library was successfully loaded.
- */
-function jplayer_waveform_load($display_warning = TRUE)
-{
-    $waveform_lib_path = 'sites/all/libraries/waveform';
-
-    if (file_exists($waveform_lib_path . '/waveform.php')) {
-        include_once($waveform_lib_path . '/waveform.php');
-        return TRUE;
-    } else {
-        drupal_set_message(t("The jplayer_waveform module cannot find the Waveform library used to creating waveform picture from audio files. The library should stored at path sites/all/libraries/waveform/waveform.php "), 'error', FALSE);
-        return FALSE;
+    $public_folder_path = file_stream_wrapper_get_instance_by_uri('public://')->realpath();
+    if (file_exists($public_folder_path . '/jplayer_waveform_images/' . $file->fid . '.png')) {
+        file_unmanaged_delete($public_folder_path . '/jplayer_waveform_images/' . $file->fid . '.png');
     }
+    db_delete('jplayer_waveform_audio_data')
+        ->condition('fid', $file->fid)
+        ->execute();
+
 }
 
 /**
@@ -490,23 +481,48 @@ function jplayer_waveform_load($display_warning = TRUE)
  * @return
  *   TRUE if creation an saving was normally happend, and FALSE if something goes wrong.
  */
-function jplayer_waveform_create_waveform_image($audio_file_uri)
+function jplayer_waveform_create_waveform_image($waveform_data, $audio_file_fid, $background_color)
 {
-    if (jplayer_waveform_load()) {
-        $file_path = drupal_realpath($audio_file_uri);
-        $file_name = drupal_basename($audio_file_uri);
-        $img = Waveform::create($file_path, 400, 50, '#FFFFFF', true);
+    $img = Waveform::createImage($waveform_data, 400, 50, $background_color);
+    if ($img != FALSE) {
+
         $public_folder_path = file_stream_wrapper_get_instance_by_uri('public://')->realpath();
+
         if (!file_exists($public_folder_path . '/jplayer_waveform_images')) {
             mkdir($public_folder_path . '/jplayer_waveform_images', 0774);
         }
-        if (file_exists($public_folder_path . '/jplayer_waveform_images/' . $file_name . '.png')) {
-            file_unmanaged_delete($public_folder_path . '/jplayer_waveform_images/' . $file_name . '.png');
+
+        if (file_exists($public_folder_path . '/jplayer_waveform_images/' . $audio_file_fid . '.png')) {
+            file_unmanaged_delete($public_folder_path . '/jplayer_waveform_images/' . $audio_file_fid . '.png');
         }
-        $result = imagepng($img, $public_folder_path . '/jplayer_waveform_images/' . $file_name . '.png');
+
+        $result = imagepng($img, $public_folder_path . '/jplayer_waveform_images/' . $audio_file_fid . '.png');
         imagedestroy($img);
         return $result;
+
+    } else {
+        drupal_set_message(t("The jplayer_waveform module cannot generate the waveform image from waveform data. The site administrator will need to verify the public directory permissions and image creation php functions"), 'error', FALSE);
+        return FALSE;
     }
-    return FALSE;
 }
+
+function jplayer_waveform_generate_waveform_data($audio_file_fid)
+{
+    $file = file_load($audio_file_fid);
+    $file_path = drupal_realpath($file->uri);
+
+    $waveform_data = Waveform::generateWaveformData($file_path);
+    if ($waveform_data != FALSE) {
+        $record = array(
+            'fid' => $audio_file_fid,
+            'data' => serialize($waveform_data),
+        );
+        drupal_write_record('jplayer_waveform_audio_data', $record);
+        return $waveform_data;
+    } else {
+        drupal_set_message(t("The jplayer_waveform module cannot generate the waveform data from audio file. The site administrator will need to verify the audio file permissions"), 'error', FALSE);
+        return FALSE;
+    }
+}
+
 
