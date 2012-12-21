@@ -66,7 +66,6 @@ function jplayer_waveform_field_formatter_info()
                 'volume' => 80,
                 'muted' => FALSE,
                 'repeat' => 'none',
-                'backgroundColor' => '000000',
             ),
         ),
     );
@@ -192,15 +191,6 @@ function jplayer_waveform_field_formatter_settings_form($field, $instance, $view
             ),
             '#description' => t("For playlist players, it is suggested to enable Continuous play if setting Repeat to 'All'."),
             '#default_value' => $settings['repeat'],
-        );
-
-        $form['backgroundColor'] = array(
-            '#title' => t('Background color'),
-            '#type' => 'textfield',
-            '#field_preffix' => '#',
-            '#maxlength' => 6,
-            '#size' => 6,
-            '#default_value' => $settings['backgroundColor'],
         );
     }
 
@@ -339,7 +329,8 @@ function jplayer_waveform_add_core_js()
             ),
             'js' => array(
                 drupal_get_path('module', 'jplayer_waveform') . '/theme/jplayer_waveform.js' => array('type' => 'file', 'scope' => 'footer', 'group' => JS_DEFAULT),
-                drupal_get_path('module', 'jplayer_waveform') . '/theme/excanvas.compiled.js' => array('type' => 'file', 'scope' => 'footer', 'group' => JS_DEFAULT),
+                //Someway that library doesn't help to displaying the canvas on IE8
+                //drupal_get_path('module', 'jplayer_waveform') . '/theme/excanvas.compiled.js' => array('type' => 'file', 'scope' => 'footer', 'group' => JS_DEFAULT),
             ),
             'css' => array(
                 drupal_get_path('module', 'jplayer_waveform') . '/theme/jplayer_waveform.css' => array('type' => 'file', 'group' => CSS_DEFAULT),
@@ -365,41 +356,6 @@ function jplayer_waveform_views_api()
         'path' => drupal_get_path('module', 'jplayer_waveform') . '/includes',
         'api' => 3.0,
     );
-}
-
-/**
- * Implement hook_field_update_instance().
- */
-function jplayer_waveform_field_update_instance($instance, $prior_instance)
-{
-    $field = field_info_field($prior_instance['field_name']);
-    if ($field['type'] == 'file') {
-        foreach ($instance['display'] as $display_name => $display) {
-            if ($display['type'] == 'jplayer_waveform_player'
-                && (!isset($prior_instance['display'][$display_name]) || $prior_instance['display'][$display_name]['settings']['backgroundColor'] != $display['settings']['backgroundColor'])
-//                && (!isset($prior_instance['display'][$display_name])
-//                    || $prior_instance['display'][$display_name]['type'] != 'jplayer_waveform_player')
-            ) {
-                //TODO write a code
-                dpm($instance);
-//                $nodes = node_load_multiple(array(), array('type' => $instance['bundle']));
-//                foreach ($nodes as $node) {
-//                    $items = field_get_items('node', $node, $instance['field_name']);
-//                    if (!empty($items)) {
-//                        foreach ($items as $item) {
-//                            if ($item['filemime'] == 'audio/mpeg') {
-//                                $public_folder_path = file_stream_wrapper_get_instance_by_uri('public://')->realpath();
-//                                if (!file_exists($public_folder_path . '/jplayer_waveform_images/' . drupal_basename($item['uri']) . '.png')) {
-//                                    jplayer_waveform_generate_waveform_data($item['fid']);
-//                                }
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
-            }
-        }
-    }
 }
 
 /**
@@ -503,7 +459,7 @@ function jplayer_waveform_create_waveform_image($waveform_data, $audio_file_fid,
         return $result;
 
     } else {
-        drupal_set_message(t("The jplayer_waveform module cannot generate the waveform image from waveform data. The site administrator will need to verify the public directory permissions and image creation php functions."), 'error', FALSE);
+        watchdog('jplayer_waveform', t("The jplayer_waveform module cannot generate the waveform image from waveform data. The site administrator will need to verify the public directory permissions and image creation php functions."), array(), WATCHDOG_ERROR);
         return FALSE;
     }
 }
@@ -522,7 +478,7 @@ function jplayer_waveform_generate_waveform_data($audio_file_fid)
         drupal_write_record('jplayer_waveform_audio_data', $record);
         return $waveform_data;
     } else {
-        drupal_set_message(t("The jplayer_waveform module cannot generate the waveform data from audio file. The site administrator will need to verify the audio file permissions or temp directory settings."), 'error', FALSE);
+        watchdog('jplayer_waveform', t("The jplayer_waveform module cannot generate the waveform data from audio file. The site administrator will need to verify the audio file permissions or temp directory settings."), array(), WATCHDOG_ERROR);
         return FALSE;
     }
 }

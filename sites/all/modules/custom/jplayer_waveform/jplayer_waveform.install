@@ -9,6 +9,10 @@
  */
 function jplayer_waveform_schema()
 {
+    //Initialize the schema for storing the wavefrom data form audio files
+    //The schema contains fields:
+    // fid - uploaded audio file id
+    // data - serialized array of amplitudes generated from audio file
     $schema['jplayer_waveform_audio_data'] = array(
         'description' => 'The table for storing data from audio files.',
         'fields' => array(

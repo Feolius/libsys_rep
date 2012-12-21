@@ -103,7 +103,7 @@
                     return false;
 
                 });
-                //Draw the waveform using canvas
+                //Draw the waveform using canvas at first time
                 drawCanvasWaveform(playerID);
             });
         }
@@ -122,10 +122,16 @@
         var progress_bar = $(interface).find('.jp-progress');
         var width = $(progress_bar).width();
         var height = $(progress_bar).height();
-
         //Get the canvas DOM object from interface of jplayer_waveform
-        var canvas = $(interface).find('.jp-waveform-canvas').get(0);
-        var context = canvas.getContext('2d');
+        var canvas = $(interface).find('.jp-waveform-canvas');
+        //Set canvas object width and heght attibutes for correct working
+        canvas.attr('width', width);
+        canvas.attr('height', height);
+
+        //Get the canvas element for creating context
+        var canvasElement = $(canvas).get(0);
+        var context = canvasElement.getContext('2d');
+
 
         //Get data from player settings for drawing canvas waveform
         var playerSettings = Drupal.settings.jplayer_waveform.jplayerInstances[playerID];
@@ -140,7 +146,7 @@
         //Draw the waveform using canvas
         for (x = 0; x < width; x++) {
             frameSize = (Array.max(waveformData.slice(x * framePerPixel, (x + 1) * framePerPixel)) / 255.0 * height);
-            context.clearRect(x, height - frameSize, 1, 2 * frameSize - height);
+            context.clearRect(x, height - frameSize, 1, 2.0 * frameSize - height);
         }
     }
 

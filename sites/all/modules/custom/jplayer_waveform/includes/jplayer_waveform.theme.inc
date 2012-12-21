@@ -31,7 +31,7 @@ function template_preprocess_jplayer_waveform(&$vars)
     }
     $public_folder_path = file_stream_wrapper_get_instance_by_uri('public://')->realpath();
     if (!file_exists($public_folder_path . '/jplayer_waveform_images/' . $player['fid'] . '.png') && $waveform_data != FALSE) {
-        jplayer_waveform_create_waveform_image($waveform_data, $player['fid'], $vars['settings']['backgroundColor']);
+        jplayer_waveform_create_waveform_image($waveform_data, $player['fid'], '#EEEEEE');
     }
 
     $vars['waveform_image'] = file_create_url("public://jplayer_waveform_images/" . $player['fid'] . '.png');
@@ -48,7 +48,7 @@ function template_preprocess_jplayer_waveform(&$vars)
                 'muted' => (boolean)$vars['settings']['muted'],
                 'autoplay' => (boolean)$vars['settings']['autoplay'],
                 'repeat' => $vars['settings']['repeat'],
-                'backgroundColor' => $vars['settings']['backgroundColor'],
+                'backgroundColor' => '#EEEEEE',
                 'continuous' => $vars['settings']['continuous'],
                 'waveformData' => $waveform_data,
             ),

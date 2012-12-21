@@ -212,9 +212,8 @@ class Waveform
         ini_set("max_execution_time", "30000");
 
         // temporary file name
-        $temp_directory_path = file_directory_temp();
+        $temp_directory_path = sys_get_temp_dir();
         $temp_file_name = $temp_directory_path . "/" . substr(md5(time()), 0, 10);
-       // $temp_file_name = $temp_directory_path . "\\" . substr(md5(time()), 0, 10);
         // copy from temp upload directory to current
         copy($file, "{$temp_file_name}_o.mp3");
 
@@ -227,8 +226,6 @@ class Waveform
          */
 
         exec("/usr/local/bin/lame {$temp_file_name}_o.mp3 -f -m m -b 16 --resample 8 {$temp_file_name}.mp3 && /usr/local/bin/lame --decode {$temp_file_name}.mp3 {$temp_file_name}.wav", $output, $return);
-       //exec('C:\lame\lame.exe "' . $temp_file_name . '_o.mp3" -f -m m -b 16 --resample 8 "' . $temp_file_name . '.mp3"', $output, $return);
-       // exec('C:\lame\lame.exe --decode "' . $temp_file_name . '.mp3" "' . $temp_file_name . '.wav"', $output, $return);
         // delete temporary files
         unlink("{$temp_file_name}_o.mp3");
         unlink("{$temp_file_name}.mp3");
@@ -313,7 +310,7 @@ class Waveform
      * @param $data
      * @return resource
      */
-    public static function createImage($data, $width = 400, $height = 50, $backgroud_color = '#ffffff')
+    public static function createImage($data, $width = 400, $height = 50, $backgroud_color = '#eeeeee')
     {
         /**
          * Image generation
