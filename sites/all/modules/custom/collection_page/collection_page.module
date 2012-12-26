@@ -10,44 +10,50 @@
 /**
  * Implements hook_menu().
  */
-function collection_page_menu()
-{
-    $items = array();
-    $items['timeline-json'] = array(
-        'access callback' => TRUE,
-        'page callback' => 'collection_page_timeline_json_callback',
-        'type' => MENU_CALLBACK,
-    );
-    $items['timeline-iframe'] = array(
-        'access callback' => TRUE,
-        'page callback' => 'collection_page_timeline_frame_callback',
-        'type' => MENU_CALLBACK,
-    );
-    return $items;
+function collection_page_menu() {
+  $items = array();
+  $items['timeline-json'] = array(
+      'access callback' => TRUE,
+      'page callback' => 'collection_page_timeline_json_callback',
+      'type' => MENU_CALLBACK,
+  );
+  $items['timeline-iframe'] = array(
+      'access callback' => TRUE,
+      'page callback' => 'collection_page_timeline_frame_callback',
+      'type' => MENU_CALLBACK,
+  );
+  return $items;
 }
 
 /**
  * Implements hook_theme().
  */
-function collection_page_theme()
-{
-    return array(
-        'facet_collection_search_results__alter' => array(
-            'variables' => array('results' => NULL),
-        ),
-        'collection_page' => array(
-            'template' => 'theme/collection-page',
-        ),
-        'timeline_json' => array(
-            'template' => 'theme/timeline-json-page',
-            'arguments' => array(
-                'options' => null,
-            ),
-        ),
-        'timeline_iframe' => array(
-            'template' => 'theme/timeline-iframe-page',
-        )
-    );
+function collection_page_theme() {
+  return array(
+      'facet_collection_search_results__alter' => array(
+          'variables' => array('results' => NULL),
+      ),
+      'collection_page' => array(
+          'template' => 'theme/collection-page',
+      ),
+      'timeline_json' => array(
+          'template' => 'theme/timeline-json-page',
+          'arguments' => array(
+              'options' => null,
+          ),
+      ),
+      'timeline_iframe' => array(
+          'template' => 'theme/timeline-iframe-page',
+      ),
+      'collection_standart_view' => array(
+          'template' => 'theme/collection-standart-view',
+          'variables' => array('content' => NULL, 'default_url' => NULL, 'thumbnail_url' => NULL)
+      ),
+      'collection_standart_thumbnail_view' => array(
+          'template' => 'theme/collection-standart-thumbnail-view',
+          'variables' => array('results' => NULL)
+      )
+  );
 }
 
 /**
@@ -56,238 +62,243 @@ function collection_page_theme()
  * @param $variables
  * @return string
  */
-function theme_facet_collection_search_results__alter($variables)
-{
-    //Put apache_solr request results into SESSION for process those in timeline data callback
-    $_SESSION['collection_page_apache_solr_results'] = $variables['results'];
-    $results = $variables['results'];
-    //Include on page supports files for building tabs and inserting into them needed views
-    //like timeline, default or location views
-    drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_style.css');
-    drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_tabs.js');
-    drupal_add_library('system', 'ui.tabs');
+function theme_facet_collection_search_results__alter($variables) {
+  //Put apache_solr request results into SESSION for process those in timeline data callback
+  $_SESSION['collection_page_apache_solr_results'] = $variables['results'];
+  $results = $variables['results'];
+  //Include on page supports files for building tabs and inserting into them needed views
+  //like timeline, default or location views
+  drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_style.css');
+  drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_tabs.js');
+  drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_thumbnails.js');
+  drupal_add_library('system', 'ui.tabs');
 
-    //Define for what bundle current apache_solr request was executed
-    $bundle = '';
-    if (isset($_GET['f'])) {
-        foreach ($_GET['f'] as $filter) {
-            $exploded_filter = explode(':', $filter);
-            if ($exploded_filter[0] == 'bundle') {
-                $bundle = $exploded_filter[1];
-            }
+  //Define for what bundle current apache_solr request was executed
+  $bundle = '';
+  if (isset($_GET['f'])) {
+    foreach ($_GET['f'] as $filter) {
+      $exploded_filter = explode(':', $filter);
+      if ($exploded_filter[0] == 'bundle') {
+        $bundle = $exploded_filter[1];
+      }
+    }
+  }
+  if (isset($_GET['view']) && $_GET['view'] == 'thumb') {
+    $rendered_results = theme('collection_standart_thumbnail_view', array('results' => $results));
+  } else {
+    $rendered_results = theme('search_results', array('#theme' => 'search_results', '#results' => $results, '#module' => 'collection_page'));
+  }
+  $options = array(
+      'query' => array_diff_key($_GET, array('q' => 1, 'view' => 1)),
+  );
+  $default_url = url(arg(0), $options);
+  $options['query']['view'] = 'thumb';
+  $thumbnail_url = url(arg(0), $options);
+  $standart_view_content = array(
+      '#id' => 'standart-view',
+      '#title' => t('Standart View'),
+      '#content' => array(
+          //theme('search_results', array('#theme' => 'search_results', '#results' => $results, '#module' => 'collection_page')),
+          '#view' => theme('collection_standart_view', array('content' => $rendered_results, 'default_url' => $default_url, 'thumbnail_url' => $thumbnail_url)),
+      ),
+  );
+  $timeline_view_content = array(
+      '#id' => 'timeline-view',
+      '#title' => t('Timeline View'),
+      '#content' => array(
+          '#view' => theme('timeline_iframe'),
+          '#pager' => theme('pager', array('tags' => NULL)),
+      ),
+  );
+
+  $node_ids = '';
+  foreach ($results as $result) {
+    $node = node_load($result['node']->entity_id);
+    if ($node->type == 'files') {
+      //Collect NIDs of referenced location nodes for bunlde Files
+      $instances = field_info_instances('node', $node->type);
+      foreach ($instances as $field_name => $instance) {
+        $field_info = field_info_field($field_name);
+        if ($field_info['type'] == 'entityreference') {
+          $items = field_get_items('node', $node, $field_info['field_name']);
+          if (!empty($items)) {
+            $node_ids = implode(',', array($node_ids, $items[0]['target_id']));
+          }
         }
+      }
+    } elseif ($node->type == 'location') {
+      //Collect NIDs of nodes for bundle Location
+      $node_ids = implode(',', array($node_ids, $result['node']->entity_id));
     }
-    $standart_view_content = array(
-        '#id' => 'standart-view',
-        '#title' => t('Standart View'),
-        '#content' => array(
-            '#view' => theme('search_results', array('#theme' => 'search_results', '#results' => $results, '#module' => 'collection_page')),
-        ),
-    );
-    $timeline_view_content = array(
-        '#id' => 'timeline-view',
-        '#title' => t('Timeline View'),
-        '#content' => array(
-            '#view' => theme('timeline_iframe'),
-            '#pager' => theme('pager', array('tags' => NULL)),
-        ),
-    );
+  }
+  $node_ids = substr($node_ids, 1);
+  //Build location view using special view with openlayers map
+  $location_view_content = array(
+      '#id' => 'location-view',
+      '#title' => t('Location View'),
+      '#content' => array(
+          '#view' => views_embed_view('location_view', 'map', $node_ids),
+          '#pager' => theme('pager', array('tags' => NULL)),
+      ),
+  );
+  //Define the views.
+  $content = array(
+      '#standart' => $standart_view_content,
+      '#timeline' => $timeline_view_content,
+      '#location' => $location_view_content,
+  );
+  $views = array_keys($content);
+  //Define default and disabled tabs on collection page
+  switch ($bundle) {
+    case 'people':
+      $default_tab = array_search('#timeline', $views);
+      $disabled_tab = array_search('#location', $views);
+      break;
+    case 'location':
+      $default_tab = array_search('#location', $views);
+      $disabled_tab = array_search('#timeline', $views);
+      break;
+    default:
+      $default_tab = array_search('#standart', $views);
+      ;
+      $disabled_tab = -1;
+      break;
+  }
 
-    $node_ids = '';
-    foreach ($results as $result) {
-        $node = node_load($result['node']->entity_id);
-        if ($node->type == 'files') {
-            //Collect NIDs of referenced location nodes for bunlde Files
-            $instances = field_info_instances('node', $node->type);
-            foreach ($instances as $field_name => $instance) {
-                $field_info = field_info_field($field_name);
-                if ($field_info['type'] == 'entityreference') {
-                    $items = field_get_items('node', $node, $field_info['field_name']);
-                    if (!empty($items)) {
-                        $node_ids = implode(',', array($node_ids, $items[0]['target_id']));
-                    }
-                }
-            }
-        } elseif ($node->type == 'location') {
-            //Collect NIDs of nodes for bundle Location
-            $node_ids = implode(',', array($node_ids, $result['node']->entity_id));
-        }
-    }
-    $node_ids = substr($node_ids, 1);
-    //Build location view using special view with openlayers map
-    $location_view_content = array(
-        '#id' => 'location-view',
-        '#title' => t('Location View'),
-        '#content' => array(
-            '#view' => views_embed_view('location_view', 'map', $node_ids),
-            '#pager' => theme('pager', array('tags' => NULL)),
-        ),
-    );
-    //Define the views.
-    $content = array(
-        '#standart' => $standart_view_content,
-        '#timeline' => $timeline_view_content,
-        '#location' => $location_view_content,
+  //Set the number of tab which was selected by default and disabled.
+  drupal_add_js(array('collection_page' => array('default_tab' => $default_tab)), 'setting');
+  drupal_add_js(array('collection_page' => array('disabled_tab' => $disabled_tab)), 'setting');
+  //Handling exception, like if timeline library does not exist, or
+  //the bundle have not date fields, or location view does not exist in views
+  $timeline_library = libraries_get_path('timeline');
+  $bundle_date_fields = _collection_page_get_date_fields_from_bundle($bundle);
+  if (isset($content['#timeline']) && empty($timeline_library) && !empty($bundle_date_fields)) {
+    unset($content['#timeline']);
+  }
+  $location_view = views_embed_view('location_view', 'map');
+  if (isset($content['#location']) && empty($location_view)) {
+    unset($content['#location']);
+  }
 
-    );
-    $views = array_keys($content);
-    //Define default and disabled tabs on collection page
-    switch ($bundle) {
-        case 'people':
-            $default_tab = array_search('#timeline',$views);
-            $disabled_tab = array_search('#location',$views);
-            break;
-        case 'location':
-            $default_tab = array_search('#location',$views);
-            $disabled_tab = array_search('#timeline',$views);
-            break;
-        default:
-            $default_tab = array_search('#standart',$views);;
-            $disabled_tab = -1;
-            break;
-    }
-
-    //Set the number of tab which was selected by default and disabled.
-    drupal_add_js(array('collection_page' => array('default_tab' => $default_tab)), 'setting');
-    drupal_add_js(array('collection_page' => array('disabled_tab' => $disabled_tab)), 'setting');
-    //Handling exception, like if timeline library does not exist, or
-    //the bundle have not date fields, or location view does not exist in views
-    $timeline_library = libraries_get_path('timeline');
-    $bundle_date_fields = _collection_page_get_date_fields_from_bundle($bundle);
-    if (isset($content['#timeline']) && empty($timeline_library) && !empty($bundle_date_fields)) {
-        unset($content['#timeline']);
-    }
-    $location_view = views_embed_view('location_view', 'map');
-    if (isset($content['#location']) && empty($location_view)) {
-        unset($content['#location']);
-    }
-
-    return theme('collection_page', array('elements' => $content));
+  return theme('collection_page', array('elements' => $content));
 }
 
 /**
  * Page callback for Timeline View on Collection Page.
  */
-function collection_page_timeline_frame_callback()
-{
-    $options = new stdClass();
-    $options->start_slide = 0;
-    $options->timeline_lib_url = $GLOBALS['base_url'] . '/' . libraries_get_path('timeline') . '/compiled/js/timeline-embed.js';
-    echo theme('timeline_json', array('options' => $options));
-    exit;
+function collection_page_timeline_frame_callback() {
+  $options = new stdClass();
+  $options->start_slide = 0;
+  $options->timeline_lib_url = $GLOBALS['base_url'] . '/' . libraries_get_path('timeline') . '/compiled/js/timeline-embed.js';
+  echo theme('timeline_json', array('options' => $options));
+  exit;
 }
 
 /**
  * Page callback for data for TimeLine View
  */
-function collection_page_timeline_json_callback()
-{
-    $date = array();
-    $results = $_SESSION['collection_page_apache_solr_results'];
+function collection_page_timeline_json_callback() {
+  $date = array();
+  $results = $_SESSION['collection_page_apache_solr_results'];
 
-    foreach ($results as $result) {
-        $asset = new stdClass();
-        $timeline_item = new stdClass();
-        $asset->media = "";
-        $asset->credit = "";
-        $asset->caption = "";
+  foreach ($results as $result) {
+    $asset = new stdClass();
+    $timeline_item = new stdClass();
+    $asset->media = "";
+    $asset->credit = "";
+    $asset->caption = "";
 
-        //For each node, which was filtered by apache_solr using chosen filters
-        //get image,as media content, and date for time line.
-        //There would taken the last image field in node and the last date field in node.
-        $node = node_load($result['node']->entity_id);
-        $instances = field_info_instances('node', $node->type);
-        foreach ($instances as $field_name => $instance) {
-            $field_info = field_info_field($field_name);
-            if ($field_info['type'] == 'image') {
-                $items = field_get_items('node', $node, $field_info['field_name']);
-                if (!empty($items)) {
-                    foreach ($items as $item) {
-                        $uri = $item['uri'];
-                        $style = 'thumbnail';
-                        $styles = image_styles();
-                        if (in_array($style, array_keys($styles))) {
-                            $image_path = image_style_url($style, $uri);
-                        } else {
-                            $image_path = file_create_url($uri);
-                        }
-                        $asset->media = $image_path;
-                        break;
-                    }
-                }
+    //For each node, which was filtered by apache_solr using chosen filters
+    //get image,as media content, and date for time line.
+    //There would taken the last image field in node and the last date field in node.
+    $node = node_load($result['node']->entity_id);
+    $instances = field_info_instances('node', $node->type);
+    foreach ($instances as $field_name => $instance) {
+      $field_info = field_info_field($field_name);
+      if ($field_info['type'] == 'image') {
+        $items = field_get_items('node', $node, $field_info['field_name']);
+        if (!empty($items)) {
+          foreach ($items as $item) {
+            $uri = $item['uri'];
+            $style = 'thumbnail';
+            $styles = image_styles();
+            if (in_array($style, array_keys($styles))) {
+              $image_path = image_style_url($style, $uri);
+            } else {
+              $image_path = file_create_url($uri);
             }
+            $asset->media = $image_path;
+            break;
+          }
         }
-        $date_fields = _collection_page_get_date_fields_from_bundle($result['bundle']);
-        if (!empty($date_fields)) {
-            foreach ($date_fields as $field_name) {
-                $item_date = date('Y,m,d', strtotime($result['fields']['dm_facet_collection_' . $field_name][0]));
-                //If the node have more then ine date fields, the earliest one would be chosen.
-                if (isset($timeline_item->startDate)) {
-                    $timeline_item->startDate = (strtotime($timeline_item->startDate) > strtotime($item_date)) ? $item_date : $timeline_item->startDate;
-                } else {
-                    $timeline_item->startDate = $item_date;
-                }
-            }
+      }
+    }
+    $date_fields = _collection_page_get_date_fields_from_bundle($result['bundle']);
+    if (!empty($date_fields)) {
+      foreach ($date_fields as $field_name) {
+        $item_date = date('Y,m,d', strtotime($result['fields']['dm_facet_collection_' . $field_name][0]));
+        //If the node have more then ine date fields, the earliest one would be chosen.
+        if (isset($timeline_item->startDate)) {
+          $timeline_item->startDate = (strtotime($timeline_item->startDate) > strtotime($item_date)) ? $item_date : $timeline_item->startDate;
+        } else {
+          $timeline_item->startDate = $item_date;
         }
-
-        $timeline_item->headline = $result['title'];
-        $timeline_item->text = l('read more', $GLOBALS['base_url'] . $result['link'], array('attributes' => array('target' => '_parent', 'class' => 'active')));
-        $timeline_item->asset = $asset;
-        $date[] = $timeline_item;
+      }
     }
 
-    $json_class = new stdClass();
-    $json_class->timeline = new stdClass();
-    $json_class->timeline->headline = "";
-    $json_class->timeline->type = "default";
-    $json_class->timeline->startDate = "0";
-    $json_class->timeline->text = "";
-    $json_class->timeline->date = $date;
-    echo drupal_json_output($json_class);
-    exit;
-}
+    $timeline_item->headline = $result['title'];
+    $timeline_item->text = l('read more', $GLOBALS['base_url'] . $result['link'], array('attributes' => array('target' => '_parent', 'class' => 'active')));
+    $timeline_item->asset = $asset;
+    $date[] = $timeline_item;
+  }
 
+  $json_class = new stdClass();
+  $json_class->timeline = new stdClass();
+  $json_class->timeline->headline = "";
+  $json_class->timeline->type = "default";
+  $json_class->timeline->startDate = "0";
+  $json_class->timeline->text = "";
+  $json_class->timeline->date = $date;
+  echo drupal_json_output($json_class);
+  exit;
+}
 
 /**
  * Preprocess for data page for Timeline View
  */
-function collection_page_preprocess_timeline_json(&$vars)
-{
-    $options = $vars['options'];
-    $vars['start_slide'] = $options->start_slide;
-    $vars['timeline_lib_url'] = $options->timeline_lib_url;
-    $vars['source'] = $GLOBALS['base_url'] . '/timeline-json';
+function collection_page_preprocess_timeline_json(&$vars) {
+  $options = $vars['options'];
+  $vars['start_slide'] = $options->start_slide;
+  $vars['timeline_lib_url'] = $options->timeline_lib_url;
+  $vars['source'] = $GLOBALS['base_url'] . '/timeline-json';
 }
-
 
 /**
  * Preprocess for iframe in Timeline View
  */
-function collection_page_preprocess_timeline_iframe(&$vars)
-{
-    $vars['iframe_url'] = $GLOBALS['base_url'] . '/timeline-iframe';
-    $vars['iframe_width'] = '100%';
-    $vars['iframe_height'] = '600px';
+function collection_page_preprocess_timeline_iframe(&$vars) {
+  $vars['iframe_url'] = $GLOBALS['base_url'] . '/timeline-iframe';
+  $vars['iframe_width'] = '100%';
+  $vars['iframe_height'] = '600px';
 }
 
 /**
  * Implements hook_apachesolr_query_alter().
  */
-function collection_page_apachesolr_query_alter($query)
-{
-    //Add date field from facet collection in apache_sorl request params.
-    //That field would used in Timeline View.
-    //There would taken the last date field in current filtering bundle.
-    //If bundle was not defined, field would not be added to params.
-    $indexed_bundles = array('files', 'location', 'people');
-    foreach ($indexed_bundles as $bundle) {
-        $date_fields = _collection_page_get_date_fields_from_bundle($bundle);
-        if (!empty($date_fields)) {
-            foreach ($date_fields as $field_name) {
-                $query->addParam('fl', 'dm_facet_collection_' . $field_name);
-            }
-        }
+function collection_page_apachesolr_query_alter($query) {
+  //Add date field from facet collection in apache_sorl request params.
+  //That field would used in Timeline View.
+  //There would taken the last date field in current filtering bundle.
+  //If bundle was not defined, field would not be added to params.
+  $indexed_bundles = array('files', 'location', 'people');
+  foreach ($indexed_bundles as $bundle) {
+    $date_fields = _collection_page_get_date_fields_from_bundle($bundle);
+    if (!empty($date_fields)) {
+      foreach ($date_fields as $field_name) {
+        $query->addParam('fl', 'dm_facet_collection_' . $field_name);
+      }
     }
+  }
 }
 
 /**
@@ -297,18 +308,60 @@ function collection_page_apachesolr_query_alter($query)
  * @param $bundle
  * @return array|null
  */
-function _collection_page_get_date_fields_from_bundle($bundle)
-{
-    if (!empty($bundle)) {
-        $date_fields = array();
-        $instances = field_info_instances('node', $bundle);
-        foreach ($instances as $instance) {
-            $field = field_info_field($instance['field_name']);
-            if ($field['type'] == 'date' || $field['type'] == 'datetime' || $field['type'] == 'datestamp') {
-                $date_fields[] = $field['field_name'];
-            }
-        }
-        return $date_fields;
+function _collection_page_get_date_fields_from_bundle($bundle) {
+  if (!empty($bundle)) {
+    $date_fields = array();
+    $instances = field_info_instances('node', $bundle);
+    foreach ($instances as $instance) {
+      $field = field_info_field($instance['field_name']);
+      if ($field['type'] == 'date' || $field['type'] == 'datetime' || $field['type'] == 'datestamp') {
+        $date_fields[] = $field['field_name'];
+      }
     }
-    return NULL;
+    return $date_fields;
+  }
+  return NULL;
+}
+
+/**
+ * Preprocess function for collection_standart_thumbnail_view
+ */
+function template_preprocess_collection_standart_thumbnail_view(&$results) {
+  //We should find a thumbnail field. It could be any image field. If we find it for
+  //content type we should save it in static variable
+  //This variable contatin array which keys are content type names and values are
+  //field names that contain image for thumbnail
+  $results['collection_thumbnails'] = array();
+  $thumbnail_fields = &drupal_static(__FUNCTION__);
+  foreach ($results['results'] as $result) {
+    $node = $result['node'];
+    $bundle = $node->bundle;
+    if (!isset($thumbnail_fields[$bundle])) {
+      $instances = field_info_instances('node', $bundle);
+      foreach ($instances as $instance) {
+        $field_info = field_info_field($instance['field_name']);
+        if ($field_info['type'] == 'image') {
+          $display = field_get_display($instance, 'collection_thumbnail', $node);
+          if ($display['type'] != 'hidden') {
+            $thumbnail_fields[$bundle]['field_name'] = $instance['field_name'];
+            $thumbnail_fields[$bundle]['style'] = $display['settings']['image_style'];
+            break;
+          }
+        }
+      }
+    } elseif (isset($thumbnail_fields[$bundle])) {
+      $node = node_load($node->entity_id);
+      $items = field_get_items('node', $node, $thumbnail_fields[$bundle]['field_name']);
+      if (!empty($items)) {
+        $image_uri = $items[0]['uri'];
+        $thumbnail_url = image_style_url($thumbnail_fields[$bundle]['style'], $image_uri);
+        $thumbnail_content = array();
+        $thumbnail_content['thumbnail_url'] = $thumbnail_url;
+        $thumbnail_view = node_view($node, 'collection_thumbnail');
+        unset($thumbnail_view[$thumbnail_fields[$bundle]['field_name']]);
+        $thumbnail_content['meta_info'] = render($thumbnail_view);
+        $results['collection_thumbnails'][] = $thumbnail_content;
+      }
+    }
+  }
 }
