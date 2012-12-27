@@ -98,7 +98,6 @@ function theme_facet_collection_search_results__alter($variables) {
       '#id' => 'standart-view',
       '#title' => t('Standart View'),
       '#content' => array(
-          //theme('search_results', array('#theme' => 'search_results', '#results' => $results, '#module' => 'collection_page')),
           '#view' => theme('collection_standart_view', array('content' => $rendered_results, 'default_url' => $default_url, 'thumbnail_url' => $thumbnail_url)),
       ),
   );
@@ -364,4 +363,5 @@ function template_preprocess_collection_standart_thumbnail_view(&$results) {
       }
     }
   }
+  $results['pager'] = theme('pager', array('tags' => NULL));
 }
