@@ -268,12 +268,18 @@ function facet_collection_ui_filters_overview_form($form, &$form_state, $entity_
         '#suffix' => '</div>',
     );
 
-
+    $row_weight = 0;
     // Filter rows.
     foreach ($instances as $name => $instance) {
         $field = field_info_field($instance['field_name']);
         if (array_key_exists($field['type'], $filterable_type_list)) {
             $filter_by_label = module_invoke($filterable_type_list[$field['type']], 'facet_collection_ui_filter_by', $field);
+            if (isset($filters[$instance['field_name']]['weight'])) {
+                $filter_weight = $filters[$instance['field_name']]['weight'];
+            } else {
+                $filter_weight = $row_weight;
+            }
+            $row_weight += 1;
             $table[$name] = array(
                 '#attributes' => array('class' => array('draggable', 'tabledrag-leaf')),
                 '#row_type' => 'field',
@@ -288,7 +294,7 @@ function facet_collection_ui_filters_overview_form($form, &$form_state, $entity_
                     '#type' => 'textfield',
                     '#title' => t('Weight for @title', array('@title' => $instance['label'])),
                     '#title_display' => 'invisible',
-                    '#default_value' => 0,
+                    '#default_value' => $filter_weight,
                     '#size' => 3,
                     '#attributes' => array('class' => array('field-weight')),
                 ),
@@ -478,7 +484,6 @@ function facet_collection_ui_filters_overview_multistep_submit($form, &$form_sta
 {
     $trigger = $form_state['triggering_element'];
     $op = $trigger['#op'];
-
     switch ($op) {
         case 'edit':
             // Store the field whose settings are currently being edited.
@@ -595,6 +600,7 @@ function facet_collection_ui_filters_overview_form_submit($form, &$form_state)
             }
             $content_type_filters[$field_name]['state'] = $values['type'];
             $content_type_filters[$field_name]['referenced_filters'] = $filters_list;
+            $content_type_filters[$field_name]['weight'] = $values['weight'];
         }
     }
 
@@ -605,6 +611,11 @@ function facet_collection_ui_filters_overview_form_submit($form, &$form_state)
             $function = $filterable_type_list[$field['type']] . '_facet_collection_ui_delete_field';
             if ($function) {
                 $function($field, $bundle, $facet_filters_settings, $filter);
+            }
+            if ($filter['state'] == 'visible') {
+                if (isset($facet_filters_settings['filter_order'][$bundle]) && array_key_exists($field['field_name'], $facet_filters_settings['filter_order'][$bundle])) {
+                    unset($facet_filters_settings['filter_order'][$bundle][$filter['weight']]);
+                }
             }
             // module_invoke($filterable_type_list[$field['type']], 'facet_collection_ui_delete_field', $field, $bundle, $facet_filters_settings, $filter);
         }
@@ -617,6 +628,9 @@ function facet_collection_ui_filters_overview_form_submit($form, &$form_state)
         $function = $filterable_type_list[$field['type']] . '_facet_collection_ui_add_field';
         if ($function) {
             $function($field, $bundle, $facet_filters_settings, $filter);
+        }
+        if ($filter['state'] == 'visible') {
+            $facet_filters_settings['filter_order'][$bundle][$filter['weight']] = $field['field_name'];
         }
         //module_invoke($filterable_type_list[$field['type']], 'facet_collection_ui_add_field', $field, $bundle, $facet_filters_settings, $filter);
     }
