@@ -634,7 +634,9 @@ function facet_collection_ui_filters_overview_form_submit($form, &$form_state)
         }
         //module_invoke($filterable_type_list[$field['type']], 'facet_collection_ui_add_field', $field, $bundle, $facet_filters_settings, $filter);
     }
-    sort($facet_filters_settings['filter_order'][$bundle]);
+    if (isset($facet_filters_settings['filter_order'][$bundle])) {
+        ksort($facet_filters_settings['filter_order'][$bundle]);
+    }
     //Save filters settings at the variables
     $facet_filters[$bundle] = $content_type_filters;
     variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
