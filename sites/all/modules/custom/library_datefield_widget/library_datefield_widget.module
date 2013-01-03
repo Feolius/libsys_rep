@@ -4,107 +4,108 @@
  * Implements hook_field_widget_info().
  */
 function library_datefield_widget_field_widget_info() {
-    return array(
-        'library_datefield_widget' => array(
-            'label' => t('Library datefield widget'),
-            'field types' => array('date', 'datestamp', 'datetime'),
-        ),
-    );
+  return array(
+      'library_datefield_widget' => array(
+          'label' => t('Library datefield widget'),
+          'field types' => array('date', 'datestamp', 'datetime'),
+          'behaviors' => array(
+              'multiple values' => FIELD_BEHAVIOR_DEFAULT,
+              'default value' => FIELD_BEHAVIOR_NONE,
+          ),
+      ),
+  );
 }
 
 /**
  * Implements hook_field_widget_form().
  */
 function library_datefield_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-    $widget = $instance['widget'];
-    
-    //Get today date for using in description
-    $date_now = date_now();   
-    $date_now_full = date_format_date($date_now, 'custom', 'Y/m/d');    
-    $date_now_month = date_format_date($date_now, 'custom', 'Y/m');   
-    $date_now_year = date_format_date($date_now, 'custom', 'Y');
-    $timezone = date_default_timezone();
-    
-    //Get default value for widget
-    if (isset($items[$delta])){
-        $date_value_obj = new DateObject($items[$delta]['value']);
-        $date_value2_obj = new DateObject($items[$delta]['value2']);
-        $difference = $date_value_obj->difference($date_value2_obj, 'days');
-        if($difference == 0){
-            $default_value = date_format_date($date_value_obj, 'custom', 'Y/m/d');
-        }elseif($difference == 365 || $difference == 366){
-            $default_value = date_format_date($date_value_obj, 'custom', 'Y');
-        }else{
-            $default_value = date_format_date($date_value_obj, 'custom', 'Y/m');
-        }        
-    }else{
-        $default_value = $date_now_full;
-    }    
-    if ($widget['type'] == 'library_datefield_widget') {
-        $element['library_date'] = array(
-            '#title' => t('Date'),
-            '#type' => 'textfield',
-            '#description' => t('Format:' . $date_now_full . ', ' . $date_now_month . ', ' . $date_now_year),
-            '#default_value' => $default_value,
-        );
-        $element['value'] = array(
-            '#type' => 'hidden',
-            '#value_callback' => 'library_datefield_widget_value',
-        );
-        $element['value2'] = array(
-            '#type' => 'hidden',
-            '#value_callback' => 'library_datefield_widget_value2',
-        );
-        $element['timezone'] = array(
-            '#type' => 'hidden',
-            '#value' => $timezone,
-        );;
-    }    
-    return $element;
+  $widget = $instance['widget'];
+
+  //Get today date for using in description
+  $date_now = date_now();
+  $date_now_full = date_format_date($date_now, 'custom', 'Y/m/d');
+  $date_now_month = date_format_date($date_now, 'custom', 'Y/m');
+  $date_now_year = date_format_date($date_now, 'custom', 'Y');
+  $timezone = 'UTC';
+  $default_value = '';
+
+  //Get default value for widget
+  if (isset($items[$delta])) {
+    $date_value_obj = new DateObject($items[$delta]['value']);
+    $date_value2_obj = new DateObject($items[$delta]['value2']);
+    $difference = $date_value_obj->difference($date_value2_obj, 'days');
+    if ($difference == 0) {
+      $default_value = date_format_date($date_value_obj, 'custom', 'Y/m/d');
+    } elseif ($difference == 365 || $difference == 366) {
+      $default_value = date_format_date($date_value_obj, 'custom', 'Y');
+    } else {
+      $default_value = date_format_date($date_value_obj, 'custom', 'Y/m');
+    }
+  }
+  if ($widget['type'] == 'library_datefield_widget') {
+    $element['library_date'] = array(
+        '#title' => t('Date'),
+        '#type' => 'textfield',
+        '#description' => t('Format:' . $date_now_full . ', ' . $date_now_month . ', ' . $date_now_year),
+        '#default_value' => $default_value,
+    );
+    $element['value'] = array(
+        '#type' => 'hidden',
+        '#value_callback' => 'library_datefield_widget_value',
+    );
+    $element['value2'] = array(
+        '#type' => 'hidden',
+        '#value_callback' => 'library_datefield_widget_value2',
+    );
+    $element['timezone'] = array(
+        '#type' => 'hidden',
+        '#value' => $timezone,
+    );
+  }
+  return $element;
 }
 
 /**
  * Value callback for start date
  */
 function library_datefield_widget_value($element, $input = FALSE, $form_state) {
-    if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'])) {
-        $date_string = $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'];
-        $date_array = explode('/', $date_string);
-        $parts_number = count($date_array);
-        if ($parts_number == 1) {
-            $date_string = $date_string . '/01/01';
-        }
-        if ($parts_number == 2) {
-            $date_string = $date_string . '/01';
-        }        
-        $date_obj = new DateObject($date_string, NULL, 'Y/m/d');
-        $date_array = $date_obj->toArray(TRUE);
-        $date_ISO = $date_obj->toISO($date_array);
-        return $date_ISO;
+  if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'])) {
+    $date_string = $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'];
+    $date_array = explode('/', $date_string);
+    $parts_number = count($date_array);
+    if ($parts_number == 1) {
+      $date_string = $date_string . '/01/01';
     }
-    
+    if ($parts_number == 2) {
+      $date_string = $date_string . '/01';
+    }
+    $date_obj = new DateObject($date_string, NULL, 'Y/m/d');
+    $date_array = $date_obj->toArray(TRUE);
+    $date_ISO = $date_obj->toISO($date_array);
+    return $date_ISO;
+  }
 }
 
 /**
  * Value callback for end date
  */
 function library_datefield_widget_value2($element, $input = FALSE, $form_state) {
-    if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'])) {
-        $date_string = $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'];
-        $date_array = explode('/', $date_string);
-        $parts_number = count($date_array);
-        if ($parts_number == 1) {
-            $date_string = $date_string . '/12/31';
-        }
-        if ($parts_number == 2) {
-            $days_number = date_days_in_month($date_array[0], $date_array[1]);
-            $date_string = $date_string . '/' . $days_number;
-        }
-        $date_obj = new DateObject($date_string, NULL, 'Y/m/d');
-        $date_array = $date_obj->toArray(TRUE);
-        $date_ISO = $date_obj->toISO($date_array);
-        return $date_ISO;
-    }       
+  if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'])) {
+    $date_string = $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'];
+    $date_array = explode('/', $date_string);
+    $parts_number = count($date_array);
+    if ($parts_number == 1) {
+      $date_string = $date_string . '/12/31';
+    }
+    if ($parts_number == 2) {
+      $days_number = date_days_in_month($date_array[0], $date_array[1]);
+      $date_string = $date_string . '/' . $days_number;
+    }
+    $date_obj = new DateObject($date_string, NULL, 'Y/m/d');
+    $date_array = $date_obj->toArray(TRUE);
+    $date_ISO = $date_obj->toISO($date_array);
+    return $date_ISO;
+  }
 }
-
 

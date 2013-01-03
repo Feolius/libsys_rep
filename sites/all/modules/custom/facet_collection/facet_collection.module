@@ -185,7 +185,7 @@ function facet_collection_menu() {
 /**
  * Page callback for returning collection teaser for the node
  */
-function facet_collection_collection_teaser($nid){
+function facet_collection_collection_teaser($nid) {
   $node = node_load($nid);
   $node_teaser = node_view($node, 'collection_teaser');
   $render = render($node_teaser);
@@ -242,7 +242,10 @@ function facet_collection_block_info() {
 function facet_collection_block_view($delta) {
   $search_content = facet_collection_get_search_filters();
   $facet_content = facet_collection_get_facet_filters();
+  //@TODO if field could be facetable and searchable it will be incorrect
   $content = array_merge($facet_content, $search_content);
+  $content = facet_collection_sort_content($content);
+  $content = array_reverse($content);
   return array(
       'subject' => t('Filters'),
       'content' => $content,
@@ -298,7 +301,7 @@ function facet_collection_get_search_filters() {
                 'index_field_name' => $index_field_name,
                 'default_value' => '',
             );
-            $content[] = drupal_get_form('facet_collection_' . $field_name . '_form', $args);
+            $content[$field_name] = drupal_get_form('facet_collection_' . $field_name . '_form', $args);
           }
         }
       }
@@ -311,7 +314,6 @@ function facet_collection_get_search_filters() {
  * Get renderable array that present all facet filters
  */
 function facet_collection_get_facet_filters() {
-
   //We need to collect all facetapi presentations for separate block in one
   //and add titles for each facet.
   $realm_name = 'block';
@@ -339,16 +341,18 @@ function facet_collection_get_facet_filters() {
 //Build content using facetapi block presentation for each facet
   $enabled_facets = $adapter->getEnabledFacets();
   $builds = facetapi_build_realm($searcher, $realm_name);
-  foreach ($builds as $facet_name => $build) {
-    if (is_array($build) && !empty($available_facets)) {
-      if (in_array($facet_name, $available_facets)) {
+  foreach ($available_facets as $field_name => $facet_names) {
+    foreach ($facet_names as $facet_name) {
+      if (in_array($facet_name, array_keys($builds)) && !empty($builds[$facet_name])) {
+        $build = $builds[$facet_name];
         $field_alias = $enabled_facets[$facet_name]['field alias'];
         $title = $build['#title'];
         $build[$field_alias]['#title'] = $title;
-        $content[] = $build;
+        $content[$field_name] = $build;
       }
     }
   }
+
   return $content;
 }
 
@@ -373,7 +377,6 @@ function facet_collection_get_available_facets($filter_settings) {
   $available_facets = array();
   $field_type_list = variable_get('facet_collection:field_type_facet_list');
   $facet_collection = variable_get('facet_collection:facet_collection');
-
 //Get all facets for collection from cache
   $data = cache_get('facet_collection:listfacets');
   $facet_list = $data->data;
@@ -387,22 +390,43 @@ function facet_collection_get_available_facets($filter_settings) {
   $searchers = array_keys($searcher_info);
   $searcher = array_shift($searchers);
   foreach ($facet_collection as $field_type => $facet_groups) {
-    foreach ($facet_groups as $facet_group => $facet_names) {
-      foreach ($facet_names as $facet_name) {
-        if (isset($field_type_list[$field_type])) {
-          $modules = $field_type_list[$field_type];
-          foreach ($modules as $module) {
-            $facet_content_types_array = module_invoke($module, 'facet_collection_facet_content_types', $filter_settings, $facet_group, $facet_name, $searcher);
+    foreach ($facet_groups as $facet_group => $field_names) {
+      foreach ($field_names as $field_name => $facet_names) {
+        foreach ($facet_names as $facet_name) {
+          if (isset($field_type_list[$field_type])) {
+            $modules = $field_type_list[$field_type];
+            foreach ($modules as $module) {
+              $facet_content_types_array = module_invoke($module, 'facet_collection_facet_content_types', $filter_settings, $facet_group, $facet_name, $searcher);
+            }
           }
-        }
-        $array_diff = array_diff($content_types, $facet_content_types_array);
-        if (empty($array_diff)) {
-          $available_facets[] = $facet_name;
+          $array_diff = array_diff($content_types, $facet_content_types_array);
+          if (empty($array_diff)) {
+            $available_facets[$field_name][] = $facet_name;
+          }
         }
       }
     }
   }
+
   return $available_facets;
+}
+
+/**
+ * Sort content in right order
+ */
+function facet_collection_sort_content($content) {
+  $ordered_content = array();
+  $filter_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
+  $filter_order = $filter_settings['filter_order'];
+
+  foreach ($filter_order as $field_names) {
+    foreach ($field_names as $field_name) {
+      if (!empty($content[$field_name])) {
+        $ordered_content[] = $content[$field_name];
+      }
+    }
+  }
+  return $ordered_content;
 }
 
 /**
@@ -466,6 +490,8 @@ function facet_collection_apachesolr_index_document_build_node($filedocument, $n
  * Implements hook_facetapi_facet_info()
  */
 function facet_collection_facetapi_facet_info($searcher_info) {
+  //Get filter settings
+  $filter_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
   $facets = array();
   $field_type_facet_list = array();
   $field_type_search_list = array();
@@ -488,33 +514,36 @@ function facet_collection_facetapi_facet_info($searcher_info) {
   }
 
   //Get facets and facet groups for each field according
-  $fields = field_info_fields();
-  foreach ($fields as $field_info) {
-    $field_type = $field_info['type'];
-    if (isset($field_type_facet_list[$field_type])) {
-      $modules = $field_type_facet_list[$field_type];
-      foreach ($modules as $module) {
-        $facet_groups = module_invoke($module, 'facet_collection_field_facet_groups', $field_info);
-        if (!empty($facet_groups)) {
-          foreach ($facet_groups as $facet_group => $field_facets) {
-            if (!isset($facet_collection[$field_type][$facet_group])) {
-              $facet_collection[$field_type][$facet_group] = array();
-            }
-            foreach ($field_facets as $field_facet_name => $field_facet) {
-              if (!in_array($field_facet_name, $facet_collection[$field_type][$facet_group])) {
-                $facet_collection[$field_type][$facet_group][] = $field_facet_name;
+  foreach ($filter_settings['filter_order'] as $content_type_field_names) {
+    foreach (array_reverse($content_type_field_names) as $field_name) {
+      $field_info = field_info_field($field_name);
+      $field_type = $field_info['type'];
+      if (isset($field_type_facet_list[$field_type])) {
+        $modules = $field_type_facet_list[$field_type];
+        foreach ($modules as $module) {
+          $facet_groups = module_invoke($module, 'facet_collection_field_facet_groups', $field_info);
+          if (!empty($facet_groups)) {
+            foreach ($facet_groups as $facet_group => $field_facets) {
+              if (!isset($facet_collection[$field_type][$facet_group])) {
+                $facet_collection[$field_type][$facet_group] = array();
               }
+              foreach ($field_facets as $field_facet_name => $field_facet) {
+                if (!in_array($field_facet_name, $facet_collection[$field_type][$facet_group])) {
+                  $facet_collection[$field_type][$facet_group][$field_name][] = $field_facet_name;
+                }
+              }
+              $facets = array_merge($facets, $field_facets);
             }
-            $facets = array_merge($facets, $field_facets);
           }
         }
       }
     }
   }
+
   //Contatins facet names for each groups and for each field type
   variable_set('facet_collection:facet_collection', $facet_collection);
 
-  //Contatns module names that should handle field type using facets
+  //Contains module names that should handle field type using facets
   variable_set('facet_collection:field_type_facet_list', $field_type_facet_list);
 
   //Contatns module names that should handle field type using search
@@ -588,7 +617,6 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
       $field_name = $instance['field_name'];
       $field_info = field_info_field($field_name);
       $node_teaser = node_view($node, 'teaser');
-
       //If there is a trim display in node teaser we take it
       if ($field_info['type'] == 'text_with_summary') {
         if (isset($node_teaser[$field_name])) {
@@ -693,8 +721,14 @@ function theme_facet_collection_search_results($vars) {
  * We need it for adding additional node view mode 'collection teaser'
  */
 function facet_collection_entity_info_alter(&$entity_info) {
-  $entity_info['node']['view modes']['collection_teaser'] = array(
-      'label' => t('Collection teaser'),
-      'custom settings' => TRUE,
+  $entity_info['node']['view modes'] += array(
+      'collection_teaser' => array(
+          'label' => t('Collection teaser'),
+          'custom settings' => TRUE,
+      ),
+      'collection_thumbnail' => array(
+          'label' => t('Collection thumbnail'),
+          'custom settings' => TRUE,
+      )
   );
 }

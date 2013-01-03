@@ -53,6 +53,8 @@ function facet_collection_date_facet_collection_field_facet_groups($field_info) 
 function facet_collection_date_facet_collection_index_field($filedocument, $node, $field_info) {
     $field_name = $field_info['field_name'];
     $fields = facet_collection_date_indexing_callback($node, 'dm_facet_collection_' . $field_name, $field_info);
+    //$fields = apachesolr_date_default_indexing_callback($node, $field_name, 'dm_facet_collection_' . $field_name, $field_info);
+
     foreach ($fields as $field) {
         $filedocument->setMultiValue($field['key'], $field['value']);
     }
@@ -88,7 +90,6 @@ function facet_collection_date_indexing_callback($node, $index_key, $field_info)
     $fields = array();
     $field = $node->$field_name;
     list($lang, $values) = each($field);
-    dpm($values);
     foreach ($values as $value) {
         if (isset($value['value2'])) {
             $date_start = new DateObject($value['value']);
@@ -109,7 +110,7 @@ function facet_collection_date_indexing_callback($node, $index_key, $field_info)
                         $date_array = $date_obj->toArray(TRUE);
                         $date_ISO = $date_obj->toISO($date_array);
                         $date = date_create($date_ISO);
-                        $index_value = apachesolr_date_iso($date->format('U'));
+                        $index_value = $date->format('Y-m-d\TH:i:s\Z');
                         $fields[] = array(
                             'key' => $index_key,
                             'value' => $index_value,
@@ -120,7 +121,7 @@ function facet_collection_date_indexing_callback($node, $index_key, $field_info)
 
 //Just add the date to field
                 $date = date_create($value['value']);
-                $index_value = apachesolr_date_iso($date->format('U'));
+                $index_value = $date->format('Y-m-d\TH:i:s\Z');
                 $fields[] = array(
                     'key' => $index_key,
                     'value' => $index_value,
@@ -136,7 +137,7 @@ function facet_collection_date_indexing_callback($node, $index_key, $field_info)
                     $date_array = $date_obj->toArray(TRUE);
                     $date_ISO = $date_obj->toISO($date_array);
                     $date = date_create($date_ISO);
-                    $index_value = apachesolr_date_iso($date->format('U'));
+                    $index_value = $date->format('Y-m-d\TH:i:s\Z');
                     $fields[] = array(
                         'key' => $index_key,
                         'value' => $index_value,
@@ -145,7 +146,7 @@ function facet_collection_date_indexing_callback($node, $index_key, $field_info)
             }
         } else {
             $date = date_create($value['value']);
-            $index_value = apachesolr_date_iso($date->format('U'));
+            $index_value = $date->format('Y-m-d\TH:i:s\Z');
             $fields[] = array(
                 'key' => $index_key,
                 'value' => $index_value,

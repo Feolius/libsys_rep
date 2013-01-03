@@ -1,41 +1,33 @@
 (function ($) {
-  Drupal.behaviors.facetCollection = {
+  Drupal.behaviors.collectionTeaser = {
     attach: function (context, settings) {
-      $(".show-collection-teaser-button").click(function(){
+      $(".show-collection-teaser-button").once('collectionTeaser').click(function(){
         var parentContainer = $(this).parent();
-        var results = parentContainer.find(".facet-collection-teaser-placeholder");
-        if(results.length == 0){
+        var placeholder = parentContainer.find(".facet-collection-teaser-placeholder");
+        //Try to find container for teaser. If exist it means that we've already upload teaser.
+        if(placeholder.length == 0){
           var teaserPlaceholder = $('<div class="facet-collection-teaser-placeholder"/>');
           parentContainer.append(teaserPlaceholder);
           var nid = parentContainer.find(".collection-nid-contatiner").val();
           var url = '/collection-teaser/node/' + nid;
           teaserPlaceholder.load(url, function(){
-            var currHeight = $(this).css('height');
-            $(this).css('height', 0);
-            $(this).animate({
-              height: currHeight
-            },
+            $(this).hide();
+            //To prevent jumping befor animation
+            $(this).css('overflow', 'hidden');
+            $(this).slideToggle(
             1000, function(){
               });
           });
           $(this).val('Hide preview');
         }else{
           if($(this).val() == 'Hide preview'){
-            results.each(function(){
-              $(this).slideUp(
-              1000, function(){
-              });
-            });
             $(this).val('Show preview');
           }else{
-            results.each(function(){
-              $(this).slideDown(
-               1000, function(){
-              });
-            });
             $(this).val('Hide preview');
           }
-
+          placeholder.slideToggle(
+              1000, function(){
+              });
         }
       });
     }
