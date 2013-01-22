@@ -15,7 +15,6 @@
         var padding = parseInt($("#collection-thumbnail-upper-container").css("padding-left"));
         $("#collection-thumbnail-upper-container").css("top", $(this).position().top - padding);
         $("#collection_upper_thumbnail").attr("src", $(this).attr("src"));
-        $("#collection-thumbnail-upper-container").width(initialWidth + 2*padding);
         if ($("#collection-thumbnail-upper-container").css("display") == "none"){
           $("#collection-thumbnail-upper-container").css("display", "block");
           $("#collection_upper_thumbnail").animate({
@@ -25,7 +24,6 @@
             complete: function(){
               $("#collection-thumbnail-metainfo").html(metainfo);
               $("#collection-thumbnail-metainfo").width(1.5*initialWidth);
-              //$("#collection-thumbnail-upper-container").width(1.5*initialWidth + 2*padding);
             },
             step: function(now, fx){
               var left = initialLeft - initialWidth*0.5*(now/200 - 1) - padding;
@@ -38,7 +36,7 @@
                 left = 0;
               }
               $("#collection-thumbnail-upper-container").css("left", left);
-              $("#collection-thumbnail-upper-container").width((now/200)*initialWidth + 2*padding);
+              $("#collection-thumbnail-upper-container").width((now/200)*initialWidth);
             }
           });
       }else{

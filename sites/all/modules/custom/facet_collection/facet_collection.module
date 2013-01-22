@@ -602,7 +602,7 @@ function facet_collection_theme() {
  */
 function template_preprocess_apachesolr_search_snippets__node(&$variables) {
   $snippets = $variables['snippets'];
-
+  $variables['show_preview_label'] = t("Show preview");
   $module_path = drupal_get_path('module', 'facet_collection');
   drupal_add_css($module_path . '/CSS/facet_collection_snippet.css');
   drupal_add_js($module_path . '/js/collection-teaser.js');

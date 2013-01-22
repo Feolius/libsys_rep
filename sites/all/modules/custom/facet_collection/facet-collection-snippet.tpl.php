@@ -11,12 +11,12 @@
   <?php endif; ?>
   <?php if (isset($text)): ?>
     <div class="facet-collection-snippet-text">
-      <?php print t($text) ?>
+      <?php print $text ?>
     </div>
   <?php endif; ?>
 </div>
 <input type="hidden" class="collection-nid-contatiner" value="<?php print $nid ?>">
-<input type="button" class="show-collection-teaser-button" value="Show preview">
+<input type="button" class="show-collection-teaser-button" value="<?php print $show_preview_label ?>">
 
 
 
