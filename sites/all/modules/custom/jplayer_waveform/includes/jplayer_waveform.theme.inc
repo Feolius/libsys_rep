@@ -70,7 +70,7 @@ function template_preprocess_jplayer_waveform(&$vars)
  */
 function jplayer_waveform_prepare_audio($raw_file = array())
 {
-    $audio_extensions = array('mp3', 'm4a', 'oga', 'webma', 'wav');
+    $audio_extensions = array('mp3');
 
     $file = array();
     $file_id3_info = array();
@@ -101,6 +101,7 @@ function jplayer_waveform_prepare_audio($raw_file = array())
         }
         if (isset($item) && $item['type'] == 'audio') {
             $file_id3_info = getid3_analyze(drupal_realpath($item['uri']));
+            dpm($file_id3_info);
             if (isset($file_id3_info['tags'])) {
                 $id3_data = array();
                 foreach ($file_id3_info['tags'] as $tag) {
@@ -116,7 +117,7 @@ function jplayer_waveform_prepare_audio($raw_file = array())
                     break;
                 }
                 if (!empty($id3_data)) {
-                    $file_id3_info = implode(' - ', $id3_data);
+                    $file_id3_info = implode(' - ', $id3_data); //TODO: when $id3_data is empty the "Array" will return
                 }
             }
             $file[$item['ext']] = $item['url'];

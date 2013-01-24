@@ -3,7 +3,6 @@
 /**
  * Waveform generating class
  * @author Andrew Freiday http://andrewfreiday.com/2010/04/29/generating-mp3-waveforms-with-php/
- * @author DiS http://dis.dj
  *
  */
 /**
@@ -200,7 +199,6 @@ limitations under the License.
  */
 class Waveform
 {
-
     /**
      * Generate waveform data for given filename
      * @param string $file File to process (absolute path)
@@ -212,8 +210,8 @@ class Waveform
         ini_set("max_execution_time", "30000");
 
         // temporary file name
-        $temp_directory_path = sys_get_temp_dir();
-        $temp_file_name = $temp_directory_path . "/" . substr(md5(time()), 0, 10);
+        $temp_directory_path = file_directory_temp();
+        $temp_file_name = $temp_directory_path . DIRECTORY_SEPARATOR . substr(md5(time()), 0, 10);
         // copy from temp upload directory to current
         copy($file, "{$temp_file_name}_o.mp3");
 
@@ -225,7 +223,9 @@ class Waveform
          * to it's simplest form and makes processing significantly faster
          */
 
-        exec("/usr/local/bin/lame {$temp_file_name}_o.mp3 -f -m m -b 16 --resample 8 {$temp_file_name}.mp3 && /usr/local/bin/lame --decode {$temp_file_name}.mp3 {$temp_file_name}.wav", $output, $return);
+        //exec("/usr/local/bin/lame {$temp_file_name}_o.mp3 -f -m m -b 16 --resample 8 {$temp_file_name}.mp3 && /usr/local/bin/lame --decode {$temp_file_name}.mp3 {$temp_file_name}.wav", $output, $return);
+        exec('C:\lame\lame.exe "' . $temp_file_name . '_o.mp3" -f -m m -b 16 --resample 8 "' . $temp_file_name . '.mp3"', $output, $return);
+        exec('C:\lame\lame.exe --decode "' . $temp_file_name . '.mp3" "' . $temp_file_name . '.wav"', $output, $return);
         // delete temporary files
         unlink("{$temp_file_name}_o.mp3");
         unlink("{$temp_file_name}.mp3");
@@ -310,53 +310,33 @@ class Waveform
      * @param $data
      * @return resource
      */
-    public static function createImage($data, $width = 400, $height = 50, $backgroud_color = '#eeeeee')
+    public static function createImage($data, $width = 400, $height = 50, $background_color = '#EEEEEE')
     {
-        /**
-         * Image generation
-         */
-
-        // how much detail we want. Larger number means less detail
-        // (basically, how many bytes/frames to skip processing)
-        // the lower the number means longer processing time
-        define("DETAIL", 1);
-
-        // create original image width based on amount of detail
-        $img = imagecreatetruecolor(sizeof($data) / DETAIL, $height);
+        // create original image width based on arguments
+        $img = imagecreatetruecolor($width, $height);
         imagealphablending($img, false);
         imagesavealpha($img, true);
 
         // generate background color
-        list($r, $g, $b) = self::html2rgb($backgroud_color);
+        list($r, $g, $b) = self::html2rgb($background_color);
         $color = imagecolorallocate($img, $r, $g, $b);
         $transparent = imagecolorallocatealpha($img, 0, 0, 0, 127);
         imagefill($img, 1, 1, $color);
 
-
-        $frames_in_pixel = round(sizeof($data) / $width);
-        // loop through frames/bytes of wav data as genearted above
-        for ($d = 0; $d < sizeof($data); $d += DETAIL) {
+        //Calculate the count of frames which would displayed as one because of the image width value
+        $frames_in_pixel = sizeof($data) / $width;
+        //And also calculate the rounded value to improve performance of the loop
+        $rounded_frames_in_pixel = round($frames_in_pixel);
+        // loop through frames/bytes of wav data as generated above
+        for ($x = 0; $x < $width; $x += 1) {
             // relative value based on height of image being generated
             // data values can range between 0 and 255
-            $v = (int)($data[$d] / 255 * $height);
-            $x = $d / DETAIL;
+            $v = round((max(array_slice($data, round($x * $frames_in_pixel), $rounded_frames_in_pixel)) / 255.0 * $height));
             // draw the line on the image using the $v value and centering it vertically on the canvas
-            imagefilledrectangle($img, $x, 0 + ($height - $v), $x + $frames_in_pixel, $height - ($height - $v), $transparent);
+            imagefilledrectangle($img, $x, 0 + ($height - $v), $x, $height - ($height - $v), $transparent);
         }
 
-        //  want it resized?
-
-        if ($width) {
-            // resample the image to the proportions defined in the form
-            $rimg = imagecreatetruecolor($width, $height);
-            imagealphablending($rimg, false);
-            imagesavealpha($rimg, true);
-            imagecopyresampled($rimg, $img, 0, 0, 0, 0, $width, $height, sizeof($data) / DETAIL, $height);
-            return $rimg;
-        } else {
-            return $img;
-        }
-
+        return $img;
     }
 
     /**
