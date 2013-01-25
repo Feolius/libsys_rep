@@ -223,9 +223,9 @@ class Waveform
          * to it's simplest form and makes processing significantly faster
          */
 
-        //exec("/usr/local/bin/lame {$temp_file_name}_o.mp3 -f -m m -b 16 --resample 8 {$temp_file_name}.mp3 && /usr/local/bin/lame --decode {$temp_file_name}.mp3 {$temp_file_name}.wav", $output, $return);
-        exec('C:\lame\lame.exe "' . $temp_file_name . '_o.mp3" -f -m m -b 16 --resample 8 "' . $temp_file_name . '.mp3"', $output, $return);
-        exec('C:\lame\lame.exe --decode "' . $temp_file_name . '.mp3" "' . $temp_file_name . '.wav"', $output, $return);
+        exec("/usr/local/bin/lame {$temp_file_name}_o.mp3 -f -m m -b 16 --resample 8 {$temp_file_name}.mp3 && /usr/local/bin/lame --decode {$temp_file_name}.mp3 {$temp_file_name}.wav", $output, $return);
+        //exec('C:\lame\lame.exe "' . $temp_file_name . '_o.mp3" -f -m m -b 16 --resample 8 "' . $temp_file_name . '.mp3"', $output, $return);
+        //exec('C:\lame\lame.exe --decode "' . $temp_file_name . '.mp3" "' . $temp_file_name . '.wav"', $output, $return);
         // delete temporary files
         unlink("{$temp_file_name}_o.mp3");
         unlink("{$temp_file_name}.mp3");
