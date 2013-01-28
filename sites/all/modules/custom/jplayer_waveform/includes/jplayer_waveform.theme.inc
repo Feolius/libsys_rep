@@ -7,56 +7,57 @@
 /**
  * Preprocess function for a player.
  */
-function template_preprocess_jplayer_waveform(&$vars)
-{
-    // Determine a unique player ID.
-    $ids = entity_extract_ids($vars['entity_type'], $vars['entity']);
-    $vars['player_id'] = _jplayer_waveform_check_id('jplayer-' . $vars['entity_type'] . '-' . $ids[0] . '-' . str_replace('_', '-', $vars['field_name']));
+function template_preprocess_jplayer_waveform(&$vars) {
+  // Determine a unique player ID.
+  $ids = entity_extract_ids($vars['entity_type'], $vars['entity']);
+  $vars['player_id'] = _jplayer_waveform_check_id('jplayer-' . $vars['entity_type'] . '-' . $ids[0] . '-' . str_replace('_', '-', $vars['field_name']));
 
-    // Get the field info so we can figure out what type it is.
-    $player = jplayer_waveform_prepare_audio($vars['items']);
-    $vars['type'] = 'audio';
+  // Get the field info so we can figure out what type it is.
+  $player = jplayer_waveform_prepare_audio($vars['items']);
+  $vars['type'] = 'audio';
 
-    //Get waveform data from database
-    $result = db_select('jplayer_waveform_audio_data', 'jplayer_db')
-        ->fields('jplayer_db', array('data'))
-        ->condition('fid', $player['fid'])
-        ->execute();
-    $result = $result->fetchAll();
+  //Get waveform data from database
+  $result = db_select('jplayer_waveform_audio_data', 'jplayer_db')
+    ->fields('jplayer_db', array('data'))
+    ->condition('fid', $player['fid'])
+    ->execute();
+  $result = $result->fetchAll();
 
-    if (empty($result)) {
-        $waveform_data = jplayer_waveform_generate_waveform_data($player['fid']);
-    } else {
-        $waveform_data = unserialize($result[0]->data);
-    }
-    $public_folder_path = file_stream_wrapper_get_instance_by_uri('public://')->realpath();
-    if (!file_exists($public_folder_path . '/jplayer_waveform_images/' . $player['fid'] . '.png') && $waveform_data != FALSE) {
-        jplayer_waveform_create_waveform_image($waveform_data, $player['fid'], '#EEEEEE');
-    }
+  if (empty($result)) {
+    $waveform_data = jplayer_waveform_generate_waveform_data($player['fid']);
+  }
+  else {
+    $waveform_data = unserialize($result[0]->data);
+  }
+  //Create waveform image if that image was not created
+  $public_folder_path = file_stream_wrapper_get_instance_by_uri('public://')->realpath();
+  if (!file_exists($public_folder_path . '/jplayer_waveform_images/' . $player['fid'] . '.png') && $waveform_data != FALSE) {
+    jplayer_waveform_create_waveform_image($waveform_data, $player['fid'], '#EEEEEE');
+  }
 
-    $vars['waveform_image'] = file_create_url("public://jplayer_waveform_images/" . $player['fid'] . '.png');
-    $vars['media_info'] = $player['$file_id3_info'];
-    // Add player settings
-    $player = array(
-        'jplayerInstances' => array(
-            $vars['player_id'] => array(
-                'file' => $player['file'],
-                'solution' => $vars['settings']['solution'],
-                'supplied' => $player['extensions'],
-                'preload' => $vars['settings']['preload'],
-                'volume' => $vars['settings']['volume'] / 100,
-                'muted' => (boolean)$vars['settings']['muted'],
-                'autoplay' => (boolean)$vars['settings']['autoplay'],
-                'repeat' => $vars['settings']['repeat'],
-                'backgroundColor' => '#EEEEEE',
-                'continuous' => $vars['settings']['continuous'],
-                'waveformData' => $waveform_data,
-            ),
-        ),
-    );
-    drupal_add_js(array('jplayer_waveform' => $player), 'setting');
+  $vars['waveform_image'] = file_create_url("public://jplayer_waveform_images/" . $player['fid'] . '.png');
+  $vars['media_info'] = $player['$file_id3_info'];
+  // Add player settings
+  $player = array(
+    'jplayerInstances' => array(
+      $vars['player_id'] => array(
+        'file' => $player['file'],
+        'solution' => $vars['settings']['solution'],
+        'supplied' => $player['extensions'],
+        'preload' => $vars['settings']['preload'],
+        'volume' => $vars['settings']['volume'] / 100,
+        'muted' => (boolean) $vars['settings']['muted'],
+        'autoplay' => (boolean) $vars['settings']['autoplay'],
+        'repeat' => $vars['settings']['repeat'],
+        'backgroundColor' => '#EEEEEE',
+        'continuous' => $vars['settings']['continuous'],
+        'waveformData' => $waveform_data,
+      ),
+    ),
+  );
+  drupal_add_js(array('jplayer_waveform' => $player), 'setting');
 
-    $vars['dynamic'] = jplayer_waveform_add_core_js();
+  $vars['dynamic'] = jplayer_waveform_add_core_js();
 }
 
 
@@ -68,63 +69,69 @@ function template_preprocess_jplayer_waveform(&$vars)
  * @return
  *   a settings array of data being passed to jPlayer instance
  */
-function jplayer_waveform_prepare_audio($raw_file = array())
-{
-    $audio_extensions = array('mp3');
+function jplayer_waveform_prepare_audio($raw_file = array()) {
+  $audio_extensions = array('mp3');
 
-    $file = array();
-    $file_id3_info = array();
-    $extensions = array();
-    $fid = 0;
+  $file = array();
+  $file_id3_info = array();
+  $extensions = array();
+  $fid = 0;
 
 
-    // Look through all the files provided and see what we have
-    foreach ($raw_file as $delta => $item) {
-        // Get file URL
-        if (!isset($item['url'])) {
-            $item['url'] = file_create_url($item['uri']);
-        }
-
-        $fid = $item['fid'];
-
-        // Get file extension
-        if (!isset($item['ext'])) {
-            $fileinfo = pathinfo($item['url']);
-            $item['ext'] = $fileinfo['extension'];
-        }
-
-        // Add file into correct group
-        if (!isset($item['type'])) {
-            if (in_array($item['ext'], $audio_extensions)) {
-                $item['type'] = 'audio';
-            }
-        }
-        if (isset($item) && $item['type'] == 'audio') {
-            $file_id3_info = getid3_analyze(drupal_realpath($item['uri']));
-            dpm($file_id3_info);
-            if (isset($file_id3_info['tags'])) {
-                $id3_data = array();
-                foreach ($file_id3_info['tags'] as $tag) {
-                    foreach ($tag as $key_name => $key_data) {
-                        if ($key_name == 'title') {
-                            $id3_data['title'] = implode(',', $key_data);
-                        }
-                        if ($key_name == 'artist') {
-                            $id3_data['artist'] = implode(',', $key_data);
-                        }
-                    }
-                    //The first tag will be taken.
-                    break;
-                }
-                if (!empty($id3_data)) {
-                    $file_id3_info = implode(' - ', $id3_data); //TODO: when $id3_data is empty the "Array" will return
-                }
-            }
-            $file[$item['ext']] = $item['url'];
-            $extensions[] = $item['ext'];
-        }
+  // Look through all the files provided and see what we have
+  foreach ($raw_file as $delta => $item) {
+    // Get file URL
+    if (!isset($item['url'])) {
+      $item['url'] = file_create_url($item['uri']);
     }
-    return array('fid' => $fid, 'file' => $file, '$file_id3_info' => $file_id3_info, 'extensions' => implode(',', $extensions));
+
+    $fid = $item['fid'];
+
+    // Get file extension
+    if (!isset($item['ext'])) {
+      $fileinfo = pathinfo($item['url']);
+      $item['ext'] = $fileinfo['extension'];
+    }
+
+    // Add file into correct group
+    if (!isset($item['type'])) {
+      if (in_array($item['ext'], $audio_extensions)) {
+        $item['type'] = 'audio';
+      }
+    }
+    if (isset($item) && $item['type'] == 'audio') {
+      $file_id3_info = getid3_analyze(drupal_realpath($item['uri']));
+      if (isset($file_id3_info['tags'])) {
+        $id3_data = array();
+        foreach ($file_id3_info['tags'] as $tag) {
+          foreach ($tag as $key_name => $key_data) {
+            if ($key_name == 'title') {
+              $id3_data['title'] = implode(',', $key_data);
+            }
+            if ($key_name == 'artist') {
+              $id3_data['artist'] = implode(',', $key_data);
+            }
+          }
+          //The first tag will be taken.
+          break;
+        }
+        if (!empty($id3_data)) {
+          $file_id3_info = implode(' - ', $id3_data);
+        }
+        else {
+          $file_id3_info = 'No name';
+        }
+      }
+      $file[$item['ext']] = $item['url'];
+      $extensions[] = $item['ext'];
+    }
+  }
+  return array(
+    'fid' => $fid,
+    'file' => $file,
+    '$file_id3_info' => $file_id3_info,
+    'extensions' => implode(',', $extensions)
+  );
 }
 
 /**
@@ -138,26 +145,26 @@ function jplayer_waveform_prepare_audio($raw_file = array())
  *   A modified ID if the ID was not unique, or the same ID passed in if it was
  *   unique.
  */
-function _jplayer_waveform_check_id($id)
-{
-    // We keep track of player IDs generated per request. This ensures that if a
-    // player pointing to the same field is shown multiple times on a page, that
-    // each player gets a unique ID. This is especially a problem when jPlayers
-    // are embedded in hidden content such as View rendered with Quicktabs.
-    static $player_ids = array();
+function _jplayer_waveform_check_id($id) {
+  // We keep track of player IDs generated per request. This ensures that if a
+  // player pointing to the same field is shown multiple times on a page, that
+  // each player gets a unique ID. This is especially a problem when jPlayers
+  // are embedded in hidden content such as View rendered with Quicktabs.
+  static $player_ids = array();
 
-    // Add the request time, so if the same player is inserted multiple times
-    // AJAX all players are functional.
-    $id = $id . '-' . $_SERVER['REQUEST_TIME'];
+  // Add the request time, so if the same player is inserted multiple times
+  // AJAX all players are functional.
+  $id = $id . '-' . $_SERVER['REQUEST_TIME'];
 
-    // Store a count of the number of times a unique ID is used, and make it
-    // unique if needed.
-    if (isset($player_ids[$id])) {
-        $id = $id . '-' . $player_ids[$id]++;
-    } else {
-        $player_ids[$id] = 0;
-    }
+  // Store a count of the number of times a unique ID is used, and make it
+  // unique if needed.
+  if (isset($player_ids[$id])) {
+    $id = $id . '-' . $player_ids[$id]++;
+  }
+  else {
+    $player_ids[$id] = 0;
+  }
 
-    return $id;
+  return $id;
 }
 

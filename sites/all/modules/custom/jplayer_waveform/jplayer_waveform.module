@@ -10,242 +10,236 @@
 /**
  * Implements hook_menu().
  */
-function jplayer_waveform_menu()
-{
-    $items = array();
+function jplayer_waveform_menu() {
+  $items = array();
 
-    $items['admin/config/media/jplayer_waveform'] = array(
-        'title' => 'jPlayer Waveform',
-        'page callback' => 'drupal_get_form',
-        'page arguments' => array('jplayer_waveform_settings_form'),
-        'access arguments' => array('administer site configuration'),
-        'description' => 'Configure the settings for the jPlayer module.',
-        'file' => 'includes/jplayer_waveform.admin.inc',
-    );
+  $items['admin/config/media/jplayer_waveform'] = array(
+    'title' => 'jPlayer Waveform',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('jplayer_waveform_settings_form'),
+    'access arguments' => array('administer site configuration'),
+    'description' => 'Configure the settings for the jPlayer module.',
+    'file' => 'includes/jplayer_waveform.admin.inc',
+  );
 
-    return $items;
+  return $items;
 }
 
 /**
  * Implements hook_theme().
  */
-function jplayer_waveform_theme()
-{
-    return array(
-        'jplayer_waveform' => array(
-            'template' => 'theme/jplayer_waveform',
-            'variables' => array(
-                'entity_type' => NULL,
-                'entity' => NULL,
-                'field_name' => NULL,
-                'items' => array(),
-                'settings' => array(),
-                'type' => '',
-                'playlist' => '',
-            ),
-            'file' => 'includes/jplayer_waveform.theme.inc',
-        ),
-    );
+function jplayer_waveform_theme() {
+  return array(
+    'jplayer_waveform' => array(
+      'template' => 'theme/jplayer_waveform',
+      'variables' => array(
+        'entity_type' => NULL,
+        'entity' => NULL,
+        'field_name' => NULL,
+        'items' => array(),
+        'settings' => array(),
+        'type' => '',
+        'playlist' => '',
+      ),
+      'file' => 'includes/jplayer_waveform.theme.inc',
+    ),
+  );
 }
 
 /**
  * Implements hook_field_formatter_info().
  */
-function jplayer_waveform_field_formatter_info()
-{
-    return array(
-        'jplayer_waveform_player' => array(
-            'label' => t('jPlayer - Waveform Player'),
-            'field types' => array('file'),
-            'description' => t('Display file fields as an HTML5-compatible with Flash-fallback media player.'),
-            'settings' => array(
-                'autoplay' => 0,
-                'continuous' => 0,
-                'solution' => 'html, flash',
-                'preload' => 'metadata',
-                'volume' => 80,
-                'muted' => FALSE,
-                'repeat' => 'none',
-            ),
-        ),
-    );
+function jplayer_waveform_field_formatter_info() {
+  return array(
+    'jplayer_waveform_player' => array(
+      'label' => t('jPlayer - Waveform Player'),
+      'field types' => array('file'),
+      'description' => t('Display file fields as an HTML5-compatible with Flash-fallback media player.'),
+      'settings' => array(
+        'autoplay' => 0,
+        'continuous' => 0,
+        'solution' => 'html, flash',
+        'preload' => 'metadata',
+        'volume' => 80,
+        'muted' => FALSE,
+        'repeat' => 'none',
+      ),
+    ),
+  );
 }
 
 /**
  * Implements hook_field_formatter_view().
  */
-function jplayer_waveform_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display)
-{
-    $element = array();
+function jplayer_waveform_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
 
-    switch ($display['type']) {
-        case 'jplayer_waveform_player':
-            if (!empty($items)) {
-                $output = theme(
-                    'jplayer_waveform',
-                    array(
-                        'entity_type' => $entity_type,
-                        'entity' => $entity,
-                        'field_name' => $instance['field_name'],
-                        'items' => $items,
-                        'settings' => $display['settings'],
-                    )
-                );
-            } else {
-                return array();
-            }
-            $element[0] = array(
-                '#markup' => $output,
-            );
-            break;
-    }
+  switch ($display['type']) {
+    case 'jplayer_waveform_player':
+      if (!empty($items)) {
+        $output = theme(
+          'jplayer_waveform',
+          array(
+            'entity_type' => $entity_type,
+            'entity' => $entity,
+            'field_name' => $instance['field_name'],
+            'items' => $items,
+            'settings' => $display['settings'],
+          )
+        );
+      }
+      else {
+        return array();
+      }
+      $element[0] = array(
+        '#markup' => $output,
+      );
+      break;
+  }
 
-    return $element;
+  return $element;
 }
 
 /**
  * Implements hook_field_formatter_settings_form().
  */
-function jplayer_waveform_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state)
-{
-    $display = $instance['display'][$view_mode];
-    $settings = $display['settings'];
+function jplayer_waveform_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
 
-    $form = array();
+  $form = array();
 
-    if ($display['type'] == 'jplayer_waveform_player') {
-        $form['continuous'] = array(
-            '#title' => t('Continuous play'),
-            '#type' => 'select',
-            '#options' => array(
-                0 => t('No'),
-                1 => t('Yes'),
-            ),
-            '#description' => t('Play the next track in a playlist automatically.'),
-            '#default_value' => $settings['continuous'],
-            '#states' => array(
-                'visible' => array(
-                    ':input[name="fields[field_audio][settings_edit_form][settings][mode]"]' => array('value' => 'playlist'),
-                ),
-            ),
-        );
+  if ($display['type'] == 'jplayer_waveform_player') {
+    $form['continuous'] = array(
+      '#title' => t('Continuous play'),
+      '#type' => 'select',
+      '#options' => array(
+        0 => t('No'),
+        1 => t('Yes'),
+      ),
+      '#description' => t('Play the next track in a playlist automatically.'),
+      '#default_value' => $settings['continuous'],
+      '#states' => array(
+        'visible' => array(
+          ':input[name="fields[field_audio][settings_edit_form][settings][mode]"]' => array('value' => 'playlist'),
+        ),
+      ),
+    );
 
-        $form['autoplay'] = array(
-            '#title' => t('Autoplay'),
-            '#type' => 'select',
-            '#options' => array(
-                0 => t('No'),
-                1 => t('Yes'),
-            ),
-            '#default_value' => $settings['autoplay'],
-        );
+    $form['autoplay'] = array(
+      '#title' => t('Autoplay'),
+      '#type' => 'select',
+      '#options' => array(
+        0 => t('No'),
+        1 => t('Yes'),
+      ),
+      '#default_value' => $settings['autoplay'],
+    );
 
-        $form['solution'] = array(
-            '#title' => t('Preferred solution'),
-            '#type' => 'select',
-            '#options' => array(
-                'html, flash' => t('HTML5'),
-                'flash, html' => t('Flash'),
-            ),
-            '#default_value' => $settings['solution'],
-        );
+    $form['solution'] = array(
+      '#title' => t('Preferred solution'),
+      '#type' => 'select',
+      '#options' => array(
+        'html, flash' => t('HTML5'),
+        'flash, html' => t('Flash'),
+      ),
+      '#default_value' => $settings['solution'],
+    );
 
-        $form['preload'] = array(
-            '#title' => t('Preload media'),
-            '#type' => 'select',
-            '#options' => array(
-                'metadata' => t('No'),
-                'auto' => t('Yes'),
-            ),
-            '#description' => t("Preloading media before it's requested isn't available in all browsers."),
-            '#default_value' => $settings['preload'],
-        );
+    $form['preload'] = array(
+      '#title' => t('Preload media'),
+      '#type' => 'select',
+      '#options' => array(
+        'metadata' => t('No'),
+        'auto' => t('Yes'),
+      ),
+      '#description' => t("Preloading media before it's requested isn't available in all browsers."),
+      '#default_value' => $settings['preload'],
+    );
 
-        $form['volume'] = array(
-            '#title' => t('Initial volume'),
-            '#type' => 'textfield',
-            '#field_suffix' => '%',
-            '#maxlength' => 3,
-            '#size' => 3,
-            '#default_value' => $settings['volume'],
-            '#element_validate' => array('jplayer_waveform_volume_check'),
-        );
+    $form['volume'] = array(
+      '#title' => t('Initial volume'),
+      '#type' => 'textfield',
+      '#field_suffix' => '%',
+      '#maxlength' => 3,
+      '#size' => 3,
+      '#default_value' => $settings['volume'],
+      '#element_validate' => array('jplayer_waveform_volume_check'),
+    );
 
-        $form['muted'] = array(
-            '#title' => t('Initially muted'),
-            '#type' => 'select',
-            '#options' => array(
-                FALSE => t('No'),
-                TRUE => t('Yes'),
-            ),
-            '#default_value' => $settings['muted'],
-        );
+    $form['muted'] = array(
+      '#title' => t('Initially muted'),
+      '#type' => 'select',
+      '#options' => array(
+        FALSE => t('No'),
+        TRUE => t('Yes'),
+      ),
+      '#default_value' => $settings['muted'],
+    );
 
-        $form['repeat'] = array(
-            '#title' => t('Repeat'),
-            '#type' => 'select',
-            '#options' => array(
-                'all' => t('All'),
-                'single' => t('Single'),
-                'none' => t('None'),
-            ),
-            '#description' => t("For playlist players, it is suggested to enable Continuous play if setting Repeat to 'All'."),
-            '#default_value' => $settings['repeat'],
-        );
-    }
+    $form['repeat'] = array(
+      '#title' => t('Repeat'),
+      '#type' => 'select',
+      '#options' => array(
+        'all' => t('All'),
+        'single' => t('Single'),
+        'none' => t('None'),
+      ),
+      '#description' => t("For playlist players, it is suggested to enable Continuous play if setting Repeat to 'All'."),
+      '#default_value' => $settings['repeat'],
+    );
+  }
 
-    return $form;
+  return $form;
 }
 
 /**
  * Element validation to check volume is between 0 and 100.
  */
-function jplayer_waveform_volume_check($element, &$form_state)
-{
-    $value = $element['#value'];
+function jplayer_waveform_volume_check($element, &$form_state) {
+  $value = $element['#value'];
 
-    if ($value < 0 || $value > 100) {
-        form_set_error($element, t('Volume must be a percentage between 0% and 100%.'));
-    }
+  if ($value < 0 || $value > 100) {
+    form_set_error($element, t('Volume must be a percentage between 0% and 100%.'));
+  }
 }
 
 /**
  * Implements hook_field_formatter_settings_summary().
  */
-function jplayer_waveform_field_formatter_settings_summary($field, $instance, $view_mode)
-{
-    $display = $instance['display'][$view_mode];
-    $settings = $display['settings'];
+function jplayer_waveform_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
 
-    $summary = '';
+  $summary = '';
 
-    if ($display['type'] == 'jplayer_waveform_player') {
-        if (isset($settings['autoplay']) && $settings['autoplay'] == 1) {
-            $summary = t('Single jPlayer instance which autoplays.');
-        } else {
-            $summary = t('Single jPlayer instance.');
-        }
+  if ($display['type'] == 'jplayer_waveform_player') {
+    if (isset($settings['autoplay']) && $settings['autoplay'] == 1) {
+      $summary = t('Single jPlayer instance which autoplays.');
     }
+    else {
+      $summary = t('Single jPlayer instance.');
+    }
+  }
 
-    return $summary;
+  return $summary;
 }
 
 /**
  * Implements hook_library().
  */
-function jplayer_waveform_library()
-{
-    $path = variable_get('jplayer_waveform_directory', 'sites/all/libraries/jplayer');
-    $libraries = array();
-    $libraries['jplayer'] = array(
-        'title' => 'jPlayer',
-        'website' => 'http://www.jplayer.org',
-        'version' => '2.0',
-        'js' => array(
-            $path . '/jquery.jplayer.min.js' => array(),
-        ),
-    );
-    return $libraries;
+function jplayer_waveform_library() {
+  $path = variable_get('jplayer_waveform_directory', 'sites/all/libraries/jplayer');
+  $libraries = array();
+  $libraries['jplayer'] = array(
+    'title' => 'jPlayer',
+    'website' => 'http://www.jplayer.org',
+    'version' => '2.0',
+    'js' => array(
+      $path . '/jquery.jplayer.min.js' => array(),
+    ),
+  );
+  return $libraries;
 }
 
 /**
@@ -259,176 +253,179 @@ function jplayer_waveform_library()
  *   version of jPlayer installed, or FALSE if a valid version number was not
  *   found.
  */
-function jplayer_waveform_get_version($directory = NULL)
-{
-    $version = 0;
+function jplayer_waveform_get_version($directory = NULL) {
+  $version = 0;
 
-    if (!isset($directory)) {
-        $directory = variable_get('jplayer_waveform_directory', 'sites/all/libraries/jplayer');
-    }
+  if (!isset($directory)) {
+    $directory = variable_get('jplayer_waveform_directory', 'sites/all/libraries/jplayer');
+  }
 
-    if (file_exists($directory . '/jquery.jplayer.min.js')) {
-        $contents = file_get_contents($directory . '/jquery.jplayer.min.js');
-    } elseif (file_exists($directory . '/jquery.jplayer.js')) {
-        $contents = file_get_contents($directory . '/jquery.jplayer.js');
-    } else {
-        return false;
-    }
+  if (file_exists($directory . '/jquery.jplayer.min.js')) {
+    $contents = file_get_contents($directory . '/jquery.jplayer.min.js');
+  }
+  elseif (file_exists($directory . '/jquery.jplayer.js')) {
+    $contents = file_get_contents($directory . '/jquery.jplayer.js');
+  }
+  else {
+    return FALSE;
+  }
 
-    $matches = array();
-    preg_match('/Version:?[ ]*([\d.]+)/i', $contents, $matches);
+  $matches = array();
+  preg_match('/Version:?[ ]*([\d.]+)/i', $contents, $matches);
 
-    if (isset($matches[1])) {
-        $version = $matches[1];
-    }
+  if (isset($matches[1])) {
+    $version = $matches[1];
+  }
 
-    $parts = explode('.', $version);
+  $parts = explode('.', $version);
 
-    // Though other parts of the module may check for a specific version,
-    // checking for a positive integer is more of a sanity check here.
-    if ($version < 1 || !isset($parts[0]) || !isset($parts[1])) {
-        return FALSE;
-    }
+  // Though other parts of the module may check for a specific version,
+  // checking for a positive integer is more of a sanity check here.
+  if ($version < 1 || !isset($parts[0]) || !isset($parts[1])) {
+    return FALSE;
+  }
 
-    return array('version' => $version, 'major' => $parts[0], 'minor' => $parts[1]);
+  return array('version' => $version, 'major' => $parts[0], 'minor' => $parts[1]);
 }
 
 /**
  * Add core JS and CSS needed for jPlayer instances
  */
-function jplayer_waveform_add_core_js()
-{
-    $added = & drupal_static(__FUNCTION__, FALSE);
-    if ($added) {
-        // Js was already loaded.
-        return;
-    }
-    $added = TRUE;
+function jplayer_waveform_add_core_js() {
+  $added = & drupal_static(__FUNCTION__, FALSE);
+  if ($added) {
+    // Js was already loaded.
+    return;
+  }
+  $added = TRUE;
 
-    // Add global settings
-    $settings = array(
-        'jplayer_waveform' => array(
-            'swfPath' => base_path() . variable_get('jplayer_waveform_directory', 'sites/all/libraries/jplayer'),
-            'showHour' => (boolean)variable_get('jplayer_waveform_showHour', FALSE),
-            'showMin' => (boolean)variable_get('jplayer_waveform_showMin', TRUE),
-            'showSec' => (boolean)variable_get('jplayer_waveform_showSec', TRUE),
-            'padHour' => (boolean)variable_get('jplayer_waveform_padHour', FALSE),
-            'padMin' => (boolean)variable_get('jplayer_waveform_padMin', TRUE),
-            'padSec' => (boolean)variable_get('jplayer_waveform_padSec', TRUE),
-            'sepHour' => variable_get('jplayer_waveform_sepHour', ':'),
-            'sepMin' => variable_get('jplayer_waveform_sepMin', ':'),
-            'sepSec' => variable_get('jplayer_waveform_sepSec', ''),
+  // Add global settings
+  $settings = array(
+    'jplayer_waveform' => array(
+      'swfPath' => base_path() . variable_get('jplayer_waveform_directory', 'sites/all/libraries/jplayer'),
+      'showHour' => (boolean) variable_get('jplayer_waveform_showHour', FALSE),
+      'showMin' => (boolean) variable_get('jplayer_waveform_showMin', TRUE),
+      'showSec' => (boolean) variable_get('jplayer_waveform_showSec', TRUE),
+      'padHour' => (boolean) variable_get('jplayer_waveform_padHour', FALSE),
+      'padMin' => (boolean) variable_get('jplayer_waveform_padMin', TRUE),
+      'padSec' => (boolean) variable_get('jplayer_waveform_padSec', TRUE),
+      'sepHour' => variable_get('jplayer_waveform_sepHour', ':'),
+      'sepMin' => variable_get('jplayer_waveform_sepMin', ':'),
+      'sepSec' => variable_get('jplayer_waveform_sepSec', ''),
+    ),
+  );
+  drupal_add_js($settings, 'setting');
+
+  $return = array(
+    '#attached' => array(
+      'library' => array(
+        array('jplayer_waveform', 'jplayer'),
+      ),
+      'js' => array(
+        drupal_get_path('module', 'jplayer_waveform') . '/theme/jplayer_waveform.js' => array(
+          'type' => 'file',
+          'scope' => 'footer',
+          'group' => JS_DEFAULT
         ),
-    );
-    drupal_add_js($settings, 'setting');
-
-    $return = array(
-        '#attached' => array(
-            'library' => array(
-                array('jplayer_waveform', 'jplayer'),
-            ),
-            'js' => array(
-                drupal_get_path('module', 'jplayer_waveform') . '/theme/jplayer_waveform.js' => array('type' => 'file', 'scope' => 'footer', 'group' => JS_DEFAULT),
-                //Someway that library doesn't help to displaying the canvas on IE8
-                //drupal_get_path('module', 'jplayer_waveform') . '/theme/excanvas.compiled.js' => array('type' => 'file', 'scope' => 'footer', 'group' => JS_DEFAULT),
-            ),
-            'css' => array(
-                drupal_get_path('module', 'jplayer_waveform') . '/theme/jplayer_waveform.css' => array('type' => 'file', 'group' => CSS_DEFAULT),
-            ),
+        //Someway that library doesn't help to displaying the canvas on IE8
+        //drupal_get_path('module', 'jplayer_waveform') . '/theme/excanvas.compiled.js' => array('type' => 'file', 'scope' => 'footer', 'group' => JS_DEFAULT),
+      ),
+      'css' => array(
+        drupal_get_path('module', 'jplayer_waveform') . '/theme/jplayer_waveform.css' => array(
+          'type' => 'file',
+          'group' => CSS_DEFAULT
         ),
-    );
+      ),
+    ),
+  );
 
-    // Allow other modules to add resources to the page when a jPlayer is
-    // embedded.
-    if ($additional_resources = module_invoke_all('jplayer_add_js')) {
-        $return['additional_resources'] = $additional_resources;
-    }
+  // Allow other modules to add resources to the page when a jPlayer is
+  // embedded.
+  if ($additional_resources = module_invoke_all('jplayer_add_js')) {
+    $return['additional_resources'] = $additional_resources;
+  }
 
-    return $return;
+  return $return;
 }
 
 /**
  * Implements hook_views_api().
  */
-function jplayer_waveform_views_api()
-{
-    return array(
-        'path' => drupal_get_path('module', 'jplayer_waveform') . '/includes',
-        'api' => 3.0,
-    );
+function jplayer_waveform_views_api() {
+  return array(
+    'path' => drupal_get_path('module', 'jplayer_waveform') . '/includes',
+    'api' => 3.0,
+  );
 }
 
 /**
  * Implement hook_node_insert().
  */
-function jplayer_waveform_node_insert($node)
-{
-    $instances = field_info_instances('node', $node->type);
-    foreach ($instances as $field_name => $instance) {
-        $field_info = field_info_field($field_name);
-        if ($field_info['type'] == 'file') {
-            foreach ($instance['display'] as $display) {
-                if ($display['type'] == 'jplayer_waveform_player') {
-                    $items = field_get_items('node', $node, $instance['field_name']);
-                    if (!empty($items)) {
-                        foreach ($items as $item) {
-                            $file = file_load($item['fid']);
-                            if ($file->filemime == 'audio/mpeg') {
-                                jplayer_waveform_generate_waveform_data($file->fid);
-                                break;
-                            }
-                        }
-                    }
-                    break;
-                }
+function jplayer_waveform_node_insert($node) {
+  $instances = field_info_instances('node', $node->type);
+  foreach ($instances as $field_name => $instance) {
+    $field_info = field_info_field($field_name);
+    if ($field_info['type'] == 'file') {
+      foreach ($instance['display'] as $display) {
+        if ($display['type'] == 'jplayer_waveform_player') {
+          $items = field_get_items('node', $node, $instance['field_name']);
+          if (!empty($items)) {
+            foreach ($items as $item) {
+              $file = file_load($item['fid']);
+              if ($file->filemime == 'audio/mpeg') {
+                jplayer_waveform_generate_waveform_data($file->fid);
+                break;
+              }
             }
+          }
+          break;
         }
+      }
     }
+  }
 }
 
 /**
  * Implement hook_node_update().
  */
-function jplayer_waveform_node_update($node)
-{
-    $instances = field_info_instances('node', $node->type);
-    foreach ($instances as $field_name => $instance) {
-        $field_info = field_info_field($field_name);
-        if ($field_info['type'] == 'file') {
-            foreach ($instance['display'] as $display) {
-                if ($display['type'] == 'jplayer_waveform_player') {
-                    $items = field_get_items('node', $node, $instance['field_name']);
-                    if (!empty($items)) {
-                        foreach ($items as $item) {
-                            $file = file_load($item['fid']);
-                            if ($file->filemime == 'audio/mpeg') {
-                                jplayer_waveform_generate_waveform_data($file->fid);
-                                break;
-                            }
-                        }
-                    }
-                    break;
-                }
+function jplayer_waveform_node_update($node) {
+  $instances = field_info_instances('node', $node->type);
+  foreach ($instances as $field_name => $instance) {
+    $field_info = field_info_field($field_name);
+    if ($field_info['type'] == 'file') {
+      foreach ($instance['display'] as $display) {
+        if ($display['type'] == 'jplayer_waveform_player') {
+          $items = field_get_items('node', $node, $instance['field_name']);
+          if (!empty($items)) {
+            foreach ($items as $item) {
+              $file = file_load($item['fid']);
+              if ($file->filemime == 'audio/mpeg') {
+                jplayer_waveform_generate_waveform_data($file->fid);
+                break;
+              }
             }
+          }
+          break;
         }
+      }
     }
+  }
 }
 
 
 /**
  * Implement hook_file_delete().
  */
-function jplayer_waveform_file_delete($file)
-{
-    //When the audio file was deleted we should delete the gereted waveform image
-    $public_folder_path = file_stream_wrapper_get_instance_by_uri('public://')->realpath();
-    if (file_exists($public_folder_path . '/jplayer_waveform_images/' . $file->fid . '.png')) {
-        file_unmanaged_delete($public_folder_path . '/jplayer_waveform_images/' . $file->fid . '.png');
-    }
-    //and also the waveform data from database
-    db_delete('jplayer_waveform_audio_data')
-        ->condition('fid', $file->fid)
-        ->execute();
+function jplayer_waveform_file_delete($file) {
+  //When the audio file was deleted we should delete the gereted waveform image
+  $public_folder_path = file_stream_wrapper_get_instance_by_uri('public://')->realpath();
+  if (file_exists($public_folder_path . '/jplayer_waveform_images/' . $file->fid . '.png')) {
+    file_unmanaged_delete($public_folder_path . '/jplayer_waveform_images/' . $file->fid . '.png');
+  }
+  //and also the waveform data from database
+  db_delete('jplayer_waveform_audio_data')
+    ->condition('fid', $file->fid)
+    ->execute();
 }
 
 /**
@@ -439,48 +436,55 @@ function jplayer_waveform_file_delete($file)
  * @return
  *   TRUE if creation an saving was normally happend, and FALSE if something goes wrong.
  */
-function jplayer_waveform_create_waveform_image($waveform_data, $audio_file_fid, $background_color)
-{
-    $img = Waveform::createImage($waveform_data, 400, 50, $background_color);
-    if ($img != FALSE) {
+function jplayer_waveform_create_waveform_image($waveform_data, $audio_file_fid, $background_color) {
+  $img = Waveform::createImage($waveform_data, 400, 50, $background_color);
+  if ($img != FALSE) {
 
-        $public_folder_path = file_stream_wrapper_get_instance_by_uri('public://')->realpath();
+    $public_folder_path = file_stream_wrapper_get_instance_by_uri('public://')->realpath();
 
-        if (!file_exists($public_folder_path . '/jplayer_waveform_images')) {
-            mkdir($public_folder_path . '/jplayer_waveform_images', 0774);
-        }
-
-        if (file_exists($public_folder_path . '/jplayer_waveform_images/' . $audio_file_fid . '.png')) {
-            file_unmanaged_delete($public_folder_path . '/jplayer_waveform_images/' . $audio_file_fid . '.png');
-        }
-
-        $result = imagepng($img, $public_folder_path . '/jplayer_waveform_images/' . $audio_file_fid . '.png');
-        imagedestroy($img);
-        return $result;
-
-    } else {
-        watchdog('jplayer_waveform', t("The jplayer_waveform module cannot generate the waveform image from waveform data. The site administrator will need to verify the public directory permissions and image creation php functions."), array(), WATCHDOG_ERROR);
-        return FALSE;
+    if (!file_exists($public_folder_path . '/jplayer_waveform_images')) {
+      mkdir($public_folder_path . '/jplayer_waveform_images', 0774);
     }
+
+    if (file_exists($public_folder_path . '/jplayer_waveform_images/' . $audio_file_fid . '.png')) {
+      file_unmanaged_delete($public_folder_path . '/jplayer_waveform_images/' . $audio_file_fid . '.png');
+    }
+
+    $result = imagepng($img, $public_folder_path . '/jplayer_waveform_images/' . $audio_file_fid . '.png');
+    imagedestroy($img);
+    return $result;
+
+  }
+  else {
+    watchdog('jplayer_waveform', t("The jplayer_waveform module cannot generate the waveform image from waveform data. The site administrator will need to verify the public directory permissions and image creation php functions."), array(), WATCHDOG_ERROR);
+    return FALSE;
+  }
 }
 
-function jplayer_waveform_generate_waveform_data($audio_file_fid)
-{
+function jplayer_waveform_generate_waveform_data($audio_file_fid) {
+  $result = db_select('jplayer_waveform_audio_data', 'data')
+    ->fields('data')
+    ->condition('fid', $audio_file_fid)
+    ->execute()
+    ->fetchAssoc();
+  if ($result == NULL) {
     $file = file_load($audio_file_fid);
     $file_path = drupal_realpath($file->uri);
 
     $waveform_data = Waveform::generateWaveformData($file_path);
     if ($waveform_data != FALSE) {
-        $record = array(
-            'fid' => $audio_file_fid,
-            'data' => serialize($waveform_data),
-        );
-        drupal_write_record('jplayer_waveform_audio_data', $record);
-        return $waveform_data;
-    } else {
-        watchdog('jplayer_waveform', t("The jplayer_waveform module cannot generate the waveform data from audio file. The site administrator will need to verify the audio file permissions or temp directory settings."), array(), WATCHDOG_ERROR);
-        return FALSE;
+      $record = array(
+        'fid' => $audio_file_fid,
+        'data' => serialize($waveform_data),
+      );
+      drupal_write_record('jplayer_waveform_audio_data', $record);
+      return $waveform_data;
     }
+    else {
+      watchdog('jplayer_waveform', t("The jplayer_waveform module cannot generate the waveform data from audio file. The site administrator will need to verify the audio file permissions or temp directory settings."), array(), WATCHDOG_ERROR);
+      return FALSE;
+    }
+  }
 }
 
 
