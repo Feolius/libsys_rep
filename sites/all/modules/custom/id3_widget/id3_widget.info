@@ -1,0 +1,8 @@
+name = ID3 Widget
+description = "Basic functions and helpers for ID3 widgets"
+package = Media
+core = 7.x
+version = "7.x-1.x"
+dependencies[] = file
+dependencies[] = field
+dependencies[] = getid3

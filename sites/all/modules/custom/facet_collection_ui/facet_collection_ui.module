@@ -104,7 +104,7 @@ function facet_collection_ui_field_delete_instance($instance)
             if (isset($facet_filters[$bundle][$field['field_name']])) {
                 $facet_filters_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
                 $function = $filterable_type_list[$field['type']] . '_facet_collection_ui_delete_field';
-                if ($function) {
+                if (function_exists($function)) {
                     $function($field, $bundle, $facet_filters_settings, $facet_filters[$bundle][$field['field_name']]);
                 }
                 unset($facet_filters[$bundle][$field['field_name']]);

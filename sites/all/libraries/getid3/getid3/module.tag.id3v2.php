@@ -1241,7 +1241,7 @@ class getid3_id3v2 extends getid3_handler
 				$frame_imagetype = substr($parsedFrame['data'], $frame_offset, 3);
 				if (strtolower($frame_imagetype) == 'ima') {
 					// complete hack for mp3Rage (www.chaoticsoftware.com) that puts ID3v2.3-formatted
-					// MIME type instead of 3-char ID3v2.2-format image type  (thanks xbhoffØpacbell*net)
+					// MIME type instead of 3-char ID3v2.2-format image type  (thanks xbhoffï¿½pacbell*net)
 					$frame_terminatorpos = strpos($parsedFrame['data'], "\x00", $frame_offset);
 					$frame_mimetype = substr($parsedFrame['data'], $frame_offset, $frame_terminatorpos - $frame_offset);
 					if (ord($frame_mimetype) === 0) {
@@ -2250,7 +2250,7 @@ class getid3_id3v2 extends getid3_handler
 			SOS	Somalia
 			SPL	Seborga
 			SRG	Suriname
-			STD	São Tome and Principe
+			STD	Sï¿½o Tome and Principe
 			SVC	El Salvador
 			SYP	Syria
 			SZL	Swaziland
@@ -2274,13 +2274,13 @@ class getid3_id3v2 extends getid3_handler
 			VND	Viet Nam
 			VUV	Vanuatu
 			WST	Samoa
-			XAF	Communauté Financière Africaine
+			XAF	Communautï¿½ Financiï¿½re Africaine
 			XAG	Silver
 			XAU	Gold
 			XCD	East Caribbean
 			XDR	International Monetary Fund
 			XPD	Palladium
-			XPF	Comptoirs Français du Pacifique
+			XPF	Comptoirs Franï¿½ais du Pacifique
 			XPT	Platinum
 			YER	Yemen
 			YUM	Yugoslavia
@@ -2724,7 +2724,7 @@ class getid3_id3v2 extends getid3_handler
 			vai	Vai
 			ven	Venda
 			vie	Vietnamese
-			vol	Volapük
+			vol	Volapï¿½k
 			vot	Votic
 			wak	Wakashan Languages
 			wal	Walamo
@@ -3047,7 +3047,6 @@ class getid3_id3v2 extends getid3_handler
 			rgad	Replay Gain Adjustment
 
 		*/
-
 		return getid3_lib::EmbeddedLookup($framename, $begin, __LINE__, __FILE__, 'id3v2-framename_long');
 
 		// Last three:
@@ -3231,8 +3230,8 @@ class getid3_id3v2 extends getid3_handler
 			rgad	replay_gain_adjustment
 
 		*/
+      	return getid3_lib::EmbeddedLookup($framename, $begin, __LINE__, __FILE__, 'id3v2-framename_short');
 
-		return getid3_lib::EmbeddedLookup($framename, $begin, __LINE__, __FILE__, 'id3v2-framename_short');
 	}
 
 	static function TextEncodingTerminatorLookup($encoding) {

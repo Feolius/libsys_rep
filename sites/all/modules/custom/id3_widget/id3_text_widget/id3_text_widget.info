@@ -1,0 +1,7 @@
+name = ID3 Text Widget
+description = "Display and store audio metadata (ID3 tags) as text fields."
+package = Media
+core = 7.x
+version = "7.x-1.x"
+dependencies[] = id3_widget
+dependencies[] = text

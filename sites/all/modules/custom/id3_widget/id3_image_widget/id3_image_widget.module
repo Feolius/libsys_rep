@@ -1,0 +1,116 @@
+<?php
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function id3_image_widget_field_widget_info() {
+  return array(
+    'id3_image_widget' => array(
+      'label' => t('ID3 tags metadata to image'),
+      'description' => t('Field content is calculated from audio field in the same content type'),
+      'field types' => array('image'),
+      'settings' => array(
+        'audio_field' => '', //The main settings for ID3_tag_widget
+        'id3_field' => '', //
+        'progress_indicator' => 'throbber', //The settings for image field type
+        'preview_image_style' => 'thumbnail', //
+      ),
+      'behaviors' => array(
+        'multiple values' => FIELD_BEHAVIOR_CUSTOM,
+        'default value' => FIELD_BEHAVIOR_DEFAULT,
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_id3_widget_widget_name_info().
+ */
+function id3_image_widget_id3_widget_widget_name_info() {
+  return 'id3_image_widget';
+}
+
+
+/**
+ * Implementation of hook_field_widget_settings_form().
+ */
+function id3_image_widget_field_widget_settings_form($field, $instance) {
+  $form = id3_widget_widget_settings_form($field, $instance);
+  $field_type_setting_addition_form = image_field_widget_settings_form($field, $instance);
+  $form = array_merge($form, $field_type_setting_addition_form);
+  return $form;
+}
+
+/**
+ * Implementation of hook_field_widget_form().
+ */
+function id3_image_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  $element = image_field_widget_form($form, $form_state, $field, $instance, $langcode, $items, $delta, $element);
+  return $element;
+}
+
+/**
+ * Handle image field
+ *
+ * @param $instance_widget_data
+ * @param $node
+ * @param $field_info
+ * @param $write_back_to_audio_file_data
+ */
+function id3_image_widget_id3_widget_handle_field($instance_widget_data, &$node, $field_info, &$write_back_to_audio_file_data) {
+  $id3_field_name = $field_info['field_name'];
+  $instance_data = $node->$id3_field_name;
+
+  //Check does a user paste the new image for including it in audio file as attached_picture
+  //or he didn't edit that image field and just save changed in another field.
+  if (isset($instance_data['und'][0]['fid'])) {
+    $file = file_load($instance_data['und'][0]['fid']);
+    $usage_list = file_usage_list($file);
+    if (!isset($usage_list['file']['node']) || !isset($usage_list['file']['node'][$node->vid])) {
+      $image_info = array();
+      $image_info['mime'] = $file->filemime;
+      $image_info['description'] = $file->filename;
+      $image_info['picturetypeid'] = 0;
+      $image_data = file_get_contents($file->uri);
+      if ($image_data != FALSE) {
+        $image_info['data'] = $image_data;
+        $write_back_to_audio_file_data[$instance_widget_data['audio_file_id']][$instance_widget_data['id3_tag_field']][] = $image_info;
+      }
+    }
+  }
+  //Check does the audio file have the album poster data
+  //and also check does the album poster image already extracted from audio file
+  //and saved into the album_poster_folder
+  else {
+    if ($instance_widget_data['value'] != NULL) {
+      $instance = field_info_instance('node', $field_info['field_name'], $node->type);
+      $instance['settings']['file_directory'];
+      $album_poster_folder = $instance['settings']['file_directory'];
+      $album_poster_folder_uri = file_build_uri($album_poster_folder);
+
+      if (!file_exists($album_poster_folder_uri)) {
+        drupal_mkdir($album_poster_folder_uri);
+      }
+      $mime = $instance_widget_data['value']['mime'];
+      switch ($mime) {
+        case 'image/png':
+          $extension = '.png';
+          break;
+        case 'image/jpeg':
+          $extension = '.jpg';
+          break;
+        case 'image/gif':
+          $extension = '.gif';
+          break;
+      }
+      $file_path = $album_poster_folder_uri . DIRECTORY_SEPARATOR . 'album_poster' . $extension;
+      $file = file_save_data($instance_widget_data['value']['data'], $file_path);
+//      $image = image_load($file->uri);
+//      image_save($image);
+      if ($file != FALSE) {
+        $instance_data['und'][0]['fid'] = $file->fid;
+      }
+    }
+  }
+  $node->$id3_field_name = $instance_data;
+}

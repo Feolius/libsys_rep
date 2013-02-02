@@ -1,0 +1,7 @@
+name = ID3 Taxonomy Widget
+description = "Display and store audio metadata (ID3 tags) as taxonomy terms."
+package = Media
+core = 7.x
+version = "7.x-1.x"
+dependencies[] = id3_widget
+dependencies[] = taxonomy

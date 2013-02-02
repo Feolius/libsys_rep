@@ -1,0 +1,100 @@
+<?php
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function id3_text_widget_field_widget_info() {
+  return array(
+    'id3_text_widget' => array(
+      'label' => t('ID3 tags metadata to text'),
+      'description' => t('Field content is calculated from audio field in the same content type'),
+      'field types' => array('text', 'text_long'),
+      'settings' => array(
+        'audio_field' => '', //The main settings for ID3_tag_widget
+        'id3_field' => '', //
+        'size' => 60, //The settings for text field type
+        'rows' => 5, //The settings for long text field type
+      ),
+      'behaviors' => array(
+        'multiple values' => FIELD_BEHAVIOR_DEFAULT,
+        'default value' => FIELD_BEHAVIOR_DEFAULT,
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_id3_widget_widget_name_info().
+ */
+function id3_text_widget_id3_widget_widget_name_info() {
+  return 'id3_text_widget';
+}
+
+
+/**
+ * Implementation of hook_field_widget_settings_form().
+ */
+function id3_text_widget_field_widget_settings_form($field, $instance) {
+  $form = id3_widget_widget_settings_form($field, $instance);
+  $field_type_setting_addition_form = array();
+  switch ($field['type']) {
+    case 'text':
+      $tmp_instance = $instance;
+      $tmp_instance['widget']['type'] = 'text_textfield';
+      $field_type_setting_addition_form = text_field_widget_settings_form($field, $tmp_instance);
+      break;
+    case 'text_long':
+      $tmp_instance = $instance;
+      $tmp_instance['widget']['type'] = 'text_textarea';
+      $field_type_setting_addition_form = text_field_widget_settings_form($field, $tmp_instance);
+      break;
+  }
+  $form = array_merge($form, $field_type_setting_addition_form);
+  return $form;
+}
+
+/**
+ * Implementation of hook_field_widget_form().
+ */
+function id3_text_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  switch ($field['type']) {
+    case 'text':
+      $tmp_instance = $instance;
+      $tmp_instance['widget']['type'] = 'text_textfield';
+      $element = text_field_widget_form($form, $form_state, $field, $tmp_instance, $langcode, $items, $delta, $element);
+      break;
+    case 'text_long':
+      $tmp_instance = $instance;
+      $tmp_instance['widget']['type'] = 'text_textarea';
+      $element = text_field_widget_form($form, $form_state, $field, $tmp_instance, $langcode, $items, $delta, $element);
+      break;
+  }
+  return $element;
+}
+
+/**
+ * Handle text and long text field
+ *
+ * @param $instance_widget_data
+ * @param $node
+ * @param $field_info
+ * @param $write_back_to_audio_file_data
+ */
+function id3_text_widget_id3_widget_handle_field($instance_widget_data, &$node, $field_info, &$write_back_to_audio_file_data) {
+  $id3_field_name = $field_info['field_name'];
+  $instance_data = $node->$id3_field_name;
+  if (!drupal_validate_utf8($instance_widget_data['value'])) {
+    $instance_widget_data['value'] = check_plain(utf8_encode($instance_widget_data['value']));
+  }
+  if (isset($instance_data['und'][0]['value'])) {
+    if (trim($instance_data['und'][0]['value']) != $instance_widget_data['value']) {
+      $write_back_to_audio_file_data[$instance_widget_data['audio_file_id']][$instance_widget_data['id3_tag_field']][] = trim($instance_data['und'][0]['value']);
+    }
+  }
+  else {
+    if ($instance_widget_data['value'] != NULL) {
+      $instance_data['und'][0]['value'] = $instance_widget_data['value'];
+    }
+  }
+  $node->$id3_field_name = $instance_data;
+}
