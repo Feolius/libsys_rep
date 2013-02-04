@@ -103,10 +103,8 @@ function id3_image_widget_id3_widget_handle_field($instance_widget_data, &$node,
           $extension = '.gif';
           break;
       }
-      $file_path = $album_poster_folder_uri . DIRECTORY_SEPARATOR . 'album_poster' . $extension;
+      $file_path = $album_poster_folder_uri . DIRECTORY_SEPARATOR . 'album_poster_'. rand() . $extension;
       $file = file_save_data($instance_widget_data['value']['data'], $file_path);
-//      $image = image_load($file->uri);
-//      image_save($image);
       if ($file != FALSE) {
         $instance_data['und'][0]['fid'] = $file->fid;
       }

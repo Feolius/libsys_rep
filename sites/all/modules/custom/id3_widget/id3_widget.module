@@ -45,6 +45,9 @@ function _id3_widget_retrieve_id3_fields($field) {
     $tmp_array = array('attached_picture' => $id3_fields['attached_picture']);
     $id3_fields = $tmp_array;
   }
+  else {
+    unset($id3_fields['attached_picture']);
+  }
   return $id3_fields;
 }
 
@@ -158,7 +161,7 @@ function id3_widget_error($element, $error, $form, &$form_state) {
 function id3_widget_node_presave($node) {
   $bundle_instances = field_info_instances('node', $node->type);
   dpm($node);
-  //Fetch the installed id3 tags widgets.
+  // Fetch the installed id3 tags widgets.
   $id3_widgets_list = cache_get('id3_widgets_list');
   if (!$id3_widgets_list) {
     $id3_widgets_list = new stdClass();
@@ -211,9 +214,30 @@ function _id3_widget_search_widget_instances(&$node, $bundle_instances, $id3_wid
 
       if (isset($audio_field_data['und'][0])) {
         $widget_instances[$instance_name] = $instance;
+        $usage_list = file_usage_list(file_load($audio_field_data['und'][0]['fid']));
+
+        if (!isset($usage_list['file']['node']) || !isset($usage_list['file']['node'][$node->vid])) {
+          //Delete old data from id3 widget fields because the new audio file is uploaded
+          $instance_data = $node->$instance_name;
+          if (isset($instance_data['und'][0])) {
+            $field_info = field_info_field($instance_name);
+            switch ($field_info['type']) {
+              case 'image':
+                $file = file_load($instance_data['und'][0]['fid']);
+                file_delete($file);
+                $node->$instance_name = array('und' => array());
+                break;
+              case 'text':
+              case 'text_long':
+              case 'taxonomy_term_reference':
+                $node->$instance_name = array('und' => array());
+                break;
+            }
+          }
+        }
       }
       else {
-        //Delete data from id3 widget fields beacause the audio field is empty
+        //Delete data from id3 widget fields because the audio field is empty
         $instance_data = $node->$instance_name;
         if (isset($instance_data['und'][0])) {
           $field_info = field_info_field($instance_name);
@@ -238,7 +262,7 @@ function _id3_widget_search_widget_instances(&$node, $bundle_instances, $id3_wid
 }
 
 /**
- *  * Search in bundle for audio fields and metadata fields which
+ * Search in bundle for audio fields and metadata fields which
  * need to be filled by meta information from these audio fields
  *
  * @param $node
@@ -247,13 +271,6 @@ function _id3_widget_search_widget_instances(&$node, $bundle_instances, $id3_wid
  */
 function _id3_widget_fetch_id3_field_data($node, $widget_instances) {
   $result = array();
-  $audio_files_metadata_from_cache = cache_get('id3_widget_audio_files_metadata');
-  $audio_files_metadata = array();
-  if (!empty($audio_files_metadata_from_cache->data)) {
-    $audio_files_metadata_from_cache = $audio_files_metadata_from_cache->data;
-    $audio_files_metadata = $audio_files_metadata_from_cache;
-  }
-
   foreach ($widget_instances as $instance_name => $instance) {
     $result[$instance_name] = NULL;
     //Get id3 tag field name.
@@ -267,7 +284,6 @@ function _id3_widget_fetch_id3_field_data($node, $widget_instances) {
       $audio_files_metadata[$audio_file_id] = getid3_analyze(drupal_realpath(file_load($audio_file_id)->uri));
     }
     $audio_file_metadata = $audio_files_metadata[$audio_file_id];
-
     //Define is the needed id3 tag field set and
     //get data from from these field.
     //Also get image data of album poster if attached_picture field was chosen.
@@ -277,7 +293,6 @@ function _id3_widget_fetch_id3_field_data($node, $widget_instances) {
       $result[$instance_name]['value'] = NULL;
       if ($id3_tag_field == 'attached_picture') {
         if (isset($audio_file_metadata['id3v2']['APIC'][0]['data'])) {
-          dpm($audio_file_metadata['id3v2']['APIC'][0]);
           $result[$instance_name]['value']['data'] = $audio_file_metadata['id3v2']['APIC'][0]['data'];
           $result[$instance_name]['value']['mime'] = $audio_file_metadata['id3v2']['APIC'][0]['mime'];
         }
@@ -292,9 +307,7 @@ function _id3_widget_fetch_id3_field_data($node, $widget_instances) {
       }
     }
   }
-  if ($audio_files_metadata != $audio_files_metadata_from_cache) {
-    cache_set('id3_widget_audio_files_metadata', $audio_files_metadata);
-  }
+  drupal_static('id3_widget_audio_files_metadata', $audio_files_metadata);
   return $result;
 }
 
@@ -306,48 +319,47 @@ function _id3_widget_fetch_id3_field_data($node, $widget_instances) {
 function id3_widget_write_tags_into_file($changed_tags_metadata) {
   getid3_load();
   $tag_writer = new getid3_writetags;
-  $getid3_tags_data = cache_get('id3_widget_audio_files_metadata');
-  if (isset($getid3_tags_data->data)) {
-    //Verify the audio files tags data in cache.
-    //If that data is empty, that means no one audio files
-    //have been uploaded for reading and writings id3 tags
-    $getid3_tags_data = $getid3_tags_data->data;
-    foreach ($changed_tags_metadata as $audio_file_id => $tag_data) {
-      if (isset($getid3_tags_data[$audio_file_id])) {
-        $audio_file_metadata = $getid3_tags_data[$audio_file_id];
-        //The getid3 library have problems with writing new tags data
-        //without deleting all previous tag data.
-        //Therefore data for writing is consist of changed data from node editing page
-        //and all metadata from audio file except changed
-        $tag_writer->filename = $audio_file_metadata['filenamepath'];
-        if (isset($audio_file_metadata['tags']['id3v2'])) {
-          $tag_data_for_writings = array_merge($audio_file_metadata['tags']['id3v2'], $tag_data);
-          if (!isset($tag_data_for_writings['attached_picture']) && isset($audio_file_metadata['id3v2']['APIC'])) {
-            $tag_data_for_writings['attached_picture'] = $audio_file_metadata['id3v2']['APIC'];
-          }
-          $tag_writer->tagformats = array('id3v2.' . $audio_file_metadata['id3v2']['majorversion']);
-          $tag_writer->tag_encoding = $audio_file_metadata['id3v2']['encoding'];
-          $tag_writer->tag_data = $tag_data_for_writings;
+  $getid3_tags_data = & drupal_static('id3_widget_audio_files_metadata');
+  foreach ($changed_tags_metadata as $audio_file_id => $tag_data) {
+    if (isset($getid3_tags_data[$audio_file_id])) {
+      $audio_file_metadata = $getid3_tags_data[$audio_file_id];
+      //The getid3 library have problems with writing new tags data
+      //without deleting all previous tag data.
+      //Therefore data for writing is consist of changed data from node editing page
+      //and all metadata from audio file except changed
+      $tag_writer->filename = $audio_file_metadata['filenamepath'];
+      if (isset($audio_file_metadata['tags']['id3v2'])) {
+        $tag_data_for_writings = array_merge($audio_file_metadata['tags']['id3v2'], $tag_data);
+        if (!isset($tag_data_for_writings['attached_picture']) && isset($audio_file_metadata['id3v2']['APIC'])) {
+          $tag_data_for_writings['attached_picture'] = $audio_file_metadata['id3v2']['APIC'];
         }
-        else {
-          $tag_writer->tagformats = array('id3v2.3');
-          $tag_writer->tag_encoding = 'UTF-8';
-          $tag_writer->tag_data = array_merge($audio_file_metadata['tags']['id3v1'], $tag_data);
+        if (isset($tag_data_for_writings['bpm'])) {
+          $tag_data_for_writings['beats_per_minute'] = $tag_data_for_writings['bpm'];
+          unset($tag_data_for_writings['bpm']);
         }
-
-        if ($tag_writer->WriteTags()) {
-          unset($getid3_tags_data[$audio_file_id]);
-          cache_set('id3_widget_audio_files_metadata', $getid3_tags_data);
-          if (!empty($tag_writer->warnings)) {
-            watchdog('id3_widget', implode('; ', $tag_writer->warnings), array(), WATCHDOG_WARNING);
-          }
+        if (isset($tag_data_for_writings['track_number'])) {
+          $tag_data_for_writings['tracknumber'] = $tag_data_for_writings['truck_number'];
+          unset($tag_data_for_writings['truck_number']);
         }
-        else {
-          watchdog('id3_widget', implode('; ', $tag_writer->errors), array(), WATCHDOG_ERROR);
+        $tag_writer->tagformats = array('id3v2.4');
+        $tag_writer->tag_encoding = $audio_file_metadata['id3v2']['encoding'];
+        $tag_writer->tag_data = $tag_data_for_writings;
+      }
+      else {
+        $tag_writer->tagformats = array('id3v2.4');
+        $tag_writer->tag_encoding = 'UTF-8';
+        $tag_writer->tag_data = array_merge($audio_file_metadata['tags']['id3v1'], $tag_data);
+      }
+      dpm($tag_writer);
+      if ($tag_writer->WriteTags()) {
+        if (!empty($tag_writer->warnings)) {
+          watchdog('id3_widget', implode('; ', $tag_writer->warnings), array(), WATCHDOG_WARNING);
         }
+      }
+      else {
+        watchdog('id3_widget', implode('; ', $tag_writer->errors), array(), WATCHDOG_ERROR);
       }
     }
   }
 }
-
 

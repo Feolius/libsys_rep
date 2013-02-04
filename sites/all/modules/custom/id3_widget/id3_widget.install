@@ -9,116 +9,90 @@ function id3_widget_install() {
 
   /** This is not a comment! This are possible fields in ID3v2 tag, with machine names and human names.
 
-  album_sort_order	                Album sort order
-  album	                            Album/Movie/Show title
-  album_artist_sort_order	        Album-Artist sort order
-  attached_picture	                Attached picture
-  audio_encryption	                Audio encryption
-  audio_seek_point_index	        Audio seek point index
-  band	                            Band/orchestra/accompaniment
-  bpm	                            BPM (Beats Per Minute)
-  comment	                        Comments
-  commercial_frame	                Commercial frame
-  commercial_information	        Commercial information
-  composer	                        Composer
-  composer_sort_order	            Composer sort order
-  conductor	                        Conductor/Performer refinement
-  content_group_description	        Content group description
-  description	                    Content group description
-  copyright_message	                Copyright message
-  copyright	                        Copyright/Legal information
-  date	                            Date
-  encoded_by	                    Encoded by
-  encoding_time	                    Encoding time
-  encrypted_meta_frame	            Encrypted meta frame
-  encryption_method_registration	Encryption method registration
-  equalisation	                    Equalisation
-  event_timing_codes	            Event timing codes
-  featured_artist	                Featured Artist
-  file_owner	                    File owner/licensee
-  file_type	                        File type
-  general_encapsulated_object	    General encapsulated object
-  genre	                            Genre
-  group_identification_registration	Group identification registration
-  initial_key	                    Initial key
-  internet_radio_station_name	    Internet radio station name
-  internet_radio_station_owner	    Internet radio station owner
-  remixer	                        Interpreted, remixed, or otherwise modified by
-  involved_people_list	            Involved people list
-  isrc	                            ISRC (international standard recording code)
-  language	                        Language(s)
-  artist	                        Lead performer(s)/Soloist(s)
-  length	                        Length
-  linked_information	            Linked information
-  lyricist	                        Lyricist/Text writer
-  media_type	                    Media type
-  mood	                            Mood
-  mpeg_location_lookup_table	    MPEG location lookup table
-  music_cd_identifier	            Music CD identifier
-  musician_credits_list	            Musician credits list
-  url_artist	                    Official artist/performer webpage
-  url_file	                        Official audio file webpage
-  url_source	                    Official audio source webpage
-  url_station	                    Official Internet radio station homepage
-  original_album	                Original album/movie/show title
-  original_artist	                Original artist(s)/performer(s)
-  original_filename	                Original filename
-  original_lyricist	                Original lyricist(s)/text writer(s)
-  original_release_time	            Original release time
-  original_year	                    Original release year
-  ownership_frame	                Ownership frame
-  part_of_a_compilation	            Part of a compilation
-  part_of_a_set	                    Part of a set
-  url_payment	                    Payment
-  performer_sort_order	            Performer sort order
-  play_counter	                    Play counter
-  playlist_delay	                Playlist delay
-  popularimeter	                    Popularimeter
-  position_synchronisation_frame	Position synchronisation frame
-  private_frame	                    Private frame
-  produced_notice	                Produced notice
-  publisher	                        Publisher
-  url_publisher	                    Publishers official webpage
-  recommended_buffer_size	        Recommended buffer size
-  recording_dates	                Recording dates
-  recording_studio	                Recording Studio
-  recording_time	                Recording time
-  relative_volume_adjustment	    Relative volume adjustment
-  release_time	                    Release time
-  replay_gain_adjustment	        Replay Gain Adjustment
-  reverb	                        Reverb
-  seek_frame	                    Seek frame
-  set_subtitle	                    Set subtitle
-  signature_frame	                Signature frame
-  size	                            Size
-  encoder_settings	                Software/Hardware and settings used for encoding
-  subtitle	                        Subtitle/Description refinement
-  synced_tempo_codes	            Synced tempo codes
-  synchronised_lyric	            Synchronised lyric/text
-  synchronised_tempo_codes	        Synchronised tempo codes
-  tagging_time	                    Tagging time
-  terms_of_use	                    Terms of use
-  time	                            Time
-  title_sort_order	                Title sort order
-  title	                            Title/songname/content description
-  track_number	                    Track number/Position in set
-  unique_file_identifier	        Unique file identifier
-  unsynchronised_lyric	            Unsynchronised lyric/text transcription
-  text	                            User defined text information frame
-  url_user	                        User defined URL link frame
-  year	                            Year
-   */
+  title                                 Title/songname/content description
+  artist                                Lead performer(s)/Soloist(s)
+  album                                 Album/Movie/Show title
+  track_number                          Track number/Position in set
+  genre                                 Genre
+  year                                  Year
+  comment                               Comments
+  bpm                                   BPM (Beats Per Minute)
+  time                                  Time
+  attached_picture                      Attached picture
+  audio_encryption                      Audio encryption
+  audio_seek_point_index                Audio seek point index
+  band                                  Band/orchestra/accompaniment
+  composer                              Composer
+  conductor                             Conductor/Performer refinement
+  content_group_description             Content group description
+  copyright                             Copyright information
+  date                                  Date
+  description                           Content group description
+  encoded_by                            Encoded by
+  encoder_settings                      Software/Hardware and settings used for encoding
+  encoding_time                         Encoding time
+  encryption_method_registration        Encryption method registration
+  equalisation                          Equalisation
+  event_timing_codes                    Event timing codes
+  file_owner                            File owner/licensee
+  file_type                             File type
+  general_encapsulated_object           General encapsulated object
+  group_identification_registration     Group identification registration
+  initial_key                           Initial key
+  internet_radio_station_name           Internet radio station name
+  internet_radio_station_owner          Internet radio station owner
+  involved_people_list                  Involved people list
+  isrc                                  ISRC (international standard recording code)
+  language                              Language(s)
+  length                                Length
+  linked_information                    Linked information
+  lyricist                              Lyricist/Text writer
+  media_type                            Media type
+  mood                                  Mood
+  mpeg_location_lookup_table            MPEG location lookup table
+  music_cd_identifier                   Music CD identifier
+  musician_credits_list                 Musician credits list
+  original_artist                       Original artist(s)/performer(s)
+  original_filename                     Original filename
+  original_lyricist                     Original lyricist(s)/text writer(s)
+  original_release_time                 Original release time
+  original_release_year                 Original release year
+  ownership                             Ownership frame
+  part_of_a_set                         Part of a set
+  performer_sort_order                  Performer sort order
+  play_counter                          Play counter
+  playlist_delay                        Playlist delay
+  popularimeter                         Popularimeter
+  produced_notice                       Produced notice
+  publisher                             Publisher
+  recommended_buffer_size               Recommended buffer size
+  recording_dates                       Recording dates
+  recording_time                        Recording time
+  relative_volume_adjustment            Relative volume adjustment
+  release_time                          Release time
+  remixer                               Interpreted, remixed, or otherwise modified by
+  reverb                                Reverb
+  set_subtitle                          Set subtitle
+  size                                  Size
+  subtitle                              Subtitle/Description refinement
+  synchronised_lyrics                   Synchronised lyric/text
+  synchronised_tempo_codes              Synchronised tempo codes
+  tagging_time                          Tagging time
+  terms_of_use                          Terms of use
+  title_sort_order                      Title sort order
+  unique_file_identifier                Unique file identifier
+  unsynchronised_lyrics                 Unsynchronised lyric/text transcription
+  url_artist                            Official artist/performer webpage
+  url_file                              Official audio file webpage
+  url_publisher                         Publishers official webpage
+  url_source                            Official audio source webpage
+  url_station                           Official Internet radio station homepage
+  url_user                              User defined URL link frame
+  */
 
   $id3v2_tag_fields = _id3_widget_turn_comments_to_array($begin, __LINE__, __FILE__);
 
   variable_set('id3_widget_id3v2_fields', drupal_json_encode($id3v2_tag_fields));
-
-
-  db_update('system')
-    ->fields(array('weight' => -5))
-    ->condition('name', 'id3_widget', '=')
-    ->execute();
-
 }
 
 /**
@@ -131,29 +105,22 @@ function id3_widget_install() {
  * @return mixed
  */
 function _id3_widget_turn_comments_to_array($begin, $end, $file) {
-
   $line_count = $end - $begin - 7;
-
   // Open php file
   $fp = fopen($file, 'r');
-
   // Discard $begin lines
   for ($i = 0; $i < ($begin + 3); $i++) {
     fgets($fp, 1024);
   }
-
   // Loop thru line
   while (0 < $line_count--) {
-
     // Read line
     $line = ltrim(fgets($fp, 1024), "\t ");
-
-    $explodedLine = explode("\t", $line, 2);
+    $explodedLine = explode(" ", $line, 2);
     $key = (isset($explodedLine[0]) ? $explodedLine[0] : '');
     $value = (isset($explodedLine[1]) ? $explodedLine[1] : '');
     $array[$key] = trim($value);
   }
-
   // Close and return
   fclose($fp);
   return $array;
