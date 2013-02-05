@@ -50,7 +50,6 @@ function _id3_widget_retrieve_id3_fields($field) {
   else {
     unset($id3_fields['attached_picture']);
   }
-  $id3_fields = array('title' => 'TITLE');
   return $id3_fields;
 }
 
