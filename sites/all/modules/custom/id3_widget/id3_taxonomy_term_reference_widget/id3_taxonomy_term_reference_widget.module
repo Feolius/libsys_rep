@@ -74,7 +74,9 @@ function id3_taxonomy_term_reference_widget_field_widget_form(&$form, &$form_sta
  */
 function id3_taxonomy_term_reference_widget_id3_widget_handle_field($instance_widget_data, &$node, $field_info, &$write_back_to_audio_file_data) {
   $id3_field_name = $field_info['field_name'];
-  $instance_data = $node->$id3_field_name;
+  if (isset($node->$id3_field_name)) {
+    $instance_data = $node->$id3_field_name;
+  }
   if (!drupal_validate_utf8($instance_widget_data['value'])) {
     $instance_widget_data = check_plain(utf8_encode($instance_widget_data['value']));
   }

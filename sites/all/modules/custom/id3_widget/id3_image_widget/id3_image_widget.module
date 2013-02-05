@@ -59,8 +59,9 @@ function id3_image_widget_field_widget_form(&$form, &$form_state, $field, $insta
  */
 function id3_image_widget_id3_widget_handle_field($instance_widget_data, &$node, $field_info, &$write_back_to_audio_file_data) {
   $id3_field_name = $field_info['field_name'];
-  $instance_data = $node->$id3_field_name;
-
+  if (isset($node->$id3_field_name)) {
+    $instance_data = $node->$id3_field_name;
+  }
   //Check does a user paste the new image for including it in audio file as attached_picture
   //or he didn't edit that image field and just save changed in another field.
   if (isset($instance_data['und'][0]['fid'])) {
@@ -103,7 +104,7 @@ function id3_image_widget_id3_widget_handle_field($instance_widget_data, &$node,
           $extension = '.gif';
           break;
       }
-      $file_path = $album_poster_folder_uri . DIRECTORY_SEPARATOR . 'album_poster_'. rand() . $extension;
+      $file_path = $album_poster_folder_uri . DIRECTORY_SEPARATOR . 'album_poster_' . rand() . $extension;
       $file = file_save_data($instance_widget_data['value']['data'], $file_path);
       if ($file != FALSE) {
         $instance_data['und'][0]['fid'] = $file->fid;
