@@ -20,17 +20,14 @@ function id3_widget_install() {
   time                                  Time
   attached_picture                      Attached picture
   audio_encryption                      Audio encryption
-  audio_seek_point_index                Audio seek point index
   band                                  Band/orchestra/accompaniment
   composer                              Composer
   conductor                             Conductor/Performer refinement
   content_group_description             Content group description
   copyright                             Copyright information
   date                                  Date
-  description                           Content group description
   encoded_by                            Encoded by
   encoder_settings                      Software/Hardware and settings used for encoding
-  encoding_time                         Encoding time
   encryption_method_registration        Encryption method registration
   equalisation                          Equalisation
   event_timing_codes                    Event timing codes
@@ -48,38 +45,28 @@ function id3_widget_install() {
   linked_information                    Linked information
   lyricist                              Lyricist/Text writer
   media_type                            Media type
-  mood                                  Mood
   mpeg_location_lookup_table            MPEG location lookup table
   music_cd_identifier                   Music CD identifier
-  musician_credits_list                 Musician credits list
   original_artist                       Original artist(s)/performer(s)
   original_filename                     Original filename
   original_lyricist                     Original lyricist(s)/text writer(s)
-  original_release_time                 Original release time
   original_release_year                 Original release year
   ownership                             Ownership frame
   part_of_a_set                         Part of a set
-  performer_sort_order                  Performer sort order
   play_counter                          Play counter
   playlist_delay                        Playlist delay
   popularimeter                         Popularimeter
-  produced_notice                       Produced notice
   publisher                             Publisher
   recommended_buffer_size               Recommended buffer size
   recording_dates                       Recording dates
-  recording_time                        Recording time
   relative_volume_adjustment            Relative volume adjustment
-  release_time                          Release time
   remixer                               Interpreted, remixed, or otherwise modified by
   reverb                                Reverb
-  set_subtitle                          Set subtitle
   size                                  Size
   subtitle                              Subtitle/Description refinement
   synchronised_lyrics                   Synchronised lyric/text
   synchronised_tempo_codes              Synchronised tempo codes
-  tagging_time                          Tagging time
   terms_of_use                          Terms of use
-  title_sort_order                      Title sort order
   unique_file_identifier                Unique file identifier
   unsynchronised_lyrics                 Unsynchronised lyric/text transcription
   url_artist                            Official artist/performer webpage

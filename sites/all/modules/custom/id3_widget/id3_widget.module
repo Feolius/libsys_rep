@@ -321,8 +321,9 @@ function _id3_widget_fetch_id3_field_data($node, $widget_instances) {
       }
     }
   }
-
-  drupal_static('id3_widget_audio_files_metadata', $audio_files_metadata);
+  if (isset($audio_files_metadata)) {
+    drupal_static('id3_widget_audio_files_metadata', $audio_files_metadata);
+  }
   return $result;
 }
 
@@ -335,43 +336,45 @@ function id3_widget_write_tags_into_file($changed_tags_metadata) {
   getid3_load();
   $tag_writer = new getid3_writetags;
   $getid3_tags_data = & drupal_static('id3_widget_audio_files_metadata');
-  foreach ($changed_tags_metadata as $audio_file_id => $tag_data) {
-    if (isset($getid3_tags_data[$audio_file_id])) {
-      $audio_file_metadata = $getid3_tags_data[$audio_file_id];
-      //The getid3 library have problems with writing new tags data
-      //without deleting all previous tag data.
-      //Therefore data for writing is consist of changed data from node editing page
-      //and all metadata from audio file except changed
-      $tag_writer->filename = $audio_file_metadata['filenamepath'];
-      if (isset($audio_file_metadata['tags']['id3v2'])) {
-        $tag_data_for_writings = array_merge($audio_file_metadata['tags']['id3v2'], $tag_data);
-        if (!isset($tag_data_for_writings['attached_picture']) && isset($audio_file_metadata['id3v2']['APIC'])) {
-          $tag_data_for_writings['attached_picture'] = $audio_file_metadata['id3v2']['APIC'];
+  if (!empty($getid3_tags_data)) {
+    foreach ($changed_tags_metadata as $audio_file_id => $tag_data) {
+      if (isset($getid3_tags_data[$audio_file_id])) {
+        $audio_file_metadata = $getid3_tags_data[$audio_file_id];
+        //The getid3 library have problems with writing new tags data
+        //without deleting all previous tag data.
+        //Therefore data for writing is consist of changed data from node editing page
+        //and all metadata from audio file except changed
+        $tag_writer->filename = $audio_file_metadata['filenamepath'];
+        if (isset($audio_file_metadata['tags']['id3v2'])) {
+          $tag_data_for_writings = array_merge($audio_file_metadata['tags']['id3v2'], $tag_data);
+          if (!isset($tag_data_for_writings['attached_picture']) && isset($audio_file_metadata['id3v2']['APIC'])) {
+            $tag_data_for_writings['attached_picture'] = $audio_file_metadata['id3v2']['APIC'];
+          }
+          if (isset($tag_data_for_writings['bpm'])) {
+            $tag_data_for_writings['beats_per_minute'] = $tag_data_for_writings['bpm'];
+            unset($tag_data_for_writings['bpm']);
+          }
+          if (isset($tag_data_for_writings['track_number'])) {
+            $tag_data_for_writings['tracknumber'] = $tag_data_for_writings['track_number'];
+            unset($tag_data_for_writings['track_number']);
+          }
+          $tag_writer->tagformats = array('id3v2.3');
+          $tag_writer->tag_encoding = $audio_file_metadata['id3v2']['encoding'];
+          $tag_writer->tag_data = $tag_data_for_writings;
         }
-        if (isset($tag_data_for_writings['bpm'])) {
-          $tag_data_for_writings['beats_per_minute'] = $tag_data_for_writings['bpm'];
-          unset($tag_data_for_writings['bpm']);
+        else {
+          $tag_writer->tagformats = array('id3v2.3');
+          $tag_writer->tag_encoding = 'UTF-8';
+          $tag_writer->tag_data = array_merge($audio_file_metadata['tags']['id3v1'], $tag_data);
         }
-        if (isset($tag_data_for_writings['track_number'])) {
-          $tag_data_for_writings['tracknumber'] = $tag_data_for_writings['truck_number'];
-          unset($tag_data_for_writings['truck_number']);
+        if ($tag_writer->WriteTags()) {
+          if (!empty($tag_writer->warnings)) {
+            watchdog('id3_widget', implode('; ', $tag_writer->warnings), array(), WATCHDOG_WARNING);
+          }
         }
-        $tag_writer->tagformats = array('id3v2.4');
-        $tag_writer->tag_encoding = $audio_file_metadata['id3v2']['encoding'];
-        $tag_writer->tag_data = $tag_data_for_writings;
-      }
-      else {
-        $tag_writer->tagformats = array('id3v2.4');
-        $tag_writer->tag_encoding = 'UTF-8';
-        $tag_writer->tag_data = array_merge($audio_file_metadata['tags']['id3v1'], $tag_data);
-      }
-      if ($tag_writer->WriteTags()) {
-        if (!empty($tag_writer->warnings)) {
-          watchdog('id3_widget', implode('; ', $tag_writer->warnings), array(), WATCHDOG_WARNING);
+        else {
+          watchdog('id3_widget', implode('; ', $tag_writer->errors), array(), WATCHDOG_ERROR);
         }
-      }
-      else {
-        watchdog('id3_widget', implode('; ', $tag_writer->errors), array(), WATCHDOG_ERROR);
       }
     }
   }
