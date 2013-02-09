@@ -143,136 +143,133 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
     if ($file = file_managed_file_save_upload($element)) {
       $fid = $file->fid;
       $file_name = $file->filename;
-      //Remove special characters that may prevent to create dwf file of show it through flexpaper
-      $file_name = str_replace('|', '', $file_name);
-      $file_name = str_replace('?', '', $file_name);
-      $file->filename = $file_name;
-      file_save($file);
     } else {
       // Load file if the FID has changed to confirm it exists.
       if (isset($input['fid']) && $file = file_load($input['fid'])) {
         $fid = $file->fid;
       }
     }
-    if ($input['fid_thumb'] == 0 && $file = file_load($fid)) {
-      if ($file->filemime == 'application/pdf') {
-        $real_file_name = get_real_file_name($file);
-        $thumb_uri = "temporary://" . $real_file_name . "-thumb.jpeg";
-        $result = db_query('SELECT fid FROM {file_managed} WHERE uri = :uri', array(
-            ':uri' => $thumb_uri
-                ));
-        $a = $result->fetchAll();
-        if ($a == NULL) {
-          $thumb_file = make_thumbnail($file);
-          $fid_thumb = $thumb_file->fid;
-        } else {
-          $fid_thumb = $a[0]->fid;
-        }
-      }
-    } else {
-      $fid_thumb = $input['fid_thumb'];
-    }
-    //Conversion to swf
-    if ($input['fid_swf'] == 0) {
-      //Check if checkbox "create swf" checked and we have pdf file
-      if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['create_swf']) &&
-              $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['create_swf'] == '1') {
+    if ($fid != 0) {
+      if ($input['fid_thumb'] == 0) {
         if ($file->filemime == 'application/pdf') {
-          $uri = $file->uri;
-          $file_name = $file->filename;
-
-          $arr = explode('.', $file_name);
-          $arr_length = count($arr);
-          $file_name = "";
-
-          //Exclude name of file extension
-          for ($i = 0; $i < ($arr_length - 1); $i++) {
-            $file_name = $file_name . $arr[$i];
-          }
-          $path = drupal_realpath($uri);
-          $temp_path = file_directory_temp();
-
-          //Get file name with index if index exists. (e.g. filename_0, 0 is index)
           $real_file_name = get_real_file_name($file);
-
-          //Create new uri for swf file
-          $swf_uri = "temporary://" . $real_file_name . ".swf";
+          $thumb_uri = "temporary://" . $real_file_name . "-thumb.jpeg";
           $result = db_query('SELECT fid FROM {file_managed} WHERE uri = :uri', array(
-              ':uri' => $swf_uri
+              ':uri' => $thumb_uri
                   ));
           $a = $result->fetchAll();
-
-          //If file with new uri doesn't exist in db, conversion proceeds.
           if ($a == NULL) {
-            $swf_path = drupal_realpath($swf_uri);
-            //Write record in record table with id of conversion progress
-            $record = array('pid' => $input['CONVERSION_IDENTIFIER'], 'progress' => '-1');
-            drupal_write_record('progress', $record);
+            $thumb_file = make_thumbnail($file);
+            $fid_thumb = $thumb_file->fid;
+          } else {
+            $fid_thumb = $a[0]->fid;
+          }
+        }
+      } else {
+        $fid_thumb = $input['fid_thumb'];
+      }
+      //Conversion to swf
+      if ($input['fid_swf'] == 0) {
+        //Check if checkbox "create swf" checked and we have pdf file
+        if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['create_swf']) &&
+                $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['create_swf'] == '1') {
+          if ($file->filemime == 'application/pdf') {
+            $uri = $file->uri;
+            $file_name = $file->filename;
 
-            //Get number of pages
-            $numberOfPages = getNumPagesPdf($path);
+            $arr = explode('.', $file_name);
+            $arr_length = count($arr);
+            $file_name = "";
 
-            //Execute command in pipe to reviewing current progress of conversion
-            $command = "pdf2swf '" . $path . "' -o '" . $swf_path . "' -f -T 9 -t -s storeallcharacters";
-            $handle = popen($command, 'r');
-            while (!feof($handle)) {
-
-              //Check current state every 2 seconds
-              sleep(2);
-              $read = fread($handle, 2096);
-              $pattern = "/page \d+/";
-              $result = preg_match_all($pattern, $read, $matches);
-
-              //Get current page and write serialized string with current progress in db.
-              $length = count($matches[0]);
-              $pattern = "/\d+/";
-              if ($length > 1) {
-                $result = preg_match_all($pattern, $matches[0][$length - 2], $match);
-                $record = array('pid' => $input['CONVERSION_IDENTIFIER'], 'progress' => $match[0][0] . '/' . $numberOfPages);
-                drupal_write_record('progress', $record, 'pid');
-              } elseif ($length == 1) {
-                $result = preg_match_all($pattern, $matches[0][$length - 1], $match);
-                $record = array('pid' => $input['CONVERSION_IDENTIFIER'], 'progress' => $match[0][0] . '/' . $numberOfPages);
-                drupal_write_record('progress', $record, 'pid');
-              }
+            //Exclude name of file extension
+            for ($i = 0; $i < ($arr_length - 1); $i++) {
+              $file_name = $file_name . $arr[$i];
             }
-            pclose($handle);
+            $path = drupal_realpath($uri);
+            $temp_path = file_directory_temp();
 
-            //Create new file object for swf file
-            $file = new stdClass();
-            $file->uid = $user->uid;
-            $file->status = 0;
-            $file->filename = $file_name . ".swf";
-            $file->uri = $swf_uri;
-            $file->filemime = "application/x-shockwave-flash";
-            $file->filesize = filesize($swf_path);
-            $file_path = drupal_realpath($file->uri);
+            //Get file name with index if index exists. (e.g. filename_0, 0 is index)
+            $real_file_name = get_real_file_name($file);
 
-            //If file exists we save file
-            if (!file_exists($file_path)) {
-              form_error($element, "Error in conversation process");
+            //Create new uri for swf file
+            $swf_uri = "temporary://" . $real_file_name . ".swf";
+            $result = db_query('SELECT fid FROM {file_managed} WHERE uri = :uri', array(
+                ':uri' => $swf_uri
+                    ));
+            $a = $result->fetchAll();
+
+            //If file with new uri doesn't exist in db, conversion proceeds.
+            if ($a == NULL) {
+              $swf_path = drupal_realpath($swf_uri);
+              //Write record in record table with id of conversion progress
+              $record = array('pid' => $input['CONVERSION_IDENTIFIER'], 'progress' => '-1');
+              drupal_write_record('progress', $record);
+
+              //Get number of pages
+              $numberOfPages = getNumPagesPdf($path);
+
+              //Execute command in pipe to reviewing current progress of conversion
+              $command = "pdf2swf '" . $path . "' -o '" . $swf_path . "' -f -T 9 -t -s storeallcharacters";
+              $handle = popen($command, 'r');
+              while (!feof($handle)) {
+
+                //Check current state every 2 seconds
+                sleep(2);
+                $read = fread($handle, 2096);
+                $pattern = "/page \d+/";
+                $result = preg_match_all($pattern, $read, $matches);
+
+                //Get current page and write serialized string with current progress in db.
+                $length = count($matches[0]);
+                $pattern = "/\d+/";
+                if ($length > 1) {
+                  $result = preg_match_all($pattern, $matches[0][$length - 2], $match);
+                  $record = array('pid' => $input['CONVERSION_IDENTIFIER'], 'progress' => $match[0][0] . '/' . $numberOfPages);
+                  drupal_write_record('progress', $record, 'pid');
+                } elseif ($length == 1) {
+                  $result = preg_match_all($pattern, $matches[0][$length - 1], $match);
+                  $record = array('pid' => $input['CONVERSION_IDENTIFIER'], 'progress' => $match[0][0] . '/' . $numberOfPages);
+                  drupal_write_record('progress', $record, 'pid');
+                }
+              }
+              pclose($handle);
+
+              //Create new file object for swf file
+              $file = new stdClass();
+              $file->uid = $user->uid;
+              $file->status = 0;
+              $file->filename = $file_name . ".swf";
+              $file->uri = $swf_uri;
+              $file->filemime = "application/x-shockwave-flash";
+              $file->filesize = filesize($swf_path);
+              $file_path = drupal_realpath($file->uri);
+
+              //If file exists we save file
+              if (!file_exists($file_path)) {
+                form_error($element, "Error in conversation process");
+              } else {
+                $file_swf = file_save($file);
+                $fid_swf = $file_swf->fid;
+              }
+
+              //Remove record from progress table
+              $delete = db_delete('progress')
+                      ->condition('pid', $input['CONVERSION_IDENTIFIER'])
+                      ->execute();
             } else {
-              $file_swf = file_save($file);
+              //If file exists we get its fid from db
+              $file_swf = file_load($a[0]->fid);
               $fid_swf = $file_swf->fid;
             }
-
-            //Remove record from progress table
-            $delete = db_delete('progress')
-                    ->condition('pid', $input['CONVERSION_IDENTIFIER'])
-                    ->execute();
           } else {
-            //If file exists we get its fid from db
-            $file_swf = file_load($a[0]->fid);
-            $fid_swf = $file_swf->fid;
+            //If this file doesn't have pdf extension we just show warning message
+            drupal_set_message(t("This file format doesn't support swf convertion"), 'warning');
           }
-        } else {
-          //If this file doesn't have pdf extension we just show warning message
-          drupal_set_message(t("This file format doesn't support swf convertion"), 'warning');
         }
+      } else {
+        //If file previously was converted we should get its fid from input
+        $fid_swf = $input['fid_swf'];
       }
-    } else {
-      //If file previously was converted we should get its fid from input
-      $fid_swf = $input['fid_swf'];
     }
   } else {
     $default_fid = isset($element['#default_value']) ? $element['#default_value']['fid'] : 0;
@@ -413,7 +410,7 @@ function book_field_managed_book_process($element, &$form_state, $form) {
         '#weight' => -10,
     );
   }
-  // Add the extension lisdpmt to the page as JavaScript settings.
+  // Add the extension list to the page as JavaScript settings.
   if (isset($element['#upload_validators']['file_validate_extensions'][0])) {
     $extension_list = implode(',', array_filter(explode(' ', $element['#upload_validators']['file_validate_extensions'][0])));
     $element['upload']['#attached']['js'] = array(
@@ -428,6 +425,23 @@ function book_field_managed_book_process($element, &$form_state, $form) {
   $element['#prefix'] = '<div id="' . $element['#id'] . '-ajax-wrapper">';
   $element['#suffix'] = '</div>';
   return $element;
+}
+
+/**
+ * File validator, check if filename contain forbidden special characters
+ */
+function book_field_validate_filename($file) {
+  $errors = array();
+  $file_name = $file->filename;
+  $check1 = strpos($file_name, '\\');
+  $check2 = strpos($file_name, '\'');
+  $check3 = strpos($file_name, '|');
+  $check4 = strpos($file_name, '%');
+  $check = !($check1 || $check2 || $check3 || $check4);
+  if ($check == FALSE) {
+    $errors[] = t("File name contains forbidden characters(', |, \, %).");
+  }
+  return $errors;
 }
 
 //Submit callback for remove/update button
@@ -548,6 +562,7 @@ function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $
           '#value_callback' => 'book_field_widget_value',
           '#upload_validators' => array(
               'file_validate_extensions' => array($allowed_extensions),
+              'book_field_validate_filename' => array(),
           ),
           '#default_value' => !empty($items) ? $items[0] : $defaults,
       );
@@ -650,7 +665,6 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
             'FlexPaperViewerPath' => $FlexPaperViewerPath,
         );
 
-
         //Determine if we need highlighting
         if (isset($_GET['query'])) {
           $query = $_GET['query'];
@@ -747,8 +761,12 @@ function book_field_field_presave($entity_type, $entity, $field, $instance, $lan
       $file_swf = file_load($item['fid_swf']);
       if (!$file_swf->status) {
         $file = file_load($item['fid']);
-        //$folder = get_real_file_name($file);
-        $folder = $file->filename;
+        $folder = get_real_file_name($file);
+        $folder = _book_field_remove_special_chars($folder);
+        $file_swf_mame = $file_swf->filename;
+        $file_swf_mame = _book_field_remove_special_chars($file_swf_mame);
+        $file_swf->filename = $file_swf_mame;
+        file_save($file_swf);
         _book_field_file_move($file_swf, $folder);
         _book_field_file_move($file, $folder);
         $file_thumb = file_load($item['fid_thumb']);
@@ -759,7 +777,7 @@ function book_field_field_presave($entity_type, $entity, $field, $instance, $lan
     } elseif (isset($item['fid']) && $item['fid'] != 0) {
       $file = file_load($item['fid']);
       if (!$file->status) {
-        //$folder = get_real_file_name($file);
+        $folder = get_real_file_name($file);
         $file = _book_field_file_move($file, $folder);
         $file_thumb = file_load($item['fid_thumb']);
         if ($file_thumb) {
@@ -768,6 +786,16 @@ function book_field_field_presave($entity_type, $entity, $field, $instance, $lan
       }
     }
   }
+}
+
+/**
+ * Remove special characters that prevent flexpaper work
+ */
+function _book_field_remove_special_chars($string) {
+  $string = str_replace('?', '', $string);
+  $string = str_replace('#', '', $string);
+  $string = str_replace('&', '', $string);
+  return $string;
 }
 
 /**
