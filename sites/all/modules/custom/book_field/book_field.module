@@ -142,6 +142,12 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
     // Uploads take priority over all other values.
     if ($file = file_managed_file_save_upload($element)) {
       $fid = $file->fid;
+      $file_name = $file->filename;
+      //Remove special characters that may prevent to create dwf file of show it through flexpaper
+      $file_name = str_replace('|', '', $file_name);
+      $file_name = str_replace('?', '', $file_name);
+      $file->filename = $file_name;
+      file_save($file);
     } else {
       // Load file if the FID has changed to confirm it exists.
       if (isset($input['fid']) && $file = file_load($input['fid'])) {
@@ -196,7 +202,7 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
                   ));
           $a = $result->fetchAll();
 
-          //If file with new uri doesn't exist in db conversion proceeds.
+          //If file with new uri doesn't exist in db, conversion proceeds.
           if ($a == NULL) {
             $swf_path = drupal_realpath($swf_uri);
             //Write record in record table with id of conversion progress
@@ -741,7 +747,8 @@ function book_field_field_presave($entity_type, $entity, $field, $instance, $lan
       $file_swf = file_load($item['fid_swf']);
       if (!$file_swf->status) {
         $file = file_load($item['fid']);
-        $folder = get_real_file_name($file);
+        //$folder = get_real_file_name($file);
+        $folder = $file->filename;
         _book_field_file_move($file_swf, $folder);
         _book_field_file_move($file, $folder);
         $file_thumb = file_load($item['fid_thumb']);
@@ -752,7 +759,7 @@ function book_field_field_presave($entity_type, $entity, $field, $instance, $lan
     } elseif (isset($item['fid']) && $item['fid'] != 0) {
       $file = file_load($item['fid']);
       if (!$file->status) {
-        $folder = get_real_file_name($file);
+        //$folder = get_real_file_name($file);
         $file = _book_field_file_move($file, $folder);
         $file_thumb = file_load($item['fid_thumb']);
         if ($file_thumb) {
@@ -902,12 +909,14 @@ function get_real_file_name($file) {
   $path = drupal_realpath($uri);
   $real_file_name = basename($path);
 
-  //Exclude name of file extension
   $arr = explode('.', $real_file_name);
   $arr_length = count($arr);
-  $real_file_name = "";
-  for ($i = 0; $i < ($arr_length - 1); $i++) {
-    $real_file_name = $real_file_name . $arr[$i];
+  if ($arr_length > 1) {
+    //Exclude name of file extension
+    unset($arr[$arr_length - 1]);
+    $real_file_name = implode('.', $arr);
+  } else {
+    $real_file_name = $arr[0];
   }
   return $real_file_name;
 }
