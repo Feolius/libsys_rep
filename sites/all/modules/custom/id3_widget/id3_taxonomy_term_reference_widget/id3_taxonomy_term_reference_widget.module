@@ -51,6 +51,9 @@ function id3_taxonomy_term_reference_widget_options_list($field, $instance, $ent
  */
 function id3_taxonomy_term_reference_widget_field_widget_settings_form($field, $instance) {
   $form = id3_widget_widget_settings_form($field, $instance);
+  $id3_fields = id3_widget_retrieve_id3_fields();
+  unset($id3_fields['attached_picture']);
+  $form['id3_field']['#options'] += $id3_fields;
   return $form;
 }
 

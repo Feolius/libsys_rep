@@ -1,0 +1,353 @@
+<?php
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function id3_date_widget_field_widget_info() {
+  $settings = array(
+    'settings' => array(
+      'input_format' => date_default_format('date_select'),
+      'input_format_custom' => '',
+      'increment' => 15,
+      'text_parts' => array(),
+      'year_range' => '-200:0',
+      'label_position' => 'above',
+      'audio_field' => '', //The main settings for ID3_tag_widget
+      'id3_field' => '', //
+    ),
+    'behaviors' => array(
+      'multiple values' => FIELD_BEHAVIOR_DEFAULT,
+      'default value' => FIELD_BEHAVIOR_NONE,
+    ),
+  );
+  $info = array(
+    'id3_date_widget' => array(
+      'label' => t('ID3 tags Date metadata'),
+      'field types' => array('date', 'datestamp', 'datetime'),
+    ) + $settings,
+  );
+  return $info;
+}
+
+///**
+// * Implements hook_field_widget_properties_alter().
+// *
+// * Alters the widget properties of a field instance before it gets displayed.
+// * Used here to flag new entities so we can later tell if they need default values.
+// */
+//function id3_date_widget_field_widget_properties_alter(&$widget, $context) {
+//  if (in_array($widget['type'], array('id3_date_widget'))) {
+//    $entity_type = $context['entity_type'];
+//    $entity = $context['entity'];
+//    $info = entity_get_info($entity_type);
+//    $id = $info['entity keys']['id'];
+//    $widget['is_new'] = FALSE;
+//    if (empty($entity->$id)) {
+//      $widget['is_new'] = TRUE;
+//    }
+//  }
+//}
+
+/**
+ * Implements hook_id3_widget_widget_name_info().
+ */
+function id3_date_widget_id3_widget_widget_name_info() {
+  return 'id3_date_widget';
+}
+
+
+/**
+ * Implementation of hook_field_widget_settings_form().
+ */
+function id3_date_widget_field_widget_settings_form($field, $instance) {
+  $form = id3_widget_widget_settings_form($field, $instance);
+  $id3_fields = id3_widget_retrieve_id3_fields();
+  $possible_date_id3_fields = array(
+    'year' => $id3_fields['year'],
+    'date' => $id3_fields['date'],
+    'time' => $id3_fields['time'],
+//    'date_full' => 'Date full'
+  );
+  $form['id3_field']['#options'] += $possible_date_id3_fields;
+  $field_type_setting_addition_form = date_field_widget_settings_form($field, $instance);
+  $form = array_merge($form, $field_type_setting_addition_form);
+  return $form;
+}
+
+/**
+ * Implementation of hook_field_widget_form().
+ */
+function id3_date_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  $element = date_field_widget_form($form, $form_state, $field, $instance, $langcode, $items, $delta, $element);
+  $element['#element_validate'] = array('id3_widget_date_combo_validate');
+  return $element;
+}
+
+/**
+ * Validate and update a combo element.
+ * Don't try this if there were errors before reaching this point.
+ */
+function id3_widget_date_combo_validate($element, &$form_state) {
+
+  // Disabled and hidden elements won't have any input and don't need validation,
+  // we just need to re-save the original values, from before they were processed into
+  // widget arrays and timezone-adjusted.
+  if (date_hidden_element($element) || !empty($element['#disabled'])) {
+    form_set_value($element, $element['#date_items'], $form_state);
+    return;
+  }
+
+  $field_name = $element['#field_name'];
+  $delta = $element['#delta'];
+  $langcode = $element['#language'];
+
+  $form_values = drupal_array_get_nested_value($form_state['values'], $element['#field_parents']);
+  $form_input = drupal_array_get_nested_value($form_state['input'], $element['#field_parents']);
+
+  // If the whole field is empty and that's OK, stop now.
+  if (empty($form_input[$field_name]) && !$element['#required']) {
+    return;
+  }
+
+  $item = $form_values[$field_name][$langcode][$delta];
+  $posted = $form_input[$field_name][$langcode][$delta];
+
+  $field = field_widget_field($element, $form_state);
+  $instance = field_widget_instance($element, $form_state);
+  $instance['widget']['type'] = 'date_text';
+
+  $context = array(
+    'field' => $field,
+    'instance' => $instance,
+    'item' => $item,
+  );
+
+  drupal_alter('date_combo_pre_validate', $element, $form_state, $context);
+
+  $from_field = 'value';
+  $to_field = 'value2';
+  $tz_field = 'timezone';
+  $offset_field = 'offset';
+  $offset_field2 = 'offset2';
+
+  // Check for empty 'Start date', which could either be an empty
+  // value or an array of empty values, depending on the widget.
+  $empty = TRUE;
+  if (!empty($item[$from_field])) {
+    if (!is_array($item[$from_field])) {
+      $empty = FALSE;
+    }
+    else {
+      foreach ($item[$from_field] as $key => $value) {
+        if (!empty($value)) {
+          $empty = FALSE;
+          break;
+        }
+      }
+    }
+  }
+
+  // An 'End' date without a 'Start' date is a validation error.
+  if ($empty && !empty($item[$to_field])) {
+    if (!is_array($item[$to_field])) {
+      form_error($element, t("A 'Start date' date is required if an 'end date' is supplied for field %field #%delta.", array(
+        '%delta' => $field['cardinality'] ? intval($delta + 1) : '',
+        '%field' => $instance['label']
+      )));
+      $empty = FALSE;
+    }
+    else {
+      foreach ($item[$to_field] as $key => $value) {
+        if (!empty($value)) {
+          form_error($element, t("A 'Start date' date is required if an 'End date' is supplied for field %field #%delta.", array(
+            '%delta' => $field['cardinality'] ? intval($delta + 1) : '',
+            '%field' => $instance['label']
+          )));
+          $empty = FALSE;
+          break;
+        }
+      }
+    }
+  }
+
+  // If the user chose the option to not show the end date, just swap in the
+  // start date as that value so the start and end dates are the same.
+  if ($field['settings']['todate'] == 'optional' && empty($item['show_todate'])) {
+    $item[$to_field] = $item[$from_field];
+    $posted[$to_field] = $posted[$from_field];
+  }
+
+  if ($empty) {
+    $item = date_element_empty($element, $form_state);
+    if (!$element['#required']) {
+      return;
+    }
+  }
+  // Don't look for further errors if errors are already flagged
+  // because otherwise we'll show errors on the nested elements
+  // more than once.
+  elseif (!form_get_errors()) {
+
+    $timezone = !empty($item[$tz_field]) ? $item[$tz_field] : $element['#date_timezone'];
+    $timezone_db = date_get_timezone_db($field['settings']['tz_handling']);
+    $element[$from_field]['#date_timezone'] = $timezone;
+    $from_date = date_input_date($field, $instance, $element[$from_field], $posted[$from_field]);
+
+    if (!empty($field['settings']['todate'])) {
+      $element[$to_field]['#date_timezone'] = $timezone;
+      $to_date = date_input_date($field, $instance, $element[$to_field], $posted[$to_field]);
+    }
+    else {
+      $to_date = $from_date;
+    }
+
+    // Neither the start date nor the end date should be empty at this point
+    // unless they held values that couldn't be evaluated.
+
+    if (!$instance['required'] && (!date_is_date($from_date) || !date_is_date($to_date))) {
+      $item = date_element_empty($element, $form_state);
+      $errors[] = t('The dates are invalid.');
+    }
+    elseif (!empty($field['settings']['todate']) && $from_date > $to_date) {
+      form_set_value($element[$to_field], $to_date, $form_state);
+      $errors[] = t('The End date must be greater than the Start date.');
+    }
+    else {
+      // Convert input dates back to their UTC values and re-format to ISO
+      // or UNIX instead of the DATETIME format used in element processing.
+      $item[$tz_field] = $timezone;
+
+      // Update the context for changes in the $item, and allow other modules to
+      // alter the computed local dates.
+      $context['item'] = $item;
+      // We can only pass two additional values to drupal_alter, so $element
+      // needs to be included in $context.
+      $context['element'] = $element;
+      drupal_alter('date_combo_validate_date_start', $from_date, $form_state, $context);
+      drupal_alter('date_combo_validate_date_end', $to_date, $form_state, $context);
+
+      $item[$offset_field] = date_offset_get($from_date);
+
+      $test_from = date_format($from_date, 'r');
+      $test_to = date_format($to_date, 'r');
+
+      $item[$offset_field2] = date_offset_get($to_date);
+      date_timezone_set($from_date, timezone_open($timezone_db));
+      date_timezone_set($to_date, timezone_open($timezone_db));
+      $item[$from_field] = date_format($from_date, date_type_format($field['type']));
+      $item[$to_field] = date_format($to_date, date_type_format($field['type']));
+      if (isset($form_values[$field_name]['rrule'])) {
+        $item['rrule'] = $form_values[$field['field_name']]['rrule'];
+      }
+
+      // If the db timezone is not the same as the display timezone
+      // and we are using a date with time granularity,
+      // test a roundtrip back to the original timezone to catch
+      // invalid dates, like 2AM on the day that spring daylight savings
+      // time begins in the US.
+      $granularity = date_format_order($element[$from_field]['#date_format']);
+      if ($timezone != $timezone_db && date_has_time($granularity)) {
+        date_timezone_set($from_date, timezone_open($timezone));
+        date_timezone_set($to_date, timezone_open($timezone));
+
+        if ($test_from != date_format($from_date, 'r')) {
+          $errors[] = t('The Start date is invalid.');
+        }
+        if ($test_to != date_format($to_date, 'r')) {
+          $errors[] = t('The End date is invalid.');
+        }
+      }
+      if (empty($errors)) {
+        form_set_value($element, $item, $form_state);
+      }
+    }
+  }
+  if (!empty($errors)) {
+    if ($field['cardinality']) {
+      form_error($element, t('There are errors in @field_name value #@delta:', array(
+        '@field_name' => $instance['label'],
+        '@delta' => $delta + 1
+      )) . theme('item_list', array('items' => $errors)));
+    }
+    else {
+      form_error($element, t('There are errors in @field_name:', array('@field_name' => $instance['label'])) . theme('item_list', array('items' => $errors)));
+    }
+  }
+}
+
+
+/**
+ * Handle text and long text field
+ *
+ * @param $instance_widget_data
+ * @param $node
+ * @param $field_info
+ * @param $write_back_to_audio_file_data
+ */
+function id3_date_widget_id3_widget_handle_field($instance_widget_data, &$node, $field_info, &$write_back_to_audio_file_data) {
+  $id3_field_name = $field_info['field_name'];
+  $instance_data = NULL;
+  if (isset($node->$id3_field_name)) {
+    $instance_data = $node->$id3_field_name;
+  }
+  dpm($instance_widget_data['value'], 'instance_widget_data');
+
+  if (isset($instance_data['und'][0]['value'])) {
+    $db_format = date_type_format($field_info['type']);
+    $timezone_db = date_get_timezone_db($field_info['settings']['tz_handling']);
+    $date = new DateObject($instance_data['und'][0]['value'], $timezone_db, $db_format);
+    switch ($instance_widget_data['id3_tag_field']) {
+      case 'year':
+        $date_from_node_field = date_format($date, 'Y');
+        break;
+      case 'date':
+        $date_from_node_field = date_format($date, 'dm');
+        break;
+      case 'time':
+        $date_from_node_field = date_format($date, 'Hi');
+        break;
+    }
+
+    if ($instance_widget_data['value'][$instance_widget_data['id3_tag_field']] != $date_from_node_field) {
+      $write_back_to_audio_file_data[$instance_widget_data['audio_file_id']][$instance_widget_data['id3_tag_field']][] = $date_from_node_field;
+    }
+
+//      $year_from_node_field = date_format($date, 'Y');
+//      $date_from_node_field = date_format($date, 'dm');
+//      $time_from_node_field = date_format($date, 'Hi');
+//      if($field_info['settings']['granularity']['month'] != 0 && $field_info['settings']['granularity']['day'] != 0
+  }
+  else {
+    if (isset($instance_widget_data['value'][$instance_widget_data['id3_tag_field']])) {
+      $id3_fields_formats = array(
+        'year' => 'Y',
+        'date' => 'dm',
+        'time' => 'Hi',
+      );
+      $full_date = '';
+      $full_format = '';
+      foreach ($id3_fields_formats as $id3_field => $format) {
+        if (isset($instance_widget_data['value'][$id3_field])) {
+          $full_date .= $instance_widget_data['value'][$id3_field] . '/';
+          $full_format .= $format . '/';
+        }
+      }
+      $date = new DateObject($full_date, NULL, $full_format);
+      $item = array();
+      $db_format = date_type_format($field_info['type']);
+      $item[0]['timezone'] = date_get_timezone($field_info['settings']['tz_handling']);
+      //$item[0]['timezone_db'] = date_get_timezone_db($field_info['settings']['tz_handling']);
+      //$item[0]['date_type'] = $field_info['type'];
+      $item[0]['value'] = is_object($date) ? date_format($date, $db_format) : '';
+      $item[0]['value2'] = $item[0]['value'];
+      $offset = $date->getOffset();
+      $item[0]['offset'] = $offset;
+      $item[0]['offset2'] = $offset;
+
+      $instance_data['und'] = $item;
+    }
+  }
+  $node->$id3_field_name = $instance_data;
+}
+
+

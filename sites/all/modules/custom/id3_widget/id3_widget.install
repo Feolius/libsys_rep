@@ -17,7 +17,7 @@ function id3_widget_install() {
   year                                  Year
   comment                               Comments
   bpm                                   BPM (Beats Per Minute)
-  time                                  Time
+  time                                  Time (hours and minutes)
   attached_picture                      Attached picture
   audio_encryption                      Audio encryption
   band                                  Band/orchestra/accompaniment
@@ -25,7 +25,7 @@ function id3_widget_install() {
   conductor                             Conductor/Performer refinement
   content_group_description             Content group description
   copyright                             Copyright information
-  date                                  Date
+  date                                  Date (days and months)
   encoded_by                            Encoded by
   encoder_settings                      Software/Hardware and settings used for encoding
   encryption_method_registration        Encryption method registration
@@ -75,7 +75,7 @@ function id3_widget_install() {
   url_source                            Official audio source webpage
   url_station                           Official Internet radio station homepage
   url_user                              User defined URL link frame
-  */
+   */
 
   $id3v2_tag_fields = _id3_widget_turn_comments_to_array($begin, __LINE__, __FILE__);
 
