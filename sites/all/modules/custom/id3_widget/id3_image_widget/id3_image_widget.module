@@ -6,7 +6,7 @@
 function id3_image_widget_field_widget_info() {
   return array(
     'id3_image_widget' => array(
-      'label' => t('ID3 tags metadata to image'),
+      'label' => t('ID3 tags Image metadata'),
       'description' => t('Field content is calculated from audio field in the same content type'),
       'field types' => array('image'),
       'settings' => array(
@@ -40,7 +40,7 @@ function id3_image_widget_field_widget_settings_form($field, $instance) {
   $possible_date_id3_fields = array(
     'attached_picture' => $id3_fields['attached_picture'],
   );
-  $form['id3_field']['#options'] += $possible_date_id3_fields;
+  $form['id3_field']['#options'] = $possible_date_id3_fields;
   $field_type_setting_addition_form = image_field_widget_settings_form($field, $instance);
   $form = array_merge($form, $field_type_setting_addition_form);
   return $form;
@@ -55,12 +55,7 @@ function id3_image_widget_field_widget_form(&$form, &$form_state, $field, $insta
 }
 
 /**
- * Handle image field
- *
- * @param $instance_widget_data
- * @param $node
- * @param $field_info
- * @param $write_back_to_audio_file_data
+ * Implementation of  hook_id3_widget_handle_field().
  */
 function id3_image_widget_id3_widget_handle_field($instance_widget_data, &$node, $field_info, &$write_back_to_audio_file_data) {
   $id3_field_name = $field_info['field_name'];

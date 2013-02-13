@@ -3,7 +3,6 @@
 /**
  * Waveform generating class
  * @author Andrew Freiday http://andrewfreiday.com/2010/04/29/generating-mp3-waveforms-with-php/
- *
  */
 /**
 Apache License
@@ -197,175 +196,170 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-class Waveform
-{
-    /**
-     * Generate waveform data for given filename
-     * @param string $file File to process (absolute path)
-     * @return resource
-     */
-    public static function generateWaveformData($file)
-    {
+class Waveform {
+  /**
+   * Generate waveform data for given filename
+   * @param string $file File to process (absolute path)
+   * @return resource
+   */
+  public static function generateWaveformData($file) {
 
-        ini_set("max_execution_time", "30000");
+    ini_set("max_execution_time", "30000");
 
-        // temporary file name
-        $temp_directory_path = file_directory_temp();
-        $temp_file_name = $temp_directory_path . DIRECTORY_SEPARATOR . substr(md5(time()), 0, 10);
-        // copy from temp upload directory to current
-        copy($file, "{$temp_file_name}_o.mp3");
-
-        /**
-         * convert mp3 to wav using lame decoder
-         * First, resample the original mp3 using as mono (-m m), 16 bit (-b 16), and 8 KHz (--resample 8)
-         * Secondly, convert that resampled mp3 into a wav
-         * We don't necessarily need high quality audio to produce a waveform, doing this process reduces the WAV
-         * to it's simplest form and makes processing significantly faster
-         */
-
-        exec("/usr/local/bin/lame {$temp_file_name}_o.mp3 -f -m m -b 16 --resample 8 {$temp_file_name}.mp3 && /usr/local/bin/lame --decode {$temp_file_name}.mp3 {$temp_file_name}.wav", $output, $return);
-        //exec('C:\lame\lame.exe "' . $temp_file_name . '_o.mp3" -f -m m -b 16 --resample 8 "' . $temp_file_name . '.mp3"', $output, $return);
-        //exec('C:\lame\lame.exe --decode "' . $temp_file_name . '.mp3" "' . $temp_file_name . '.wav"', $output, $return);
-        // delete temporary files
-        unlink("{$temp_file_name}_o.mp3");
-        unlink("{$temp_file_name}.mp3");
-
-        $filename = "{$temp_file_name}.wav";
-
-        /**
-         * Below as posted by "zvoneM" on
-         * http://forums.devshed.com/php-development-5/reading-16-bit-wav-file-318740.html
-         * as nadjiVrijednosti() defined above
-         */
-        $handle = fopen($filename, "r");
-
-        if ($handle == FALSE) {
-            return FALSE;
-        }
-        //dohvacanje zaglavlja wav datoteke
-        $header = array();
-        $header[] = fread($handle, 4);
-        $header[] = bin2hex(fread($handle, 4));
-        $header[] = fread($handle, 4);
-        $header[] = fread($handle, 4);
-        $header[] = bin2hex(fread($handle, 4));
-        $header[] = bin2hex(fread($handle, 2));
-        $header[] = bin2hex(fread($handle, 2));
-        $header[] = bin2hex(fread($handle, 4));
-        $header[] = bin2hex(fread($handle, 4));
-        $header[] = bin2hex(fread($handle, 2));
-        $header[] = bin2hex(fread($handle, 2));
-        $header[] = fread($handle, 4);
-        $header[] = bin2hex(fread($handle, 4));
-
-        //bitrate wav
-        $bits = hexdec(substr($header[10], 0, 2));
-        $byte = $bits / 8;
-
-        //get channels number
-        $channels = hexdec(substr($header[6], 0, 2));
-
-        if ($channels == 2) {
-            $skip = 40;
-        } else {
-            $skip = 80;
-        }
-
-        $data = array();
-        while (!feof($handle)) {
-            $bytes = array();
-            //get number of bytes depending on bitrate
-            for ($i = 0; $i < $byte; $i++) {
-                $bytes[$i] = fgetc($handle);
-            }
-            switch ($byte) {
-                //get value for 8-bit wav
-                case 1:
-                    $data[] = self::getAmplitude($bytes[0], $bytes[1]);
-                    break;
-                //get value for 16-bit wav
-                case 2:
-                    if (ord($bytes[1]) & 128) {
-                        $temp = 0;
-                    } else {
-                        $temp = 128;
-                    }
-                    $temp = chr((ord($bytes[1]) & 127) + $temp);
-                    $data[] = floor(self::getAmplitude($bytes[0], $temp) / 256);
-                    break;
-            }
-            //skip bytes for memory optimization
-            fread($handle, $skip);
-        }
-
-        // close and cleanup
-        fclose($handle);
-        unlink("{$temp_file_name}.wav");
-
-        return $data;
-    }
+    // temporary file name
+    $temp_directory_path = file_directory_temp();
+    $temp_file_name = $temp_directory_path . DIRECTORY_SEPARATOR . substr(md5(time()), 0, 10);
+    // copy from temp upload directory to current
+    copy($file, "{$temp_file_name}_o.mp3");
 
     /**
-     * Create image by pregenerated audio data.
-     * @param $data
-     * @return resource
+     * convert mp3 to wav using lame decoder
+     * First, resample the original mp3 using as mono (-m m), 16 bit (-b 16), and 8 KHz (--resample 8)
+     * Secondly, convert that resampled mp3 into a wav
+     * We don't necessarily need high quality audio to produce a waveform, doing this process reduces the WAV
+     * to it's simplest form and makes processing significantly faster
      */
-    public static function createImage($data, $width = 400, $height = 50, $background_color = '#EEEEEE')
-    {
-        // create original image width based on arguments
-        $img = imagecreatetruecolor($width, $height);
-        imagealphablending($img, false);
-        imagesavealpha($img, true);
 
-        // generate background color
-        list($r, $g, $b) = self::html2rgb($background_color);
-        $color = imagecolorallocate($img, $r, $g, $b);
-        $transparent = imagecolorallocatealpha($img, 0, 0, 0, 127);
-        imagefill($img, 1, 1, $color);
+    exec("/usr/local/bin/lame {$temp_file_name}_o.mp3 -f -m m -b 16 --resample 8 {$temp_file_name}.mp3 && /usr/local/bin/lame --decode {$temp_file_name}.mp3 {$temp_file_name}.wav", $output, $return);
+    // delete temporary files
+    unlink("{$temp_file_name}_o.mp3");
+    unlink("{$temp_file_name}.mp3");
 
-        //Calculate the count of frames which would displayed as one because of the image width value
-        $frames_in_pixel = sizeof($data) / $width;
-        //And also calculate the rounded value to improve performance of the loop
-        $rounded_frames_in_pixel = round($frames_in_pixel);
-        // loop through frames/bytes of wav data as generated above
-        for ($x = 0; $x < $width; $x += 1) {
-            // relative value based on height of image being generated
-            // data values can range between 0 and 255
-            $v = round((max(array_slice($data, round($x * $frames_in_pixel), $rounded_frames_in_pixel)) / 255.0 * $height));
-            // draw the line on the image using the $v value and centering it vertically on the canvas
-            imagefilledrectangle($img, $x, 0 + ($height - $v), $x, $height - ($height - $v), $transparent);
-        }
-
-        return $img;
-    }
+    $filename = "{$temp_file_name}.wav";
 
     /**
-     * Get amplitude between two bytes?
-     * @param  $byte1
-     * @param  $byte2
-     * @return
+     * Below as posted by "zvoneM" on
+     * http://forums.devshed.com/php-development-5/reading-16-bit-wav-file-318740.html
+     * as nadjiVrijednosti() defined above
      */
-    private static function getAmplitude($byte1, $byte2)
-    {
-        $byte1 = hexdec(bin2hex($byte1));
-        $byte2 = hexdec(bin2hex($byte2));
-        return ($byte1 + ($byte2 * 256));
+    $handle = fopen($filename, "r");
+
+    if ($handle == FALSE) {
+      return FALSE;
+    }
+    //dohvacanje zaglavlja wav datoteke
+    $header = array();
+    $header[] = fread($handle, 4);
+    $header[] = bin2hex(fread($handle, 4));
+    $header[] = fread($handle, 4);
+    $header[] = fread($handle, 4);
+    $header[] = bin2hex(fread($handle, 4));
+    $header[] = bin2hex(fread($handle, 2));
+    $header[] = bin2hex(fread($handle, 2));
+    $header[] = bin2hex(fread($handle, 4));
+    $header[] = bin2hex(fread($handle, 4));
+    $header[] = bin2hex(fread($handle, 2));
+    $header[] = bin2hex(fread($handle, 2));
+    $header[] = fread($handle, 4);
+    $header[] = bin2hex(fread($handle, 4));
+
+    //bitrate wav
+    $bits = hexdec(substr($header[10], 0, 2));
+    $byte = $bits / 8;
+
+    //get channels number
+    $channels = hexdec(substr($header[6], 0, 2));
+
+    if ($channels == 2) {
+      $skip = 40;
+    }
+    else {
+      $skip = 80;
     }
 
-    /**
-     * Great function slightly modified as posted by Minux at
-     * http://forums.clantemplates.com/showthread.php?t=133805
-     * @param  string $input #abcdef
-     * @return array
-     */
-    private static function html2rgb($input)
-    {
-        $input = ($input[0] == "#") ? substr($input, 1, 6) : substr($input, 0, 6);
-        return array(
-            hexdec(substr($input, 0, 2)),
-            hexdec(substr($input, 2, 2)),
-            hexdec(substr($input, 4, 2))
-        );
+    $data = array();
+    while (!feof($handle)) {
+      $bytes = array();
+      //get number of bytes depending on bitrate
+      for ($i = 0; $i < $byte; $i++) {
+        $bytes[$i] = fgetc($handle);
+      }
+      switch ($byte) {
+        //get value for 8-bit wav
+        case 1:
+          $data[] = self::getAmplitude($bytes[0], $bytes[1]);
+          break;
+        //get value for 16-bit wav
+        case 2:
+          if (ord($bytes[1]) & 128) {
+            $temp = 0;
+          }
+          else {
+            $temp = 128;
+          }
+          $temp = chr((ord($bytes[1]) & 127) + $temp);
+          $data[] = floor(self::getAmplitude($bytes[0], $temp) / 256);
+          break;
+      }
+      //skip bytes for memory optimization
+      fread($handle, $skip);
     }
+
+    // close and cleanup
+    fclose($handle);
+    unlink("{$temp_file_name}.wav");
+
+    return $data;
+  }
+
+  /**
+   * Create image by pregenerated audio data.
+   * @param $data
+   * @return resource
+   */
+  public static function createImage($data, $width = 400, $height = 50, $background_color = '#EEEEEE') {
+    // create original image width based on arguments
+    $img = imagecreatetruecolor($width, $height);
+    imagealphablending($img, FALSE);
+    imagesavealpha($img, TRUE);
+
+    // generate background color
+    list($r, $g, $b) = self::html2rgb($background_color);
+    $color = imagecolorallocate($img, $r, $g, $b);
+    $transparent = imagecolorallocatealpha($img, 0, 0, 0, 127);
+    imagefill($img, 1, 1, $color);
+
+    //Calculate the count of frames which would displayed as one because of the image width value
+    $frames_in_pixel = sizeof($data) / $width;
+    //And also calculate the rounded value to improve performance of the loop
+    $rounded_frames_in_pixel = round($frames_in_pixel);
+    // loop through frames/bytes of wav data as generated above
+    for ($x = 0; $x < $width; $x += 1) {
+      // relative value based on height of image being generated
+      // data values can range between 0 and 255
+      $v = round((max(array_slice($data, round($x * $frames_in_pixel), $rounded_frames_in_pixel)) / 255.0 * $height));
+      // draw the line on the image using the $v value and centering it vertically on the canvas
+      imagefilledrectangle($img, $x, 0 + ($height - $v), $x, $height - ($height - $v), $transparent);
+    }
+
+    return $img;
+  }
+
+  /**
+   * Get amplitude between two bytes?
+   * @param  $byte1
+   * @param  $byte2
+   * @return
+   */
+  private static function getAmplitude($byte1, $byte2) {
+    $byte1 = hexdec(bin2hex($byte1));
+    $byte2 = hexdec(bin2hex($byte2));
+    return ($byte1 + ($byte2 * 256));
+  }
+
+  /**
+   * Great function slightly modified as posted by Minux at
+   * http://forums.clantemplates.com/showthread.php?t=133805
+   * @param  string $input #abcdef
+   * @return array
+   */
+  private static function html2rgb($input) {
+    $input = ($input[0] == "#") ? substr($input, 1, 6) : substr($input, 0, 6);
+    return array(
+      hexdec(substr($input, 0, 2)),
+      hexdec(substr($input, 2, 2)),
+      hexdec(substr($input, 4, 2))
+    );
+  }
 
 }

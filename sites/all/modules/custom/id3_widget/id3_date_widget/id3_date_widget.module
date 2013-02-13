@@ -29,25 +29,6 @@ function id3_date_widget_field_widget_info() {
   return $info;
 }
 
-///**
-// * Implements hook_field_widget_properties_alter().
-// *
-// * Alters the widget properties of a field instance before it gets displayed.
-// * Used here to flag new entities so we can later tell if they need default values.
-// */
-//function id3_date_widget_field_widget_properties_alter(&$widget, $context) {
-//  if (in_array($widget['type'], array('id3_date_widget'))) {
-//    $entity_type = $context['entity_type'];
-//    $entity = $context['entity'];
-//    $info = entity_get_info($entity_type);
-//    $id = $info['entity keys']['id'];
-//    $widget['is_new'] = FALSE;
-//    if (empty($entity->$id)) {
-//      $widget['is_new'] = TRUE;
-//    }
-//  }
-//}
-
 /**
  * Implements hook_id3_widget_widget_name_info().
  */
@@ -66,7 +47,6 @@ function id3_date_widget_field_widget_settings_form($field, $instance) {
     'year' => $id3_fields['year'],
     'date' => $id3_fields['date'],
     'time' => $id3_fields['time'],
-//    'date_full' => 'Date full'
   );
   $form['id3_field']['#options'] += $possible_date_id3_fields;
   $field_type_setting_addition_form = date_field_widget_settings_form($field, $instance);
@@ -277,12 +257,7 @@ function id3_widget_date_combo_validate($element, &$form_state) {
 
 
 /**
- * Handle text and long text field
- *
- * @param $instance_widget_data
- * @param $node
- * @param $field_info
- * @param $write_back_to_audio_file_data
+ * Implementation of  hook_id3_widget_handle_field().
  */
 function id3_date_widget_id3_widget_handle_field($instance_widget_data, &$node, $field_info, &$write_back_to_audio_file_data) {
   $id3_field_name = $field_info['field_name'];
@@ -290,12 +265,18 @@ function id3_date_widget_id3_widget_handle_field($instance_widget_data, &$node, 
   if (isset($node->$id3_field_name)) {
     $instance_data = $node->$id3_field_name;
   }
-  dpm($instance_widget_data['value'], 'instance_widget_data');
-
+  //Check if current field already have value, i.e. user have wrote smth in this field, or not
+  //and he's wrote we should save these changes back to the audio file.
   if (isset($instance_data['und'][0]['value'])) {
     $db_format = date_type_format($field_info['type']);
     $timezone_db = date_get_timezone_db($field_info['settings']['tz_handling']);
     $date = new DateObject($instance_data['und'][0]['value'], $timezone_db, $db_format);
+    //The Year, Date and Time frames inf id3 tag have special structure
+    // Year - YYYY - 4 digits describing year
+    // Date - DDMM - 2 digits for day and 2 digits for month
+    // Time - HHMM - 2 digits for hour and 2 digits for minute
+    //The current date field should be converten to necessary format
+    // to compare with current id3 tag field value in audio file
     switch ($instance_widget_data['id3_tag_field']) {
       case 'year':
         $date_from_node_field = date_format($date, 'Y');
@@ -307,16 +288,14 @@ function id3_date_widget_id3_widget_handle_field($instance_widget_data, &$node, 
         $date_from_node_field = date_format($date, 'Hi');
         break;
     }
-
     if ($instance_widget_data['value'][$instance_widget_data['id3_tag_field']] != $date_from_node_field) {
       $write_back_to_audio_file_data[$instance_widget_data['audio_file_id']][$instance_widget_data['id3_tag_field']][] = $date_from_node_field;
     }
-
-//      $year_from_node_field = date_format($date, 'Y');
-//      $date_from_node_field = date_format($date, 'dm');
-//      $time_from_node_field = date_format($date, 'Hi');
-//      if($field_info['settings']['granularity']['month'] != 0 && $field_info['settings']['granularity']['day'] != 0
   }
+  //If he's not wrote or that's the first node save for current node,
+  // we need to fetch current id3_tag_field from audio file, and create
+  // new date object with id3 tag date frames data, and then save that
+  // date object in node.
   else {
     if (isset($instance_widget_data['value'][$instance_widget_data['id3_tag_field']])) {
       $id3_fields_formats = array(
@@ -326,6 +305,8 @@ function id3_date_widget_id3_widget_handle_field($instance_widget_data, &$node, 
       );
       $full_date = '';
       $full_format = '';
+      //Collect data from existing year,date and time frames in id3 tag
+      //If frame doesn't exist now date would be taken for that part of date.
       foreach ($id3_fields_formats as $id3_field => $format) {
         if (isset($instance_widget_data['value'][$id3_field])) {
           $full_date .= $instance_widget_data['value'][$id3_field] . '/';
@@ -336,8 +317,6 @@ function id3_date_widget_id3_widget_handle_field($instance_widget_data, &$node, 
       $item = array();
       $db_format = date_type_format($field_info['type']);
       $item[0]['timezone'] = date_get_timezone($field_info['settings']['tz_handling']);
-      //$item[0]['timezone_db'] = date_get_timezone_db($field_info['settings']['tz_handling']);
-      //$item[0]['date_type'] = $field_info['type'];
       $item[0]['value'] = is_object($date) ? date_format($date, $db_format) : '';
       $item[0]['value2'] = $item[0]['value'];
       $offset = $date->getOffset();
@@ -349,5 +328,3 @@ function id3_date_widget_id3_widget_handle_field($instance_widget_data, &$node, 
   }
   $node->$id3_field_name = $instance_data;
 }
-
-

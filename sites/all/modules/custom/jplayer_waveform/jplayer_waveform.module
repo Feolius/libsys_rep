@@ -349,16 +349,6 @@ function jplayer_waveform_add_core_js() {
 }
 
 /**
- * Implements hook_views_api().
- */
-function jplayer_waveform_views_api() {
-  return array(
-    'path' => drupal_get_path('module', 'jplayer_waveform') . '/includes',
-    'api' => 3.0,
-  );
-}
-
-/**
  * Implement hook_node_insert().
  */
 function jplayer_waveform_node_insert($node) {
@@ -417,7 +407,7 @@ function jplayer_waveform_node_update($node) {
  * Implement hook_file_delete().
  */
 function jplayer_waveform_file_delete($file) {
-  //When the audio file was deleted we should delete the gereted waveform image
+  //When the audio file was deleted we should delete the generated waveform image
   $public_folder_path = file_stream_wrapper_get_instance_by_uri('public://')->realpath();
   if (file_exists($public_folder_path . '/jplayer_waveform_images/' . $file->fid . '.png')) {
     file_unmanaged_delete($public_folder_path . '/jplayer_waveform_images/' . $file->fid . '.png');

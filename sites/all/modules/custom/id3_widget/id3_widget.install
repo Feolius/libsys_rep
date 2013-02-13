@@ -83,6 +83,13 @@ function id3_widget_install() {
 }
 
 /**
+ * Implements hook_uninstall().
+ */
+function id3_widget_uninstall() {
+  variable_del('id3_widget_id3v2_fields');
+}
+
+/**
  * Convert the part of source code with comments into the array.
  * That's needed for more understandable id3 tag structure storing.
  *

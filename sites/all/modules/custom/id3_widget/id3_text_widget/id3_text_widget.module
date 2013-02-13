@@ -6,11 +6,11 @@
 function id3_text_widget_field_widget_info() {
   return array(
     'id3_text_widget' => array(
-      'label' => t('ID3 tags metadata to text'),
+      'label' => t('ID3 tags Text metadata'),
       'description' => t('Field content is calculated from audio field in the same content type'),
       'field types' => array('text', 'text_long'),
       'settings' => array(
-        'audio_field' => '', //The main settings for ID3_tag_widget
+        'audio_field' => '', //Main settings for ID3_tag_widget
         'id3_field' => '', //
         'size' => 60, //The settings for text field type
         'rows' => 5, //The settings for long text field type
@@ -76,12 +76,7 @@ function id3_text_widget_field_widget_form(&$form, &$form_state, $field, $instan
 }
 
 /**
- * Handle text and long text field
- *
- * @param $instance_widget_data
- * @param $node
- * @param $field_info
- * @param $write_back_to_audio_file_data
+ * Implementation of  hook_id3_widget_handle_field().
  */
 function id3_text_widget_id3_widget_handle_field($instance_widget_data, &$node, $field_info, &$write_back_to_audio_file_data) {
   $id3_field_name = $field_info['field_name'];

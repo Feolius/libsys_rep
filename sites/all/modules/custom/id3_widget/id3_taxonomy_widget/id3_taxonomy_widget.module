@@ -3,10 +3,10 @@
 /**
  * Implements hook_field_widget_info().
  */
-function id3_taxonomy_term_reference_widget_field_widget_info() {
+function id3_taxonomy_widget_field_widget_info() {
   return array(
-    'id3_taxonomy_term_reference_widget' => array(
-      'label' => t('ID3 tags metadata to taxonomy'),
+    'id3_taxonomy_widget' => array(
+      'label' => t('ID3 tags Taxonomy Reference metadata'),
       'description' => t('Field content is calculated from audio field in the same content type'),
       'field types' => array('taxonomy_term_reference'),
       'settings' => array(
@@ -26,14 +26,14 @@ function id3_taxonomy_term_reference_widget_field_widget_info() {
 /**
  * Implements hook_id3_widget_widget_name_info().
  */
-function id3_taxonomy_term_reference_widget_id3_widget_widget_name_info() {
-  return 'id3_taxonomy_term_reference_widget';
+function id3_taxonomy_widget_id3_widget_widget_name_info() {
+  return 'id3_taxonomy_widget';
 }
 
 /**
  * Implements hook_field_widget_info_alter().
  */
-function id3_taxonomy_term_reference_widget_field_widget_info_alter(&$info) {
+function id3_taxonomy_widget_field_widget_info_alter(&$info) {
   $info['options_select']['field types'][] = 'taxonomy_term_reference';
   $info['options_buttons']['field types'][] = 'taxonomy_term_reference';
 }
@@ -41,7 +41,7 @@ function id3_taxonomy_term_reference_widget_field_widget_info_alter(&$info) {
 /**
  * Implements hook_options_list().
  */
-function id3_taxonomy_term_reference_widget_options_list($field, $instance, $entity_type, $entity) {
+function id3_taxonomy_widget_options_list($field, $instance, $entity_type, $entity) {
   $function = !empty($field['settings']['options_list_callback']) ? $field['settings']['options_list_callback'] : 'taxonomy_allowed_values';
   return $function($field);
 }
@@ -49,7 +49,7 @@ function id3_taxonomy_term_reference_widget_options_list($field, $instance, $ent
 /**
  * Implementation of hook_field_widget_settings_form().
  */
-function id3_taxonomy_term_reference_widget_field_widget_settings_form($field, $instance) {
+function id3_taxonomy_widget_field_widget_settings_form($field, $instance) {
   $form = id3_widget_widget_settings_form($field, $instance);
   $id3_fields = id3_widget_retrieve_id3_fields();
   unset($id3_fields['attached_picture']);
@@ -61,21 +61,16 @@ function id3_taxonomy_term_reference_widget_field_widget_settings_form($field, $
 /**
  * Implementation of hook_field_widget_form().
  */
-function id3_taxonomy_term_reference_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+function id3_taxonomy_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   $element = taxonomy_field_widget_form($form, $form_state, $field, $instance, $langcode, $items, $delta, $element);
   return $element;
 }
 
 
 /**
- * Handle taxonomy field
- *
- * @param $instance_widget_data
- * @param $node
- * @param $field_info
- * @param $write_back_to_audio_file_data
+ * Implementation of  hook_id3_widget_handle_field().
  */
-function id3_taxonomy_term_reference_widget_id3_widget_handle_field($instance_widget_data, &$node, $field_info, &$write_back_to_audio_file_data) {
+function id3_taxonomy_widget_id3_widget_handle_field($instance_widget_data, &$node, $field_info, &$write_back_to_audio_file_data) {
   $id3_field_name = $field_info['field_name'];
   if (isset($node->$id3_field_name)) {
     $instance_data = $node->$id3_field_name;
@@ -87,7 +82,7 @@ function id3_taxonomy_term_reference_widget_id3_widget_handle_field($instance_wi
   $chosen_vocabulary = taxonomy_vocabulary_machine_name_load($chosen_vocabulary_name);
 
   //Check if current field already have value, i.e. user have wrote smth in this field, or not
-  //If he've wrote that means the taxonomy widget already create term and all what we need to do is
+  //If he's wrote that means the taxonomy widget already create term and all what we need to do is
   //to change parent term, which is the id3_tag_field.
   if (isset($instance_data['und'][0])) {
     if (trim($instance_data['und'][0]['name']) != $instance_widget_data['value']) {
@@ -107,7 +102,7 @@ function id3_taxonomy_term_reference_widget_id3_widget_handle_field($instance_wi
       $write_back_to_audio_file_data[$instance_widget_data['audio_file_id']][$instance_widget_data['id3_tag_field']][] = trim($instance_data['und'][0]['name']);
     }
   }
-  //If he've not wrote, we need to fetch current id3_tag_field from audio file
+  //If he's not wrote, we need to fetch current id3_tag_field from audio file
   //create term with value of that id3_tag_field, or get tid of exist term with the same name
   //and write the tid of this term to node data.
   else {

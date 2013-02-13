@@ -1,0 +1,133 @@
+<?php
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function id3_entity_reference_widget_field_widget_info() {
+  $info = array(
+    'id3_entity_reference_widget' => array(
+      'label' => t('ID3 tags Entity Reference metadata'),
+      'description' => t('An autocomplete text field.'),
+      'field types' => array('entityreference'),
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'size' => 60,
+        'path' => '',
+        'audio_field' => '', //The main settings for ID3_tag_widget
+        'id3_field' => '', //
+      ),
+    )
+  );
+  return $info;
+}
+
+
+/**
+ * Implements hook_id3_widget_widget_name_info().
+ */
+function id3_entity_reference_widget_id3_widget_widget_name_info() {
+  return 'id3_entity_reference_widget';
+}
+
+
+/**
+ * Implementation of hook_field_widget_settings_form().
+ */
+function id3_entity_reference_widget_field_widget_settings_form($field, $instance) {
+  $form = id3_widget_widget_settings_form($field, $instance);
+  $id3_fields = id3_widget_retrieve_id3_fields();
+  unset($id3_fields['attached_picture']);
+  $form['id3_field']['#options'] += $id3_fields;
+
+  // That part of code was copied from function
+  // entityreference_field_widget_settings_form().
+  $widget = $instance['widget'];
+  $settings = $widget['settings'];
+  $field_type_setting_addition_form = array();
+
+  $field_type_setting_addition_form['match_operator'] = array(
+    '#type' => 'select',
+    '#title' => t('Autocomplete matching'),
+    '#default_value' => $settings['match_operator'],
+    '#options' => array(
+      'STARTS_WITH' => t('Starts with'),
+      'CONTAINS' => t('Contains'),
+    ),
+    '#description' => t('Select the method used to collect autocomplete suggestions. Note that <em>Contains</em> can cause performance issues on sites with thousands of nodes.'),
+  );
+  $field_type_setting_addition_form['size'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Size of textfield'),
+    '#default_value' => $settings['size'],
+    '#element_validate' => array('_element_validate_integer_positive'),
+    '#required' => TRUE,
+  );
+  // end of copied part
+
+
+  $form = array_merge($form, $field_type_setting_addition_form);
+  return $form;
+}
+
+/**
+ * Implementation of hook_field_widget_form().
+ */
+function id3_entity_reference_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  $tmp_instance = $instance;
+  $tmp_instance['widget']['type'] = 'entityreference_autocomplete';
+  $element = entityreference_field_widget_form($form, $form_state, $field, $tmp_instance, $langcode, $items, $delta, $element);
+  return $element;
+}
+
+/**
+ * Implementation of  hook_id3_widget_handle_field().
+ */
+function id3_entity_reference_widget_id3_widget_handle_field($instance_widget_data, &$node, $field_info, &$write_back_to_audio_file_data) {
+  $id3_field_name = $field_info['field_name'];
+  $instance_data = NULL;
+  if (isset($node->$id3_field_name)) {
+    $instance_data = $node->$id3_field_name;
+  }
+  if (!drupal_validate_utf8($instance_widget_data['value'])) {
+    $instance_widget_data['value'] = check_plain(utf8_encode($instance_widget_data['value']));
+  }
+  //Check if current field already have value, i.e. user have wrote smth in this field, or not
+  //and he's wrote we should save these changes back to the audio file.
+  if (isset($instance_data['und'][0]['target_id'])) {
+    $node = node_load($instance_data['und'][0]['target_id']);
+    $title = $node->title;
+    if ($instance_widget_data['value'] != $title) {
+      $write_back_to_audio_file_data[$instance_widget_data['audio_file_id']][$instance_widget_data['id3_tag_field']][] = $title;
+    }
+  }
+  //If he's not wrote or that's the first node save for current node,
+  // we need to fetch current id3_tag_field from audio file, then check
+  // does node with id3 tag field value as title exist and if not, create
+  // new such node object, and then save it at node.
+  else {
+    if (isset($instance_widget_data['value'])) {
+      $result = db_select('node', 'n')
+        ->fields('n', array('nid'))
+        ->condition('title', $instance_widget_data['value'], '=')
+        ->execute()
+        ->fetchAssoc();
+      if ($result != NULL) {
+        $target_nid = $result['nid'];
+      }
+      else {
+        $target_node = new stdClass();
+        $target_node->title = $instance_widget_data['value'];
+        $target_node->type = array_shift($field_info['settings']['handler_settings']['target_bundles']);
+        $target_node->language = 'und';
+        $target_node->is_new = TRUE;
+        node_save($target_node);
+        $target_nid = $target_node->nid;
+      }
+      $instance_data['und'][0]['target_id'] = $target_nid;
+    }
+  }
+
+  $node->$id3_field_name = $instance_data;
+}
+
+
