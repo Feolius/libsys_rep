@@ -195,50 +195,39 @@ function _id3_widget_search_widget_instances(&$node, $bundle_instances, $id3_wid
       && !empty($instance['widget']['settings']['audio_field'])
       && !empty($instance['widget']['settings']['id3_field'])
     ) {
-      $result[$instance_name] = NULL;
+
       $audio_field = $instance['widget']['settings']['audio_field'];
-      if (!empty($instance['widget']['settings']['audio_field']) && isset($node->$audio_field)) {
-        $audio_field_data = $node->$audio_field;
-
-        if (isset($audio_field_data['und'][0]['fid'])) {
-          $widget_instances[$instance_name] = $instance;
-          $usage_list = file_usage_list(file_load($audio_field_data['und'][0]['fid']));
-
-          if (!isset($usage_list['file']['node']) || !isset($usage_list['file']['node'][$node->vid])) {
-            //Delete old data from id3 widget fields because the new audio file is uploaded
-            if (isset($node->$instance_name)) {
-              $instance_data = $node->$instance_name;
-              $field_info = field_info_field($instance_name);
-              switch ($field_info['type']) {
-                case 'image':
-                  if (isset($instance_data['und'][0]['fid'])) {
-                    $file = file_load($instance_data['und'][0]['fid']);
-                    file_delete($file);
-                  }
-                  $node->$instance_name = array('und' => array());
-                  break;
-                default:
-                  $node->$instance_name = array('und' => array());
-              }
-            }
+      if (!empty($instance['widget']['settings']['audio_field'])) {
+        $audio_field_data = NULL;
+        $usage_list = NULL;
+        if (isset($node->$audio_field)) {
+          $audio_field_data = $node->$audio_field;
+          if (isset($audio_field_data['und'][0]['fid'])) {
+            $widget_instances[$instance_name] = $instance;
+            $usage_list = file_usage_list(file_load($audio_field_data['und'][0]['fid']));
           }
         }
-      }
-      else {
-        //Delete data from id3 widget fields because the audio field is empty
-        if (isset($node->$instance_name)) {
-          $instance_data = $node->$instance_name;
-          $field_info = field_info_field($instance_name);
-          switch ($field_info['type']) {
-            case 'image':
-              if (isset($instance_data['und'][0])) {
-                $file = file_load($instance_data['und'][0]['fid']);
-                file_delete($file);
-              }
-              $node->$instance_name = array('und' => array());
-              break;
-            default:
-              $node->$instance_name = array('und' => array());
+
+        if (!isset($usage_list['file']['node'])
+          || !isset($usage_list['file']['node'][$node->vid])
+          || $audio_field_data == NULL
+        ) {
+          //Delete old data from id3 widget fields because the new audio file is uploaded
+          if (isset($node->$instance_name)) {
+            $instance_data = $node->$instance_name;
+            $field_info = field_info_field($instance_name);
+            dpm($instance_data, 'instance data');
+            switch ($field_info['type']) {
+              case 'image':
+                if (isset($instance_data['und'][0]['fid'])) {
+                  $file = file_load($instance_data['und'][0]['fid']);
+                  file_delete($file);
+                }
+                $node->$instance_name = array('und' => array());
+                break;
+              default:
+                $node->$instance_name = array('und' => array());
+            }
           }
         }
       }
