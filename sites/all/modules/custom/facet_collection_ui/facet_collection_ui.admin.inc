@@ -5,6 +5,44 @@
  * Overview and settings forms and helper functions for Facet Collection UI module.
  */
 
+function facet_collection_ui_admin_settings_flush_data_form($form, &$form_state){
+  $form = array();
+  $form['#description'] = t('This form will flush all the facet collection ui data.') . '<br /><strong>' . t('Warning! Flushing the settings for a facet collection ui will disable all already enabled filters!') . '</strong>';
+//  $options = array('' => '- Select -');
+//  foreach (node_type_get_types() as $type) {
+//    if (is_multistep($type)) {
+//      $options[$type->type] = $type->name;
+//    }
+//  }
+//  $form['multistep_type'] = array(
+//    '#type' => 'select',
+//    '#title' => t('Content type'),
+//    '#options' => $options,
+//    '#required' => TRUE,
+//    '#weight' => -1,
+//  );
+  // Show reset button if multistep is enabled for this content type.
+  $form['facet_collection_ui_flush'] = array(
+    '#type' => 'submit',
+    '#value' => t("Let's flush data for fun!"),
+    '#weight' => 1,
+    '#access' => user_access('administer facet_collection_ui'),
+  );
+  return $form;
+}
+
+/**
+ * Resets the multistep table data for the selected content type.
+ */
+function facet_collection_ui_admin_settings_flush_data_form_submit($form, &$form_state) {
+  variable_del('facet_collection_filters');
+  variable_del('facet_collection_filters_settings');
+  drupal_set_message(t('Data was successfully flushed'));
+}
+
+
+
+
 /**
  * Determines the rendering order of an array representing a tree.
  *
@@ -465,7 +503,10 @@ function facet_collection_ui_filters_overview_form($form, &$form_state, $entity_
   );
 
   $form['actions'] = array('#type' => 'actions');
-  $form['actions']['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save')
+  );
 
   $form['#attached']['js'][] = drupal_get_path('module', 'field_ui') . '/field_ui.js';
   $form['#attached']['css'][] = drupal_get_path('module', 'field_ui') . '/field_ui.css';

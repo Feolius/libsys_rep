@@ -7,132 +7,163 @@
  */
 
 /**
+ * Implements hook_permission().
+ */
+function facet_collection_ui_permission() {
+  return array(
+    'administer facet_collection_ui' => array(
+      'title' => t('Administer Facet Collection UI'),
+      'description' => t('Enable, disable, and configure the facet collection functionality for different content types.'),
+    ),
+  );
+}
+
+/**
  * Implements hook_menu().
  */
-function facet_collection_ui_menu()
-{
-    $items = array();
-    foreach (entity_get_info() as $entity_type => $entity_info) {
-        if ($entity_info['fieldable'] && $entity_type == 'node') {
-            foreach ($entity_info['bundles'] as $bundle_name => $bundle_info) {
-                if (isset($bundle_info['admin'])) {
-                    // Extract path information from the bundle.
-                    $path = $bundle_info['admin']['path'];
-                    // Different bundles can appear on the same path (e.g. %node_type and
-                    // %comment_node_type). To allow field_ui_menu_load() to extract the
-                    // actual bundle object from the translated menu router path
-                    // arguments, we need to identify the argument position of the bundle
-                    // name string ('bundle argument') and pass that position to the menu
-                    // loader. The position needs to be casted into a string; otherwise it
-                    // would be replaced with the bundle name string.
-                    if (isset($bundle_info['admin']['bundle argument'])) {
-                        $bundle_arg = $bundle_info['admin']['bundle argument'];
-                        $bundle_pos = (string)$bundle_arg;
-                    } else {
-                        $bundle_arg = $bundle_name;
-                        $bundle_pos = '0';
-                    }
-                    // This is the position of the %field_ui_menu placeholder in the
-                    // items below.
-                    $field_position = count(explode('/', $path)) + 1;
+function facet_collection_ui_menu() {
+  $items = array();
+  foreach (entity_get_info() as $entity_type => $entity_info) {
+    if ($entity_info['fieldable'] && $entity_type == 'node') {
+      foreach ($entity_info['bundles'] as $bundle_name => $bundle_info) {
+        if (isset($bundle_info['admin'])) {
+          // Extract path information from the bundle.
+          $path = $bundle_info['admin']['path'];
+          // Different bundles can appear on the same path (e.g. %node_type and
+          // %comment_node_type). To allow field_ui_menu_load() to extract the
+          // actual bundle object from the translated menu router path
+          // arguments, we need to identify the argument position of the bundle
+          // name string ('bundle argument') and pass that position to the menu
+          // loader. The position needs to be casted into a string; otherwise it
+          // would be replaced with the bundle name string.
+          if (isset($bundle_info['admin']['bundle argument'])) {
+            $bundle_arg = $bundle_info['admin']['bundle argument'];
+            $bundle_pos = (string) $bundle_arg;
+          }
+          else {
+            $bundle_arg = $bundle_name;
+            $bundle_pos = '0';
+          }
+          // This is the position of the %field_ui_menu placeholder in the
+          // items below.
+          $field_position = count(explode('/', $path)) + 1;
 
-                    // Extract access information, providing defaults.
-                    $access = array_intersect_key($bundle_info['admin'], drupal_map_assoc(array('access callback', 'access arguments')));
-                    $access += array(
-                        'access callback' => 'user_access',
-                        'access arguments' => array('administer site configuration'),
-                    );
-                    // 'Manage filters' tab.
-                    $path_elements = explode('/', $path);
-                    if (!in_array('comment', $path_elements)) {
-                        $items["$path/filters"] = array(
-                            'title' => t('Manage filters'),
-                            'page callback' => 'drupal_get_form',
-                            'page arguments' => array('facet_collection_ui_filters_overview_form', $entity_type, $bundle_arg),
-                            'type' => MENU_LOCAL_TASK,
-                            'weight' => 2,
-                            'file' => 'facet_collection_ui.admin.inc',
-                        ) + $access;
-                    }
-                }
-            }
+          // Extract access information, providing defaults.
+          $access = array_intersect_key($bundle_info['admin'], drupal_map_assoc(array(
+            'access callback',
+            'access arguments'
+          )));
+          $access += array(
+            'access callback' => 'user_access',
+            'access arguments' => array('administer site configuration'),
+          );
+          // 'Manage filters' tab.
+          $path_elements = explode('/', $path);
+          if (!in_array('comment', $path_elements)) {
+            $items["$path/filters"] = array(
+              'title' => t('Manage filters'),
+              'page callback' => 'drupal_get_form',
+              'page arguments' => array('facet_collection_ui_filters_overview_form', $entity_type, $bundle_arg),
+              'type' => MENU_LOCAL_TASK,
+              'weight' => 2,
+              'file' => 'facet_collection_ui.admin.inc',
+            ) + $access;
+          }
         }
+      }
     }
-    return $items;
+  }
+  $items['admin/config/search/facet-collection-ui'] = array(
+    'title' => 'Facet Collection UI',
+    'description' => 'Allows the user to configure different options for the facet collection ui module.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('facet_collection_ui_admin_settings_flush_data_form'),
+    'access arguments' => array('administer facet_collection_ui'),
+    'file' => 'facet_collection_ui.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/config/search/facet-collection-ui/flush-data'] = array(
+    'title' => 'Flush Data',
+    'description' => 'These settings will flush data of all filter for facet collection ui.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('facet_collection_ui_admin_settings_flush_data_form'),
+    'access arguments' => array('administer facet_collection_ui'),
+    'file' => 'facet_collection_ui.admin.inc',
+    'weight' => -9,
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+
+  return $items;
 }
 
 /**
  * Implements hook_element_info().
  */
-function facet_collection_ui_element_info()
-{
-    return array(
-        'facet_collection_ui_table' => array(
-            '#theme' => 'facet_collection_ui_table',
-            '#pre_render' => array('facet_collection_ui_table_pre_render'),
-            '#regions' => array('' => array()),
-        ),
-    );
+function facet_collection_ui_element_info() {
+  return array(
+    'facet_collection_ui_table' => array(
+      '#theme' => 'facet_collection_ui_table',
+      '#pre_render' => array('facet_collection_ui_table_pre_render'),
+      '#regions' => array('' => array()),
+    ),
+  );
 }
 
 /**
  * Implements hook_theme().
  */
-function facet_collection_ui_theme()
-{
-    return array(
-        'facet_collection_ui_table' => array(
-            'render element' => 'elements',
-        ),
-    );
+function facet_collection_ui_theme() {
+  return array(
+    'facet_collection_ui_table' => array(
+      'render element' => 'elements',
+    ),
+  );
 }
 
 /**
  * Implements hook_field_delete_instance().
  */
-function facet_collection_ui_field_delete_instance($instance)
-{
-    $field = field_info_field($instance['field_name']);
-    $filterable_type_list = facet_collection_ui_submodules_info();
-    if (array_key_exists($field['type'], $filterable_type_list)) {
-        $facet_filters = drupal_json_decode(variable_get('facet_collection_filters'));
-        $bundle = $instance['bundle'];
+function facet_collection_ui_field_delete_instance($instance) {
+  $field = field_info_field($instance['field_name']);
+  $filterable_type_list = facet_collection_ui_submodules_info();
+  if (array_key_exists($field['type'], $filterable_type_list)) {
+    $facet_filters = drupal_json_decode(variable_get('facet_collection_filters'));
+    $bundle = $instance['bundle'];
 
-        //Erase information of deleting field from existing version of facet_collections_filters
-        //and facet_collections_filters_settings common variables
-        if (isset($facet_filters[$bundle])) {
-            if (isset($facet_filters[$bundle][$field['field_name']])) {
-                $facet_filters_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
-                $function = $filterable_type_list[$field['type']] . '_facet_collection_ui_delete_field';
-                if (function_exists($function)) {
-                    $function($field, $bundle, $facet_filters_settings, $facet_filters[$bundle][$field['field_name']]);
-                }
-                unset($facet_filters[$bundle][$field['field_name']]);
-                variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
-                variable_set('facet_collection_filters_settings', drupal_json_encode($facet_filters_settings));
-            }
+    //Erase information of deleting field from existing version of facet_collections_filters
+    //and facet_collections_filters_settings common variables
+    if (isset($facet_filters[$bundle])) {
+      if (isset($facet_filters[$bundle][$field['field_name']])) {
+        $facet_filters_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
+        $function = $filterable_type_list[$field['type']] . '_facet_collection_ui_delete_field';
+        if (function_exists($function)) {
+          $function($field, $bundle, $facet_filters_settings, $facet_filters[$bundle][$field['field_name']]);
         }
+        unset($facet_filters[$bundle][$field['field_name']]);
+        variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
+        variable_set('facet_collection_filters_settings', drupal_json_encode($facet_filters_settings));
+      }
     }
+  }
 }
 
 /**
  * Implements hook_field_create_instance().
  */
-function facet_collection_ui_field_create_instance($instance)
-{
-    $field = field_info_field($instance['field_name']);
-    $filterable_type_list = facet_collection_ui_submodules_info();
-    if (array_key_exists($field['type'], $filterable_type_list)) {
-        $facet_filters = drupal_json_decode(variable_get('facet_collection_filters'));
-        $bundle = $instance['bundle'];
-        if (!isset($facet_filters[$bundle])) {
-            $facet_filters[$bundle] = array();
-        }
-        $facet_filters[$bundle][$field['field_name']] = array();
-        $facet_filters[$bundle][$field['field_name']]['state'] = 'hidden';
-        $facet_filters[$bundle][$field['field_name']]['referened_filters'] = array();
-        variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
+function facet_collection_ui_field_create_instance($instance) {
+  $field = field_info_field($instance['field_name']);
+  $filterable_type_list = facet_collection_ui_submodules_info();
+  if (array_key_exists($field['type'], $filterable_type_list)) {
+    $facet_filters = drupal_json_decode(variable_get('facet_collection_filters'));
+    $bundle = $instance['bundle'];
+    if (!isset($facet_filters[$bundle])) {
+      $facet_filters[$bundle] = array();
     }
+    $facet_filters[$bundle][$field['field_name']] = array();
+    $facet_filters[$bundle][$field['field_name']]['state'] = 'hidden';
+    $facet_filters[$bundle][$field['field_name']]['referened_filters'] = array();
+    variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
+  }
 }
 
 /**
@@ -141,20 +172,19 @@ function facet_collection_ui_field_create_instance($instance)
  * @return array
  *  An array with list of filterable types
  */
-function facet_collection_ui_submodules_info()
-{
-    $filterable_type_list = cache_get('facet_collection_ui_filterable_field_types');
-    if (!$filterable_type_list) {
-        foreach (module_implements('facet_collection_ui_field_type_info') as $module) {
-            $field_types = module_invoke($module, 'facet_collection_ui_field_type_info');
-            foreach ($field_types as $field_type) {
-                $filterable_type_list[$field_type] = $module;
-            }
-        }
-        if (!empty($filterable_type_list)) {
-            cache_set('facet_collection_ui_filterable_field_types', $filterable_type_list);
-        }
-        return $filterable_type_list;
+function facet_collection_ui_submodules_info() {
+  $filterable_type_list = cache_get('facet_collection_ui_filterable_field_types');
+  if (!$filterable_type_list) {
+    foreach (module_implements('facet_collection_ui_field_type_info') as $module) {
+      $field_types = module_invoke($module, 'facet_collection_ui_field_type_info');
+      foreach ($field_types as $field_type) {
+        $filterable_type_list[$field_type] = $module;
+      }
     }
-    return $filterable_type_list->data;
+    if (!empty($filterable_type_list)) {
+      cache_set('facet_collection_ui_filterable_field_types', $filterable_type_list);
+    }
+    return $filterable_type_list;
+  }
+  return $filterable_type_list->data;
 }
