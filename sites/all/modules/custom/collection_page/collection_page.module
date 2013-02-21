@@ -13,14 +13,14 @@
 function collection_page_menu() {
   $items = array();
   $items['timeline-json'] = array(
-    'access callback' => TRUE,
-    'page callback' => 'collection_page_timeline_json_callback',
-    'type' => MENU_CALLBACK,
+      'access callback' => TRUE,
+      'page callback' => 'collection_page_timeline_json_callback',
+      'type' => MENU_CALLBACK,
   );
   $items['timeline-iframe'] = array(
-    'access callback' => TRUE,
-    'page callback' => 'collection_page_timeline_frame_callback',
-    'type' => MENU_CALLBACK,
+      'access callback' => TRUE,
+      'page callback' => 'collection_page_timeline_frame_callback',
+      'type' => MENU_CALLBACK,
   );
   return $items;
 }
@@ -30,29 +30,29 @@ function collection_page_menu() {
  */
 function collection_page_theme() {
   return array(
-    'facet_collection_search_results__alter' => array(
-      'variables' => array('results' => NULL),
-    ),
-    'collection_page' => array(
-      'template' => 'theme/collection-page',
-    ),
-    'timeline_json' => array(
-      'template' => 'theme/timeline-json-page',
-      'arguments' => array(
-        'options' => NULL,
+      'facet_collection_search_results__alter' => array(
+          'variables' => array('results' => NULL),
       ),
-    ),
-    'timeline_iframe' => array(
-      'template' => 'theme/timeline-iframe-page',
-    ),
-    'collection_standart_view' => array(
-      'template' => 'theme/collection-standart-view',
-      'variables' => array('content' => NULL, 'default_url' => NULL, 'thumbnail_url' => NULL)
-    ),
-    'collection_standart_thumbnail_view' => array(
-      'template' => 'theme/collection-standart-thumbnail-view',
-      'variables' => array('results' => NULL)
-    )
+      'collection_page' => array(
+          'template' => 'theme/collection-page',
+      ),
+      'timeline_json' => array(
+          'template' => 'theme/timeline-json-page',
+          'arguments' => array(
+              'options' => null,
+          ),
+      ),
+      'timeline_iframe' => array(
+          'template' => 'theme/timeline-iframe-page',
+      ),
+      'collection_standart_view' => array(
+          'template' => 'theme/collection-standart-view',
+          'variables' => array('content' => NULL, 'default_url' => NULL, 'thumbnail_url' => NULL)
+      ),
+      'collection_standart_thumbnail_view' => array(
+          'template' => 'theme/collection-standart-thumbnail-view',
+          'variables' => array('results' => NULL)
+      )
   );
 }
 
@@ -85,38 +85,29 @@ function theme_facet_collection_search_results__alter($variables) {
   }
   if (isset($_GET['view']) && $_GET['view'] == 'thumb') {
     $rendered_results = theme('collection_standart_thumbnail_view', array('results' => $results));
-  }
-  else {
-    $rendered_results = theme('search_results', array(
-      '#theme' => 'search_results',
-      '#results' => $results,
-      '#module' => 'collection_page'
-    ));
+  } else {
+    $rendered_results = theme('search_results', array('#theme' => 'search_results', '#results' => $results, '#module' => 'collection_page'));
   }
   $options = array(
-    'query' => array_diff_key($_GET, array('q' => 1, 'view' => 1)),
+      'query' => array_diff_key($_GET, array('q' => 1, 'view' => 1)),
   );
   $default_url = url(arg(0), $options);
   $options['query']['view'] = 'thumb';
   $thumbnail_url = url(arg(0), $options);
   $standart_view_content = array(
-    '#id' => 'standart-view',
-    '#title' => t('Standart View'),
-    '#content' => array(
-      '#view' => theme('collection_standart_view', array(
-        'content' => $rendered_results,
-        'default_url' => $default_url,
-        'thumbnail_url' => $thumbnail_url
-      )),
-    ),
+      '#id' => 'standart-view',
+      '#title' => t('Standart View'),
+      '#content' => array(
+          '#view' => theme('collection_standart_view', array('content' => $rendered_results, 'default_url' => $default_url, 'thumbnail_url' => $thumbnail_url)),
+      ),
   );
   $timeline_view_content = array(
-    '#id' => 'timeline-view',
-    '#title' => t('Timeline View'),
-    '#content' => array(
-      '#view' => theme('timeline_iframe'),
-      '#pager' => theme('pager', array('tags' => NULL)),
-    ),
+      '#id' => 'timeline-view',
+      '#title' => t('Timeline View'),
+      '#content' => array(
+          '#view' => theme('timeline_iframe'),
+          '#pager' => theme('pager', array('tags' => NULL)),
+      ),
   );
 
   $node_ids = '';
@@ -134,8 +125,7 @@ function theme_facet_collection_search_results__alter($variables) {
           }
         }
       }
-    }
-    elseif ($node->type == 'location') {
+    } elseif ($node->type == 'location') {
       //Collect NIDs of nodes for bundle Location
       $node_ids = implode(',', array($node_ids, $result['node']->entity_id));
     }
@@ -143,18 +133,18 @@ function theme_facet_collection_search_results__alter($variables) {
   $node_ids = substr($node_ids, 1);
   //Build location view using special view with openlayers map
   $location_view_content = array(
-    '#id' => 'location-view',
-    '#title' => t('Location View'),
-    '#content' => array(
-      '#view' => views_embed_view('location_view', 'map', $node_ids),
-      '#pager' => theme('pager', array('tags' => NULL)),
-    ),
+      '#id' => 'location-view',
+      '#title' => t('Location View'),
+      '#content' => array(
+          '#view' => views_embed_view('location_view', 'map', $node_ids),
+          '#pager' => theme('pager', array('tags' => NULL)),
+      ),
   );
   //Define the views.
   $content = array(
-    '#standart' => $standart_view_content,
-    '#timeline' => $timeline_view_content,
-    '#location' => $location_view_content,
+      '#standart' => $standart_view_content,
+      '#timeline' => $timeline_view_content,
+      '#location' => $location_view_content,
   );
   $views = array_keys($content);
   //Define default and disabled tabs on collection page
@@ -221,26 +211,23 @@ function collection_page_timeline_json_callback() {
     //get image,as media content, and date for time line.
     //There would taken the last image field in node and the last date field in node.
     $node = node_load($result['node']->entity_id);
-    if ($node != NULL) {
-      $instances = field_info_instances('node', $node->type);
-      foreach ($instances as $field_name => $instance) {
-        $field_info = field_info_field($field_name);
-        if ($field_info['type'] == 'image') {
-          $items = field_get_items('node', $node, $field_info['field_name']);
-          if (!empty($items)) {
-            foreach ($items as $item) {
-              $uri = $item['uri'];
-              $style = 'thumbnail';
-              $styles = image_styles();
-              if (in_array($style, array_keys($styles))) {
-                $image_path = image_style_url($style, $uri);
-              }
-              else {
-                $image_path = file_create_url($uri);
-              }
-              $asset->media = $image_path;
-              break;
+    $instances = field_info_instances('node', $node->type);
+    foreach ($instances as $field_name => $instance) {
+      $field_info = field_info_field($field_name);
+      if ($field_info['type'] == 'image') {
+        $items = field_get_items('node', $node, $field_info['field_name']);
+        if (!empty($items)) {
+          foreach ($items as $item) {
+            $uri = $item['uri'];
+            $style = 'thumbnail';
+            $styles = image_styles();
+            if (in_array($style, array_keys($styles))) {
+              $image_path = image_style_url($style, $uri);
+            } else {
+              $image_path = file_create_url($uri);
             }
+            $asset->media = $image_path;
+            break;
           }
         }
       }
@@ -252,23 +239,16 @@ function collection_page_timeline_json_callback() {
         //If the node have more then ine date fields, the earliest one would be chosen.
         if (isset($timeline_item->startDate)) {
           $timeline_item->startDate = (strtotime($timeline_item->startDate) > strtotime($item_date)) ? $item_date : $timeline_item->startDate;
-        }
-        else {
+        } else {
           $timeline_item->startDate = $item_date;
         }
       }
     }
 
     $timeline_item->headline = $result['title'];
-    $timeline_item->text = l('read more', $GLOBALS['base_url'] . $result['link'], array(
-      'attributes' => array(
-        'target' => '_parent',
-        'class' => 'active'
-      )
-    ));
+    $timeline_item->text = l('read more', $GLOBALS['base_url'] . $result['link'], array('attributes' => array('target' => '_parent', 'class' => 'active')));
     $timeline_item->asset = $asset;
     $date[] = $timeline_item;
-
   }
 
   $json_class = new stdClass();
@@ -346,16 +326,16 @@ function _collection_page_get_date_fields_from_bundle($bundle) {
  * Preprocess function for collection_standart_thumbnail_view
  */
 function template_preprocess_collection_standart_thumbnail_view(&$results) {
-  //We should find a thumbnail field. It could be any image field. If we find it for
-  //content type we should save it in static variable
-  //This variable contatin array which keys are content type names and values are
-  //field names that contain image for thumbnail
-  $results['collection_thumbnails'] = array();
-  $thumbnail_fields = & drupal_static(__FUNCTION__);
-  foreach ($results['results'] as $result) {
-    $node = $result['node'];
-    $bundle = $node->bundle;
-    if (!isset($thumbnail_fields[$bundle])) {
+  $thumbnail_fields = array();
+  if (!($thumbnail_fields = cache_get('collection_page:thumbnail_fields'))) {
+
+    //We should find a thumbnail field. It could be any image field. If we find it for
+    //content type we should save it in static variable
+    //This variable contatin array which keys are content type names and values are
+    //field names that contain image for thumbnail
+    $environment = apachesolr_default_environment();
+    $bundles = apachesolr_get_index_bundles($environment, 'node');
+    foreach ($bundles as $bundle) {
       $instances = field_info_instances('node', $bundle);
       foreach ($instances as $instance) {
         $field_info = field_info_field($instance['field_name']);
@@ -364,12 +344,15 @@ function template_preprocess_collection_standart_thumbnail_view(&$results) {
           if ($display['type'] != 'hidden') {
             $thumbnail_fields[$bundle]['field_name'] = $instance['field_name'];
             $thumbnail_fields[$bundle]['style'] = $display['settings']['image_style'];
-            break;
           }
         }
       }
     }
-    elseif (isset($thumbnail_fields[$bundle])) {
+    cache_set('collection_page:thumbnail_fields', $textfield_names, 'cache', CACHE_TEMPORARY);
+  }
+  $results['collection_thumbnails'] = array();
+  foreach ($results['results'] as $result) {
+    if (isset($thumbnail_fields[$bundle])) {
       $node = node_load($node->entity_id);
       $items = field_get_items('node', $node, $thumbnail_fields[$bundle]['field_name']);
       if (!empty($items)) {
@@ -382,6 +365,8 @@ function template_preprocess_collection_standart_thumbnail_view(&$results) {
         $thumbnail_content['meta_info'] = render($thumbnail_view);
         $results['collection_thumbnails'][] = $thumbnail_content;
       }
+    }else{
+      drupal_set_message('Please clear cache and check fields in collection thumbnail view set properly');
     }
   }
   $results['pager'] = theme('pager', array('tags' => NULL));
