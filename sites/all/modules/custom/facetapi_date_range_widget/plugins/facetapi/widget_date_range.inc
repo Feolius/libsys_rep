@@ -45,7 +45,6 @@ class FacetapiWidgetDateRange extends FacetapiWidget {
     }else{
       $search_path = $search_path_parts[0];
     }
-
     $args = array(
         'search path' => $search_path,
         'field alias' => $this->facet['field alias'],

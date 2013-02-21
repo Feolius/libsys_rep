@@ -4,114 +4,113 @@
  * Implements hook_facetapi_widgets().
  */
 function facetapi_date_range_widget_facetapi_widgets() {
-    return array(
-        'facetapi_date_range_widget' => array(
-            'handler' => array(
-                'label' => t('Date Range'),
-                'class' => 'FacetapiWidgetDateRange',
-                'query types' => array('term', 'date'),
-            ),
-        ),
-    );
+  return array(
+      'facetapi_date_range_widget' => array(
+          'handler' => array(
+              'label' => t('Date Range'),
+              'class' => 'FacetapiWidgetDateRange',
+              'query types' => array('term', 'date'),
+          ),
+      ),
+  );
 }
 
 /**
  * Implements hook_forms().
  */
 function facetapi_date_range_widget_forms($form_id, $args) {
-    $forms = array();
-    $searcher_info = facetapi_get_searcher_info();
-    $searchers = array_keys($searcher_info);
-    $searcher = array_shift($searchers);
-    $adapter = facetapi_adapter_load($searcher);
-    $enabled_facets = $adapter->getEnabledFacets();
-    foreach($enabled_facets as $enabled_facet){
-        if(in_array('date', $enabled_facet['query types'])){
-            $forms['facetapi_date_range_widget_' . $enabled_facet['name'] . '_form'] = array(
-                'callback' => 'facetapi_date_range_widget_filter_form',
-            );
-        }
+  $forms = array();
+  $searcher_info = facetapi_get_searcher_info();
+  $searchers = array_keys($searcher_info);
+  $searcher = array_shift($searchers);
+  $adapter = facetapi_adapter_load($searcher);
+  $enabled_facets = $adapter->getEnabledFacets();
+  foreach ($enabled_facets as $enabled_facet) {
+    if (in_array('date', $enabled_facet['query types'])) {
+      $forms['facetapi_date_range_widget_' . $enabled_facet['name'] . '_form'] = array(
+          'callback' => 'facetapi_date_range_widget_filter_form',
+      );
     }
-    return $forms;
+  }
+  return $forms;
 }
 
 /**
  * Submit callback for date filter form
  */
 function facetapi_date_range_widget_filter_submit($form, &$form_state) {
-    $basic_path = $form_state['build_info']['args'][0]['search path'];
-    $field_alias = $form_state['build_info']['args'][0]['field alias'];
-    $facet_name = $form_state['build_info']['args'][0]['facet name'];
+  $basic_path = $form_state['build_info']['args'][0]['search path'];
+  $field_alias = $form_state['build_info']['args'][0]['field alias'];
+  $facet_name = $form_state['build_info']['args'][0]['facet name'];
 
-    //We consider to use dateapi functions instead of facetapi date functions for converting date to ISO format
-    //because it gives better precision and convienience.
-    //Perform smart date fulling for apache solr query.
-    $min_date = $form_state['input']['min_date'];
-    $min_date_parts = explode('/', $min_date);
-    $parts_number = count($min_date_parts);
+  //We consider to use dateapi functions instead of facetapi date functions for converting date to ISO format
+  //because it gives better precision and convienience.
+  //Perform smart date fulling for apache solr query.
+  $min_date = $form_state['input']['min_date'];
+  $min_date_parts = explode('/', $min_date);
+  $parts_number = count($min_date_parts);
 
-    //We add the minimal possible date here because we deal with min date field
-    if ($parts_number == 1) {
-        $min_date_full = $min_date . '/01/01';
-    }
-    if ($parts_number == 2) {
-        $min_date_full = $min_date . '/01';
-    }
-    if ($parts_number == 3) {
-        $min_date_full = $min_date;
-    }
-    $date_min_obj = new DateObject($min_date_full, NULL, 'Y/m/d');
-    $min_date_array = $date_min_obj->toArray();
-    $min_date_ISO = $date_min_obj->toISO($min_date_array);
-    $max_date = $form_state['input']['max_date'];
-    $max_date_parts = explode('/', $max_date);
-    $parts_number = count($max_date_parts);
+  //We add the minimal possible date here because we deal with min date field
+  if ($parts_number == 1) {
+    $min_date_full = $min_date . '/01/01';
+  }
+  if ($parts_number == 2) {
+    $min_date_full = $min_date . '/01';
+  }
+  if ($parts_number == 3) {
+    $min_date_full = $min_date;
+  }
+  $date_min_obj = new DateObject($min_date_full, NULL, 'Y/m/d');
+  $min_date_array = $date_min_obj->toArray();
+  $min_date_ISO = $date_min_obj->toISO($min_date_array);
+  $max_date = $form_state['input']['max_date'];
+  $max_date_parts = explode('/', $max_date);
+  $parts_number = count($max_date_parts);
 
-    //We add the max possible date here because we deal with max date field
-    if ($parts_number == 1) {
-        $max_date_full = $max_date . '/31/12';
-    }
-    if ($parts_number == 2) {
-        $month = $max_date_parts[1];
-        $year = $max_date_parts[0];
-        $days_number = date_days_in_month($year, $month);
-        $max_date_full = $max_date . '/' . $days_number;
-    }
-    if ($parts_number == 3) {
-        $max_date_full = $max_date;
-    }
+  //We add the max possible date here because we deal with max date field
+  if ($parts_number == 1) {
+    $max_date_full = $max_date . '/12/31';
+  }
+  if ($parts_number == 2) {
+    $month = $max_date_parts[1];
+    $year = $max_date_parts[0];
+    $days_number = date_days_in_month($year, $month);
+    $max_date_full = $max_date . '/' . $days_number;
+  }
+  if ($parts_number == 3) {
+    $max_date_full = $max_date;
+  }
+  $date_max_obj = new DateObject($max_date_full, NULL, 'Y/m/d');
+  $max_date_array = $date_max_obj->toArray();
+  $max_date_ISO = $date_max_obj->toISO($max_date_array);
 
-    $date_max_obj = new DateObject($max_date_full, NULL, 'Y/m/d');
-    $max_date_array = $date_max_obj->toArray();
-    $max_date_ISO = $date_max_obj->toISO($max_date_array);
-
-    //Build request
-    $request = $field_alias . ':[' . $min_date_ISO . 'Z TO ' . $max_date_ISO . 'Z]';
-    $merge = TRUE;
-    if (isset($_GET['f'])) {
-        $f = $_GET['f'];
-        foreach ($f as $key => $row) {
-            if (strstr($row, $field_alias)) {
-                $f[$key] = $request;
-                $merge = FALSE;
-                continue;
-            }
-        }
-        if ($merge) {
-            $f = array_merge($f, array($request));
-        }
-    }else
-        $f = array($request);
-    $options = array(
-        'query' => array(
-            'f' => $f,
-            'min_' . $facet_name => $min_date,
-            'max_' . $facet_name => $max_date,
-        ),
-    );
-    $form_state['redirect'] = array(
-        $basic_path, $options, 302
-    );
+  //Build request
+  $request = $field_alias . ':[' . $min_date_ISO . 'Z TO ' . $max_date_ISO . 'Z]';
+  $merge = TRUE;
+  if (isset($_GET['f'])) {
+    $f = $_GET['f'];
+    foreach ($f as $key => $row) {
+      if (strstr($row, $field_alias)) {
+        $f[$key] = $request;
+        $merge = FALSE;
+        continue;
+      }
+    }
+    if ($merge) {
+      $f = array_merge($f, array($request));
+    }
+  }else
+    $f = array($request);
+  $options = array(
+      'query' => array(
+          'f' => $f,
+          'min_' . $facet_name => $min_date,
+          'max_' . $facet_name => $max_date,
+      ),
+  );
+  $form_state['redirect'] = array(
+      $basic_path, $options, 302
+  );
 }
 
 /**
@@ -119,130 +118,202 @@ function facetapi_date_range_widget_filter_submit($form, &$form_state) {
  */
 function facetapi_date_range_widget_reset_submit($form, &$form_state) {
 
-    //Find and unset filter query from GET request
-    $options = array();
-    $basic_path = $form_state['build_info']['args'][0]['search path'];
-    $field_alias = $form_state['build_info']['args'][0]['field alias'];
-    if (isset($_GET['f'])) {
-        $f = $_GET['f'];
-        foreach ($f as $key => $row) {
-            if (strstr($row, $field_alias)) {
-                unset($f[$key]);
-                $merge = FALSE;
-                continue;
-            }
-        }
-
-        if (!empty($f)) {
-            $options = array(
-                'query' => array(
-                    'f' => $f,
-                ),
-            );
-        }
+  //Find and unset filter query from GET request
+  $options = array();
+  $basic_path = $form_state['build_info']['args'][0]['search path'];
+  $field_alias = $form_state['build_info']['args'][0]['field alias'];
+  if (isset($_GET['f'])) {
+    $f = $_GET['f'];
+    foreach ($f as $key => $row) {
+      if (strstr($row, $field_alias)) {
+        unset($f[$key]);
+        $merge = FALSE;
+        continue;
+      }
     }
-    $form_state['redirect'] = array(
-        $basic_path, $options, 302
-    );
+
+    if (!empty($f)) {
+      $options = array(
+          'query' => array(
+              'f' => $f,
+          ),
+      );
+    }
+  }
+  $form_state['redirect'] = array(
+      $basic_path, $options, 302
+  );
 }
 
 /**
  * Form callback for date filter
  */
 function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
-    $label = $args['label'];
-    $date_now = date_now();
-    $date_now_full = date_format_date($date_now, 'custom', 'Y/m/d');
-    $date_now_month = date_format_date($date_now, 'custom', 'Y/m');
-    $date_now_year = date_format_date($date_now, 'custom', 'Y');
-    $facet_name = $args['facet name'];
-    $format = 'Format:' . $date_now_full . ', ' . $date_now_month . ', ' . $date_now_year;
-    if (empty($_GET['min_' . $facet_name ])) {
-        $min_date = $args['min date'];
-        $max_date = $args['max date'];
-    } else {
-        $min_date = $_GET['min_' . $facet_name];
-        $max_date = $_GET['max_' . $facet_name];
-    }
-    $form = array(
-        'title' => array(
-            '#type' => 'item',
-            '#markup' => '<h3>' . $label . '</h3>',
-            '#weight' => -20,
-        ),
-        'min_date' => array(
-            '#type' => 'textfield',
-            '#description' => t('Left limit'),
-            '#size' => 10,
-            '#maxlength' => 10,
-            '#weight' => -15,
-            '#default_value' => $min_date,
-        ),
-        'max_date' => array(
-            '#type' => 'textfield',
-            '#description' => t('Right limit'),
-            '#size' => 10,
-            '#maxlength' => 10,
-            '#weight' => -14,
-            '#default_value' => $max_date,
-        ),
-         'label' => array(
-            '#type' => 'item',
-            '#markup' => '<div class="desription">' . $format . ' </div>',
-        ),
-        'filter_button' => array(
-            '#type' => 'submit',
-            '#value' => t('Filter'),
-            '#description' => t('Format:'),
-            '#weight' => 15,
-            '#submit' => array('facetapi_date_range_widget_filter_submit'),
-        ),
-        'reset_button' => array(
-            '#type' => 'submit',
-            '#value' => t('Reset'),
-            '#description' => t('Format:'),
-            '#weight' => 15,
-            '#submit' => array('facetapi_date_range_widget_reset_submit'),
-        ),
-    );
-    return $form;
+  $label = $args['label'];
+  $left_limit = $args['min date'];
+  $right_limit = $args['max date'];
+  $date_now = date_now();
+  $date_now_full = date_format_date($date_now, 'custom', 'Y/m/d');
+  $date_now_month = date_format_date($date_now, 'custom', 'Y/m');
+  $date_now_year = date_format_date($date_now, 'custom', 'Y');
+  $facet_name = $args['facet name'];
+  $format = 'Format:' . $date_now_full . ', ' . $date_now_month . ', ' . $date_now_year;
+  if (empty($_GET['min_' . $facet_name])) {
+    $min_date = $args['min date'];
+    $max_date = $args['max date'];
+  } else {
+    $min_date = $_GET['min_' . $facet_name];
+    $max_date = $_GET['max_' . $facet_name];
+  }
+
+  //Unfortunately there can be such situation when few forms with one form id will be in one page.
+  //To prevent possible conflicts we should define what HTML form id will this form have and put it in Drupal js settings.
+  $form_id = $form_state['build_info']['form_id'];
+  $form_id = strtr(drupal_strtolower($form_id), array(' ' => '-', '_' => '-', '[' => '-', ']' => ''));
+  $form_id = preg_replace('/[^A-Za-z0-9\-_]/', '', $form_id);
+  $form_id = preg_replace('/\-+/', '-', $form_id);
+  $seen_ids = &drupal_static('drupal_html_id');
+  if (isset($seen_ids[$form_id])) {
+    $seen_id = $seen_ids[$form_id] + 1;
+    $form_id = $form_id . '--' . $seen_id;
+  } else {
+    $seen_id = 1;
+  }
+  $facet_name = $args['facet name'];
+  if ($seen_id == 1) {
+    $slider_id = 'facetapi-slider-' . $facet_name;
+    $min_datepicker_id = 'facetapi-datepicker-min-' . $facet_name;
+    $max_datepicker_id = 'facetapi-datepicker-max-' . $facet_name;
+    $min_date_id = 'facetapi-range-min-' . $facet_name;
+    $max_date_id = 'facetapi-range-max-' . $facet_name;
+  } else {
+    $slider_id = 'facetapi-slider-' . $facet_name . '-' . $seen_id;
+    $min_datepicker_id = 'facetapi-datepicker-min-' . $facet_name . '-' . $seen_id;
+    $max_datepicker_id = 'facetapi-datepicker-max-' . $facet_name . '-' . $seen_id;
+    $min_date_id = 'facetapi-range-min-' . $facet_name . '-' . $seen_id;
+    $max_date_id = 'facetapi-range-max-' . $facet_name . '-' . $seen_id;
+  }
+  $settings = array(
+      'forms' => array(
+          $form_id => array(
+              'minValueId' => $min_date_id,
+              'maxValueId' => $max_date_id,
+              'minDatepickerID' => $min_datepicker_id,
+              'maxDatepickerID' => $max_datepicker_id,
+              'leftLimit' => $left_limit,
+              'rightLimit' => $right_limit,
+              'minValue' => $min_date,
+              'maxValue' => $max_date,
+              'sliderID' => $slider_id,
+          ),
+      ),
+      'iconPath' => base_path() . drupal_get_path('module', 'facetapi_date_range_widget') . '/images/calendar.gif',
+  );
+
+  //Add js settings and files
+  drupal_add_library('system', 'ui.slider');
+  drupal_add_library('system', 'ui.datepicker');
+  drupal_add_js(drupal_get_path('module', 'facetapi_date_range_widget') . '/js/facetapi_date_range.js');
+  drupal_add_js(array('facetapi_date_range_widget' => $settings), 'setting');
+  drupal_add_css(drupal_get_path('module', 'facetapi_date_range_widget') . '/css/facetapi_date_range.css');
+
+  $form = array(
+      'title' => array(
+          '#type' => 'item',
+          '#markup' => '<h3>' . $label . '</h3>',
+          '#weight' => -20,
+      ),
+      'min_date_picker' => array(
+          '#type' => 'item',
+          '#markup' => '<input id="' . $min_datepicker_id . '" class="facetapi_datepicker" type="text">',
+          '#weight' => -15,
+          '#description' => t('Left limit'),
+      ),
+      'max_date_picker' => array(
+          '#type' => 'item',
+          '#markup' => '<input id="' . $max_datepicker_id . '" class="facetapi_datepicker" type="text">',
+          '#weight' => -14,
+          '#description' => t('Right limit'),
+      ),
+      'min_date' => array(
+          '#type' => 'textfield',
+          '#size' => 16,
+          '#weight' => -15,
+          '#default_value' => $min_date,
+          '#attributes' => array(
+              'id' => $min_date_id,
+          )
+      ),
+      'max_date' => array(
+          '#type' => 'textfield',
+          '#size' => 16,
+          '#weight' => -14,
+          '#default_value' => $max_date,
+          '#attributes' => array(
+              'id' => $max_date_id,
+          )
+      ),
+      'label' => array(
+          '#type' => 'item',
+          '#markup' => '<div class="desription">' . $format . ' </div>',
+      ),
+      'slider' => array(
+          '#type' => 'item',
+          '#markup' => '<div id="' . $slider_id . '"></div>',
+      ),
+      'filter_button' => array(
+          '#type' => 'submit',
+          '#value' => t('Filter'),
+          '#description' => t('Format:'),
+          '#weight' => 14,
+          '#submit' => array('facetapi_date_range_widget_filter_submit'),
+      ),
+      'reset_button' => array(
+          '#type' => 'submit',
+          '#value' => t('Reset'),
+          '#description' => t('Format:'),
+          '#weight' => 15,
+          '#submit' => array('facetapi_date_range_widget_reset_submit'),
+      ),
+  );
+  return $form;
 }
 
 /**
  * Validate callback for date filter form
  */
 function facetapi_date_range_widget_filter_form_validate($form, &$form_state) {
-    $min_date = $form_state['input']['min_date'];
-    $max_date = $form_state['input']['max_date'];
-    $date_array = explode('/', $min_date);
-    $parts_number = count($date_array);
-    if ($parts_number == 1) {
-        $min_date = $min_date . '/01/01';
-    }
-    if ($parts_number == 2) {
-        $min_date = $min_date . '/01';
-    }
-    $date_array = explode('/', $max_date);
-    $parts_number = count($date_array);
-    if ($parts_number == 1) {
-        $max_date = $max_date . '/12/31';
-    }
-    if ($parts_number == 2) {
-        $month = $date_array[1];
-        $year = $date_array[0];
-        $days_number = date_days_in_month($year, $month);
-        $max_date = $max_date . '/' . $days_number;
-    }
-    $min_date_obj = new DateObject($min_date, NULL, 'Y/m/d');
-    $max_date_obj = new DateObject($max_date, NULL, 'Y/m/d');
-    if (!date_is_date($min_date_obj)) {
-        form_set_error('min_date', t('Please insert correct date.'));
-    }
-    if (!date_is_date($max_date_obj)) {
-        form_set_error('max_date', t('Please insert correct date.'));
-    }
-    if ($min_date_obj > $max_date_obj) {
-        form_set_error('min_textfield', t('Left limit should be less than right limit.'));
-    }
+  $min_date = $form_state['input']['min_date'];
+  $max_date = $form_state['input']['max_date'];
+  $date_array = explode('/', $min_date);
+  $parts_number = count($date_array);
+  if ($parts_number == 1) {
+    $min_date = $min_date . '/01/01';
+  }
+  if ($parts_number == 2) {
+    $min_date = $min_date . '/01';
+  }
+  $date_array = explode('/', $max_date);
+  $parts_number = count($date_array);
+  if ($parts_number == 1) {
+    $max_date = $max_date . '/12/31';
+  }
+  if ($parts_number == 2) {
+    $month = $date_array[1];
+    $year = $date_array[0];
+    $days_number = date_days_in_month($year, $month);
+    $max_date = $max_date . '/' . $days_number;
+  }
+  $min_date_obj = new DateObject($min_date, NULL, 'Y/m/d');
+  $max_date_obj = new DateObject($max_date, NULL, 'Y/m/d');
+  if (!date_is_date($min_date_obj)) {
+    form_set_error('min_date', t('Please insert correct date.'));
+  }
+  if (!date_is_date($max_date_obj)) {
+    form_set_error('max_date', t('Please insert correct date.'));
+  }
+  if ($min_date_obj > $max_date_obj) {
+    form_set_error('min_textfield', t('Left limit should be less than right limit.'));
+  }
 }
 
