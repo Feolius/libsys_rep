@@ -38,6 +38,8 @@
         $( "#" + minDatepickerID ).datepicker(
         {
           showOn: "button",
+          changeMonth: true,
+          changeYear: true,
           buttonImage: iconPath,
           buttonImageOnly: true,
           minDate: leftLimitDateObj,
@@ -64,6 +66,8 @@
         $( "#" + maxDatepickerID ).datepicker(
         {
           showOn: "button",
+          changeMonth: true,
+          changeYear: true,
           buttonImage: iconPath,
           buttonImageOnly: true,
           minDate: leftLimitDateObj,
@@ -168,7 +172,7 @@
         dateString = dateParts[0] + '/' + dateParts[1] + '/' + daysNumber;
         break;
       case 1:
-        dateString = dateString + '/01/01';
+        dateString = dateString + '/12/31';
         break;
       default:
         dateString = defaultValue;
