@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * Implements hook_menu()
+ */
+function library_import_menu() {
+  $items['libimport'] = array(
+      'title' => t('Import'),
+      'type' => MENU_LOCAL_TASK,
+      'page callback' => 'library_import_page',
+      'access arguments' => array('access content'),
+  );
+  return $items;
+}
+
+/**
+ * Page callback for import page
+ */
+function library_import_page() {
+  return drupal_get_form('library_import_form');
+}
+
+function library_import_form($form, &$form_state) {
+  $form['submit'] = array(
+      '#type' => 'submit',
+      '#submit' => array('library_import_submit'),
+      '#value' => t('Import')
+  );
+  return $form;
+}
+
+/**
+ * Submiter for import
+ */
+function library_import_submit() {
+  $other_database = array(
+      'database' => 'adventists',
+      'username' => 'admin', // assuming this is necessary
+      'password' => '1234', // assuming this is necessary
+      'host' => 'localhost', // assumes localhost
+      'driver' => 'mysql', // replace with your database driver
+  );
+  Database::addConnectionInfo('ImportDatabaseKey', 'default', $other_database);
+  /* $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('egw_linker', 'l');
+    $query->addField('l', 'tb_id');
+    $query->leftJoin('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
+    $query->leftJoin('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id AND l2.tb_name != l.tb_name');
+    $query->condition('l2.tb_id', 32, '=');
+    $query->condition('l2.tb_name', 'file', '=');
+    $query->condition('l2i.linkerinfo_id', '1', '=');
+  $result = $query->execute();
+$row = $result->fetchAssoc();
+dpm($row);
+$f = new stdClass();
+$f->a = $row['tb_id'];
+dpm($f);*/
+  $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('adv_people', 'l');
+    $query->addField('l', 'ID');
+    $query->isNull('first_name');
+    $query->isNull('last_name');
+    $query->isNull('email');
+    $query->isNotNull('source');
+    $query->range(0, 10);
+
+    $result = $query->execute();
+
+  while ($row = $result->fetchAssoc()) {
+         dpm($row);
+    }
+  $node = node_load(191);
+  dpm($node);
+}

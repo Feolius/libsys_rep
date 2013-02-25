@@ -1,0 +1,394 @@
+<?php
+
+abstract class LibraryMigration extends DynamicMigration {
+
+  public function __construct() {
+    parent::__construct();
+    $other_database = array(
+        'database' => 'adventists',
+        'username' => 'admin', // assuming this is necessary
+        'password' => '1234', // assuming this is necessary
+        'host' => 'localhost', // assumes localhost
+        'driver' => 'mysql', // replace with your database driver
+    );
+    Database::addConnectionInfo('ImportDatabaseKey', 'default', $other_database);
+  }
+
+}
+
+class FileCollectionMigration extends LibraryMigration {
+
+  public function __construct() {
+    parent::__construct();
+    $this->description = t('Migrate Files Collections from file_collection table');
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('file_collection', 'fc')
+            ->fields('fc', array('ID', 'name', 'name_short', 'description'));
+    $this->map = new MigrateSQLMap($this->machineName,
+                    array(
+                        'ID' => array('type' => 'int',
+                            'not null' => TRUE,
+                        )
+                    ),
+                    MigrateDestinationTerm::getKeySchema(),
+                    'ImportDatabaseKey'
+    );
+    $this->source = new MigrateSourceSQL($query);
+    $this->destination = new MigrateDestinationTerm('file_collection');
+    $this->addFieldMapping('name', 'name');
+    $this->addFieldMapping('field_file_collection_short_name', 'name_short');
+    $this->addFieldMapping('description', 'description');
+  }
+
+}
+
+class FileFolderMigration extends LibraryMigration {
+
+  public function __construct() {
+    parent::__construct();
+    $this->description = t('Migrate Files Folders from file_folder table');
+    $this->dependencies = array('FileCollection');
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('file_folder', 'ff')
+            ->fields('ff', array('ID', 'collection_id', 'topic', 'file_no', 'other_source', 'comments'));
+    $this->map = new MigrateSQLMap($this->machineName,
+                    array(
+                        'ID' => array('type' => 'int',
+                            'not null' => TRUE,
+                        )
+                    ),
+                    MigrateDestinationTerm::getKeySchema(),
+                    'ImportDatabaseKey'
+    );
+
+    $this->source = new MigrateSourceSQL($query);
+    $this->destination = new MigrateDestinationTerm('file_folder');
+    $this->addFieldMapping('name', 'topic');
+    $this->addFieldMapping('field_files_folder_file_no', 'file_no');
+    $this->addFieldMapping('field_files_folder_other_source', 'other_source');
+    $this->addFieldMapping('field_files_folder_comments', 'comments');
+    $this->addFieldMapping('field_files_folder_collection', 'collection_id')
+            ->sourceMigration('FileCollection')
+            ->arguments(array('source_type' => 'tid'));
+  }
+
+}
+
+class FileCategoryMigration extends LibraryMigration {
+
+  public function __construct() {
+    parent::__construct();
+    $this->description = t('Migrate Files Categories from file_categories table');
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('file_categories', 'fcc')
+            ->fields('fcc', array('ID', 'name'));
+    $this->map = new MigrateSQLMap($this->machineName,
+                    array(
+                        'ID' => array('type' => 'int',
+                            'not null' => TRUE,
+                        )
+                    ),
+                    MigrateDestinationTerm::getKeySchema(),
+                    'ImportDatabaseKey'
+    );
+    $this->source = new MigrateSourceSQL($query);
+    $this->destination = new MigrateDestinationTerm('file_category');
+    $this->addFieldMapping('name', 'name');
+  }
+
+}
+
+class FilesMigration extends LibraryMigration {
+
+  public function __construct() {
+    parent::__construct();
+    $this->description = t('Migrate Files content type from file table');
+    $this->dependencies = array('FileCollection', 'FileFolder', 'FileCategory');
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('file', 'f')
+            ->fields('f', array('ID', 'topic', 'extendedtopic', 'description', 'keypoints', 'extended_summary', 'text', 'keywords',
+        'original_title', 'category_id', 'source', 'volume', 'number', 'chapter', 'page', 'handwritten', 'typewritten', 'letterhead', 'remarks'));
+    $query->leftJoin('file_collection2file', 'c2f', 'c2f.file_id = f.ID');
+    $query->addField('c2f', 'collection_id', 'cid');
+    $query->leftJoin('file_file2folder', 'f2f', 'f2f.file_id = f.ID');
+    $query->addField('f2f', 'folder_id', 'fid');
+    $this->map = new MigrateSQLMap($this->machineName,
+                    array(
+                        'ID' => array(
+                            'type' => 'int',
+                            'not null' => TRUE,
+                            'alias' => 'f',
+                        )
+                    ),
+                    MigrateDestinationTerm::getKeySchema(),
+                    'ImportDatabaseKey'
+    );
+    $this->source = new MigrateSourceSQL($query);
+    $this->destination = new MigrateDestinationNode('files');
+    $this->addFieldMapping('field_files_original_id', 'ID');
+    $this->addFieldMapping('title', 'topic');
+    $this->addFieldMapping('field_files_subtitle', 'extendedtopic');
+    $this->addFieldMapping('field_files_description', 'description');
+    $this->addFieldMapping('field_files_key_points', 'keypoints');
+    $this->addFieldMapping('field_files_description:summary', 'extended_summary');
+    $this->addFieldMapping('field_files_text2', 'text');
+    $this->addFieldMapping('field_files_keywords', 'keywords')
+            ->separator(',')
+            ->arguments(array('create_term' => TRUE));
+    $this->addFieldMapping('field_files_original_title', 'original_title');
+    $this->addFieldMapping('field_files_category', 'category_id')
+            ->sourceMigration('FileCategory')
+            ->arguments(array('source_type' => 'tid'));
+    $this->addFieldMapping('field_files_source_title', 'source');
+    $this->addFieldMapping('field_files_source_volume', 'volume');
+    $this->addFieldMapping('field_files_source_number', 'number');
+    $this->addFieldMapping('field_files_source_page', 'page');
+    $this->addFieldMapping('field_files_source_chapter', 'chapter');
+    $this->addFieldMapping('field_files_handwritten', 'handwritten');
+    $this->addFieldMapping('field_files_typewritten', 'typewritten');
+    $this->addFieldMapping('field_files_letterhead', 'letterhead');
+    $this->addFieldMapping('field_files_notes', 'remarks');
+    $this->addFieldMapping('field_files_collection', 'cid')
+            ->sourceMigration('FileCollection')
+            ->arguments(array('source_type' => 'tid'));
+    $this->addFieldMapping('field_files_folder', 'fid')
+            ->sourceMigration('FileFolder')
+            ->arguments(array('source_type' => 'tid'));
+    $this->addFieldMapping('field_files_author', 'author')
+            ->sourceMigration('People');
+    $this->addFieldMapping('field_files_receiver', 'receiver')
+            ->sourceMigration('People');
+  }
+
+  public function prepareRow($row) {
+    //Add author field to the row
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('egw_linker', 'l');
+    $query->addField('l', 'tb_id');
+    $query->leftJoin('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
+    $query->leftJoin('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id AND l2.tb_name != l.tb_name');
+    $query->condition('l2.tb_id', $row->ID, '=');
+    $query->condition('l2.tb_name', 'file', '=');
+    $query->condition('l.tb_name', 'adv_people', '=');
+    $query->condition('l2i.linkerinfo_id', '1', '=');
+    $result = $query->execute();
+    $authors = array();
+    while ($record = $result->fetchAssoc()) {
+      $authors[] = $record['tb_id'];
+    }
+    $row->author = $authors;
+
+    //Add author field to the row
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('egw_linker', 'l');
+    $query->addField('l', 'tb_id');
+    $query->leftJoin('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
+    $query->leftJoin('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id AND l2.tb_name != l.tb_name');
+    $query->condition('l2.tb_id', $row->ID, '=');
+    $query->condition('l2.tb_name', 'file', '=');
+    $query->condition('l.tb_name', 'adv_people', '=');
+    $query->condition('l2i.linkerinfo_id', '3', '=');
+    $result = $query->execute();
+    $receivers = array();
+    while ($record = $result->fetchAssoc()) {
+      $receivers[] = $record['tb_id'];
+    }
+    $row->receiver = $receivers;
+
+
+    //Check if this file from collection with id 1,2 or 3
+    /* $query = Database::getConnection('default', 'ImportDatabaseKey')
+      ->select('file_collection2file', 'c2f');
+      $query->addField('c2f', 'collection_id');
+      $query->rightJoin('file', 'f', 'c2f.file_id = f.ID');
+      $query->condition('f.ID', $row->ID . '=');
+      $result = $query->execute();
+      $record = $result->fetchAssoc();
+      switch ($record['collection_id']) {
+      case 1:
+      case 2:
+      case 3:
+      return TRUE;
+      default:
+      return FALSE;
+      } */
+  }
+
+  protected function createStub($migration, $source_id) {
+    $node = new stdClass();
+    $node->title = t('Stub for') . $source_id[0];
+    $node->body = t('Stub body');
+    $node->type = $this->destination->getBundle();
+    $node->uid = 1;
+    $node->status = 0;
+    node_save($node);
+    if (isset($node->nid)) {
+      return array($node->nid);
+    } else {
+      return FALSE;
+    }
+  }
+
+  public function prepare($node, stdClass $row) {
+    $node->language = 'en';
+  }
+
+}
+
+class PeopleMigration extends LibraryMigration {
+
+  public function __construct() {
+    parent::__construct();
+    $this->description = t('Migrate People content type from adv_people table');
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('adv_people', 'p')
+            ->fields('p', array('ID', 'first_name', 'middle_name', 'last_name', 'maiden_name', 'generic_name',
+        'email', 'description', 'title', 'degree', 'official_position', 'source'));
+
+    $this->map = new MigrateSQLMap($this->machineName,
+                    array(
+                        'ID' => array(
+                            'type' => 'int',
+                            'not null' => FALSE,
+                        )
+                    ),
+                    MigrateDestinationTerm::getKeySchema(),
+                    'ImportDatabaseKey'
+    );
+    $this->source = new MigrateSourceSQL($query);
+    $this->destination = new MigrateDestinationNode('people');
+    $this->addFieldMapping('title', 'real_title');
+    $this->addFieldMapping('field_people_first_name', 'first_name');
+    $this->addFieldMapping('field_people_last_name', 'last_name');
+    $this->addFieldMapping('field_people_middle_name', 'middle_name');
+    $this->addFieldMapping('field_people_maiden_name', 'maiden_name');
+    $this->addFieldMapping('field_people_generic_name', 'generic_name');
+    $this->addFieldMapping('field_people_e_mail', 'email');
+    $this->addFieldMapping('field_people_title', 'title');
+    $this->addFieldMapping('field_people_degree', 'degree');
+    $this->addFieldMapping('field_people_official_position', 'official_position');
+    $this->addFieldMapping('field_people_source', 'source');
+    $this->addFieldMapping('field_people_description', 'description');
+    $this->addFieldMapping('field_people_written_files', 'written_files')
+            ->sourceMigration('Files');
+    $this->addFieldMapping('field_people_received_files', 'received_files')
+            ->sourceMigration('Files');
+  }
+
+  public function prepareRow($row) {
+    $first_name = $row->first_name;
+    $middle_name = $row->middle_name;
+    $last_name = $row->last_name;
+    $email = $row->email;
+    if($first_name || $last_name){
+      $real_title = $first_name . ' ' . $last_name;
+    }elseif($email){
+      $real_title = $email;
+    }else{
+      return FALSE;
+    }
+    $row->real_title = $real_title;
+
+    //Add written files
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('egw_linker', 'l');
+    $query->addField('l', 'tb_id');
+    $query->leftJoin('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
+    $query->leftJoin('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id AND l2.tb_name != l.tb_name');
+    $query->condition('l2.tb_id', $row->ID, '=');
+    $query->condition('l2.tb_name', 'adv_people', '=');
+    $query->condition('l.tb_name', 'file', '=');
+    $query->condition('l2i.linkerinfo_id', '1', '=');
+    $result = $query->execute();
+    $record = $result->fetchAssoc();
+    $written_files = array();
+    while ($record = $result->fetchAssoc()) {
+      $written_files[] = $record['tb_id'];
+    }
+    $row->written_files = $written_files;
+dpm($written_files);
+
+    //Add received files
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('egw_linker', 'l');
+    $query->addField('l', 'tb_id');
+    $query->leftJoin('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
+    $query->leftJoin('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id AND l2.tb_name != l.tb_name');
+    $query->condition('l2.tb_id', $row->ID, '=');
+    $query->condition('l2.tb_name', 'adv_people', '=');
+    $query->condition('l.tb_name', 'file', '=');
+    $query->condition('l2i.linkerinfo_id', '3', '=');
+    $result = $query->execute();
+    $record = $result->fetchAssoc();
+    $received_files = array();
+    while ($record = $result->fetchAssoc()) {
+      $received_files[] = $record['tb_id'];
+    }
+    $row->received_files = $received_files;
+  }
+  public function prepare($node, $row) {
+    $node->language = 'en';
+    if ($row->official_position == 0) {
+      $node->status = 0;
+      $node->promote = 0;
+    }
+  }
+
+}
+
+/*class LocationMigration extends LibraryMigration {
+
+  public function __construct() {
+    parent::__construct();
+    $this->description = t('Migrate Location content type from adv_location table');
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('adv_location', 'p')
+            ->fields('p', array('ID', 'locname', 'address', 'town', 'state', 'country',
+        'zipcode', 'description', 'link', 'source'));
+    $this->map = new MigrateSQLMap($this->machineName,
+                    array(
+                        'ID' => array(
+                            'type' => 'int',
+                            'not null' => FALSE,
+                        )
+                    ),
+                    MigrateDestinationTerm::getKeySchema(),
+                    'ImportDatabaseKey'
+    );
+    $this->source = new MigrateSourceSQL($query);
+    $this->destination = new MigrateDestinationNode('location');
+    $this->addSimpleMappings(array('title', 'description'));
+    $this->addFieldMapping('field_location_link', 'real_title');
+  }
+
+  public function prepareRow($row) {
+    $town = $row->town;
+    $state = $row->state;
+    $country = $row->country;
+    $locname = $row->locname;
+    $title = array();
+    if ($town) {
+      $title[] = $town;
+    }
+    if ($state) {
+      $title[] = $state;
+    }
+    if ($country) {
+      $title[] = $country;
+    }
+    $title = implode(', ', $title);
+    if ($locname) {
+      $title = $locname . '(' . $title . ')';
+    }
+    $row->title = $title;
+  }
+
+  public function prepare($node, $row) {
+    $node->language = 'en';
+    if ($row->official_position == 0) {
+      $node->status = 0;
+      $node->promote = 0;
+    }
+  }
+
+}*/
