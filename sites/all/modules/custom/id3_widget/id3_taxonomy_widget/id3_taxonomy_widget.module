@@ -86,19 +86,19 @@ function id3_taxonomy_widget_id3_widget_handle_field($instance_widget_data, &$no
   //to change parent term, which is the id3_tag_field.
   if (isset($instance_data['und'][0])) {
     if (trim($instance_data['und'][0]['name']) != $instance_widget_data['value']) {
-      $term = taxonomy_term_load($instance_data['und'][0]['tid']);
-      $terms = taxonomy_get_term_by_name($instance_widget_data['id3_tag_field'], $chosen_vocabulary_name);
-      if (is_array($terms) && count($terms) > 0) {
-        $parent_term = array_shift($terms);
-      }
-      else {
-        $parent_term = new stdClass();
-        $parent_term->vid = $chosen_vocabulary->vid;
-        $parent_term->name = $instance_widget_data['id3_tag_field_name'];
-        taxonomy_term_save($parent_term);
-      }
-      $term->parent = $parent_term->tid;
-      taxonomy_term_save($term);
+//      $term = taxonomy_term_load($instance_data['und'][0]['tid']);
+//      $terms = taxonomy_get_term_by_name($instance_widget_data['id3_tag_field'], $chosen_vocabulary_name);
+//      if (is_array($terms) && count($terms) > 0) {
+//        $parent_term = array_shift($terms);
+//      }
+//      else {
+//        $parent_term = new stdClass();
+//        $parent_term->vid = $chosen_vocabulary->vid;
+//        $parent_term->name = $instance_widget_data['id3_tag_field_name'];
+//        taxonomy_term_save($parent_term);
+//      }
+//      $term->parent = $parent_term->tid;
+//      taxonomy_term_save($term);
       $write_back_to_audio_file_data[$instance_widget_data['audio_file_id']][$instance_widget_data['id3_tag_field']][] = trim($instance_data['und'][0]['name']);
     }
   }
@@ -113,20 +113,20 @@ function id3_taxonomy_widget_id3_widget_handle_field($instance_widget_data, &$no
         $instance_data['und'][0]['tid'] = $term->tid;
       }
       else {
-        $terms = taxonomy_get_term_by_name($instance_widget_data['id3_tag_field'], $chosen_vocabulary_name);
-        if (is_array($terms) && count($terms) > 0) {
-          $parent_term = array_shift($terms);
-        }
-        else {
-          $parent_term = new stdClass();
-          $parent_term->vid = $chosen_vocabulary->vid;
-          $parent_term->name = $instance_widget_data['id3_tag_field'];
-          taxonomy_term_save($parent_term);
-        }
+//        $terms = taxonomy_get_term_by_name($instance_widget_data['id3_tag_field'], $chosen_vocabulary_name);
+//        if (is_array($terms) && count($terms) > 0) {
+//          $parent_term = array_shift($terms);
+//        }
+//        else {
+//          $parent_term = new stdClass();
+//          $parent_term->vid = $chosen_vocabulary->vid;
+//          $parent_term->name = $instance_widget_data['id3_tag_field'];
+//          taxonomy_term_save($parent_term);
+//        }
         $term = new stdClass();
         $term->vid = $chosen_vocabulary->vid;
         $term->name = $instance_widget_data['value'];
-        $term->parent = $parent_term->tid;
+//        $term->parent = $parent_term->tid;
         taxonomy_term_save($term);
         if (isset($term->tid)) {
           $instance_data['und'][0]['tid'] = $term->tid;

@@ -2,6 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dd5d7f11-d9f0-40a7-bb9a-2abfab543ed8" name="Default" comment="">
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\CHANGELOG.txt" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\LICENSE.txt" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\README.txt" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\includes\multistep_views_handler_field_status.inc" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\includes\multistep_views_handler_filter_status.inc" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\includes\multistep_views_handler_sort_status.inc" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\multistep.admin.inc" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\multistep.api.php" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\multistep.css" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\multistep.info" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\multistep.install" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\multistep.js" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\multistep.module" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\multistep.rules.inc" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\multistep.theme.inc" afterPath="" />
+      <change type="DELETED" beforePath="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep\sites\all\modules\contrib\multistep\multistep.views.inc" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/jplayer/Jplayer.swf" afterPath="$PROJECT_DIR$/sites/all/libraries/jplayer/Jplayer.swf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/jwplayer/JW Player Quick Start Guide.pdf" afterPath="$PROJECT_DIR$/sites/all/libraries/jwplayer/JW Player Quick Start Guide.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/jwplayer/player.swf" afterPath="$PROJECT_DIR$/sites/all/libraries/jwplayer/player.swf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/jwplayer/preview.jpg" afterPath="$PROJECT_DIR$/sites/all/libraries/jwplayer/preview.jpg" />
@@ -226,7 +243,6 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/fivestar/widgets/small/small_delete.png" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/fivestar/widgets/small/small_delete.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/fivestar/widgets/small/small_star.png" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/fivestar/widgets/small/small_star.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geofield/includes/behaviors/images/dropdown.png" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geofield/includes/behaviors/images/dropdown.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/multipolygon.wkb" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/multipolygon.wkb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/jquery_update/replace/ui/themes/base/images/ui-bg_flat_0_aaaaaa_40x100.png" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/jquery_update/replace/ui/themes/base/images/ui-bg_flat_0_aaaaaa_40x100.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/jquery_update/replace/ui/themes/base/images/ui-bg_flat_75_ffffff_40x100.png" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/jquery_update/replace/ui/themes/base/images/ui-bg_flat_75_ffffff_40x100.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/jquery_update/replace/ui/themes/base/images/ui-bg_glass_55_fbf9ee_1x400.png" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/jquery_update/replace/ui/themes/base/images/ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -352,6 +368,8 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/video/wysiwyg_plugins/video/images/video-place-holder.gif" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/video/wysiwyg_plugins/video/images/video-place-holder.gif" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/video/wysiwyg_plugins/video/images/video.gif" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/video/wysiwyg_plugins/video/images/video.gif" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/book_field/FlexPaperViewer.swf" afterPath="$PROJECT_DIR$/sites/all/modules/custom/book_field/FlexPaperViewer.swf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/jplayer_waveform/theme/jplayer.blue.monday.jpg" afterPath="$PROJECT_DIR$/sites/all/modules/custom/jplayer_waveform/theme/jplayer.blue.monday.jpg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/jplayer_waveform/theme/pbar-ani.gif" afterPath="$PROJECT_DIR$/sites/all/modules/custom/jplayer_waveform/theme/pbar-ani.gif" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/corporateclean/color/base.png" afterPath="$PROJECT_DIR$/sites/all/themes/corporateclean/color/base.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/corporateclean/color/preview.png" afterPath="$PROJECT_DIR$/sites/all/themes/corporateclean/color/preview.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/corporateclean/images/active-slide.png" afterPath="$PROJECT_DIR$/sites/all/themes/corporateclean/images/active-slide.png" />
@@ -383,6 +401,84 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/corporateclean/screenshot.png" afterPath="$PROJECT_DIR$/sites/all/themes/corporateclean/screenshot.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/README.txt" afterPath="$PROJECT_DIR$/sites/all/README.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/changelog.txt" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/changelog.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/dependencies.txt" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/dependencies.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/extension.cache.dbm.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/extension.cache.dbm.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/extension.cache.mysql.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/extension.cache.mysql.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/getid3.lib.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/getid3.lib.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/getid3.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/getid3.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.archive.gzip.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.archive.gzip.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.archive.rar.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.archive.rar.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.archive.szip.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.archive.szip.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.archive.tar.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.archive.tar.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.archive.zip.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.archive.zip.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.asf.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.asf.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.bink.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.bink.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.flv.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.flv.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.matroska.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.matroska.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.mpeg.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.mpeg.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.nsv.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.nsv.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.quicktime.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.quicktime.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.real.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.real.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.riff.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.riff.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.swf.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio-video.swf.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.aa.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.aa.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.aac.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.aac.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.ac3.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.ac3.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.au.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.au.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.avr.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.avr.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.bonk.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.bonk.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.dss.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.dss.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.dts.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.dts.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.flac.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.flac.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.la.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.la.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.lpac.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.lpac.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.midi.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.midi.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.mod.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.mod.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.monkey.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.monkey.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.mp3.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.mp3.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.mpc.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.mpc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.ogg.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.ogg.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.optimfrog.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.optimfrog.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.rkau.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.rkau.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.shorten.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.shorten.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.tta.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.tta.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.voc.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.voc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.vqf.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.vqf.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.wavpack.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.audio.wavpack.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.bmp.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.bmp.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.efax.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.efax.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.gif.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.gif.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.jpg.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.jpg.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.pcd.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.pcd.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.png.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.png.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.svg.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.svg.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.tiff.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.graphic.tiff.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.misc.cue.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.misc.cue.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.misc.exe.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.misc.exe.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.misc.iso.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.misc.iso.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.misc.msoffice.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.misc.msoffice.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.misc.par2.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.misc.par2.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.misc.pdf.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.misc.pdf.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.tag.apetag.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.tag.apetag.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.tag.id3v1.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.tag.id3v1.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.tag.id3v2.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.tag.id3v2.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.tag.lyrics3.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.tag.lyrics3.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.tag.xmp.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/module.tag.xmp.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.apetag.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.apetag.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.id3v1.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.id3v1.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.id3v2.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.id3v2.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.lyrics3.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.lyrics3.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.metaflac.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.metaflac.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.real.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.real.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.vorbiscomment.php" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/getid3/write.vorbiscomment.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/helperapps/readme.helperapps.txt" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/helperapps/readme.helperapps.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/license.commercial.txt" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/license.commercial.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/license.txt" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/license.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/readme.txt" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/readme.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/getid3/structure.txt" afterPath="$PROJECT_DIR$/sites/all/libraries/getid3/structure.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/jplayer/jquery.jplayer.min.js" afterPath="$PROJECT_DIR$/sites/all/libraries/jplayer/jquery.jplayer.min.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/jwplayer/jwplayer.js" afterPath="$PROJECT_DIR$/sites/all/libraries/jwplayer/jwplayer.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/jwplayer/license.txt" afterPath="$PROJECT_DIR$/sites/all/libraries/jwplayer/license.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/libraries/jwplayer/readme.html" afterPath="$PROJECT_DIR$/sites/all/libraries/jwplayer/readme.html" />
@@ -1261,7 +1357,6 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/features/theme/features-admin-components.tpl.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/features/theme/features-admin-components.tpl.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/features/theme/theme.inc" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/features/theme/theme.inc" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/CHANGELOG.txt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/CHANGELOG.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/LICENSE.txt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/LICENSE.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/README.txt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/README.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.api.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.api.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.css" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.css" />
@@ -1269,7 +1364,6 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.field_ui.css" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.field_ui.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.field_ui.inc" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.field_ui.inc" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.field_ui.js" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.field_ui.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.info" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.info" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.install" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.install" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.js" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.module" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/field_group/field_group.module" />
@@ -1329,6 +1423,7 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/fivestar/widgets/oxygen/oxygen.css" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/fivestar/widgets/oxygen/oxygen.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/fivestar/widgets/small/small-rtl.css" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/fivestar/widgets/small/small-rtl.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/fivestar/widgets/small/small.css" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/fivestar/widgets/small/small.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geocoder/plugins/geocoder_handler/google.inc" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geocoder/plugins/geocoder_handler/google.inc" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geofield/LICENSE.txt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geofield/LICENSE.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geofield/README.txt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geofield/README.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geofield/geofield.devel_generate.inc" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geofield/geofield.devel_generate.inc" />
@@ -1351,61 +1446,6 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geofield/modules/geofield_map/includes/geofield_map_plugin_style_map.inc" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geofield/modules/geofield_map/includes/geofield_map_plugin_style_map.inc" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geofield/modules/geofield_map/js/GeoJSON.js" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geofield/modules/geofield_map/js/GeoJSON.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geofield/modules/geofield_map/js/geofield_map.js" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geofield/modules/geofield_map/js/geofield_map.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/LICENSE.txt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/LICENSE.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/LICENSE" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/LICENSE" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/README.md" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/doc/api.html" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/doc/api.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/geoPHP.inc" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/geoPHP.inc" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/EWKB.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/EWKB.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/EWKT.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/EWKT.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/GPX.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/GPX.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/GeoAdapter.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/GeoAdapter.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/GeoJSON.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/GeoJSON.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/GeoRSS.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/GeoRSS.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/GoogleGeocode.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/GoogleGeocode.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/KML.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/KML.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/WKB.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/WKB.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/WKT.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/adapters/WKT.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/Collection.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/Collection.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/Geometry.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/Geometry.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/GeometryCollection.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/GeometryCollection.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/LineString.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/LineString.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/MultiLineString.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/MultiLineString.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/MultiPoint.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/MultiPoint.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/MultiPolygon.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/MultiPolygon.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/Point.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/Point.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/Polygon.class.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/lib/geometry/Polygon.class.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/an_empty_polygon.wkt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/an_empty_polygon.wkt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/barret_spur.gpx" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/barret_spur.gpx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/big_n_ugly.kml" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/big_n_ugly.kml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/box.georss" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/box.georss" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/cdata.kml" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/cdata.kml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/circle.georss" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/circle.georss" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/fells_loop.gpx" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/fells_loop.gpx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/geometrycollection.georss" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/geometrycollection.georss" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/geometrycollection.wkt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/geometrycollection.wkt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/line.georss" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/line.georss" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/linestring.wkt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/linestring.wkt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/multilinestring.wkt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/multilinestring.wkt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/multipolygon.wkt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/multipolygon.wkt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/multipolygon2.wkt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/multipolygon2.wkt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/multipolygon_big.wkt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/multipolygon_big.wkt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/path.kml" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/path.kml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/pentagon.kml" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/pentagon.kml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/point.georss" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/point.georss" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/point.kml" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/point.kml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/point.wkt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/point.wkt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/polygon.georss" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/polygon.georss" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/polygon.wkt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/polygon.wkt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/polygon2.wkt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/polygon2.wkt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/polygon3.wkt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/polygon3.wkt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/polygon4.wkt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/polygon4.wkt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/route.gpx" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/route.gpx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/track.gpx" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/input/track.gpx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/postgis.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/postgis.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/test.php" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geoPHP/tests/test.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geophp.info" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geophp.info" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geophp.module" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/geophp/geophp.module" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/i18n/INSTALL.txt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/i18n/INSTALL.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/i18n/LICENSE.txt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/i18n/LICENSE.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/contrib/i18n/README.txt" afterPath="$PROJECT_DIR$/sites/all/modules/contrib/i18n/README.txt" />
@@ -2079,7 +2119,6 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/book_field_search/book_field_search.info" afterPath="$PROJECT_DIR$/sites/all/modules/custom/book_field_search/book_field_search.info" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/book_field_search/book_field_search.install" afterPath="$PROJECT_DIR$/sites/all/modules/custom/book_field_search/book_field_search.install" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/book_field_search/book_field_search.module" afterPath="$PROJECT_DIR$/sites/all/modules/custom/book_field_search/book_field_search.module" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/collection_page/collection_page.module" afterPath="$PROJECT_DIR$/sites/all/modules/custom/collection_page/collection_page.module" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/facet_collection_ui/README.txt" afterPath="$PROJECT_DIR$/sites/all/modules/custom/facet_collection_ui/README.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/facet_collection_ui/facet_collection_ui.admin.inc" afterPath="$PROJECT_DIR$/sites/all/modules/custom/facet_collection_ui/facet_collection_ui.admin.inc" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/facet_collection_ui/facet_collection_ui.info" afterPath="$PROJECT_DIR$/sites/all/modules/custom/facet_collection_ui/facet_collection_ui.info" />
@@ -2102,6 +2141,8 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/facetapi_slider_widget/facetapi_slider_widget.info" afterPath="$PROJECT_DIR$/sites/all/modules/custom/facetapi_slider_widget/facetapi_slider_widget.info" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/facetapi_slider_widget/facetapi_slider_widget.module" afterPath="$PROJECT_DIR$/sites/all/modules/custom/facetapi_slider_widget/facetapi_slider_widget.module" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/facetapi_slider_widget/plugins/facetapi/widget_slider.inc" afterPath="$PROJECT_DIR$/sites/all/modules/custom/facetapi_slider_widget/plugins/facetapi/widget_slider.inc" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/id3_widget/id3_taxonomy_widget/id3_taxonomy_widget.module" afterPath="$PROJECT_DIR$/sites/all/modules/custom/id3_widget/id3_taxonomy_widget/id3_taxonomy_widget.module" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/id3_widget/id3_widget.module" afterPath="$PROJECT_DIR$/sites/all/modules/custom/id3_widget/id3_widget.module" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/features/collection_layout_map/collection_layout_map.features.inc" afterPath="$PROJECT_DIR$/sites/all/modules/features/collection_layout_map/collection_layout_map.features.inc" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/features/collection_layout_map/collection_layout_map.info" afterPath="$PROJECT_DIR$/sites/all/modules/features/collection_layout_map/collection_layout_map.info" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/features/collection_layout_map/collection_layout_map.module" afterPath="$PROJECT_DIR$/sites/all/modules/features/collection_layout_map/collection_layout_map.module" />
@@ -2159,7 +2200,7 @@
       <file leaf-file-name="collection_pager_block.module" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/collection_pager_block.module">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.0">
               <folding />
             </state>
           </provider>
@@ -2168,7 +2209,7 @@
       <file leaf-file-name="collection_page.module" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_page/collection_page.module">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="232" column="13" selection-start="8578" selection-end="8578" vertical-scroll-proportion="0.02021403">
+            <state line="266" column="7" selection-start="9295" selection-end="9295" vertical-scroll-proportion="0.022974607">
               <folding />
             </state>
           </provider>
@@ -2188,10 +2229,10 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="54" />
-    <option name="y" value="-8" />
-    <option name="width" value="1634" />
-    <option name="height" value="1066" />
+    <option name="x" value="69" />
+    <option name="y" value="-9" />
+    <option name="width" value="1620" />
+    <option name="height" value="1068" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -2219,7 +2260,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -2350,11 +2390,17 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="C:/Program Files/xampp/htdocs/drupal7" />
+    <property name="last_opened_file_path" value="C:/xampp/htdocs/drupal7" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Barzhomi_\Dropbox\WebProjects\Drupal\libsys_rep" />
+    </key>
   </component>
   <component name="RunManager">
     <list size="0" />
@@ -2369,14 +2415,14 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="54" y="-8" width="1634" height="1066" extended-state="6" />
+    <frame x="69" y="-9" width="1620" height="1068" extended-state="6" />
     <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25318065" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25675675" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -2453,7 +2499,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_page/collection_page.module">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="123" column="28" selection-start="3811" selection-end="3811" vertical-scroll-proportion="0.0">
+        <state line="232" column="13" selection-start="8578" selection-end="8578" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -2467,7 +2513,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_page/collection_page.module">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="232" column="13" selection-start="8578" selection-end="8578" vertical-scroll-proportion="0.02021403">
+        <state line="123" column="28" selection-start="3811" selection-end="3811" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/collection_pager_block.module">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sites/default/settings.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="205" column="17" selection-start="7320" selection-end="7320" vertical-scroll-proportion="0.3446191">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_page/collection_page.module">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="266" column="7" selection-start="9295" selection-end="9295" vertical-scroll-proportion="0.022974607">
           <folding />
         </state>
       </provider>

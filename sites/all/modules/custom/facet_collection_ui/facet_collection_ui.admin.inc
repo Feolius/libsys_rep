@@ -5,7 +5,7 @@
  * Overview and settings forms and helper functions for Facet Collection UI module.
  */
 
-function facet_collection_ui_admin_settings_flush_data_form($form, &$form_state){
+function facet_collection_ui_admin_settings_flush_data_form($form, &$form_state) {
   $form = array();
   $form['#description'] = t('This form will flush all the facet collection ui data.') . '<br /><strong>' . t('Warning! Flushing the settings for a facet collection ui will disable all already enabled filters!') . '</strong>';
 //  $options = array('' => '- Select -');
@@ -39,8 +39,6 @@ function facet_collection_ui_admin_settings_flush_data_form_submit($form, &$form
   variable_del('facet_collection_filters_settings');
   drupal_set_message(t('Data was successfully flushed'));
 }
-
-
 
 
 /**
@@ -244,15 +242,17 @@ function facet_collection_ui_filters_overview_form($form, &$form_state, $entity_
 
   $instances = array();
   //At filters overview page we need to see only fields that is filterable
-  foreach ($bundle_instances as $instance_name => $bundle_instance) {
-    $field = field_info_field($bundle_instance['field_name']);
-    if (array_key_exists($field['type'], $filterable_type_list)) {
-      $instances[$instance_name] = $bundle_instance;
+  if (!empty($filterable_type_list)) {
+    foreach ($bundle_instances as $instance_name => $bundle_instance) {
+      $field = field_info_field($bundle_instance['field_name']);
+      if (array_key_exists($field['type'], $filterable_type_list)) {
+        $instances[$instance_name] = $bundle_instance;
+      }
     }
   }
 
   if (empty($instances)) {
-    drupal_set_message(t('There are no filterable fields yet added. You can add suitable fields on the <a href="@link">Manage fields</a> page.', array('@link' => url($admin_path . '/fields'))), 'warning');
+    drupal_set_message(t('There are no filterable fields yet added. You can add suitable fields on <a href="@link">Manage fields</a> page.', array('@link' => url($admin_path . '/fields'))), 'warning');
     return $form;
   }
 

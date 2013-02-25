@@ -3,29 +3,29 @@
 /**
  * Implementation of hook_views_data().
  */
-function multistep_views_data() {
-  $data['multistep']['table']['group'] = t('Multistep');
+function multistep_adl_views_data() {
+  $data['multistep_adl']['table']['group'] = t('Multistep ADL');
   // This table references the {node} table.
-  $data['multistep']['table']['join'] = array(
+  $data['multistep_adl']['table']['join'] = array(
     'node' => array(
       'left_field' => 'nid',
       'field' => 'nid',
-      'extra' => "multistep.status = 'unsubmitted'",
+      'extra' => "multistep_adl.status = 'unsubmitted'",
     ),
   );
-  // Status of a multistep form.
-  $data['multistep']['status'] = array(
+  // Status of a multistep_adl form.
+  $data['multistep_adl']['status'] = array(
     'title' => t('Status'),
     'help' => t('Status of the current step in the referenced node.'),
     'field' => array(
-      'handler' => 'multistep_views_handler_field_status',
+      'handler' => 'multistep_adl_views_handler_field_status',
       'click sortable' => TRUE,
     ),
     'filter' => array(
-      'handler' => 'multistep_views_handler_filter_status',
+      'handler' => 'multistep_adl_views_handler_filter_status',
     ),
     'sort' => array(
-      'handler' => 'multistep_views_handler_sort_status',
+      'handler' => 'multistep_adl_views_handler_sort_status',
     ),
   );
   return $data;
@@ -35,22 +35,22 @@ function multistep_views_data() {
  * Implementation of hook_views_handlers() to register all of the basic handlers
  * views uses.
  */
-function multistep_views_handlers() {
+function multistep_adl_views_handlers() {
   return array(
     'info' => array(
-      'path' => drupal_get_path('module', 'multistep') . '/includes',
+      'path' => drupal_get_path('module', 'multistep_adl') . '/includes',
     ),
     'handlers' => array(
       // field handlers
-      'multistep_views_handler_field_status' => array(
+      'multistep_adl_views_handler_field_status' => array(
         'parent' => 'views_handler_field',
       ),
       // sort handlers
-      'multistep_views_handler_sort_status' => array(
+      'multistep_adl_views_handler_sort_status' => array(
         'parent' => 'views_handler_sort',
       ),
       // filter handlers
-      'multistep_views_handler_filter_status' => array(
+      'multistep_adl_views_handler_filter_status' => array(
         'parent' => 'views_handler_filter',
       ),
     ),

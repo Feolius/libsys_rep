@@ -216,7 +216,6 @@ function _id3_widget_search_widget_instances(&$node, $bundle_instances, $id3_wid
           if (isset($node->$instance_name)) {
             $instance_data = $node->$instance_name;
             $field_info = field_info_field($instance_name);
-            dpm($instance_data, 'instance data');
             switch ($field_info['type']) {
               case 'image':
                 if (isset($instance_data['und'][0]['fid'])) {

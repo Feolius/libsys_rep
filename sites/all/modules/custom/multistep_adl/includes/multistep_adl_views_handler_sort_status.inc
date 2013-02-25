@@ -1,15 +1,15 @@
 <?php
 
 /**
- * Field handler that returns the completion status of a multistep node.
+ * Field handler that returns the completion status of a multistep_adl node.
  */
-class multistep_views_handler_sort_status extends views_handler_sort {
+class multistep_adl_views_handler_sort_status extends views_handler_sort {
   /**
    * Called to add the sort to a query.
    */
   function query() {
     // Add the field.
-    $this->query->add_orderby('multistep', 'status', $this->options['order']);
+    $this->query->add_orderby('multistep_adl', 'status', $this->options['order']);
   }
 
   function option_definition() {

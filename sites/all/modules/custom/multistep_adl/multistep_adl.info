@@ -1,0 +1,15 @@
+name = Multistep ADL
+description = Adds multistep adl functionality to content types.
+package = Fields
+dependencies[] = field
+dependencies[] = field_group
+core = 7.x
+files[] = multistep_adl.module
+files[] = multistep_adl.install
+files[] = multistep_adl.admin.inc
+files[] = multistep_adl.theme.inc
+files[] = multistep_adl.rules.inc
+;files[] = multistep_adl.views.inc
+configure = admin/config/content/multistep_adl
+
+

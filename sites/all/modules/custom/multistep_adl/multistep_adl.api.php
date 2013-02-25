@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Hooks provided by the multistep module.
+ * Hooks provided by the multistep_adl module.
  */
 
 /**
@@ -27,11 +27,11 @@
  *   The status of the step after submission. The possible options are
  *   'submitted' or 'unsubmitted'.
  */
-function hook_multistep_update_status($form_state, $status, $step) {
+function hook_multistep_adl_update_status($form_state, $status, $step) {
   // Get the node type
   $type = $form_state['node']['type'];
   // Check whether we are on the last step of the form
-  if ($type == 'profile' && $step == variable_get('multistep_steps_' . $type, 0)) {
+  if ($type == 'profile' && $step == variable_get('multistep_adl_steps_' . $type, 0)) {
     // Check whether the user entered their Last Name in the proper field
     if (empty($form_state['values']['field_last_name']['value'][0])) {
       // Warn the user

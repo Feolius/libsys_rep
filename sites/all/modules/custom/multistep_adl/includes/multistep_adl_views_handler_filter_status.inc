@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Filter handler that filters results based on the completion status of a multistep node.
+ * Filter handler that filters results based on the completion status of a multistep_adl node.
  */
-class multistep_views_handler_filter_status extends views_handler_filter {
+class multistep_adl_views_handler_filter_status extends views_handler_filter {
   function get_value_options() {
     if (!isset($this->value_options)) {
       $this->value_options = array('complete' => t('Complete'), 'incomplete' => t('Incomplete'));
@@ -59,10 +59,10 @@ class multistep_views_handler_filter_status extends views_handler_filter {
     }
     switch ($value) {
       case 'incomplete':
-        $this->query->add_where(0, "multistep.status = 'unsubmitted'");
+        $this->query->add_where(0, "multistep_adl.status = 'unsubmitted'");
         break;
       case 'complete':
-        $this->query->add_where(0, "multistep.status IS NULL");
+        $this->query->add_where(0, "multistep_adl.status IS NULL");
         break;
     }
     $this->query->add_groupby('nid');

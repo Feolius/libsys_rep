@@ -175,6 +175,7 @@ function facet_collection_ui_field_create_instance($instance) {
 function facet_collection_ui_submodules_info() {
   $filterable_type_list = cache_get('facet_collection_ui_filterable_field_types');
   if (!$filterable_type_list) {
+    $filterable_type_list = array();
     foreach (module_implements('facet_collection_ui_field_type_info') as $module) {
       $field_types = module_invoke($module, 'facet_collection_ui_field_type_info');
       foreach ($field_types as $field_type) {

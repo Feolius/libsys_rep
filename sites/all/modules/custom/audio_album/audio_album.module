@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * Implements hook_block_info().
+ */
+function audio_album_block_info() {
+  $blocks = array();
+  $blocks['audio_album_block'] = array(
+    'info' => t('Audio Album Titles'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+
+/**
+ * Implements hook_block_view().
+ */
+function audio_album_block_view($delta) {
+  $node = menu_get_object();
+  if (property_exists($node, 'type') && $node->type == 'test_media' && property_exists($node, 'field_album')) {
+    $album_item = $node->field_album;
+    $term_reference_id = isset($album_item['und'][0]['tid']) ? $album_item['und'][0]['tid'] : '';
+    $content = views_embed_view('playist_view', 'audio_album', $term_reference_id);
+    $term = taxonomy_term_load($term_reference_id);
+    $album_name = $term != FALSE ? ' ' . $term->name : '';
+    return array(
+      'subject' => 'Other Titles in Album' . $album_name,
+      'content' => $content,
+    );
+  }
+  else {
+    return array(
+      'content' => NULL,
+    );
+  }
+}

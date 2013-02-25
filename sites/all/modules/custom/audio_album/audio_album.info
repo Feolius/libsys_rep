@@ -1,0 +1,5 @@
+name = Audio Album
+description = Provide a possibility to display current node album title in a special block
+package = Other
+dependencies[] = views
+core = 7.x
