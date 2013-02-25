@@ -122,8 +122,9 @@ function getNumPagesPdf($filepath) {
  */
 function book_field_managed_book_value(&$element, $input = FALSE, $form_state = NULL) {
   $fid = 0;
-  $fid_swf = 0;
   $fid_thumb = 0;
+  $conversion_done = 0;
+  $folder_name = '';
   global $user;
   // Find the current value of this field from the form state.
   $form_state_fid = $form_state['values'];
@@ -142,145 +143,61 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
     // Uploads take priority over all other values.
     if ($file = file_managed_file_save_upload($element)) {
       $fid = $file->fid;
-      $file_name = $file->filename;
+
+      //Try to use filename as folder name
+      $folder_name = get_real_file_name($file);
+
+      //Create directory in temp folder where files will be contained.
+      $swf_folder_path = file_directory_temp() . '/' . $folder_name;
+
+      //If directory already exist we should remove it nd create new one.
+      if (file_prepare_directory($swf_folder_path)) {
+        file_unmanaged_delete_recursive($swf_folder_path);
+      }
+      file_prepare_directory($swf_folder_path, FILE_CREATE_DIRECTORY);
+
+      //We should create a thumbnail for PDF file and make swf files for flexpaper viewer
+      if ($file->filemime == 'application/pdf') {
+        $thumb_file = _book_field_managed_book_create_thumbnail($file);
+        $fid_thumb = $thumb_file->fid;
+        $file_name = $file->filename;
+
+
+
+        //Check if checkbox "create swf" checked and we have pdf file
+        if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['create_swf']) &&
+                $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['create_swf'] == '1') {
+
+          if (_book_field_managed_book_create_swf($file, $folder_name, $input['CONVERSION_IDENTIFIER'])) {
+            $conversion_done = 1;
+          } else {
+            drupal_set_message(t("Can't create folder for swf files in temporary directory. Please, check temporary directory permissions"), 'error');
+          }
+        }
+      }
     } else {
       // Load file if the FID has changed to confirm it exists.
       if (isset($input['fid']) && $file = file_load($input['fid'])) {
         $fid = $file->fid;
       }
-    }
-    if ($fid != 0) {
-      if ($input['fid_thumb'] == 0) {
-        if ($file->filemime == 'application/pdf') {
-          $real_file_name = get_real_file_name($file);
-          $thumb_uri = "temporary://" . $real_file_name . "-thumb.jpeg";
-          $result = db_query('SELECT fid FROM {file_managed} WHERE uri = :uri', array(
-              ':uri' => $thumb_uri
-                  ));
-          $a = $result->fetchAll();
-          if ($a == NULL) {
-            $thumb_file = make_thumbnail($file);
-            $fid_thumb = $thumb_file->fid;
-          } else {
-            $fid_thumb = $a[0]->fid;
-          }
-        }
-      } else {
-        $fid_thumb = $input['fid_thumb'];
+      if (isset($input['fid_thumb']) && $file = file_load($input['fid_thumb'])) {
+        $fid_thumb = $file->fid;
       }
-      //Conversion to swf
-      if ($input['fid_swf'] == 0) {
-        //Check if checkbox "create swf" checked and we have pdf file
-        if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['create_swf']) &&
-                $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['create_swf'] == '1') {
-          if ($file->filemime == 'application/pdf') {
-            $uri = $file->uri;
-            $file_name = $file->filename;
-
-            $arr = explode('.', $file_name);
-            $arr_length = count($arr);
-            $file_name = "";
-
-            //Exclude name of file extension
-            for ($i = 0; $i < ($arr_length - 1); $i++) {
-              $file_name = $file_name . $arr[$i];
-            }
-            $path = drupal_realpath($uri);
-            $temp_path = file_directory_temp();
-
-            //Get file name with index if index exists. (e.g. filename_0, 0 is index)
-            $real_file_name = get_real_file_name($file);
-
-            //Create new uri for swf file
-            $swf_uri = "temporary://" . $real_file_name . ".swf";
-            $result = db_query('SELECT fid FROM {file_managed} WHERE uri = :uri', array(
-                ':uri' => $swf_uri
-                    ));
-            $a = $result->fetchAll();
-
-            //If file with new uri doesn't exist in db, conversion proceeds.
-            if ($a == NULL) {
-              $swf_path = drupal_realpath($swf_uri);
-              //Write record in record table with id of conversion progress
-              $record = array('pid' => $input['CONVERSION_IDENTIFIER'], 'progress' => '-1');
-              drupal_write_record('progress', $record);
-
-              //Get number of pages
-              $numberOfPages = getNumPagesPdf($path);
-
-              //Execute command in pipe to reviewing current progress of conversion
-              $command = "pdf2swf '" . $path . "' -o '" . $swf_path . "' -f -T 9 -t -s storeallcharacters";
-              $handle = popen($command, 'r');
-              while (!feof($handle)) {
-
-                //Check current state every 2 seconds
-                sleep(2);
-                $read = fread($handle, 2096);
-                $pattern = "/page \d+/";
-                $result = preg_match_all($pattern, $read, $matches);
-
-                //Get current page and write serialized string with current progress in db.
-                $length = count($matches[0]);
-                $pattern = "/\d+/";
-                if ($length > 1) {
-                  $result = preg_match_all($pattern, $matches[0][$length - 2], $match);
-                  $record = array('pid' => $input['CONVERSION_IDENTIFIER'], 'progress' => $match[0][0] . '/' . $numberOfPages);
-                  drupal_write_record('progress', $record, 'pid');
-                } elseif ($length == 1) {
-                  $result = preg_match_all($pattern, $matches[0][$length - 1], $match);
-                  $record = array('pid' => $input['CONVERSION_IDENTIFIER'], 'progress' => $match[0][0] . '/' . $numberOfPages);
-                  drupal_write_record('progress', $record, 'pid');
-                }
-              }
-              pclose($handle);
-
-              //Create new file object for swf file
-              $file = new stdClass();
-              $file->uid = $user->uid;
-              $file->status = 0;
-              $file->filename = $file_name . ".swf";
-              $file->uri = $swf_uri;
-              $file->filemime = "application/x-shockwave-flash";
-              $file->filesize = filesize($swf_path);
-              $file_path = drupal_realpath($file->uri);
-
-              //If file exists we save file
-              if (!file_exists($file_path)) {
-                form_error($element, "Error in conversation process");
-              } else {
-                $file_swf = file_save($file);
-                $fid_swf = $file_swf->fid;
-              }
-
-              //Remove record from progress table
-              $delete = db_delete('progress')
-                      ->condition('pid', $input['CONVERSION_IDENTIFIER'])
-                      ->execute();
-            } else {
-              //If file exists we get its fid from db
-              $file_swf = file_load($a[0]->fid);
-              $fid_swf = $file_swf->fid;
-            }
-          } else {
-            //If this file doesn't have pdf extension we just show warning message
-            drupal_set_message(t("This file format doesn't support swf convertion"), 'warning');
-          }
-        }
-      } else {
-        //If file previously was converted we should get its fid from input
-        $fid_swf = $input['fid_swf'];
+      if (isset($input['conversion_done'])) {
+        $conversion_done = $input['conversion_done'];
+      }
+      if (isset($input['folder_name'])) {
+        $folder_name = $input['folder_name'];
       }
     }
   } else {
     $default_fid = isset($element['#default_value']) ? $element['#default_value']['fid'] : 0;
-    $default_fid_swf = isset($element['#default_value']) ? $element['#default_value']['fid_swf'] : 0;
+    $conversion_done = isset($element['#default_value']) ? $element['#default_value']['conversion_done'] : 0;
     $default_fid_thumb = isset($element['#default_value']) ? $element['#default_value']['fid_thumb'] : 0;
+    $folder_name = isset($element['#default_value']) ? $element['#default_value']['folder_name'] : 0;
     // Confirm that the file exists when used as a default value.
     if ($default_fid && $file = file_load($default_fid)) {
       $fid = $file->fid;
-    }
-    if ($default_fid_swf && $file = file_load($default_fid_swf)) {
-      $fid_swf = $file->fid;
     }
     if ($default_fid_thumb && $file = file_load($default_fid_thumb)) {
       $fid_thumb = $file->fid;
@@ -289,28 +206,119 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
 
   //Return all fids of pdf, swf and thumbnail files
   $return['fid'] = $fid;
-  $return['fid_swf'] = $fid_swf;
+  $return['conversion_done'] = $conversion_done;
   $return['fid_thumb'] = $fid_thumb;
+  $return['folder_name'] = $folder_name;
   return $return;
+}
+
+//Create swf files in temporary folder
+function _book_field_managed_book_create_swf($file, $folder_name, $conversion_pid) {
+  $path = drupal_realpath($file->uri);
+  $swf_folder_path = file_directory_temp() . '/' . $folder_name;
+  //Write record in record table with id of conversion progress
+  $record = array('pid' => $conversion_pid, 'progress' => '-1');
+  drupal_write_record('progress', $record);
+
+  //Get number of pages
+  $numberOfPages = getNumPagesPdf($path);
+
+  //Execute command in pipe to reviewing current progress of conversion
+  $command = "pdf2swf '" . $path . "' -o '" . $swf_folder_path . "/" . $folder_name . "%.swf' -f -T 9 -t -s storeallcharacters";
+  $handle = popen($command, 'r');
+
+  //Try to make conversion
+  $conversion_done = 1;
+  while (!feof($handle)) {
+
+    //Check current state every 2 seconds
+    sleep(2);
+    $read = fread($handle, 2096);
+
+    $pattern = '/(FATAL|ERROR)/i';
+    preg_match($pattern, $read, $m);
+    if (!empty($m)) {
+      drupal_set_message(t("Conversion process was failed. Log info:") . $read, 'error');
+      return FALSE;
+    }
+
+    //Get current page and write serialized string with current progress in db.
+    $pattern = '/page\s(\d+)/';
+    preg_match($pattern, $read, $m);
+    if (!empty($m[1])) {
+      $record = array('pid' => $conversion_pid, 'progress' => $m[1] . '/' . $numberOfPages);
+      drupal_write_record('progress', $record, 'pid');
+    }
+  }
+  pclose($handle);
+  drupal_set_message(t("Conversion was succesfully completed"), 'status');
+
+  //Remove record from progress table
+  $delete = db_delete('progress')
+          ->condition('pid', $conversion_pid)
+          ->execute();
+  return TRUE;
+}
+
+//Create a thumbnail for managed_book element
+function _book_field_managed_book_create_thumbnail($file) {
+  $real_file_name = get_real_file_name($file);
+  $image_file_name = $real_file_name . '-thumb.jpeg';
+  $image_uri = 'temporary://' . $image_file_name;
+  //If file with the same name already exists in temporary directory, we will remove it.
+  if (file_exists($image_uri)) {
+    db_delete('file_managed', 'fm')
+            ->condition('uri', $image_uri, '=')
+            ->execute();
+    unlink($image_uri);
+  }
+  $file_name = $file->filename;
+  $arr = explode('.', $file_name);
+  $arr_length = count($arr);
+  $file_name = "";
+
+  //Exclude name of file extension
+  for ($i = 0; $i < ($arr_length - 1); $i++) {
+    $file_name = $file_name . $arr[$i];
+  }
+  $uri = $file->uri;
+  $path = drupal_realpath($uri);
+  $im = new Imagick();
+  $im->readImage($path . '[0]');
+  $im->setResolution(500, 500);
+  $image_path = drupal_realpath($image_uri);
+  $im->writeImage($image_path);
+  $image_file = new stdClass();
+  $image_file->uid = $file->uid;
+  $image_file->status = 0;
+  $image_file->filename = $file_name . '-thumb.jpeg';
+  $image_file->uri = $image_uri;
+  $image_file->filemime = 'image/jpeg';
+  $image_file->filesize = filesize($image_path);
+  $image_file = file_save($image_file);
+  return $image_file;
 }
 
 //Process function for managed_book form type.
 function book_field_managed_book_process($element, &$form_state, $form) {
   $fid = 0;
-  $fid_swf = 0;
   $fid_thumb = 0;
+  $conversion_done = 0;
+  $folder_name = '';
   if (isset($element['#value']['fid'])) {
     $fid = $element['#value']['fid'];
-  }
-  if (isset($element['#value']['fid_swf'])) {
-    $fid_swf = $element['#value']['fid_swf'];
   }
   if (isset($element['#value']['fid_thumb'])) {
     $fid_thumb = $element['#value']['fid_thumb'];
   }
+  if (isset($element['#value']['conversion_done'])) {
+    $conversion_done = $element['#value']['conversion_done'];
+  }
+  if (isset($element['#value']['folder_name'])) {
+    $folder_name = $element['#value']['folder_name'];
+  }
   $element['#progress_indicator'] = 'bar';
   $element['#file_thumb'] = $fid_thumb ? file_load($fid_thumb) : FALSE;
-  $element['#file_swf'] = $fid_swf ? file_load($fid_swf) : FALSE;
   $element['#file'] = $fid ? file_load($fid) : FALSE;
   $element['#tree'] = TRUE;
   $ajax_settings = array(
@@ -354,13 +362,17 @@ function book_field_managed_book_process($element, &$form_state, $form) {
       '#type' => 'hidden',
       '#value' => $fid,
   );
-  $element['fid_swf'] = array(
-      '#type' => 'hidden',
-      '#value' => $fid_swf,
-  );
   $element['fid_thumb'] = array(
       '#type' => 'hidden',
       '#value' => $fid_thumb,
+  );
+  $element['conversion_done'] = array(
+      '#type' => 'hidden',
+      '#value' => $conversion_done,
+  );
+  $element['folder_name'] = array(
+      '#type' => 'hidden',
+      '#value' => $folder_name,
   );
 
   //Get upload progress key and conversion progress key
@@ -397,13 +409,7 @@ function book_field_managed_book_process($element, &$form_state, $form) {
       '#weight' => -10,
   );
 
-  if ($element['#file_swf']) {
-    $element['filename'] = array(
-        '#type' => 'markup',
-        '#markup' => theme('file_link', array('file' => $element['#file_swf'])) . ' ',
-        '#weight' => -10,
-    );
-  } elseif ($element['#file']) {
+  if ($element['#file']) {
     $element['filename'] = array(
         '#type' => 'markup',
         '#markup' => theme('file_link', array('file' => $element['#file'])) . ' ',
@@ -453,9 +459,6 @@ function book_field_managed_book_submit($form, &$form_state) {
   $element = drupal_array_get_nested_value($form, $parents);
   if ($button_key == 'remove_button') {
     //Delete files
-    if ($element['#file_swf']) {
-      file_delete($element['#file_swf']);
-    }
     if ($element['#file_thumb']) {
       file_delete($element['#file_thumb']);
     }
@@ -464,27 +467,18 @@ function book_field_managed_book_submit($form, &$form_state) {
 
       //Remove directory where files was stored
       if ($element['#file']->status == FILE_STATUS_PERMANENT) {
-        $uri = $element['#file']->uri;
-        $path = drupal_realpath($uri);
-        $arr = explode('/', $path);
-        $length = count($arr);
-        $directory = '';
-        for ($i = 0; $i < $length - 1; $i++) {
-          $directory = $directory . '/' . $arr[$i];
-        }
-        if (count(scandir($directory)) == 2) {
-          rmdir($directory);
-        }
+        $folder_name = $element['folder_name']['#value'];
+        $directory = file_default_scheme() . '://books/' . $folder_name;
+        file_unmanaged_delete_recursive($directory);
       }
     }
-    $values_element = $element['#extended'] ? $element['fid'] : $element;
 
-    form_set_value($values_element, NULL, $form_state);
-    drupal_array_set_nested_value($form_state['input'], $values_element['#parents'], NULL);
+    form_set_value($element, NULL, $form_state);
+    drupal_array_set_nested_value($form_state['input'], $element['#parents'], NULL);
+
+    //Rebuild form
+    $form_state['rebuild'] = TRUE;
   }
-
-  //Rebuild form
-  $form_state['rebuild'] = TRUE;
 }
 
 //Pre render  callback for managed_book form type
@@ -548,8 +542,9 @@ function book_field_field_formatter_info() {
 function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   $defaults = array(
       'fid' => 0,
-      'fid_swf' => 0,
+      'conversion_done' => 0,
       'fid_thumb' => 0,
+      'folder_name' => ''
   );
   $allowed_extensions = $instance['settings']['file_extensions'];
   $widget = $instance['widget'];
@@ -559,7 +554,7 @@ function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $
           '#title' => t('Upload book'),
           '#description' => 'Book uploading',
           '#type' => 'managed_book',
-          '#value_callback' => 'book_field_widget_value',
+          //'#value_callback' => 'book_field_widget_value',
           '#upload_validators' => array(
               'file_validate_extensions' => array($allowed_extensions),
               'book_field_validate_filename' => array(),
@@ -575,13 +570,17 @@ function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $
           '#type' => 'hidden',
           '#value_callback' => 'book_field_widget_fid_value',
       );
-      $element['fid_swf'] = array(
-          '#type' => 'hidden',
-          '#value_callback' => 'book_field_widget_fid_swf_value',
-      );
       $element['fid_thumb'] = array(
           '#type' => 'hidden',
           '#value_callback' => 'book_field_widget_fid_thumb_value',
+      );
+      $element['conversion_done'] = array(
+          '#type' => 'hidden',
+          '#value_callback' => 'book_field_widget_conversion_done_value',
+      );
+      $element['folder_name'] = array(
+          '#type' => 'hidden',
+          '#value_callback' => 'book_field_widget_folder_name_value',
       );
       return $element;
   }
@@ -597,20 +596,29 @@ function book_field_widget_value($element, $input = FALSE, $form_state) {
   return $return;
 }
 
+//Callback value for folder_name element in widget form
+function book_field_widget_folder_name_value(&$element, $input = FALSE, $form_state) {
+  $return = '';
+  if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['fids']['folder_name'])) {
+    $return = $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['fids']['folder_name'];
+  }
+  return $return;
+}
+
+//Callback value for conversion_done element in widget form
+function book_field_widget_conversion_done_value(&$element, $input = FALSE, $form_state) {
+  $return = '0';
+  if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['fids']['conversion_done'])) {
+    $return = $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['fids']['conversion_done'];
+  }
+  return $return;
+}
+
 //Callback value for fid element in widget form
 function book_field_widget_fid_value(&$element, $input = FALSE, $form_state) {
   $return = '0';
   if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['fids']['fid'])) {
     $return = $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['fids']['fid'];
-  }
-  return $return;
-}
-
-//Callback value for fid_swf element in widget form
-function book_field_widget_fid_swf_value(&$element, $input = FALSE, $form_state) {
-  $return = '0';
-  if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['fids']['fid_swf'])) {
-    $return = $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['fids']['fid_swf'];
   }
   return $return;
 }
@@ -650,16 +658,26 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
   $element = array();
   if ($display['type'] == 'book_field_formatter') {
     foreach ($items as $delta => $item) {
-      if ($item['fid_swf'] != '0') {
-        $file_swf = file_load($item['fid_swf']);
-        $file = file_load($item['fid']);
+
+      //If swf files was created, we should show it in flexpaper.
+      if ($item['conversion_done'] != 0) {
         $module_path = drupal_get_path('module', 'book_field');
         $FlexPaperViewerPath = $base_url . '/' . $module_path . '/FlexPaperViewer';
-        $uri = $file_swf->uri;
-        $path = drupal_realpath($uri);
+        $file = file_load($item['fid']);
+        $file_name = get_real_file_name($file);
+        $swf_directory = file_default_scheme() . '://books/' . $item['folder_name'];
+        $path = drupal_realpath($swf_directory);
         $drupal_folder = realpath('.');
         $relative_path = str_replace($drupal_folder, "", $path);
-        $swf_path = $base_url . '/' . $relative_path;
+        $files = scandir($path);
+        if (isset($item['fid_thumb'])) {
+          $num_of_swfs = count($files) - 4;
+        } else {
+          $num_of_swfs = count($files) - 3;
+        }
+
+        $swf_path = '{' . $base_url . $relative_path . '/' . $file_name . '[*,0].swf,' . $num_of_swfs . '}';
+
         $settings = array(
             'paths' => array($swf_path),
             'FlexPaperViewerPath' => $FlexPaperViewerPath,
@@ -715,20 +733,17 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
                     'js' => array($module_path . '/flexpaper_flash.js', $module_path . '/book_field.js'),
                 ),
                 '#theme' => 'book_field_flexpaper_view',
-                '#file_swf' => $file_swf,
                 '#file' => $file,
             )
         );
-        if (module_exists('book_thumbnail') && $item['fid_thumb'] != 0) {
-          $file_thumb = file_load($item['fid_thumb']);
+        if (module_exists('book_thumbnail') && ($file_thumb = file_load($item['fid_thumb']))) {
           $element[$delta]['flexpaper']['#file_thumb'] = $file_thumb;
         }
         $element[$delta] = array_merge($buttons, $element[$delta]);
         drupal_add_js(array('book_field' => $settings), 'setting');
       } elseif ($item['fid'] != 0) {
         $file = file_load($item['fid']);
-        if (module_exists('book_thumbnail') && $item['fid_thumb'] != 0) {
-          $file_thumb = file_load($item['fid_thumb']);
+        if (module_exists('book_thumbnail') && ($file_thumb = file_load($item['fid_thumb']))) {
           $element[$delta]['#file_thumb'] = $file_thumb;
         }
         $element[$delta] = array(
@@ -756,32 +771,38 @@ function book_field_field_presave($entity_type, $entity, $field, $instance, $lan
   // permanent status, so that it will not be removed when temporary files are
   // cleaned up.
   list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
-  foreach ($items as $item) {
-    if (isset($item['fid_swf']) && $item['fid_swf'] != 0) {
-      $file_swf = file_load($item['fid_swf']);
-      if (!$file_swf->status) {
-        $file = file_load($item['fid']);
-        $folder = get_real_file_name($file);
-        $folder = _book_field_remove_special_chars($folder);
-        $file_swf_mame = $file_swf->filename;
-        $file_swf_mame = _book_field_remove_special_chars($file_swf_mame);
-        $file_swf->filename = $file_swf_mame;
-        file_save($file_swf);
-        _book_field_file_move($file_swf, $folder);
-        _book_field_file_move($file, $folder);
-        $file_thumb = file_load($item['fid_thumb']);
-        if ($file_thumb) {
-          _book_field_file_move($file_thumb, $folder);
-        }
-      }
-    } elseif (isset($item['fid']) && $item['fid'] != 0) {
+  foreach ($items as $index => $item) {
+    if (isset($item['fid']) && $item['fid'] != 0) {
       $file = file_load($item['fid']);
       if (!$file->status) {
-        $folder = get_real_file_name($file);
-        $file = _book_field_file_move($file, $folder);
+        $folder_name = $item['folder_name'];
+        $source_folder = file_directory_temp() . '/' . $folder_name;
+        $destination_folder = file_default_scheme() . '://books/' . $folder_name;
+        $i = 0;
+
+        //If directory already exist we should try to create another directory
+        while (is_dir($destination_folder)) {
+          $folder_name = $folder_name . '_' . $i;
+          $destination_folder = file_default_scheme() . '://books/' . $folder_name;
+          $i++;
+        }
+
+        //Copy folder with swf files from temporary directory to files directory
+        mkdir($destination_folder);
+        $directory = dir($source_folder);
+        while (FALSE !== ( $readdirectory = $directory->read() )) {
+          $PathDir = $source_folder . '/' . $readdirectory;
+          if (is_dir($PathDir)) {
+            continue;
+          }
+          var_dump($PathDir);
+          copy($PathDir, $destination_folder . '/' . $readdirectory);
+        }
+        $items[$index]['folder_name'] = $folder_name;
+        $file = _book_field_file_move($file, $folder_name);
         $file_thumb = file_load($item['fid_thumb']);
         if ($file_thumb) {
-          _book_field_file_move($file_thumb, $folder);
+          _book_field_file_move($file_thumb, $folder_name);
         }
       }
     }
@@ -804,37 +825,19 @@ function _book_field_remove_special_chars($string) {
 function book_field_field_delete($entity_type, $entity, $field, $instance, $langcode, &$items) {
   // Delete all files and directory where this files contain.
   foreach ($items as $item) {
-    if (isset($item['fid_swf']) && $item['fid_swf'] != 0) {
-      $fid_swf = $item['fid_swf'];
-      $file = file_load($fid_swf);
+    if (isset($item['fid_thumb']) && ($file = file_load($item['fid_thumb']))) {
       file_delete($file);
     }
-    if (isset($item['fid_thumb']) && $item['fid_thumb'] != 0) {
-      $fid_thumb = $item['fid_thumb'];
-      $file = file_load($fid_thumb);
+    if (isset($item['fid']) && ($file = file_load($item['fid']))) {
       file_delete($file);
     }
-    if (isset($item['fid']) && $item['fid'] != 0) {
-      $fid = $item['fid'];
-      $file = file_load($fid);
-      file_delete($file);
-      $uri = $file->uri;
-      $path = drupal_realpath($uri);
-      $arr = explode('/', $path);
-      $length = count($arr);
-      $directory = '';
-      for ($i = 0; $i < $length - 1; $i++) {
-        $directory = $directory . '/' . $arr[$i];
-      }
-      if (count(scandir($directory)) == 2) {
-        rmdir($directory);
-      }
-    }
+    $directory = file_default_scheme() . '://books/' . $item['folder_name'];
+    file_unmanaged_delete_recursive($directory);
   }
 }
 
 //Creats thumbnail file in temporary directory
-function make_thumbnail($file) {
+function make_thumbnail_file($file) {
   $file_name = $file->filename;
   $arr = explode('.', $file_name);
   $arr_length = count($arr);
@@ -869,7 +872,7 @@ function make_thumbnail($file) {
 function _book_field_file_move($file, $folder) {
   $file->status = FILE_STATUS_PERMANENT;
   file_save($file);
-  $file_name = $file->filename;
+  $file_name = drupal_basename($file->uri);
   $directory = file_default_scheme() . '://books/' . $folder;
   file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
   $file = file_move($file, file_default_scheme() . '://books/' . $folder . '/' . $file_name);
@@ -934,8 +937,7 @@ function theme_book_field_flexpaper_view($variables) {
  */
 function get_real_file_name($file) {
   $uri = $file->uri;
-  $path = drupal_realpath($uri);
-  $real_file_name = basename($path);
+  $real_file_name = drupal_basename($uri);
 
   $arr = explode('.', $real_file_name);
   $arr_length = count($arr);
