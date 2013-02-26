@@ -151,6 +151,7 @@ function id3_widget_node_presave($node) {
   $id3_widgets_list = cache_get('id3_widgets_list');
   if (!$id3_widgets_list) {
     $id3_widgets_list = new stdClass();
+    $widget_list = array();
     foreach (module_implements('id3_widget_widget_name_info') as $module) {
       $id3_widget = module_invoke($module, 'id3_widget_widget_name_info');
       $widget_list[$id3_widget] = $module;
