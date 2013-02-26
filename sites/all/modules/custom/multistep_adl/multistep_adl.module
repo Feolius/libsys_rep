@@ -72,45 +72,44 @@ function multistep_adl_menu() {
   foreach (entity_get_info() as $entity_type => $entity_info) {
     if ($entity_info['fieldable'] && $entity_type == 'node') {
       foreach ($entity_info['bundles'] as $bundle_name => $bundle_info) {
-        if (is_multistep_adl($bundle_name)) {
-          if (isset($bundle_info['admin'])) {
-            // Extract path information from the bundle.
-            $path = $bundle_info['admin']['path'];
-            // Different bundles can appear on the same path (e.g. %node_type and
-            // %comment_node_type). To allow field_ui_menu_load() to extract the
-            // actual bundle object from the translated menu router path
-            // arguments, we need to identify the argument position of the bundle
-            // name string ('bundle argument') and pass that position to the menu
-            // loader. The position needs to be casted into a string; otherwise it
-            // would be replaced with the bundle name string.
-            if (isset($bundle_info['admin']['bundle argument'])) {
-              $bundle_arg = $bundle_info['admin']['bundle argument'];
-            }
-            else {
-              $bundle_arg = $bundle_name;
-            }
 
-            // Extract access information, providing defaults.
-            $access = array_intersect_key($bundle_info['admin'], drupal_map_assoc(array(
-              'access callback',
-              'access arguments'
-            )));
-            $access += array(
-              'access callback' => 'user_access',
-              'access arguments' => array('administer site configuration'),
-            );
-            // 'Manage steps' tab on content type structure page.
-            $path_elements = explode('/', $path);
-            if (!in_array('comment', $path_elements)) {
-              $items["$path/steps"] = array(
-                'title' => t('Manage steps'),
-                'page callback' => 'drupal_get_form',
-                'page arguments' => array('multistep_adl_manage_steps_form', $entity_type, $bundle_arg),
-                'type' => MENU_LOCAL_TASK,
-                'weight' => 2,
-                'file' => 'multistep_adl.admin.inc',
-              ) + $access;
-            }
+        if (isset($bundle_info['admin'])) {
+          // Extract path information from the bundle.
+          $path = $bundle_info['admin']['path'];
+          // Different bundles can appear on the same path (e.g. %node_type and
+          // %comment_node_type). To allow field_ui_menu_load() to extract the
+          // actual bundle object from the translated menu router path
+          // arguments, we need to identify the argument position of the bundle
+          // name string ('bundle argument') and pass that position to the menu
+          // loader. The position needs to be casted into a string; otherwise it
+          // would be replaced with the bundle name string.
+          if (isset($bundle_info['admin']['bundle argument'])) {
+            $bundle_arg = $bundle_info['admin']['bundle argument'];
+          }
+          else {
+            $bundle_arg = $bundle_name;
+          }
+
+          // Extract access information, providing defaults.
+          $access = array_intersect_key($bundle_info['admin'], drupal_map_assoc(array(
+            'access callback',
+            'access arguments'
+          )));
+          $access += array(
+            'access callback' => 'user_access',
+            'access arguments' => array('administer site configuration'),
+          );
+          // 'Manage steps' tab on content type structure page.
+          $path_elements = explode('/', $path);
+          if (!in_array('comment', $path_elements)) {
+            $items["$path/steps"] = array(
+              'title' => t('Manage steps'),
+              'page callback' => 'drupal_get_form',
+              'page arguments' => array('multistep_adl_manage_steps_form', $entity_type, $bundle_arg),
+              'type' => MENU_LOCAL_TASK,
+              'weight' => 2,
+              'file' => 'multistep_adl.admin.inc',
+            ) + $access;
           }
         }
       }

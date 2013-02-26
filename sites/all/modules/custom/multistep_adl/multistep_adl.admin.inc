@@ -153,11 +153,18 @@ function multistep_adl_manage_steps_form($form, &$form_state, $entity_type, $bun
   $steps = multistep_adl_get_steps($bundle);
   $first_step = multistep_adl_get_first($bundle);
   $step_settings = drupal_json_decode(variable_get('multistep_adl_steps_settings'));
+  $admin_path = _field_ui_bundle_admin_path($entity_type, $bundle);
+
+  if (empty($steps)) {
+    drupal_set_message(t('This content type has no field group with Multistep ADL formatter. You can add such field goups on <a href="@link">Manage fields</a> page.', array('@link' => url($admin_path . '/fields'))), 'warning');
+    return $form;
+  }
 
   $optional_steps = array('none' => '-None-');
   foreach ($steps as $step) {
     $optional_steps[$step->group_name] = $step->label;
   }
+
 
   $optional_fields = array('none' => '-None-');
   $first_step_fields = $steps[$first_step]->children;
@@ -235,7 +242,6 @@ function multistep_adl_manage_steps_form($form, &$form_state, $entity_type, $bun
       }
     }
     else {
-      $admin_path = _field_ui_bundle_admin_path($entity_type, $bundle);
       $form['determining_field_fieldset']['determining_field_values_with_steps_fieldset'] = array(
         '#title' => t("No value is already define for this field"),
         // The prefix/suffix provide the div that we're replacing, named by
