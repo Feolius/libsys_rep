@@ -8,8 +8,19 @@
  * Video transcoder admin settings
  */
 function video_transcoder_admin_settings() {
-  $transcoder = new Transcoder;
-  $form = $transcoder->adminSettings();
+  $transcoder = new Transcoder();
+  $options = $transcoder->getAllTranscoders();
+
+  $form = array();
+  $form['video_convertor'] = array(
+    '#type' => 'radios',
+    '#title' => t('Video transcoder'),
+    '#default_value' => variable_get('video_convertor', 'TranscoderAbstractionFactoryFfmpeg'),
+    '#options' => $options['radios'],
+    '#description' => '<p>' . t('Select a video transcoder will help you convert videos and generate thumbnails.') . '</p>' . theme('item_list', array('items' => $options['help'])),
+  );
+  $form = $form + $options['admin_settings'];
+
   return system_settings_form($form);
 }
 
@@ -22,9 +33,7 @@ function video_transcoder_admin_settings_validate($form, &$form_state) {
     return;
   }
 
-  $factory = new TranscoderAbstractionAbstractFactory();
-  $transcoder = $factory->getProduct($transcodername);
-  $transcoder->adminSettingsValidate($form, $form_state);
+  Transcoder::createTranscoder($transcodername)->adminSettingsValidate($form, $form_state);
 
   if (!form_get_errors() && $transcodername != variable_get('video_convertor')) {
     drupal_set_message(t('Because the selected transcoder was changed, you need to update the codec settings for your presets.'), 'warning');
@@ -41,12 +50,7 @@ function video_preset_admin_settings($form_state) {
     '#submit' => array('video_preset_admin_settings_submit'),
   );
 
-  module_load_include('inc', 'video_ui', 'video.preset');
-  $presets = video_preset_get_presets();
-
-  if (empty($presets)) {
-    drupal_set_message(t('No presets were found. Please use the !create_link link to create a new Video Preset, or upload an existing Feature to your modules directory.', array('!create_link' => l(t('Add Preset'), 'admin/config/media/video/presets/add'))), 'warning');
-  }
+  $presets = Preset::getAllPresets();
 
   $form['video_use_preset_wxh'] = array(
     '#type' => 'checkbox',
@@ -63,24 +67,24 @@ function video_preset_admin_settings($form_state) {
     );
 
     foreach ($presets as $preset) {
+      $delete = NULL;
+      if (empty($preset['module']) && !in_array($preset['name'], $selected)) {
+        $delete = array('#type' => 'link', '#title' => t('delete'), '#href' => 'admin/config/media/video/presets/preset/' . $preset['name'] . '/delete');
+      }
+      elseif ($preset['overridden']) {
+        $delete = array('#type' => 'link', '#title' => t('revert'), '#href' => 'admin/config/media/video/presets/preset/' . $preset['name'] . '/revert');
+      }
+
       $form['video_preset'][$preset['name']] = array(
-        'description' => array('#markup' => check_plain($preset['description'])),
-        'edit' => array('#type' => 'link', '#title' => t('edit'), '#href' => 'admin/config/media/video/presets/preset/' . $preset['name']),
-        'delete' => $preset['default'] ? '' : array('#type' => 'link', '#title' => t('delete'), '#href' => 'admin/config/media/video/presets/preset/' . $preset['name'] . '/delete'),
-        'export' => array('#type' => 'link', '#title' => t('export'), '#href' => 'admin/config/media/video/presets/preset/' . $preset['name'] . '/export'),
-        /*
-        'weight' => array(
-          '#type' => 'weight',
-          '#title' => t('Weight for @title', array('@title' => $preset['name'])),
-          '#title_display' => 'invisible',
-          '#default_value' => mt_rand(1, 14),
-        ),
-        */
         'status' => array(
           '#type' => 'checkbox',
-          '#title' => $preset['name'],
+          '#title' => check_plain($preset['name']),
           '#default_value' => in_array($preset['name'], $selected),
         ),
+        'description' => array('#markup' => !empty($preset['description']) ? check_plain($preset['description']) : ''),
+        'edit' => array('#type' => 'link', '#title' => t('edit'), '#href' => 'admin/config/media/video/presets/preset/' . $preset['name']),
+        'delete' => $delete,
+        'export' => array('#type' => 'link', '#title' => t('export'), '#href' => 'admin/config/media/video/presets/preset/' . $preset['name'] . '/export'),
       );
     }
   }
@@ -127,32 +131,34 @@ function theme_video_preset_admin_settings($variables) {
   $header = array(
     array('data' => t('Name')),
     array('data' => t('Description')),
-//    array('data' => t('Weight')),
     array('data' => t('Operations'), 'colspan' => 3),
   );
 
   $rows = array();
-  foreach (element_children($form['video_preset']) as $id) {
-//    $form['video_preset'][$id]['weight']['#attributes']['class'] = array('video-preset-weight');
-    $rows[] = array(
-      'data' => array(
-        drupal_render($form['video_preset'][$id]['status']),
-        drupal_render($form['video_preset'][$id]['description']),
-//        drupal_render($form['video_preset'][$id]['weight']),
-        drupal_render($form['video_preset'][$id]['edit']),
-        drupal_render($form['video_preset'][$id]['delete']),
-        drupal_render($form['video_preset'][$id]['export']),
-      ),
-//      'class' => array('draggable'),
-    );
+
+  if (!empty($form['video_preset'])) {
+    foreach (element_children($form['video_preset']) as $id) {
+      $rows[] = array(
+        'data' => array(
+          drupal_render($form['video_preset'][$id]['status']),
+          drupal_render($form['video_preset'][$id]['description']),
+          drupal_render($form['video_preset'][$id]['edit']),
+          drupal_render($form['video_preset'][$id]['delete']),
+          drupal_render($form['video_preset'][$id]['export']),
+        ),
+      );
+    }
   }
 
   $actions = drupal_render_children($form['actions']);
   $output = drupal_render_children($form);
-  $output .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'video-preset')));
+  $output .= theme('table', array(
+    'header' => $header,
+    'rows' => $rows,
+    'attributes' => array('id' => 'video-preset'),
+    'empty' => t('No presets were found. Please use the <a href="@create-preset">Add preset</a> link to create a new Video preset or upload an existing Video preset feature module to your modules directory.', array('@create-preset' => url('admin/config/media/video/presets/add'))),
+  ));
   $output .= $actions;
-
-//  drupal_add_tabledrag('video-preset', 'order', 'sibling', 'video-preset-weight');
 
   return $output;
 }
@@ -205,7 +211,26 @@ function video_general_admin_settings() {
     '#disabled' => TRUE,
     '#access' => $hastranscoder,
   );
+  $form['video_dimensions'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Available dimensions for converting and displaying videos'),
+    '#description' => t('Enter one dimension per line. Each resolution must be in the form of <code>width</code>x<code>height</code>. Example dimensions: <code>1280x720</code>.'),
+    '#default_value' => variable_get('video_dimensions', video_utility::getDefaultDimensions()),
+    '#required' => TRUE,
+    '#wysiwyg' => FALSE,
+  );
+
   return system_settings_form($form);
+}
+
+function video_general_admin_settings_validate($form, $form_state) {
+  $v =& $form_state['values'];
+  if (!empty($v['video_dimensions'])) {
+    $v['video_dimensions'] = str_replace("\r", '', $v['video_dimensions']);
+    if (!video_utility::validateDimensionList($v['video_dimensions'])) {
+      form_error($form['video_dimensions'], t('The list of dimensions contains errors: only enter new lines and dimensions in the form widthxheight.'));
+    }
+  }
 }
 
 /**
@@ -288,6 +313,33 @@ function video_players_admin_settings() {
     }
   }
 
+  // Miscellaneous player settings
+  $form['playersettings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Player settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  if (module_exists('jw_player')) {
+    $presets = array();
+    foreach (jw_player_preset_load() as $preset => $item) {
+      $presets[$preset] = $item['preset_name'];
+    }
+
+    $form['playersettings']['video_jwplayer_preset'] = array(
+      '#type' => 'select',
+      '#title' => t('JW Player preset'),
+      '#options' => $presets,
+      '#default_value' => variable_get('video_jwplayer_preset', NULL),
+      '#empty_value' => '',
+    );
+  }
+
+  if (count(element_children($form['playersettings'])) == 0) {
+    unset($form['playersettings']);
+  }
+
   return system_settings_form($form);
 }
 
@@ -312,43 +364,47 @@ function video_players_admin_settings_submit($form, &$form_state) {
 }
 
 /**
- * Video Metadata admin settings
- */
-function video_metadata_admin_settings() {
-  $metadata = new Metadata;
-  $form = $metadata->adminSettings();
-  return system_settings_form($form);
-}
-
-function video_metadata_admin_settings_validate($form, &$form_state) {
-  // add vallidations by metadata interface
-  $metadata = $form_state['values']['video_metadata'];
-  $metadata = new Metadata($metadata);
-  $metadata->adminSettingsValidate($form, $form_state);
-}
-
-/**
  * Video cron admin settings
  */
-function video_cron_admin_settings() {
+function video_scheduling_admin_settings() {
   $form = array();
   $form['video_cron'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Use Drupal\'s built-in cron.'),
+    '#title' => t('Use Drupal\'s built-in cron'),
     '#default_value' => variable_get('video_cron', TRUE),
-    '#description' => t('Check this box to use Drupal\'s built in cron hook. Be aware that video transcoding is very resource-intensive. If you use poor man\'s cron, this option is strongly discouraged. We suggest you set up your cron to call this function through CLI instead of WGET.'),
+    '#description' =>
+        t('Check this box to use Drupal\'s built in cron execution to transcode videos. Be aware that video transcoding is very resource-intensive. If you use poor man\'s cron, this option is strongly discouraged.') . '<br/>' .
+        t('Alternatives to using cron are the video_scheduler.php script that is located in the Video module directory or the video-scheduler <a href="@drush-url">Drush</a> command (recommended).', array('@drush-url' => url('http://drupal.org/project/drush'))) . '<br/>' .
+        t('If you use none of these options, you can only transcode videos by using the %convertonsave option when uploading a video.', array('%convertonsave' => t('Convert video on save'))),
+  );
+  $form['video_transcode_timeout'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Video transcode timeout'),
+    '#default_value' => variable_get('video_transcode_timeout', 10),
+    '#description' => t('The maximum time allowed for a video transcode to complete. Use a larger value when you regularly transcode large or long videos. When a video has been transcoding for more than this amount of time, it will be marked as failed. Leave this field empty to disable this behavior.'),
+    '#field_suffix' => t('minutes'),
+    '#maxlength' => 5,
+    '#size' => 10,
+    '#element_validate' => array('element_validate_integer_positive'),
   );
   $form['video_queue_timeout'] = array(
     '#type' => 'textfield',
-    '#title' => t('Video queue timeout (s).'),
-    '#default_value' => variable_get('video_queue_timeout', 90),
-    '#description' => t('The maximum time allowed for a video transcode to complete. Use a larger value for larger-sized video.'),
+    '#title' => t('Video queue timeout'),
+    '#default_value' => variable_get('video_queue_timeout', 60),
+    '#description' => t('The maximum time allowed for a video to be in the queue. When processing of the queue is aborted, the video will be requeued after this amount of time. Leave this field empty to disable this behavior.'),
+    '#field_suffix' => t('minutes'),
+    '#maxlength' => 5,
+    '#size' => 10,
+    '#element_validate' => array('element_validate_integer_positive'),
   );
   $form['video_ffmpeg_instances'] = array(
     '#type' => 'textfield',
-    '#title' => t('Total videos to convert during each cron process.'),
+    '#title' => t('Total videos to convert during each scheduled run'),
     '#default_value' => variable_get('video_ffmpeg_instances', 5),
-    '#description' => t('How many videos do you want to process on each cron run?  Either through hook_cron or video_scheduler.php.'),
+    '#description' => t('How many videos do you want to process on each cron/video_scheduler.php/drush run?'),
+    '#maxlength' => 5,
+    '#size' => 10,
+    '#element_validate' => array('element_validate_integer_positive'),
   );
   return system_settings_form($form);
 }
@@ -371,15 +427,62 @@ function video_video_flv_players() {
 }
 
 /**
- * Return our possible flash players.
+ * Return our possible HTML5 players.
  */
 function video_video_html5_players() {
-  $options = array();
+  $options = array(
+    'video' => t('Video for everybody'),
+  );
   if (module_exists('videojs')) {
     $options['videojs'] = t('Video.js');
   }
-  if (module_exists('video')) {
-    $options['video'] = t('Video for everybody');
-  }
   return $options;
+}
+
+/**
+ * Page callback that displays FFmpeg information.
+ */
+function video_admin_ffmpeg_info($form_state) {
+  $ffmpegpath = variable_get('video_ffmpeg_path', '/usr/bin/ffmpeg');
+  if (isset($_GET['ffmpegpath'])) {
+    $ffmpegpath = $_GET['ffmpegpath'];
+  }
+
+  $form = array();
+  $form['ffmpegpath'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Path to FFmpeg or avconv executable'),
+    '#default_value' => $ffmpegpath,
+    '#required' => TRUE,
+  );
+
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array('#type' => 'submit', '#value' => t('Show information'));
+
+  if ($ffmpegpath != '') {
+    $transcoder = new PHPVideoToolkit($ffmpegpath, realpath(file_directory_temp()) . '/');
+    $info = $transcoder->getFFmpegInfo(FALSE);
+    $infotxt = var_export($info, TRUE);
+
+    $form['info'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Debug information'),
+      '#default_value' => $infotxt,
+      '#weight' => 1000,
+      '#rows' => min(20, substr_count($infotxt, "\n")),
+    );
+  }
+
+  return $form;
+}
+
+function video_admin_ffmpeg_info_submit($form, &$form_state) {
+  $form_state['redirect'] = array(
+    'admin/config/media/video/ffmpeg-info',
+    array(
+      'query' => array(
+        'ffmpegpath' => $form_state['values']['ffmpegpath'],
+      ),
+    ),
+  );
 }

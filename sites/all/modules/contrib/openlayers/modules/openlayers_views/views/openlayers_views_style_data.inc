@@ -105,6 +105,7 @@ class openlayers_views_style_data extends views_plugin_style {
       ),
       '#default_value' => $this->options['data_source']['value'],
     );
+
     if (count($fields > 0)) {
       $form['data_source']['other_lat'] = array(
         '#type' => 'select',
@@ -236,15 +237,6 @@ class openlayers_views_style_data extends views_plugin_style {
         ),
       );
     }
-    $form['data_source']['style_field'] = array(
-      '#type'          => 'select',
-      '#title'         => t('Style Field'),
-      '#description'   => t('Choose the field which will appear as a style on '
-        . 'the layer.'),
-      '#required'      => FALSE,
-      '#options'       => array('' => '',) + $fields,
-      '#default_value' => $this->options['data_source']['style_field'],
-    );
 
     // A simple way to display attributes and styling
     $form['attributes'] = array(
@@ -345,9 +337,8 @@ class openlayers_views_style_data extends views_plugin_style {
 
         // Create features array.
         $feature = array(
-          'projection' => 'EPSG:4326',
+          'projection' => '4326',
           'attributes' => $attributes,
-          'style' => $this->get_style($attributes, $handlers, $this->options['data_source'], $record),
           'wkt' => $this->get_wkt($attributes, $handlers, $this->options['data_source']),
         );
         $features = $this->reduce_features($this->options['grouping'], $features, $feature, $title);
@@ -372,35 +363,6 @@ class openlayers_views_style_data extends views_plugin_style {
    */
   function datasource_dependent($type) {
     return array('visible' => array('#edit-style-options-data-source-value' => array('value' => $type)));
-  }
-
-  /**
-   * Find and compute styling attributes.
-   */
-  function get_style($feature, $handlers, $datasource, $record) {
-    $style = NULL;
-
-    if (isset($datasource['style_field']) && !empty($datasource['style_field'])) {
-      $style_field = $handlers[$datasource['style_field']];
-      $style = $style_field->options['settings'];
-
-      if ($style_field->original_value) {
-        $image_info = image_get_info($style_field->original_value);
-        $style['graphicWidth'] = $image_info['width'];
-        $style['graphicHeight'] = $image_info['height'];
-
-        unset($style['imageStyle']);
-        $style['externalGraphic'] = file_create_url($style_field->original_value);
-      }
-
-      foreach ($style as $prop => $value) {
-        if (empty($value)) {
-          unset($style[$prop]);
-        }
-      }
-    }
-
-    return $style;
   }
 
   /**

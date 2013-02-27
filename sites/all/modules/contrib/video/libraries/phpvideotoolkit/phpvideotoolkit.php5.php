@@ -467,17 +467,6 @@ class PHPVideoToolkit {
    */
   protected $_command_output = array();
 
-  /**
-   * Holds commands should be sent added to the exec before the input file, this is by no means a definitive list
-   * of all the ffmpeg commands, as it only utilizes the ones in use by this class. Also only commands that have
-   * specific required places are entered in the arrays below. Anything not in these arrays will be treated as an
-   * after-input item.
-   * @access protected
-   * @var array
-   */
-// 		protected $_cmds_before_input		= array();
-  protected $_cmds_before_input = array('-inputr', '-ss');
-// 		protected $_cmds_before_input		= array('-r', '-f');
   // Stores the FFMPEG Binary Path
   protected $_ffmpeg_binary;
 
@@ -573,33 +562,13 @@ class PHPVideoToolkit {
    * @access public
    * @return mixed FALSE on error encountered, TRUE otherwise
    * */
-  public function getFFmpegInfo($read_from_cache=TRUE, $tmp_dir=FALSE) {
-    $cache_file = isset($this) === TRUE || $tmp_dir !== FALSE ? TRUE : FALSE;
-
-    if ($read_from_cache === TRUE && $cache_file !== FALSE) {
-      $cache_file = ($tmp_dir === FALSE ? $this->_tmp_directory : $tmp_dir) . '_ffmpeg_info.php';
-      if (is_file($cache_file) === TRUE) {
-        require_once $cache_file;
-        if (isset($info) === TRUE && $info['_cache_date'] > time() - 2678400) {
-          $info['reading_from_cache'] = TRUE;
-          PHPVideoToolkit::$ffmpeg_info = $info;
-        }
-      }
-    }
-
+  public function getFFmpegInfo($read_from_cache = TRUE) {
     // check to see if the info has already been cached
-    if (PHPVideoToolkit::$ffmpeg_info !== FALSE) {
+    if ($read_from_cache && PHPVideoToolkit::$ffmpeg_info !== FALSE) {
       return PHPVideoToolkit::$ffmpeg_info;
     }
 
-    // check to see if this is a static call
-    if (isset($this) === FALSE) {
-      $toolkit = new PHPVideoToolkit();
-      return $toolkit->getFFmpegInfo($read_from_cache, $tmp_dir);
-    }
-
-    $format = '';
-    $data = array('reading_from_cache' => FALSE);
+    $data = array();
 
     $formats = $this->_captureExecBuffer($this->_ffmpeg_binary . ' -formats');
     $codecs = $this->_captureExecBuffer($this->_ffmpeg_binary . ' -codecs');
@@ -613,10 +582,6 @@ class PHPVideoToolkit {
     $data['compiler'] = array();
     $data['binary'] = array();
     $data['ffmpeg-php-support'] = self::hasFFmpegPHPSupport();
-    if (!self::$ffmpeg_found) {
-      self::$ffmpeg_info = $data;
-      return $data;
-    }
 
     // FFmpeg 0.5 and lower don't support -codecs, -bsfs or -protocols, but the info is in -formats
     if (strpos(end($codecs), 'missing argument for option')) {
@@ -636,6 +601,11 @@ class PHPVideoToolkit {
       $pixformats = implode("\n", $pixformats);
       $help = implode("\n", $help);
       $data['raw'] = $formats . "\n" . $codecs . "\n" . $filters . "\n" . $protocols . "\n" . $pixformats;
+    }
+
+    if (!self::$ffmpeg_found) {
+      self::$ffmpeg_info = $data;
+      return $data;
     }
 
     // grab the versions
@@ -676,8 +646,19 @@ class PHPVideoToolkit {
     // grab the codecs available
     $codecsmatches = array();
     $data['codecs'] = array('video' => array(), 'audio' => array(), 'subtitle' => array());
-    if (preg_match_all('/ ((?:[DEVAST ]{6})|(?:[DEVASTFB ]{8})) ([A-Za-z0-9\_]+) (.+)/', $codecs, $codecsmatches)) {
-    // Codecs:
+    if (preg_match_all('/ ((?:[DEVAST ]{6})|(?:[DEVASTFB ]{8})|(?:[DEVASIL\.]{6})) ([A-Za-z0-9\_]+) (.+)/', $codecs, $codecsmatches)) {
+
+// FFmpeg 0.12+
+//  D..... = Decoding supported
+//  .E.... = Encoding supported
+//  ..V... = Video codec
+//  ..A... = Audio codec
+//  ..S... = Subtitle codec
+//  ...I.. = Intra frame-only codec
+//  ....L. = Lossy compression
+//  .....S = Lossless compression
+
+// FFmpeg other
 //  D..... = Decoding supported
 //  .E.... = Encoding supported
 //  ..V... = Video codec
@@ -686,6 +667,7 @@ class PHPVideoToolkit {
 //  ...S.. = Supports draw_horiz_band
 //  ....D. = Supports direct rendering method 1
 //  .....T = Supports weird frame truncation
+
       for ($i = 0, $a = count($codecsmatches[0]); $i < $a; $i++) {
         $options = preg_split('//', $codecsmatches[1][$i], -1, PREG_SPLIT_NO_EMPTY);
         if ($options) {
@@ -788,12 +770,6 @@ class PHPVideoToolkit {
 
     PHPVideoToolkit::$ffmpeg_info = $data;
 
-    // cache the data
-    if ($cache_file !== FALSE && $read_from_cache === TRUE) {
-      $data['_cache_date'] = time();
-      file_put_contents($cache_file, '<?php $info = ' . var_export($data, TRUE) . ';');
-    }
-
     return $data;
   }
 
@@ -807,14 +783,14 @@ class PHPVideoToolkit {
   protected function getVersion($output) {
     // Search for SVN string
     // FFmpeg version SVN-r20438, Copyright (c) 2000-2009 Fabrice Bellard, et al.
-    $pattern = "/ffmpeg version SVN-r([0-9.]*)/i";
+    $pattern = "/(?:ffmpeg|avconv) version SVN-r([0-9.]*)/i";
     if (preg_match($pattern, $output, $matches)) {
       return $matches[1];
     }
 
     // Some OSX versions are built from a very early CVS
     // I do not know what to do with this version- using 1 for now
-    $pattern = "/ffmpeg version.*CVS.*Mac OSX universal/msUi";
+    $pattern = "/(?:ffmpeg|avconv) version.*CVS.*Mac OSX universal/msUi";
     if (preg_match($pattern, $output, $matches)) {
       return 0;
     }
@@ -822,7 +798,7 @@ class PHPVideoToolkit {
     // Search for git string
     // FFmpeg version git-N-29240-gefb5fa7, Copyright (c) 2000-2011 the FFmpeg developers.
     // ffmpeg version N-31145-g59bd0fe, Copyright (c) 2000-2011 the FFmpeg developers
-    $pattern = "/ffmpeg version.*N-([0-9.]*)/i";
+    $pattern = "/(?:ffmpeg|avconv) version.*N-([0-9.]*)/i";
     if (preg_match($pattern, $output, $matches)) {
       // Versions above this seem to be ok
       if ($matches[1] >= 29240) {
@@ -835,14 +811,14 @@ class PHPVideoToolkit {
 
     // Do we have a release?
     // ffmpeg version 0.4.9-pre1, build 4736, Copyright (c) 2000-2004 Fabrice Bellard
-    $pattern = "/ffmpeg version ([0-9.]*)/i";
+    $pattern = "/(?:ffmpeg|avconv) version ([0-9.]*)/i";
     if (preg_match($pattern, $output, $matches)) {
       return $matches[1];
     }
 
     // Do we have a build version?
     // ffmpeg version 0.4.9-pre1, build 4736, Copyright (c) 2000-2004 Fabrice Bellard
-    $pattern = "/ffmpeg version.*, build ([0-9]*)/i";
+    $pattern = "/(?:ffmpeg|avconv) version.*, build ([0-9]*)/i";
     if (preg_match($pattern, $output, $matches)) {
       return $matches[1];
     }
@@ -863,7 +839,7 @@ class PHPVideoToolkit {
    */
   public function hasCodecSupport($codec, $support=PHPVideoToolkit::ENCODE) {
     $codec = strtolower($codec);
-    $data = $this->getFFmpegInfo(true);
+    $data = $this->getFFmpegInfo();
     return isset($data['formats'][$codec]) === TRUE ? $data['formats'][$codec][$support] : FALSE;
   }
 
@@ -886,7 +862,7 @@ class PHPVideoToolkit {
    * @return mixed. Boolean FALSE if there is no support, TRUE there is support.
    */
   public function hasVHookSupport() {
-    $info = $this->getFFmpegInfo(true);
+    $info = $this->getFFmpegInfo();
     return $info['binary']['vhook-support'];
   }
 
@@ -895,45 +871,65 @@ class PHPVideoToolkit {
    * as it consults the ffmpeg binary directly. This idea for this function has been borrowed from
    * a French ffmpeg class located: http://www.phpcs.com/codesource.aspx?ID=45279
    *
-   * @access public
-   * @param string $file The absolute path of the file that is required to be manipulated.
-   * @return mixed FALSE on error encountered, TRUE otherwise
-   * */
-  public function getFileInfo($file=FALSE) {
-// 			check to see if this is a static call
-    if ($file !== FALSE && isset($this) === FALSE) {
-      $toolkit = new PHPVideoToolkit();
-      return $toolkit->getFileInfo($file);
-    }
-// 			if the file has not been specified check to see if an input file has been specified
+   * @param $file
+   *   The absolute path of the file that is required to be manipulated.
+   * @return
+   *   FALSE on error encountered, TRUE otherwise
+   */
+  public function getFileInfo($file = FALSE) {
+    // if the file has not been specified check to see if an input file has been specified
     if ($file === FALSE) {
       if (!$this->_input_file) {
-//					input file not valid
         return $this->_raiseError('getFileInfo_no_input');
-// <-				exits
       }
       $file = $this->_input_file;
     }
     $file = escapeshellarg($file);
-// 			create a hash of the filename
+    // create a hash of the filename
     $hash = md5($file);
-// 			check to see if the info has already been generated
+    // check to see if the info has already been generated
     if (isset(self::$_file_info[$hash]) === TRUE) {
       return self::$_file_info[$hash];
     }
-// 			execute the ffmpeg lookup
-    $buffer = $this->_captureExecBuffer($this->_ffmpeg_binary . ' -i ' . $file);
-// 			exec(PHPVIDEOTOOLKIT_FFMPEG_BINARY.' 2>&1', $buffer);
-    $buffer = implode("\r\n", $buffer);
-    $data = array();
-// 			grab the duration and bitrate data
-    preg_match_all('/Duration: (.*)/', $buffer, $matches);
 
-    if (count($matches) > 0) {
+    // execute the ffmpeg lookup
+    $buffer = $this->_captureExecBuffer($this->_ffmpeg_binary . ' -i ' . $file);
+    $buffer = implode("\r\n", $buffer);
+
+    $data = $this->parseFileInfo($buffer);
+
+    // check that some data has been obtained
+    if (empty($data)) {
+      $data = FALSE;
+    }
+    else {
+      $data['_raw_info'] = $buffer;
+    }
+
+    // cache info and return
+    return self::$_file_info[$hash] = $data;
+  }
+
+  /**
+   * Parses file information returned by ffmpeg -i
+   *
+   * @param $raw
+   *   Return text of ffmpeg -i
+   * @return
+   *   Array containing various data about the file
+   */
+  public function parseFileInfo($raw) {
+    $data = array();
+    $matches = array();
+
+    // grab the duration and bitrate data
+    preg_match_all('/Duration: (.*)/', $raw, $matches);
+
+    if (!empty($matches)) {
       $line = trim($matches[0][0]);
-// 				capture any data
+      // capture any data
       preg_match_all('/(Duration|start|bitrate): ([^,]*)/', $line, $matches);
-// 				setup the default data
+      // setup the default data
       $data['duration'] = array(
         'timecode' => array(
           'seconds' => array(
@@ -943,7 +939,7 @@ class PHPVideoToolkit {
           'rounded' => -1,
         )
       );
-// 				get the data
+      // get the data
       foreach ($matches[1] as $key => $detail) {
         $value = $matches[2][$key];
         switch (strtolower($detail)) {
@@ -963,19 +959,19 @@ class PHPVideoToolkit {
       }
     }
 
-// 			match the video stream info
-    preg_match('/Stream(.*): Video: (.*)/', $buffer, $matches);
+    // match the video stream info
+    preg_match('/Stream(.*): Video: (.*)/', $raw, $matches);
     if (count($matches) > 0) {
       $data['video'] = array();
-// 				get the dimension parts
+      // get the dimension parts
       preg_match('/([1-9][0-9]*)x([1-9][0-9]*)/', $matches[2], $dimensions_matches);
-// 				print_r($dimensions_matches);
+
       $dimensions_value = $dimensions_matches[0];
       $data['video']['dimensions'] = array(
         'width' => floatval($dimensions_matches[1]),
         'height' => floatval($dimensions_matches[2])
       );
-// 				get the timebases
+      // get the timebases
       $data['video']['time_bases'] = array();
       preg_match_all('/([0-9\.k]+) (fps|tbr|tbc|tbn)/', $matches[0], $fps_matches);
       if (count($fps_matches[0]) > 0) {
@@ -983,31 +979,33 @@ class PHPVideoToolkit {
           $data['video']['time_bases'][$abrv] = $fps_matches[1][$key];
         }
       }
-// 				get the video frames per second
+
+      // get the video frames per second
+      $data['duration']['timecode']['seconds']['total'] = $data['duration']['seconds'] = (float)$this->formatTimecode($data['duration']['timecode']['frames']['exact'], '%hh:%mm:%ss.%ms', '%ss.%ms');
       $fps = isset($data['video']['time_bases']['fps']) === TRUE ? $data['video']['time_bases']['fps'] : (isset($data['video']['time_bases']['tbr']) === TRUE ? $data['video']['time_bases']['tbr'] : FALSE);
       if ($fps !== FALSE) {
         $fps = floatval($fps);
         $data['duration']['timecode']['frames']['frame_rate'] = $data['video']['frame_rate'] = $fps;
-        $data['duration']['timecode']['seconds']['total'] = $data['duration']['seconds'] = $this->formatTimecode($data['duration']['timecode']['frames']['exact'], '%hh:%mm:%ss.%ms', '%ss.%ms', $data['video']['frame_rate']);
+        // set the total frame count for the video
+        $data['video']['frame_count'] = ceil($data['duration']['seconds'] * $data['video']['frame_rate']);
+        $data['duration']['timecode']['frames']['exact'] = $this->formatTimecode($data['video']['frame_count'], '%ft', '%hh:%mm:%ss.%fn', $fps);
+        $data['duration']['timecode']['frames']['total'] = $data['video']['frame_count'];
       }
+
       $fps_value = $fps_matches[0];
-// 				get the ratios
+      // get the ratios
       preg_match('/\[PAR ([0-9\:\.]+) DAR ([0-9\:\.]+)\]/', $matches[0], $ratio_matches);
       if (count($ratio_matches)) {
         $data['video']['pixel_aspect_ratio'] = $ratio_matches[1];
         $data['video']['display_aspect_ratio'] = $ratio_matches[2];
       }
-// 				work out the number of frames
+      // work out the number of frames
       if (isset($data['duration']) === TRUE && isset($data['video']) === TRUE) {
-// 					set the total frame count for the video
-        $data['video']['frame_count'] = ceil($data['duration']['seconds'] * $data['video']['frame_rate']);
-// 					set the framecode
+        // set the framecode
         $data['duration']['timecode']['seconds']['excess'] = floatval($data['duration']['seconds']) - floor($data['duration']['seconds']);
         $data['duration']['timecode']['seconds']['exact'] = $this->formatSeconds($data['duration']['seconds'], '%hh:%mm:%ss.%ms');
-        $data['duration']['timecode']['frames']['exact'] = $this->formatTimecode($data['video']['frame_count'], '%ft', '%hh:%mm:%ss.%fn', $fps);
-        $data['duration']['timecode']['frames']['total'] = $data['video']['frame_count'];
       }
-// 				formats should be anything left over, let me know if anything else exists
+      // formats should be anything left over, let me know if anything else exists
       $parts = explode(',', $matches[2]);
       $other_parts = array($dimensions_value, $fps_value);
       $formats = array();
@@ -1021,35 +1019,35 @@ class PHPVideoToolkit {
       $data['video']['codec'] = $formats[0];
     }
 
-// 			match the audio stream info
-    preg_match('/Stream(.*): Audio: (.*)/', $buffer, $matches);
+    // match the audio stream info
+    preg_match('/Stream(.*): Audio: (.*)/', $raw, $matches);
     if (count($matches) > 0) {
-// 				setup audio values
+      // setup audio values
       $data['audio'] = array(
         'stereo' => -1,
         'sample_rate' => -1,
         'sample_rate' => -1
       );
       $other_parts = array();
-// 				get the stereo value
+      // get the stereo value
       preg_match('/(stereo|mono)/i', $matches[0], $stereo_matches);
       if (count($stereo_matches)) {
         $data['audio']['stereo'] = $stereo_matches[0];
         array_push($other_parts, $stereo_matches[0]);
       }
-// 				get the sample_rate
+      // get the sample_rate
       preg_match('/([0-9]{3,6}) Hz/', $matches[0], $sample_matches);
       if (count($sample_matches)) {
         $data['audio']['sample_rate'] = count($sample_matches) ? floatval($sample_matches[1]) : -1;
         array_push($other_parts, $sample_matches[0]);
       }
-// 				get the bit rate
+      // get the bit rate
       preg_match('/([0-9]{1,3}) kb\/s/', $matches[0], $bitrate_matches);
       if (count($bitrate_matches)) {
         $data['audio']['bitrate'] = count($bitrate_matches) ? floatval($bitrate_matches[1]) : -1;
         array_push($other_parts, $bitrate_matches[0]);
       }
-// 				formats should be anything left over, let me know if anything else exists
+      // formats should be anything left over, let me know if anything else exists
       $parts = explode(',', $matches[2]);
       $formats = array();
       foreach ($parts as $key => $part) {
@@ -1059,7 +1057,7 @@ class PHPVideoToolkit {
         }
       }
       $data['audio']['codec'] = $formats[0];
-// 				if no video is set then no audio frame rate is set
+      // if no video is set then no audio frame rate is set
       if ($data['duration']['timecode']['seconds']['exact'] === -1) {
         $exact_timecode = $this->formatTimecode($data['duration']['timecode']['frames']['exact'], '%hh:%mm:%ss.%fn', '%hh:%mm:%ss.%ms', 1000);
         $data['duration']['timecode']['seconds'] = array(
@@ -1069,19 +1067,10 @@ class PHPVideoToolkit {
         );
         $data['duration']['timecode']['frames']['frame_rate'] = 1000;
         $data['duration']['seconds'] = $data['duration']['timecode']['seconds']['total'];
-        // $this->formatTimecode($data['duration']['timecode']['frames']['exact'], '%hh:%mm:%ss.%fn', '%st.%ms', $data['video']['frame_rate']);
       }
     }
 
-// 			check that some data has been obtained
-    if (!count($data)) {
-      $data = FALSE;
-    }
-    else {
-      $data['_raw_info'] = $buffer;
-    }
-// 			cache info and return
-    return self::$_file_info[$hash] = $data;
+    return $data;
   }
 
   /**
@@ -1161,7 +1150,6 @@ class PHPVideoToolkit {
       $this->_input_file = $escaped_name;
       $this->_input_file_id = md5($escaped_name);
 
-// 				the -inputr is a hack for -r to come before the input
       if ($input_frame_rate !== 0) {
         $info = $this->getFileInfo();
         if (isset($info['video']) === TRUE) {
@@ -1169,7 +1157,7 @@ class PHPVideoToolkit {
             $input_frame_rate = $info['video']['frame_rate'];
           }
 // 						input frame rate is a command hack
-          $this->addCommand('-inputr', $input_frame_rate);
+          $this->addCommand('-r', $input_frame_rate, TRUE);
         }
       }
     }
@@ -1410,7 +1398,7 @@ class PHPVideoToolkit {
 // 			run a libmp3lame check as it require different mp3 codec
 // 			updated thanks to Varon for providing the research
     if ($audio_codec == self::FORMAT_MP3) {
-      $info = $this->getFFmpegInfo(false);
+      $info = $this->getFFmpegInfo();
       if (isset($info['formats']['libmp3lame']) === TRUE || in_array('--enable-libmp3lame', $info['binary']['configuration']) === TRUE) {
         $audio_codec = 'libmp3lame';
       }
@@ -1559,7 +1547,7 @@ class PHPVideoToolkit {
       array_push($this->_unlink_files, $tmp_file);
     }
 // 			the inputr is a hack for -r to come before the input
-    $this->addCommand('-inputr', $input_frame_rate);
+    $this->addCommand('-r', $input_frame_rate, TRUE);
 // 			exit;
 //			add the directory to the unlinks
     array_push($this->_unlink_dirs, $this->_tmp_directory . $uniqid);
@@ -1858,7 +1846,19 @@ class PHPVideoToolkit {
       $extract_begin_timecode = $this->formatTimecode($extract_begin_timecode, $timecode_format, '%hh:%mm:%ss.%ms', $frames_per_second);
       }
      */
-    $this->addCommand('-ss', $extract_begin_timecode);
+
+    // Use seek before the input tag to quickly move to the approximate location,
+    // then use the seek after the input tag to locate the exact frames.
+    // See http://ffmpeg.org/trac/ffmpeg/wiki/Seeking%20with%20FFmpeg
+    $seconds = $this->formatTimecode($extract_begin_timecode, $timecode_format, '%st', $frames_per_second);
+    if ($seconds > 5) {
+      $this->addCommand('-ss', $this->formatTimecode($seconds - 5, $timecode_format, '%hh:%mm:%ss:%ms', $frames_per_second), TRUE);
+      $this->addCommand('-ss', $this->formatTimecode(5, $timecode_format, '%hh:%mm:%ss:%ms', $frames_per_second), FALSE);
+    }
+    else {
+      $this->addCommand('-ss', $extract_begin_timecode);
+    }
+
 //			added by Matthias on 12th March 2007
 //			allows for exporting the entire timeline
     if ($extract_end_timecode !== FALSE) {
@@ -1936,7 +1936,7 @@ class PHPVideoToolkit {
 // 			this way we limit the cpu usage of ffmpeg
 // 			Thanks to Istvan Szakacs for pointing out that ffmpeg can export frames using the -ss hh:mm:ss[.xxx]
 // 			it has saved a lot of cpu intensive processes.
-    $this->extractFrames($frame_timecode, $frame_timecode, $frames_per_second, 1, '%hh:%mm:%ss.%ms', FALSE);
+    $this->extractFrames($frame_timecode, $frame_timecode, $frames_per_second, 1, $frame_timecode_format, FALSE);
 // 			register the post tidy process
 // 			$this->registerPostProcess('_extractFrameTidy', $this);
   }
@@ -2273,7 +2273,7 @@ class PHPVideoToolkit {
     elseif ($quality < 1) {
       $quality = 1;
     }
-    $this->addCommand('-qscale', $quality);
+    return $this->addCommand('-qscale', $quality);
   }
 
   /**
@@ -2575,7 +2575,7 @@ class PHPVideoToolkit {
    * @return boolean True if the codec can be used with the given method by ffmpeg, otherwise FALSE.
    */
   public function validateCodec($codec, $type, $method) {
-    $info = $this->getFFmpegInfo(true);
+    $info = $this->getFFmpegInfo();
     return isset($info['codecs'][$type]) === TRUE && isset($info['codecs'][$type][$codec]) === TRUE && isset($info['codecs'][$type][$codec][$method]) === TRUE ? $info['codecs'][$type][$codec][$method] : FALSE;
   }
 
@@ -2607,7 +2607,7 @@ class PHPVideoToolkit {
    * @return boolean True if the format can be used with the given method by ffmpeg, otherwise FALSE.
    */
   public function validateFormat($format, $method) {
-    $info = $this->getFFmpegInfo(true);
+    $info = $this->getFFmpegInfo();
     return isset($info['formats'][$format]) === TRUE && isset($info['formats'][$format][$method]) === TRUE ? $info['formats'][$format][$method] : FALSE;
   }
 
@@ -2618,7 +2618,7 @@ class PHPVideoToolkit {
    * @return array An array of formats available to ffmpeg.
    */
   public function getAvailableFormats($method=FALSE) {
-    $info = $this->getFFmpegInfo(true);
+    $info = $this->getFFmpegInfo();
     $return_vals = array();
     switch ($method) {
       case FALSE :
@@ -2658,10 +2658,10 @@ class PHPVideoToolkit {
 // 			check to see if this is a static call
     if (isset($this) === FALSE) {
       $toolkit = new PHPVideoToolkit();
-      $info = $toolkit->getFFmpegInfo(true);
+      $info = $toolkit->getFFmpegInfo();
     }
     else {
-      $info = $this->getFFmpegInfo(true);
+      $info = $this->getFFmpegInfo();
     }
 // 			are we checking for particluar method?
     $return_vals = array();
@@ -2681,10 +2681,9 @@ class PHPVideoToolkit {
    *   array An array of pixel formats available to ffmpeg.
    */
   public function getAvailablePixelFormats() {
-    $info = $this->getFFmpegInfo(TRUE);
+    $info = $this->getFFmpegInfo();
 
     if (!isset($info['pixelformats'])) {
-      PHPVideoToolkit::$ffmpeg_info = FALSE;
       $info = $this->getFFmpegInfo(FALSE);
 
       if (!isset($info['pixelformats'])) {
@@ -3473,8 +3472,8 @@ class PHPVideoToolkit {
    * @param mixed $argument
    * @return boolean
    */
-  public function addCommand($command, $argument=FALSE) {
-    $this->_commands[$command] = $argument === FALSE ? FALSE : escapeshellarg($argument);
+  public function addCommand($command, $argument = FALSE, $before_input = FALSE) {
+    $this->_commands[$before_input][$command] = $argument === FALSE ? FALSE : escapeshellarg($argument);
     return TRUE;
   }
 
@@ -3485,8 +3484,8 @@ class PHPVideoToolkit {
    * @param string $command
    * @return mixed boolean if failure or value if exists.
    */
-  public function hasCommand($command) {
-    return isset($this->_commands[$command]) === TRUE ? ($this->_commands[$command] === FALSE ? TRUE : $this->_commands[$command]) : FALSE;
+  public function hasCommand($command, $before_input = FALSE) {
+    return isset($this->_commands[$before_input][$command]) ? ($this->_commands[$before_input][$command] === FALSE ? TRUE : $this->_commands[$before_input][$command]) : FALSE;
   }
 
   /**
@@ -3499,23 +3498,22 @@ class PHPVideoToolkit {
     $before_input = array();
     $after_input = array();
     $input = NULL;
-    foreach ($this->_commands as $command => $argument) {
-      $command_string = trim($command . (!empty($argument) ? ' ' . $argument : ''));
-//				check for specific none combinable commands as they have specific places they have to go in the string
-      switch ($command) {
-        case '-i' :
+
+    foreach ($this->_commands as $is_before_input => $commands) {
+      foreach ($commands as $command => $argument) {
+        $command_string = trim($command . (!empty($argument) ? ' ' . $argument : ''));
+
+        if ($command === '-i') {
           $input = $command_string;
-          break;
-        case '-inputr' :
-          $command_string = trim('-r' . ($argument ? ' ' . $argument : ''));
-          ;
-        default :
-          if (in_array($command, $this->_cmds_before_input)) {
+        }
+        else {
+          if ($is_before_input) {
             array_push($before_input, $command_string);
           }
           else {
             array_push($after_input, $command_string);
           }
+        }
       }
     }
 

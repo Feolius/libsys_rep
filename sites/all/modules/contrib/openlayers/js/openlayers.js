@@ -32,13 +32,14 @@ Drupal.behaviors.openlayers = {
     if (typeof(Drupal.settings.openlayers) === 'object' &&
         Drupal.settings.openlayers.maps &&
         !$(context).data('openlayers')) {
-      $('.openlayers-map').once('openlayers-map', function() {
+      $('.openlayers-map:not(.openlayers-processed)').each(function() {
         // By setting the stop_render variable to TRUE, this will
         // halt the render process.  If set, one could remove this setting
         // then call Drupal.attachBehaviors again to get it started
         var map_id = $(this).attr('id');
         if (Drupal.settings.openlayers.maps[map_id] && Drupal.settings.openlayers.maps[map_id].stop_render != true) {
           var map = Drupal.settings.openlayers.maps[map_id];
+          $(this).addClass('openlayers-processed');
 
           // Use try..catch for error handling.
           try {
@@ -46,18 +47,23 @@ Drupal.behaviors.openlayers = {
             // rather than browser language
             OpenLayers.Lang.setCode($('html').attr('lang'));
 
+            $(this)
+              // @TODO: move this into markup in theme function, doing this dynamically is a waste.
+              .css('width', map.width)
+              .css('height', map.height);
+
             var options = {};
             // This is necessary because the input JSON cannot contain objects
-            options.projection = new OpenLayers.Projection(map.projection);
-            options.displayProjection = new OpenLayers.Projection(map.displayProjection);
+            options.projection = new OpenLayers.Projection('EPSG:' + map.projection);
+            options.displayProjection = new OpenLayers.Projection('EPSG:' + map.displayProjection);
 
             // TODO: work around this scary code
-            if (map.projection === 'EPSG:900913') {
+            if (map.projection === '900913') {
               options.maxExtent = new OpenLayers.Bounds(
                 -20037508.34, -20037508.34, 20037508.34, 20037508.34);
                 options.units = "m";
             }
-            if (map.projection === 'EPSG:4326') {
+            if (map.projection === '4326') {
               options.maxExtent = new OpenLayers.Bounds(-180, -90, 180, 90);
             }
 
@@ -79,7 +85,7 @@ Drupal.behaviors.openlayers = {
             }
 
             // Initialize openlayers map
-            var openlayers = new OpenLayers.Map(options);
+            var openlayers = new OpenLayers.Map(map.id, options);
 
             // Run the layer addition first
             Drupal.openlayers.addLayers(map, openlayers);
@@ -91,11 +97,7 @@ Drupal.behaviors.openlayers = {
             Drupal.attachBehaviors(this);
 
             if ($.browser.msie) {
-              $(window).load(function() {
-                openlayers.render(map.id);
-              });
-            } else {
-              openlayers.render(map.id);
+              Drupal.openlayers.redrawVectors();
             }
           }
           catch (e) {
@@ -157,12 +159,12 @@ Drupal.openlayers = {
 
     var sorted = [];
     for (var name in map.layers) {
-      sorted.push({'name': name, 'weight': map.layers[name].weight, 'isBaseLayer': map.layers[name].isBaseLayer });
+      sorted.push({'name': name, 'weight': map.layers[name].weight, 'baselayer': map.layers[name].baselayer });
     }
 
     sorted.sort(function(a, b) {
       var x = parseInt(a.weight, 10), y = parseInt(b.weight, 10);
-      return ((a.isBaseLayer && x < y) ? -1 : ((b.isBaseLayer || x > y) ? 1 : 0));
+      return ((a.baselayer && x < y) ? -1 : ((b.baselayer || x > y) ? 1 : 0));
     });
 
     for (var i = 0; i < sorted.length; ++i) {
@@ -205,7 +207,7 @@ Drupal.openlayers = {
     if (map.center.initial) {
       var center = OpenLayers.LonLat.fromString(map.center.initial.centerpoint).transform(
         new OpenLayers.Projection('EPSG:4326'),
-        new OpenLayers.Projection(map.projection));
+        new OpenLayers.Projection('EPSG:' + map.projection));
       var zoom = parseInt(map.center.initial.zoom, 10);
       openlayers.setCenter(center, zoom, false, false);
     }
@@ -243,8 +245,8 @@ Drupal.openlayers = {
           // Transform the geometry if the 'projection' property is different from the map projection
           if (feature.projection) {
             if (feature.projection !== map.projection) {
-              var featureProjection = new OpenLayers.Projection(feature.projection);
-              var mapProjection = new OpenLayers.Projection(map.projection);
+              var featureProjection = new OpenLayers.Projection('EPSG:' + feature.projection);
+              var mapProjection = new OpenLayers.Projection('EPSG:' + map.projection);
               newFeature.geometry.transform(featureProjection, mapProjection);
             }
           }

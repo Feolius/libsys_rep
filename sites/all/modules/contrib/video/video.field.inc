@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Implement an video field, based on the file module's file field.
+ * Implement a video field, based on the file module's file field.
  */
 
 /**
@@ -39,9 +39,8 @@ function video_field_info() {
  * Implements hook_field_settings_form().
  */
 function video_field_settings_form($field, $instance, $has_data) {
-  $factory = new TranscoderAbstractionAbstractFactory();
-  $transcoder = $factory->getProduct();
-  $hastranscoder = $transcoder != NULL;
+  $transcoder = new Transcoder();
+  $hastranscoder = $transcoder->hasTranscoder();
 
   $defaults = field_info_field_settings($field['type']);
   $settings = array_merge($defaults, $field['settings']);
@@ -77,16 +76,23 @@ function video_field_settings_form($field, $instance, $has_data) {
 
   // Add warnings for S3
   if ($hastranscoder && isset($scheme_options['s3'])) {
-    $value = $transcoder->getValue();
+    $value = $transcoder->getTranscoder()->getValue();
 
     if ($value == 'TranscoderAbstractionFactoryFfmpeg') {
-      $form['uri_scheme']['#description'] .= '<br/><strong>';
+      $form['uri_scheme']['#description'] .= '<br/>';
       $form['uri_scheme']['#description'] .= t('You are using the FFmpeg transcoder. Using @scheme to store videos is not advised because FFmpeg is not able to transcode remote files. Every time FFmpeg needs access to the video, it will be copied to a temporary location.', array('@scheme' => $scheme_options['s3']));
-      $form['uri_scheme']['#description'] .= '</strong>';
     }
 
     $form['uri_scheme_thumbnails']['#description'] .= '<br/>';
     $form['uri_scheme_thumbnails']['#description'] .= t('Be aware that using @scheme to store thumbnails increases the overhead of dynamic image manipulation by the Image module.', array('@scheme' => $scheme_options['s3']));
+  }
+
+  // Add warnings for streaming to iPad when using the private file system
+  // See http://www.metaltoad.com/blog/iphone-video-streaming-drupals-file-system
+  if (isset($scheme_options['private']) && !module_exists('xsendfile') && !module_exists('resumable_download')) {
+    $ioswarning = '<br/>' . t('Streaming to Apple iOS devices (iPad/iPhone/iPod) is not supported when using the private file system unless a module to support Range requests is installed. Modules that are known to work are <a href="@xsendfile-module">X-Sendfile</a> or <a href="@resumable-download-module">Resumable Download</a>.', array('@xsendfile-module' => url('http://drupal.org/project/xsendfile'), '@resumable-download-module' => url('http://drupal.org/project/resumable_download')));
+    $form['uri_scheme']['#description'] .= $ioswarning;
+    $form['uri_scheme_converted']['#description'] .= $ioswarning;
   }
 
   $form['autoconversion'] = array(
@@ -114,8 +120,12 @@ function video_field_settings_form($field, $instance, $has_data) {
     'no' => 'Don\'t create thumbnail',
   );
 
+  // When there is no transcoder, the auto option is not available and should not be the default.
   if (!$hastranscoder) {
     unset($thumb_options['auto']);
+    if (!isset($settings['autothumbnail']) || $settings['autothumbnail'] == 'auto') {
+      $settings['autothumbnail'] = 'no';
+    }
   }
 
   $form['autothumbnail'] = array(
@@ -123,7 +133,7 @@ function video_field_settings_form($field, $instance, $has_data) {
     '#title' => t('Video thumbnails'),
     '#options' => $thumb_options,
     '#description' => t('If you choose <i>Automatically extract thumbnails from video</i> then please make sure to configure your !settings to make this work properly.', array('!settings' => l(t('transcoder settings'), 'admin/config/media/video/transcoders'))),
-    '#default_value' => isset($settings['autothumbnail']) ? $settings['autothumbnail'] : 'no',
+    '#default_value' => isset($settings['autothumbnail']) ? $settings['autothumbnail'] : 'auto',
   );
 
   $form['default_video_thumbnail'] = array(
@@ -144,9 +154,8 @@ function video_field_settings_form($field, $instance, $has_data) {
     '#description' => t('This image style will be used to show extracted video thumbnails on video node edit. Extracted thumbnail preview will also use this style.'),
   );
 
-  module_load_include('inc', 'video_ui', 'video.preset');
   $selectedpresets = array_filter(variable_get('video_preset', array()));
-  $presets = video_preset_get_presets();
+  $presets = Preset::getAllPresets();
   $presetnames = array();
   foreach ($presets as $preset) {
     $presetnames[$preset['name']] = $preset['name'];
@@ -473,8 +482,6 @@ function video_field_update($entity_type, $entity, $field, $instance, $langcode,
  * Implements hook_field_delete().
  */
 function video_field_delete($entity_type, $entity, $field, $instance, $langcode, &$items) {
-  file_field_delete($entity_type, $entity, $field, $instance, $langcode, $items);
-
   // Deregister the thumbnails in file_usage
   $thumbnails = _video_field_get_all_thumbnails($field, $items);
   file_field_delete($entity_type, $entity, $field, $instance, $langcode, $thumbnails);
@@ -482,14 +489,14 @@ function video_field_delete($entity_type, $entity, $field, $instance, $langcode,
   // Deregister the converted files in file_usage
   $converted = _video_field_get_all_converted($items);
   file_field_delete($entity_type, $entity, $field, $instance, $langcode, $converted);
+
+  file_field_delete($entity_type, $entity, $field, $instance, $langcode, $items);
 }
 
 /**
  * Implements hook_field_delete_revision().
  */
 function video_field_delete_revision($entity_type, $entity, $field, $instance, $langcode, &$items) {
-  file_field_delete_revision($entity_type, $entity, $field, $instance, $langcode, $items);
-
   // Deregister the thumbnails in file_usage
   $thumbnails = _video_field_get_all_thumbnails($field, $items);
   file_field_delete_revision($entity_type, $entity, $field, $instance, $langcode, $thumbnails);
@@ -497,6 +504,8 @@ function video_field_delete_revision($entity_type, $entity, $field, $instance, $
   // Deregister the converted files in file_usage
   $converted = _video_field_get_all_converted($items);
   file_field_delete_revision($entity_type, $entity, $field, $instance, $langcode, $converted);
+
+  file_field_delete_revision($entity_type, $entity, $field, $instance, $langcode, $items);
 }
 
 /**
@@ -571,6 +580,9 @@ function video_field_widget_form(&$form, &$form_state, $field, $instance, $langc
   // Add display_field setting to field because file_field_widget_form() assumes it is set.
   $field['settings']['display_field'] = 0;
 
+  if (module_exists('filefield_role_limit')) {
+    filefield_role_limit_file_field_process($element, $form_state, $form);
+  }
   $elements = file_field_widget_form($form, $form_state, $field, $instance, $langcode, $items, $delta, $element);
   $settings = $instance['settings'];
 
@@ -616,11 +628,9 @@ function video_field_widget_value($element, $input = FALSE, $form_state) {
   $value = file_field_widget_value($element, $input, $form_state);
 
   if ($value['fid'] > 0) {
-    $factory = new TranscoderAbstractionAbstractFactory();
-    $transcoder = $factory->getProduct();
-
-    if ($transcoder != NULL) {
-      $video = $transcoder->loadJob($value['fid']);
+    $transcoder = new Transcoder();
+    if ($transcoder->hasTranscoder()) {
+      $video = video_jobs::load($value['fid']);
 
       if ($video) {
         $value['dimensions'] = $video->dimensions;
@@ -645,7 +655,6 @@ function video_field_widget_process($element, &$form_state, $form) {
   $field = field_widget_field($element, $form_state);
 
   $element['#theme'] = 'video_widget';
-  $element['preview'] = array();
 
   // Title is not necessary for each individual field.
   if ($field['cardinality'] != 1) {
@@ -672,17 +681,18 @@ function video_thumb_process(array &$element, array &$form_state, array $field) 
   $defaultthumbfid = isset($field['settings']['default_video_thumbnail']) ? intval($field['settings']['default_video_thumbnail']['fid']) : 0;
   $thumbnailfid = !isset($file['thumbnail']) ? 0 : (is_array($file['thumbnail']) ? intval($file['thumbnail']['fid']) : intval($file['thumbnail']));
 
-  if (isset($element['preview']) && $fid != 0) {
+  if ($fid != 0) {
     $gen_fail = FALSE;
 
     if ($field['settings']['autothumbnail'] == 'auto') {
       $transcoder = new Transcoder();
       $thumbs = $transcoder->extractFrames($file, $field);
+      $thumbstyle = !empty($field['settings']['preview_video_thumb_style']) ? $field['settings']['preview_video_thumb_style'] : 'thumbnail';
 
       if (!empty($thumbs)) {
         $thumbss = array();
         foreach ($thumbs as $img) {
-          $thumbss[$img->fid] = theme('image_style', array('style_name' => $field['settings']['preview_video_thumb_style'], 'path' => $img->uri));
+          $thumbss[$img->fid] = theme('image_style', array('style_name' => $thumbstyle, 'path' => $img->uri));
         }
 
         if ($thumbnailfid > 0 && isset($thumbss[$thumbnailfid])) {
@@ -732,19 +742,21 @@ function video_thumb_process(array &$element, array &$form_state, array $field) 
     }
 
     // Setup our large thumbnail that is on the left.
-    $large_thumb = NULL;
-    if (!empty($currentthumb)) {
-      $large_thumb = file_load($currentthumb);
-    }
-    elseif ($thumbnailfid > 0) {
-      $large_thumb = file_load($thumbnailfid);
-    }
-    elseif ($defaultthumbfid > 0) {
-      $large_thumb = file_load($defaultthumbfid);
-    }
+    if (!empty($field['settings']['preview_video_thumb_style'])) {
+      $large_thumb = NULL;
+      if (!empty($currentthumb)) {
+        $large_thumb = file_load($currentthumb);
+      }
+      elseif ($thumbnailfid > 0) {
+        $large_thumb = file_load($thumbnailfid);
+      }
+      elseif ($defaultthumbfid > 0) {
+        $large_thumb = file_load($defaultthumbfid);
+      }
 
-    if (!empty($large_thumb)) {
-      $element['preview']['#suffix'] = '<div class="video_large_thumbnail-' . $fid . '">' . theme('image_style', array('style_name' => $field['settings']['preview_video_thumb_style'], 'path' => $large_thumb->uri)) . '</div>';
+      if (!empty($large_thumb)) {
+        $element['preview']['#markup'] = '<div class="video-preview video_large_thumbnail-' . $fid . '">' . theme('image_style', array('style_name' => $field['settings']['preview_video_thumb_style'], 'path' => $large_thumb->uri)) . '</div>';
+      }
     }
   }
 }
@@ -753,8 +765,7 @@ function video_thumb_process(array &$element, array &$form_state, array $field) 
  * Process elements loads on settings
  */
 function video_widget_element_settings(array &$element, array &$form_state, array $field) {
-  $factory = new TranscoderAbstractionAbstractFactory();
-  $transcoder = $factory->getProduct();
+  $transcoder = new Transcoder();
 
   $file = $element['#value'];
   $delta = $element['#delta'];
@@ -762,16 +773,16 @@ function video_widget_element_settings(array &$element, array &$form_state, arra
   $instance = field_widget_instance($element, $form_state);
   $dimensions = $instance['settings']['default_dimensions'];
   $default_dimensions = user_access('override player dimensions');
-  $autoconversion = !empty($field['settings']['autoconversion']) && $transcoder != NULL;
+  $autoconversion = !empty($field['settings']['autoconversion']) && $transcoder->hasTranscoder();
 
-  $description = t('Set your video dimensions. This will create your player with these dimensions.');
+  $description = t('Set the size of the converted video.');
   $options = video_utility::getDimensions();
-  if ($autoconversion && isset($element['preview']) && $file['fid'] != 0 && $default_dimensions) {
+  if ($autoconversion && $file['fid'] != 0 && $default_dimensions) {
     $file_object = file_load($file['fid']);
     $video_info = _video_dimensions_options($options, $file_object);
     if (!empty($video_info['width']) && !empty($video_info['height'])) {
       $dimensions = $video_info['width'] . 'x' . $video_info['height'];
-      $description .= ' ' . t('Your video size is %size, if you choose a higher resolution, this could cause video distortion. You are shown dimensions that match your aspect ratio, if you choose dimensions that do not match your ratio, we will pad your video by adding black bars on either the top or bottom while maintaining your videos original aspect ratio.', array('%size' => $dimensions));
+      $description .= ' ' . t('The original video size is %size. If you choose a higher resolution, this could cause video distortion. You are shown dimensions that match your aspect ratio, if you choose dimensions that do not match your ratio, black bars will be added to maintain the original aspect ratio.', array('%size' => $dimensions));
     }
   }
 
@@ -800,11 +811,11 @@ function video_widget_element_settings(array &$element, array &$form_state, arra
   if ($autoconversion) {
     // check if already converted or failed
     if (user_access('re convert video') && isset($file['conversionstatus']) && ($file['conversionstatus'] == VIDEO_RENDERING_COMPLETE || $file['conversionstatus'] == VIDEO_RENDERING_FAILED)) {
-      $status = array(VIDEO_RENDERING_COMPLETE => 'been completed', VIDEO_RENDERING_FAILED => 'failed');
+      $status = array(VIDEO_RENDERING_COMPLETE => 'was successful', VIDEO_RENDERING_FAILED => 'failed');
       $element['re_convert_video'] = array(
         '#type' => 'checkbox',
-        '#title' => t('Video conversion has ' . $status[$file['conversionstatus']] . '. Re-queue video?'),
-        '#description' => t('This will re-convert your video to output formats when you save or schedule it for cron.'),
+        '#title' => t('Video conversion ' . $status[$file['conversionstatus']] . '. Re-queue video conversion?'),
+        '#description' => t('This will re-convert your video and schedule it for cron, unless you also check “convert video on save,” below.'),
         '#attributes' => array('class' => array('video-re-convert', 'video-' . $file['conversionstatus'])),
       );
     }
@@ -813,7 +824,7 @@ function video_widget_element_settings(array &$element, array &$form_state, arra
         '#type' => 'checkbox',
         '#title' => t('Bypass auto conversion'),
         '#default_value' => isset($file['bypass_autoconversion']) ? $file['bypass_autoconversion'] : variable_get('video_bypass_conversion', FALSE),
-        '#description' => t('This will bypass the auto-conversion of videos.'),
+        '#description' => t('This video will not convert your video when you save, and it will not be scheduled for cron.'),
         '#attributes' => array('class' => array('video-bypass-auto-conversion')),
       );
     }
@@ -829,7 +840,7 @@ function video_widget_element_settings(array &$element, array &$form_state, arra
         '#type' => 'checkbox',
         '#title' => t('Convert video on save'),
         '#default_value' => variable_get('video_convert_on_save', FALSE),
-        '#description' => t('This will convert your video to flv format when you save, instead of scheduling it for cron.'),
+        '#description' => t('This will convert your video on save, instead of scheduling it for cron.'),
         '#attributes' => array('class' => array('video-convert-video-on-save')),
       );
     }
@@ -903,8 +914,8 @@ function _video_dimensions_options(&$options, $video) {
  * Returns the width/height and aspect ratio of the video
  */
 function _video_aspect_ratio($video) {
-  $factory = new TranscoderAbstractionAbstractFactory();
-  $transcoder = $factory->getProduct();
+  $transcoder = new Transcoder();
+  $transcoder = $transcoder->getTranscoder();
   $transcoder->setInput((array) $video);
   $wxh = $transcoder->getDimensions();
 
@@ -983,7 +994,7 @@ function video_field_formatter_settings_form($field, $instance, $view_mode, $for
         '#title' => t('Dimensions'),
         '#type' => 'select',
         '#default_value' => $settings['widthxheight'],
-        '#description' => t('Select the desired dimensions of the video player. You can add your own dimensions at !settings.', array('!settings' => l(t('video metadata settings'), 'admin/config/media/video/metadata'))),
+        '#description' => t('Select the desired dimensions of the video player. You can add your own dimensions at !settings.', array('!settings' => l(t('video module settings'), 'admin/config/media/video'))),
         '#options' => video_utility::getDimensions(),
       );
 
@@ -992,6 +1003,7 @@ function video_field_formatter_settings_form($field, $instance, $view_mode, $for
         '#type' => 'select',
         '#default_value' => $settings['poster_image_style'],
         '#empty_option' => t('None (original image)'),
+        '#description' => t('The original video thumbnail will be displayed. Otherwise, you can add a custom image style at !settings.', array('!settings' => l(t('media image styles'), 'admin/config/media/image-styles'))),
         '#options' => $image_styles,
       );
       break;
@@ -1072,6 +1084,7 @@ function video_field_formatter_view($entity_type, $entity, $field, $instance, $l
           '#image_style' => $settings['image_style'],
           '#path' => isset($uri) ? $uri : '',
           '#entity' => $entity,
+          '#entity_type' => $entity_type,
           '#field' => $field,
           '#instance' => $instance
         );
@@ -1082,6 +1095,7 @@ function video_field_formatter_view($entity_type, $entity, $field, $instance, $l
           '#theme' => 'video_formatter_player',
           '#item' => $item,
           '#entity' => $entity,
+          '#entity_type' => $entity_type,
           '#field' => $field,
           '#instance' => $instance,
           '#player_dimensions' => $settings['widthxheight'],
@@ -1102,55 +1116,68 @@ function video_filefield_sources_widgets() {
 }
 
 /**
+ * Implements hook_filefield_role_limit_supported_widgets_alter().
+ *
+ * Add the video field to the list of supported FileField Role Limit widgets.
+ */
+function video_filefield_role_limit_supported_widgets_alter(&$types) {
+  $types[] = 'video_upload';
+}
+
+/**
  * Video file save to the video_queue table for conversions
  */
 function _video_field_file_autoconversion($entity_type, $entity, $field, $instance, $langcode, &$items) {
-  $factory = new TranscoderAbstractionAbstractFactory();
-  $transcoder = $factory->getProduct();
+  $transcoder = new Transcoder();
 
-  if (empty($field['settings']['autoconversion']) || $transcoder == NULL) {
+  if (empty($field['settings']['autoconversion']) || !$transcoder->hasTranscoder()) {
     return;
   }
 
   foreach ($items as $delta => &$item) {
-    // set input file
-    $transcoder->setInput($item);
+    $fid = intval($item['fid']);
     // skip adding entry if bypass conversion is checked
     if (!empty($item['bypass_autoconversion'])) {
       // delete the conversion job if any
-      $transcoder->deleteJob();
+      video_jobs::delete($fid);
       return;
     }
 
     // Try to load the job
-    $video = $transcoder->loadJob();
+    $video = video_jobs::load($fid);
 
     // Create the job if it doesn't exist
     if (!$video) {
       list($entity_id, $entity_vid, $bundle) = entity_extract_ids($entity_type, $entity);
       // @todo get the default dimension when not available in $item
-      if (!($transcoder->createJob($item['fid'], $item['dimensions'], $entity_id, $entity_type, $field['field_name'], $langcode, $delta))) {
+      if (!video_jobs::create($item['fid'], $item['dimensions'], $entity_id, $entity_type, $field['field_name'], $langcode, $delta)) {
         drupal_set_message(t('Something went wrong with your video job creation. Please check your recent log entries for further debugging.'), 'error');
         return;
       }
       // Load a fresh copy of the job
-      $video = $transcoder->loadJob();
+      $video = video_jobs::load($fid);
     }
 
     // re queue for video conversion
     if (!empty($item['re_convert_video'])) {
       $video->video_status = VIDEO_RENDERING_PENDING;
+      $video->statusupdated = time();
       $video->dimensions = $item['dimensions'];
-      $transcoder->updateJob($video);
+      video_jobs::update($video);
     }
 
-    // Convert on save if the job is pending and if it is requested
-    // The automatic conversions of files is handled in _video_field_convert_on_save(),
-    // which is called from hook_entity_insert/hook_entity_update.
-    if (!empty($item['convert_video_on_save']) && $video->video_status == VIDEO_RENDERING_PENDING) {
-      // Only save the fid, because the location of the file may change
-      // between now and _video_field_convert_on_save().
-      $entity->video_convert_on_save[$video->fid] = $video->fid;
+    if ($video->video_status == VIDEO_RENDERING_PENDING) {
+      // Convert on save if the job is pending and if it is requested
+      // The automatic conversions of files is handled in _video_field_convert_on_save(),
+      // which is called from hook_entity_insert/hook_entity_update.
+      if (!empty($item['convert_video_on_save'])) {
+        // Only save the fid, because the location of the file may change
+        // between now and _video_field_convert_on_save().
+        $entity->video_convert_on_save[$video->fid] = $video->fid;
+      }
+      else {
+        drupal_set_message(t('Transcoding job was successfully queued for %transcoder-name. The video %video-name will be converted soon.', array('%transcoder-name' => $transcoder->getTranscoder()->getName(), '%video-name' => $video->filename)));
+      }
     }
   }
 }
@@ -1170,15 +1197,21 @@ function _video_field_file_autoconversion($entity_type, $entity, $field, $instan
  */
 function _video_field_convert_on_save($entity, $type) {
   if (!empty($entity->video_convert_on_save)) {
-    $video_conversion = new Conversion();
+    $transcoder = new Transcoder();
+    $transcodername = $transcoder->getTranscoder()->getName();
 
     foreach ($entity->video_convert_on_save as $videofid) {
-      if ($video_conversion->process($videofid)) {
-        drupal_set_message(t('Transcoding job submission was successful. Your video will be converted and published very soon.'));
+      $video = video_jobs::load($videofid);
+      if ($transcoder->executeConversion($video)) {
+        if ($video->video_status == VIDEO_RENDERING_COMPLETE) {
+          drupal_set_message(t('The video %video-name was converted.', array('%video-name' => $video->filename)));
+        }
+        else {
+          drupal_set_message(t('Transcoding job was successfully submitted to %transcoder-name. The video %video-name will be converted soon.', array('%transcoder-name' => $transcodername, '%video-name' => $video->filename)));
+        }
       }
       else {
-        $video_conversion->changeStatus($videofid, VIDEO_RENDERING_FAILED);
-        drupal_set_message(t('Something went wrong with your video transcoding. Please check your recent log entries for further debugging.'), 'error');
+        drupal_set_message(t('Something went wrong with transcoding %video-name. Please check your <a href="@log-page">recent log entries</a> for further debugging.', array('%video-name' => $video->filename, '@log-page' => url('admin/reports/dblog'))), 'error');
       }
     }
 

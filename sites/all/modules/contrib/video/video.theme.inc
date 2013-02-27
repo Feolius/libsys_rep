@@ -19,9 +19,7 @@ function theme_video_widget(array $variables) {
   $output = '<div class="video-widget form-managed-file clearfix">';
 
   if (isset($element['preview'])) {
-    $output .= '<div class="video-preview">';
     $output .= drupal_render($element['preview']);
-    $output .= '</div>';
   }
 
   $output .= '<div class="video-widget-data">';
@@ -80,7 +78,7 @@ function theme_video_formatter_player(array $variables) {
     }
   }
 
-  $extension = video_utility::getExtension($item['playablefiles'][0]->filename);
+  $extension = video_utility::getExtension($item['playablefiles'][0]->uri);
   $defaults = video_utility::getVideoExtensions();
   $theme_function = variable_get('video_extension_' . $extension, $defaults[$extension]);
 
@@ -91,7 +89,7 @@ function theme_video_formatter_player(array $variables) {
     $theme_function = 'video_html5';
   }
 
-  return theme($theme_function, array('item' => $item, 'width' => $player_width, 'height' => $player_height));
+  return theme($theme_function, array('item' => $item, 'width' => $player_width, 'height' => $player_height, 'entity' => $variables['entity'], 'entity_type' => $variables['entity_type']));
 }
 
 /**
@@ -202,7 +200,7 @@ function theme_video_flv($variables) {
     return '';
   }
 
-  $extension = strtolower(video_utility::getExtension($video->filename));
+  $extension = video_utility::getExtension($video->uri);
   $flash_player = variable_get('video_extension_' . $extension . '_flash_player', '');
   switch ($flash_player) {
     case 'flowplayer':
@@ -232,6 +230,7 @@ function theme_video_flv($variables) {
       break;
 
     case 'jwplayer':
+      $preset = variable_get('video_jwplayer_preset');
       $options = array(
         'width' => $variables['width'],
         'height' => $variables['height'],
@@ -241,7 +240,7 @@ function theme_video_flv($variables) {
       if (!empty($item['thumbnailfile'])) {
         $config['image'] = $item['thumbnailfile']->url;
       }
-      $themed_output = theme('jw_player', array('file_object' => $video, 'options' => $options, 'config' => $config));
+      $themed_output = theme('jw_player', array('file_object' => $video, 'options' => $options, 'config' => $config, 'preset' => $preset));
       break;
 
     default:
@@ -260,7 +259,7 @@ function theme_video_html5($variables) {
   $item = $variables['item'];
 
   $files = $item['playablefiles'];
-  $extension = strtolower(video_utility::getExtension($files[0]->filename));
+  $extension = video_utility::getExtension($files[0]->uri);
 
   $html5_player = variable_get('video_extension_' . $extension . '_html5_player', 'video');
   switch ($html5_player) {
@@ -280,7 +279,7 @@ function theme_video_html5($variables) {
         'width' => $variables['width'],
         'height' => $variables['height'],
       );
-      return theme('videojs', array('items' => $items, 'player_id' => 'video-' . $item['fid'], 'attributes' => $attributes));
+      return theme('videojs', array('items' => $items, 'player_id' => 'video-' . $item['fid'], 'attributes' => $attributes, 'entity' => $variables['entity'], 'entity_type' => $variables['entity_type']));
   }
 }
 

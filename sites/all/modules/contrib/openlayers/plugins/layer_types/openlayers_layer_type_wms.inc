@@ -24,6 +24,23 @@ function openlayers_openlayers_layer_type_wms_openlayers_layer_types() {
  * OpenLayers WMS Layer Type class
  */
 class openlayers_layer_type_wms extends openlayers_layer_type {
+  function __construct($layer = array(), $map = array()) {
+    parent::__construct($layer, $map);
+    if (isset($this->data)) {
+      if (isset($this->data['options']['srs'])) {
+        $pts = explode(':', $this->data['options']['srs']);
+        $this->data['projection'] = array($pts[1]);
+        $this->data['params']['resolutions'] = openlayers_get_resolutions($pts[1]);
+        $this->data['params']['projection'] = $this->data['options']['srs'];
+        $this->data['params']['maxextent'] =  openlayers_get_extent($pts[1]);
+      }
+      $this->data['baselayer'] = $this->data['params']['isBaseLayer'];
+      $this->data += $this->options_init();
+    }
+    else {
+      $this->data = $this->options_init();
+    }
+  }
 
   /**
    * Provide initial values for options.
@@ -31,7 +48,8 @@ class openlayers_layer_type_wms extends openlayers_layer_type {
   function options_init() {
     return array(
       'layer_handler' => 'wms',
-    ) + parent::options_init();
+      'baselayer' => FALSE
+    );
   }
 
   /**
@@ -49,6 +67,14 @@ class openlayers_layer_type_wms extends openlayers_layer_type {
 
       // TODO: swap terms
       'params' => array(
+        'isBaseLayer' => array(
+          '#type' => 'checkbox',
+          '#default_value' => isset($this->data['params']['isBaseLayer']) ?
+            $this->data['params']['isBaseLayer'] : TRUE,
+          '#return_value' => 'true',
+          '#title' => t('BaseLayer'),
+          '#description' => t('Uncheck to make this map an overlay')
+        ),
         // TODO: validate the field, only positive integers shall be allowed
         'buffer' => array(
           '#type' => 'textfield',
@@ -79,10 +105,10 @@ class openlayers_layer_type_wms extends openlayers_layer_type {
           '#type' => 'select',
           '#title' => t('Projection'),
           '#options' => array(
-            'EPSG:900913' => 'EPSG:900913',
-            'EPSG:4326' => 'EPSG:4326'),
+            'EPSG:900913' => '900913',
+            'EPSG:4326' => '4326'),
           '#default_value' => isset($this->data['options']['srs']) ?
-            $this->data['options']['srs'] : 'EPSG:900913'
+            $this->data['options']['srs'] : '900913'
         ),
         'TRANSPARENT' => array(
           '#type' => 'checkbox',
@@ -125,6 +151,10 @@ class openlayers_layer_type_wms extends openlayers_layer_type {
             $this->data['options']['styles'] : ''
         ),
       ),
+      'layer_type' => array(
+        '#type' => 'hidden',
+        '#value' => 'openlayers_layer_type_wms'
+      )
     );
   }
 
@@ -134,5 +164,6 @@ class openlayers_layer_type_wms extends openlayers_layer_type {
   function render(&$map) {
     drupal_add_js(drupal_get_path('module', 'openlayers') .
       '/plugins/layer_types/openlayers_layer_type_wms.js');
+    return $this->options;
   }
 }

@@ -15,9 +15,12 @@ function video_transcoder_postback_jobs() {
     exit;
   }
 
-  $factory = new TranscoderAbstractionAbstractFactory();
-  $transcoder = $factory->getProduct();
-  return $transcoder->processPostback();
+  $transcoder = new Transcoder();
+  if ($transcoder->hasTranscoder()) {
+    return $transcoder->getTranscoder()->processPostback();
+  }
+
+  return MENU_NOT_FOUND;
 }
 
 /**
@@ -31,7 +34,7 @@ function video_file_browser() {
     '#title' => t('Player dimensions'),
     '#type' => 'select',
     '#default_value' => '352x288',
-    '#description' => t('Select the desired widthxheight of the video player. You can add your own dimensions from !settings.', array('!settings' => l(t('video metadata settings'), 'admin/config/media/video/metadata'))),
+    '#description' => t('Select the desired widthxheight of the video player. You can add your own dimensions from !settings.', array('!settings' => l(t('Video module settings'), 'admin/config/media/video'))),
     '#options' => video_utility::getDimensions(),
     '#attributes' => array('class' => array('video-file-browser-dimensions')),
   );

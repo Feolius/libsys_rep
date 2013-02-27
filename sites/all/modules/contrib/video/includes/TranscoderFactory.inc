@@ -5,7 +5,7 @@
  */
 
 /**
- * Interface for transocder classes
+ * Interface for transcoder classes
  */
 interface TranscoderFactoryInterface {
   /**
@@ -37,7 +37,42 @@ interface TranscoderFactoryInterface {
 
   public function setInput(array $file);
 
-  public function loadOutput($fid);
+  /**
+   * Reset internal variables to their initial state.
+   */
+  public function reset($keepinput = FALSE);
+
+  /**
+   * Process postback jobs
+   */
+  public function processPostback();
+
+  /**
+   * Get enabled and supporting codecs by the transcoder.
+   */
+  public function getCodecs();
+
+  /**
+   * Get available output file formats from the transcoder.
+   */
+  public function getAvailableFormats($type = FALSE);
+
+  /**
+   * Returns a list of all supported pixel formats.
+   *
+   * Returns NULL when pixel formats are not configurable for this transcoder.
+   */
+  public function getPixelFormats();
+
+  /**
+   * Admin settings form for the transcoder
+   */
+  public function adminSettings();
+
+  /**
+   * Validate admin settings. This will call when Drupal admin settings validate.
+   */
+  public function adminSettingsValidate($form, &$form_state);
 }
 
 /**
@@ -91,51 +126,6 @@ abstract class TranscoderAbstractionFactory {
   }
 
   /**
-   * Get enabled and supporting codecs by the transcoder.
-   */
-  abstract public function getCodecs();
-
-  /**
-   * Get available output file formats from the transcoder.
-   */
-  public function getAvailableFormats($type = FALSE) {
-    return array(
-      '3g2' => '3G2',
-      '3gp' => '3GP',
-      '3gp2' => '3GP2',
-      '3gpp' => '3GPP',
-      '3gpp2' => '3GPP2',
-      'aac' => 'AAC',
-      'f4a' => 'F4A',
-      'f4b' => 'F4B',
-      'f4v' => 'F4V',
-      'flv' => 'FLV',
-      'm4a' => 'M4A',
-      'm4b' => 'M4B',
-      'm4r' => 'M4R',
-      'm4v' => 'M4V',
-      'mov' => 'MOV',
-      'mp3' => 'MP3',
-      'mp4' => 'MP4',
-      'oga' => 'OGA',
-      'ogg' => 'OGG',
-      'ogv' => 'OGV',
-      'ogx' => 'OGX',
-      'ts' => 'TS',
-      'webm' => 'WebM',
-      'wma' => 'WMA',
-      'wmv' => 'WMV'
-    );
-  }
-
-  /**
-   * Returns a list of all supported pixel formats.
-   *
-   * Returns NULL when pixel formats are not configurable for this transcoder.
-   */
-  public abstract function getPixelFormats();
-
-  /**
    * Get the installed transcoder version.
    */
   public function getVersion() {
@@ -179,107 +169,10 @@ abstract class TranscoderAbstractionFactory {
   }
 
   /**
-   * Admin settings form for the transcoder
-   */
-  abstract public function adminSettings();
-
-  /**
-   * Validate admin settings. This will call when Drupal admin settings validate.
-   */
-  abstract public function adminSettingsValidate($form, &$form_state);
-
-  /**
-   * Create new transcoder job in the database.
-   */
-  public function createJob($fid, $dimensions, $entity_id, $entity_type, $field_name, $langcode, $delta) {
-    $video = new stdClass();
-    $video->fid = intval($fid);
-    $video->entity_id = intval($entity_id);
-    $video->entity_type = $entity_type;
-    $video->status = VIDEO_RENDERING_PENDING;
-    $video->dimensions = $dimensions;
-    $video->data = array(
-      'field_name' => $field_name,
-      'langcode' => $langcode,
-      'delta' => intval($delta),
-    );
-
-    return drupal_write_record('video_queue', $video) === SAVED_NEW ? $video : FALSE;
-  }
-
-  public function updateJob(stdClass $video) {
-    return drupal_write_record('video_queue', $video, 'fid') === SAVED_UPDATED;
-  }
-
-  /**
-   * Delete transcoder job and its details from database.
-   *
-   * @todo improve this method: not everything is deleted.
-   */
-  public function deleteJob() {
-    if (!$video = $this->loadJob()) {
-      return FALSE;
-    }
-
-    db_delete('video_queue')->condition('fid', $video->fid)->execute();
-    db_delete('video_output')->condition('original_fid', $video->fid)->execute();
-    return TRUE;
-  }
-
-  /**
-   * Load transcoding job from the database.
-   */
-  public function loadJob($id = NULL, $field = 'fid') {
-    if ($id == NULL) {
-      $id = $this->settings['input']['fid'];
-    }
-
-    $job = db_query('SELECT vf.*, f.*, vf.status as video_status FROM {video_queue} vf LEFT JOIN {file_managed} f ON vf.fid = f.fid WHERE f.fid=vf.fid AND vf.' . $field . ' = :id', array(':id' => $id))->fetch();
-    if (empty($job)) {
-      return FALSE;
-    }
-
-    $job->data = empty($job->data) ? NULL : unserialize($job->data);
-
-    return $job;
-  }
-
-  /**
-   * Load output from a transcoding job from the database.
-   */
-  public function loadOutput($fid) {
-    $fids = db_select('video_output', 'vo')
-      ->fields('vo')
-      ->condition('vo.original_fid', $fid)->execute()->fetchAllAssoc('output_fid');
-    $files = file_load_multiple(array_keys($fids));
-
-    $videofiles = array();
-    foreach ($files as $file) {
-      $extension = drupal_strtolower(pathinfo($file->filename, PATHINFO_EXTENSION));
-      $videofiles[] = $file;
-    }
-
-    return $videofiles;
-  }
-
-  /**
-   * Select videos from our queue
-   */
-  public function loadJobQueue() {
-    $total_videos = variable_get('video_ffmpeg_instances', 5);
-    $videos = array();
-    $result = db_query_range('SELECT vf.*, f.*, vf.status as video_status FROM {video_queue} vf LEFT JOIN {file_managed} f ON vf.fid = f.fid WHERE vf.status = :vstatus AND f.status = :fstatus ORDER BY f.timestamp', 0, $total_videos, array(':vstatus' => VIDEO_RENDERING_PENDING, ':fstatus' => FILE_STATUS_PERMANENT));
-    foreach ($result as $row) {
-      $row->data = empty($row->data) ? NULL : unserialize($row->data);
-      $videos[] = $row;
-    }
-    return $videos;
-  }
-
-  /**
    * Process postback jobs
    */
   public function processPostback() {
+    return MENU_NOT_FOUND;
   }
 
   /**
@@ -293,48 +186,5 @@ abstract class TranscoderAbstractionFactory {
     unset($this->settings['options']);
     unset($this->settings['output']);
     $this->errors = array();
-  }
-}
-
-interface TranscoderAbstractFactoryInterface {
-  public static function getProduct();
-}
-
-class TranscoderAbstractionAbstractFactory implements TranscoderAbstractFactoryInterface {
-  /**
-   * @return
-   *   TranscoderFactoryInterface
-   */
-  public static function getProduct($transcoder = NULL) {
-    // get our configured transcoder.
-    if (!isset($transcoder)) {
-      $transcoder = variable_get('video_convertor', 'TranscoderAbstractionFactoryFfmpeg');
-    }
-    if ($transcoder == '') {
-      return NULL;
-    }
-
-    if (!module_load_include('inc', 'video', '/transcoders/' . $transcoder)) {
-      $modules = module_list();
-      $files = array();
-      foreach ($modules as $module) {
-        $module_path = drupal_get_path('module', $module) . '/transcoders';
-        $inc_files = file_scan_directory($module_path, '/.*\.inc/');
-        if (!empty($inc_files))
-          $files[$module] = $inc_files;
-      }
-      foreach ($files as $module => $_files) {
-        foreach ($_files as $file) {
-          if ($file->name == $transcoder)
-            module_load_include('inc', $module, '/transcoders/' . $file->name);
-        }
-      }
-    }
-    if (class_exists($transcoder)) {
-      return new $transcoder;
-    }
-    else {
-      drupal_set_message(t('The transcoder is not configured properly.'), 'error');
-    }
   }
 }

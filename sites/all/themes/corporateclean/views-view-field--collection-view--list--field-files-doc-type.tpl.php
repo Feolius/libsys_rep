@@ -1,1 +1,0 @@
-<span class="collection_layout_term_value"><?php print $output;?></span>

@@ -141,9 +141,9 @@ function hook_openlayers_layers() {
   $layer->title = 'Google Maps Satellite';
   $layer->description = 'Google Maps Satellite Imagery.';
   $layer->data = array(
-    'isBaseLayer' => TRUE,
+    'baselayer' => TRUE,
     'type' => 'satellite',
-    'projection' => array('EPSG:900913'),
+    'projection' => array('900913'),
     'layer_type' => 'openlayers_layer_type_google',
   );
   $layers[$layer->name] = $layer;
@@ -254,7 +254,7 @@ function hook_openlayers_maps() {
   $default->title = t('Default Map');
   $default->description = t('This is the default map that comes with the OpenLayers module.');
   $default->data = array(
-    'projection' => 'EPSG:900913',
+    'projection' => '900913',
     'width' => 'auto',
     'default_layer' => 'osm_mapnik',
     'height' => '400px',
@@ -265,8 +265,8 @@ function hook_openlayers_maps() {
       )
     ),
     'options' => array(
-      'displayProjection' => 'EPSG:4326',
-      'maxExtent' => openlayers_get_extent('EPSG:4326'),
+      'displayProjection' => '4326',
+      'maxExtent' => openlayers_get_extent('4326'),
     ),
     'behaviors' => array(
       'openlayers_behavior_panzoombar' => array(),

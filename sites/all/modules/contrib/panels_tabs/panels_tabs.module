@@ -20,12 +20,7 @@ function panels_tabs_ctools_plugin_directory($module, $plugin) {
  * Hold the title of the pane for later use (i.e. show it as the tab's title),
  * and remove it form the pane itself.
  */
-function panels_tabs_panels_pane_content_alter(&$content, $pane, $args, $context) {
-  if (empty($pane->did)) {
-    return;
-  }
-  // TODO: panels_load_display() isn't cached.
-  $display = panels_load_display($pane->did);
+function panels_tabs_panels_pane_content_alter(&$content, $pane, $args, $context, $renderer, $display) {
   // Get the regions that should be themed as tabs.
   foreach ($display->panel_settings as $key => $values) {
     if ($key == 'style_settings') {

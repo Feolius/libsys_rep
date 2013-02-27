@@ -384,7 +384,7 @@ span.olGoogleAttribution.hybrid a, span.olGoogleAttribution.satellite a {
 }
 /* positions */
 .olControlEditingToolbar {
-    right: 26px;
+    right: 0;
     top: 0;
 }
 .olControlNavToolbar {

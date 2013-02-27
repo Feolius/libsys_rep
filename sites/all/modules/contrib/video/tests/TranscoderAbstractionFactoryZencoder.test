@@ -28,9 +28,10 @@ class TranscoderAbstractionFactoryZencoderTestCase extends DrupalWebTestCase {
   public function setUp() {
     parent::setUp();
 
-    $this->assertTrue(module_enable(array('video'), TRUE), t('Enabled modules: %modules', array('%modules' => 'video')));
-    $this->assertTrue(module_enable(array('zencoderapi'), TRUE), t('Enabled modules: %modules', array('%modules' => 'zencoderapi')));
-    $this->assertTrue(module_enable(array('node'), TRUE), t('Enabled modules: %modules', array('%modules' => 'node')));
+    module_enable(array('video', 'node'), TRUE);
+    if (!module_enable(array('zencoderapi'), TRUE)) {
+      $this->verbose('The Zencoder API module could not be enabled.');
+    }
 
     field_info_cache_clear();
     $this->resetAll();
@@ -71,7 +72,7 @@ class TranscoderAbstractionFactoryZencoderTestCase extends DrupalWebTestCase {
       'timestamp' => time(),
       'uid' => 1,
     ))->execute();
-    $transcoder->createJob(1, '320x240', 1, 'node', 'videofield', LANGUAGE_NONE, 0);
+    video_jobs::create(1, '320x240', 1, 'node', 'videofield', LANGUAGE_NONE, 0);
     db_insert('video_output')->fields(array(
       'vid' => 1,
       'original_fid' => 1,
@@ -162,6 +163,10 @@ class TranscoderAbstractionFactoryZencoderTestCase extends DrupalWebTestCase {
    */
   public function testProcessPostback() {
     // Only test this if the library is installed
+    if (!function_exists('libraries_load')) {
+      $this->verbose('Not starting testProcessPostback() because the Libraries API module is not available.');
+      return;
+    }
     $load = libraries_load('zencoder');
     if (!$load['loaded'] || !$load['installed']) {
       $this->verbose('Not starting testProcessPostback() because Zencoder API can\'t be loaded.');
@@ -175,6 +180,10 @@ class TranscoderAbstractionFactoryZencoderTestCase extends DrupalWebTestCase {
 
     // Set state of job
     db_update('video_queue')->fields(array('status' => VIDEO_RENDERING_PENDING))->condition('vid', 1)->execute();
+
+    // Test GET request to postback URL
+    $out = $this->curlExec(array(CURLOPT_URL => url('postback/jobs', array('absolute' => TRUE)), CURLOPT_POST => FALSE));
+    $this->assertEqual('This is the Zencoder notification handler. It seems to work fine.', $out, 'Postback with GET request output "This is the Zencoder notification handler. It seems to work fine.", got "' . $out . '"');
 
     // Test invalid JSON in postback request
     $out = $this->doPostback('4 d234234');
@@ -326,9 +335,9 @@ class TranscoderAbstractionFactoryZencoderTestCase extends DrupalWebTestCase {
     }');
 
     $this->assertEqual('', $out);
-return;
+
     // Test whether the duration and status have been saved
-    $video = $this->transcoder->loadJob(1, 'vid');
+    $video = video_jobs::load(1);
 
     $this->assertEqual(5, $video->duration);
     $this->assertEqual(VIDEO_RENDERING_COMPLETE, $video->video_status);
@@ -396,7 +405,7 @@ return;
     }');
 
     $this->assertEqual('', $out);
-    $video = $this->transcoder->loadJob(1, 'vid');
+    $video = video_jobs::load(1);
     $this->assertEqual(VIDEO_RENDERING_COMPLETE, $video->video_status);
   }
 

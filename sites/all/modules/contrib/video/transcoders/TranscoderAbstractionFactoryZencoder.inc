@@ -10,11 +10,13 @@
 class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory implements TranscoderFactoryInterface {
   protected $options = array();
   private $postbackurl;
+  private $outputdestination;
 
   public function __construct() {
     parent::__construct();
     $this->options['api_key'] = variable_get('video_zencoder_api_key');
     $this->postbackurl = variable_get('video_zencoder_postback', url('postback/jobs', array('absolute' => TRUE)));
+    $this->outputdestination = variable_get('video_zencoder_output_destination');
   }
 
   public function setInput(array $file) {
@@ -121,7 +123,35 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
     parent::setOutput($output_directory, $output_name, $overwrite_mode);
     $this->options['output']['label'] = 'video-' . $this->settings['input']['fid'];
     $this->options['output']['filename'] = $this->settings['filename'];
-    $this->options['output']['public'] = 1;
+    $this->options['output']['public'] = !variable_get('video_zencoder_private', FALSE);
+    $baseurl = NULL;
+
+    if ($this->outputdestination == 's3') {
+      $bucket = variable_get('amazons3_bucket');
+      // For now, silently ignore the "Use Amazon S3 module" setting when the bucket is not found
+      if ($bucket !== NULL) {
+        $baseurl = 's3://' . $bucket . '/';
+      }
+    }
+    elseif ($this->outputdestination == 'rcf') {
+      $username = variable_get('rackspace_cloud_username');
+      $key = variable_get('rackspace_cloud_api_key');
+      $container = variable_get('rackspace_cloud_container');
+      $authurl = variable_get('rackspace_cloud_auth_url');
+      // For now, silently ignore the "Use Rackspace Cloud Files module" setting when the cloudfiles module isn't setup
+      if ($username !== NULL && $key !== NULL && $container !== NULL && $authurl !== NULL) {
+        $scheme = $authurl == 'https://lon.auth.api.rackspacecloud.com' ? 'cf+uk' : 'cf';
+        $baseurl = $scheme . '://' . rawurlencode($username) . ':' . rawurlencode($key) . '@' . $container . '/';
+      }
+    }
+
+    if ($baseurl != NULL) {
+      $this->options['output']['base_url'] = $baseurl . file_uri_target($output_directory) . '/';
+
+      if (isset($this->options['output']['thumbnails'])) {
+        $this->options['output']['thumbnails']['base_url'] = $baseurl . variable_get('video_thumbnail_path', 'videos/thumbnails') . '/' . $this->settings['input']['fid'] . '/';
+      }
+    }
   }
 
   /**
@@ -133,7 +163,8 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
     // Check if the job has been completed.
     // If the job has not been completed, don't bother checking for
     // thumbnails
-    $job = $this->loadJob();
+    $fid = $this->settings['input']['fid'];
+    $job = video_jobs::load($fid);
     if (empty($job)) {
       return array();
     }
@@ -142,7 +173,6 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
       return array();
     }
 
-    $fid = $this->settings['input']['fid'];
     $path = variable_get('video_thumbnail_path', 'videos/thumbnails') . '/' . $fid;
 
     // Get the file system directory.
@@ -178,12 +208,7 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
           break;
         }
 
-        copy($srcuri, $dsturi);
-        if (variable_get('video_zencoder_testing_mode', FALSE)) {
-          db_update('video_queue')
-            ->fields(array('status' => VIDEO_RENDERING_COMPLETE))
-            ->condition('fid', $fid)->execute();
-        }
+        $this->moveFile($srcuri, $dsturi);
 
         // Delete the source, it is no longer needed
         drupal_unlink($srcuri);
@@ -206,12 +231,10 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
 
     try {
       $encoding_job = $zencoder->jobs->create($this->options);
-      $output_uri = $this->settings['base_url'] . '/' . $this->settings['filename'];
 
       $output = new stdClass();
       $output->filename = $this->settings['filename'];
-      $output->uri = $output_uri;
-      $output->filemime = file_get_mimetype($output_uri);
+      $output->uri = $this->settings['base_url'] . '/' . $this->settings['filename'];
       $output->filesize = 0;
       $output->timestamp = time();
       $output->jobid = intval($encoding_job->id);
@@ -298,6 +321,11 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
           ),
         ),
       );
+      $form['zencoder_info']['api_status'] = array(
+        '#type' => 'item',
+        '#title' => t('Zencoder API status'),
+        '#markup' => $this->getCurrentStatus(),
+      );
       $form['zencoder_info']['video_zencoder_api_key'] = array(
         '#type' => 'textfield',
         '#title' => t('Zencoder API key'),
@@ -321,10 +349,17 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
         '#type' => 'textfield',
         '#title' => t('Postback URL for Zencoder'),
         '#description' =>
-          t('Important : Don\'t change this if you don\'t know what you\'re doing. This postback URL will receive video data as video transcodings are completed.') . '<br/>' .
+          t('Important: Don\'t change this if you don\'t know what you\'re doing. The Postback URL is used by Zencoder to send transcoding status notifications to Drupal.') . '<br/>' .
           t('Default: %value', array('%value' => url('postback/jobs', array('absolute' => TRUE)))),
         '#default_value' => $this->postbackurl,
       );
+      $form['zencoder_info']['video_zencoder_postback_donotvalidate'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Do not validate the Postback URL'),
+        '#description' => t('The Postback URL is validated by retrieving the URL from the local server. In some cases this fails while it works fine for the Zencoder notification sender. Use this checkbox to disable Postback URL validation.'),
+        '#default_value' => variable_get('video_zencoder_postback_donotvalidate', FALSE),
+      );
+
       // testing
       $form['zencoder_info']['testing'] = array(
         '#type' => 'fieldset',
@@ -346,6 +381,48 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
           address from which Zencoder can download video.'),
         '#default_value' => variable_get('video_zencoder_test_file_path', 'http://example.com/video.mp4'),
       );
+
+      // advanced
+      $form['zencoder_info']['advanced'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Advanced'),
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+      );
+
+      $tempdestinations = array(
+        '' => t('Zencoder temporary storage') . ' (' . t('default') . ')',
+      );
+      if (module_exists('amazons3') && variable_get('amazons3_bucket', FALSE)) {
+        $tempdestinations['s3'] = t('Amazon S3 bucket %bucket', array('%bucket' => variable_get('amazons3_bucket')));
+      }
+      if (module_exists('cloud_files') && variable_get('rackspace_cloud_container', FALSE)) {
+        $tempdestinations['rcf'] = t('Rackspace Cloud Files container %container', array('%container' => variable_get('rackspace_cloud_container')));
+      }
+
+      if (count($tempdestinations) > 1) {
+        $form['zencoder_info']['advanced']['video_zencoder_output_destination'] = array(
+          '#type' => 'radios',
+          '#title' => t('Location for Zencoder output'),
+          '#default_value' => $this->outputdestination === NULL ? '' : $this->outputdestination,
+          '#options' => $tempdestinations,
+          '#description' => t('Normally, Zencoder uploads its transcoded files to its own Amazon S3 bucket from which the Video module will copy the file to the final destination. Use this setting to use a different location. If the selected location is identical to the final destination, this saves resource intensive copy operations during handling of the postback. The final destination is set per video field and defaults to the public files folder.'),
+        );
+
+        if (isset($tempdestinations['s3'])) {
+          $form['zencoder_info']['advanced']['video_zencoder_output_destination']['#description'] .= '<br/>' .
+            t('To enable Zencoder to upload directly to your Amazon S3 bucket, read the <a href="@zencoder-s3-url">Zencoder manual</a>.', array('@zencoder-s3-url' => url('https://app.zencoder.com/docs/guides/getting-started/working-with-s3')));
+        }
+      }
+
+      if (module_exists('amazons3')) {
+        $form['zencoder_info']['advanced']['video_zencoder_private'] = array(
+          '#type' => 'checkbox',
+          '#title' => t('Store files on Amazon S3 privately'),
+          '#default_value' => variable_get('video_zencoder_private', FALSE),
+          '#description' => t('Files stored privately are only accessible by visitors when <a href="@amazons3-settings">Presigned URLs</a> are enabled. These URLs expire, allow you to control access to the video files. For this setting to work, you must set %destination-setting-name to Amazon S3.', array('@amazons3-settings' => url('admin/config/media/amazons3'), '%destination-setting-name' => t('Location for Zencoder output'))),
+        );
+      }
     }
     return $form;
   }
@@ -358,28 +435,31 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
       $form_state['values']['video_thumbnail_count'] = $form_state['values']['video_thumbnail_count_zc'];
       unset($form_state['values']['video_thumbnail_count_zc']);
 
-      // Check the postback URL
-      $testurl = $v['video_zencoder_postback'];
-      $testcode = md5(mt_rand(0, REQUEST_TIME));
-      if (strpos($testurl, '?') === FALSE) {
-        $testurl .= '?test=1';
-      }
-      else {
-        $testurl .= '&test=1';
-      }
-      variable_set('video_postback_test', $testcode);
-      $result = drupal_http_request($testurl);
-      variable_del('video_postback_test');
+      // Check the postback URL if validation hasn't been disabled
+      if (empty($v['video_zencoder_postback_donotvalidate'])) {
+        $testurl = $v['video_zencoder_postback'];
+        $testcode = md5(mt_rand(0, REQUEST_TIME));
+        if (strpos($testurl, '?') === FALSE) {
+          $testurl .= '?test=1';
+        }
+        else {
+          $testurl .= '&test=1';
+        }
+        variable_set('video_postback_test', $testcode);
+        $result = drupal_http_request($testurl);
+        variable_del('video_postback_test');
 
-      if ($result->code != 200) {
-        form_error(
-          $form['zencoder_info']['video_zencoder_postback'],
-          t('The postback URL cannot be retrieved: @error (@code).',
-          array('@code' => $result->code, '@error' => empty($result->error) ? t('unknown error') : $result->error))
-        );
-      }
-      elseif (empty($result->data) || $result->data != $testcode) {
-        form_error($form['zencoder_info']['video_zencoder_postback'], t('The postback URL is not valid: returned data contains unexpected value &quot;@value&quot;.', array('@value' => $result->data)));
+        $error = NULL;
+        if ($result->code != 200) {
+          $error = t('The postback URL cannot be retrieved: @error (@code).', array('@code' => $result->code, '@error' => empty($result->error) ? t('unknown error') : $result->error));
+        }
+        elseif (empty($result->data) || trim($result->data) != $testcode) {
+          $error = t('The postback URL is not valid: returned data contains unexpected value &quot;@value&quot;.', array('@value' => $result->data));
+        }
+
+        if ($error != NULL) {
+          form_error($form['zencoder_info']['video_zencoder_postback'], $error);
+        }
       }
     }
     else {
@@ -425,7 +505,7 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
       ));
 
       variable_set('video_zencoder_api_key', $result->api_key);
-      drupal_set_message(t('Your Zencoder details are as below.<br/><b>API Key</b> : @api_key<br/> <b>Password</b> : @password<br/> You can now login to !zencoder website and track your transcoding jobs online. Make sure you <b>save user/pass combination somewhere</b> before proceed.', array('@api_key' => $result->api_key, '@password' => $result->password, '!zencoder' => l(t('Zencoder'), 'http://zencoder.com'))), 'status');
+      drupal_set_message(t('Your Zencoder details are as below.<br/><b>API Key</b> : @api_key<br/> <b>Password</b> : @password<br/> You can now login to the <a href="@zencoder-url">Zencoder website</a> and track your transcoding jobs online. Make sure you <b>save user/pass combination somewhere</b> before you proceed.', array('@api_key' => $result->api_key, '@password' => $result->password, '@zencoder-url' => url('http://zencoder.com'))), 'status');
 
       return TRUE;
     }
@@ -449,6 +529,12 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
   }
 
   public function processPostback() {
+    if (strcasecmp($_SERVER['REQUEST_METHOD'], 'POST') !== 0) {
+      echo 'This is the Zencoder notification handler. It seems to work fine.';
+      return;
+    }
+
+    ignore_user_abort(TRUE);
     libraries_load('zencoder');
     $zencoder = new Services_Zencoder();
 
@@ -477,13 +563,20 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
     $fid = intval($video_output->original_fid);
     watchdog('transcoder', 'Postback received from Zencoder for fid: @fid, Zencoder job id: @jobid.', array('@fid' => $fid, '@jobid' => $jobid));
 
+    // Find the transcoding job.
+    $video = video_jobs::load($fid);
+    if (empty($video)) {
+      echo 'Transcoding job not found in database';
+      return;
+    }
+
     // Zencoder API 2.1.0 and above use $notification->job->outputs.
     // For now, only one output is supported.
     $output = isset($notification->output) ? $notification->output :  current($notification->job->outputs);
 
     // Find all error situations
     if ($output->state === 'cancelled') {
-      db_update('video_queue')->fields(array('status' => VIDEO_RENDERING_FAILED))->condition('fid', $fid)->execute();
+      video_jobs::setFailed($video);
       echo 'Cancelled';
       return;
     }
@@ -499,18 +592,12 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
         }
       }
 
-      db_update('video_queue')->fields(array('status' => VIDEO_RENDERING_FAILED))->condition('fid', $fid)->execute();
+      video_jobs::setFailed($video);
       watchdog('transcoder', 'Zencoder reports errors in postback for fid @fid, job id @jobid: !errordetail', array('@fid' => $fid, '@jobid' => $jobid, '!errordetail' => $errordetail), WATCHDOG_ERROR);
       echo 'Failure';
     }
 
     if ($notification->job->state !== 'finished') {
-      return;
-    }
-
-    $video = $this->loadJob($fid, 'fid');
-    if (empty($video)) {
-      echo 'Not found';
       return;
     }
 
@@ -520,17 +607,27 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
       echo 'Output file not found in database';
       return;
     }
-    copy($output->url, $outputfile->uri);
+
+    // Sometimes the long duration of the copy() call causes Zencoder
+    // to timeout and retry the notification postback later.
+    // So we only copy the file when it doesn't exist or has a different file size.
+    if (!file_exists($outputfile->uri) || filesize($outputfile->uri) != $output->file_size_in_bytes) {
+      if (!$this->moveFile($output->url, $outputfile->uri)) {
+        video_jobs::setFailed($video);
+        watchdog('transcoder', 'While processing Zencoder postback, failed to copy @source-uri to @target-uri.', array('@source-uri' => $output->url, '@target-uri' => $outputfile->uri), WATCHDOG_ERROR);
+        return;
+      }
+    }
+
     $outputfile->filesize = $output->file_size_in_bytes;
-    drupal_write_record('file_managed', $outputfile, 'fid');
+    file_save($outputfile);
 
     // Actual processing of the response
     $video->duration = round($output->duration_in_ms / 1000);
-    $video->status = VIDEO_RENDERING_COMPLETE;
-    drupal_write_record('video_queue', $video, 'vid');
+    video_jobs::setCompleted($video);
 
     // Clear the field cache. Normally, node_save() does this, but that function is not invoked in all cases
-    cache_clear_all('field:' . $video->entity_type . ':' . $video->entity_id, 'cache_field');
+    video_utility::clearEntityCache($video->entity_type, $video->entity_id);
 
     // If there are no thumbnails, quit now.
     if (empty($output->thumbnails)) {
@@ -551,7 +648,7 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
       return;
     }
 
-    // The following information was saved in TranscoderFactory::createJob()
+    // The following information was saved in video_jobs::create()
     $fieldname = $video->data['field_name'];
     $field = field_info_field($fieldname);
     $langcode = $video->data['langcode'];
@@ -585,7 +682,7 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
       }
     }
 
-    $existingthumbs = db_query('SELECT f.uri, f.fid FROM {file_managed} f INNER JOIN {video_thumbnails} t ON (f.fid = t.thumbnailfid) WHERE t.videofid = :fid', array(':fid' => $video->fid))->fetchAllKeyed();
+    $existingthumbs = db_query('SELECT f.uri, f.fid, f.filesize FROM {file_managed} f INNER JOIN {video_thumbnails} t ON (f.fid = t.thumbnailfid) WHERE t.videofid = :fid', array(':fid' => $video->fid))->fetchAllAssoc('uri');
     $thumbs = array();
     $tnid = 0;
     foreach ($thumbnails as $thumbnail) {
@@ -593,9 +690,8 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
       $thumbnail = (object)$thumbnail;
       $urlpath = parse_url($thumbnail->url, PHP_URL_PATH);
       $ext = video_utility::getExtension($urlpath);
-      $update = array();
       $thumb = new stdClass();
-      $thumb->uid = $entity->uid;
+      $thumb->uid = $outputfile->uid; // $entity may not have a uid property, so take it from the output file.
       $thumb->status = FILE_STATUS_PERMANENT;
       $thumb->filename = 'thumbnail-' . $video->fid . '_' . sprintf('%04d', $tnid++) . '.' . $ext;
       $thumb->uri = $thumburibase . $thumb->filename;
@@ -603,17 +699,22 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
       $thumb->type = 'image'; // For the media module
       $thumb->filesize = $thumbnail->file_size_bytes;
       $thumb->timestamp = REQUEST_TIME;
+
+      $shouldcopy = TRUE;
       if (isset($existingthumbs[$thumb->uri])) {
-        $thumb->fid = intval($existingthumbs[$thumb->uri]);
-        $update = array('fid');
+        // If the thumbnail has the same size in the database compared to the notification data, don't copy
+        if (file_exists($thumb->uri) && $existingthumbs[$thumb->uri]->filesize == $thumb->filesize) {
+          $shouldcopy = FALSE;
+        }
+        $thumb->fid = intval($existingthumbs[$thumb->uri]->fid);
       }
 
-      if (!copy($thumbnail->url, $thumb->uri)) {
+      if ($shouldcopy && !$this->moveFile($thumbnail->url, $thumb->uri)) {
         watchdog('transcoder', 'Could not copy @thumbsrc to @thumbdest.', array('@thumbsrc' => $thumbnail->url, '@thumbdest' => $thumb->uri), WATCHDOG_ERROR);
         continue;
       }
 
-      drupal_write_record('file_managed', $thumb, $update);
+      file_save($thumb);
 
       // Saving to video_thumbnails and file_usage is only necessary when this is a new thumbnail
       if (!isset($existingthumbs[$thumb->uri])) {
@@ -624,6 +725,9 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
       $thumbs[$thumb->fid] = $thumb;
     }
     lock_release('video_zencoder_thumbnails:' . $video->fid);
+
+    // Clear the field cache. Normally, node_save() does this, but that function is not invoked in all cases
+    video_utility::clearEntityCache($video->entity_type, $video->entity_id);
 
     // Skip setting the thumbnail if there are no thumbnails or when the current value is already valid
     $currentthumb = isset($entity->{$fieldname}[$langcode][$delta]['thumbnail']) ? intval($entity->{$fieldname}[$langcode][$delta]['thumbnail']) : 0;
@@ -644,13 +748,52 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
       default:
         // entity_save() is supplied by the entity module
         if (function_exists('entity_save')) {
-          entity_save($entity);
+          entity_save($video->entity_type, $entity);
         }
         break;
     }
+  }
 
-    // Clear the field cache. Normally, node_save() does this, but that function is not invoked in all cases
-    cache_clear_all('field:' . $video->entity_type . ':' . $video->entity_id, 'cache_field');
+  private function moveFile($srcurl, $dsturi) {
+    $unlinksrc = FALSE;
+
+    // If the Amazon S3 or Cloud Files module is used, we know that the file is on s3:// or rcf://.
+    // We must move the file, because the original must be deleted.
+    if ($this->outputdestination == 's3' || $this->outputdestination == 'rcf') {
+      $srcuri = $this->outputdestination . ':/' . parse_url($srcurl, PHP_URL_PATH);
+      // Check if the file is already at the right place
+      if ($srcuri === $dsturi) {
+        return TRUE;
+      }
+      // Move the file if the target is also s3:// or rcf://
+      if (file_uri_scheme($dsturi) == $this->outputdestination) {
+        return rename($srcuri, $dsturi);
+      }
+
+      // The src file needs to be removed after copying.
+      $unlinksrc = TRUE;
+    }
+
+    // Check if $srcurl is actually a $uri
+    $srcuri = $srcurl;
+    if (strncmp('http', $srcuri, 4) === 0) {
+      $srcuri = video_utility::urlToUri($srcurl);
+      if ($srcuri === NULL) {
+        $srcuri = $srcurl;
+      }
+    }
+
+    // Check if the file is already at the right place
+    if ($srcuri === $dsturi) {
+      return TRUE;
+    }
+
+    $result = copy($srcuri, $dsturi);
+    if ($result && $unlinksrc) {
+      unlink($srcuri);
+    }
+
+    return $result;
   }
 
   /**
@@ -659,7 +802,7 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
   public function getCodecs() {
     $auto = t('Default for this extension');
 
-    $codecs = array(
+    return array(
       'encode' => array(
         'video' => array(
           '' => $auto,
@@ -680,8 +823,36 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
       ),
       'decode' => array(),
     );
+  }
 
-    return $codecs;
+  public function getAvailableFormats($type = FALSE) {
+    return array(
+      '3g2' => '3G2',
+      '3gp' => '3GP',
+      '3gp2' => '3GP2',
+      '3gpp' => '3GPP',
+      '3gpp2' => '3GPP2',
+      'aac' => 'AAC',
+      'f4a' => 'F4A',
+      'f4b' => 'F4B',
+      'f4v' => 'F4V',
+      'flv' => 'FLV',
+      'm4a' => 'M4A',
+      'm4b' => 'M4B',
+      'm4r' => 'M4R',
+      'm4v' => 'M4V',
+      'mov' => 'MOV',
+      'mp3' => 'MP3',
+      'mp4' => 'MP4',
+      'oga' => 'OGA',
+      'ogg' => 'OGG',
+      'ogv' => 'OGV',
+      'ogx' => 'OGX',
+      'ts' => 'TS',
+      'webm' => 'WebM',
+      'wma' => 'WMA',
+      'wmv' => 'WMV',
+    );
   }
 
   public function getPixelFormats() {
@@ -699,5 +870,29 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
       unset($this->options['input']);
     }
     unset($this->options['output']);
+  }
+
+  /**
+   * Check the current Zencoder API status.
+   */
+  public function getCurrentStatus() {
+    $json = drupal_http_request('http://status.zencoder.com/api/events.json');
+    $message = t('All systems go');
+
+    if ($json->code != 200) {
+      $message = t('The Zencoder Status API URL cannot be retrieved: @error (@code).', array('@code' => $json->code, '@error' => empty($json->error) ? t('unknown error') : $json->error));
+    }
+    else {
+
+      $status_messages = drupal_json_decode($json->data);
+
+      if (!empty($status_messages)) {
+        $last_message = reset($status_messages);
+        $last_event = $last_message['event'];
+        $message = nl2br(t('@status', array('@status' =>  $last_event['description'])));
+      }
+    }
+
+    return $message;
   }
 }

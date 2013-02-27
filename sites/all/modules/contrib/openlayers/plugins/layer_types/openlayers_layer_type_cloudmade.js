@@ -14,7 +14,7 @@ Drupal.openlayers.layer.cloudmade = function(title, map, options) {
 
   // options.sphericalMercator = true;
   options.maxExtent = new OpenLayers.Bounds(-20037508, -20037508, 20037508, 20037508);
-  options.projection = new OpenLayers.Projection(options.projection);
+  options.projection = 'EPSG:' + options.projection;
 
   var layer = new OpenLayers.Layer.CloudMade(title, options);
   layer.styleMap = styleMap;

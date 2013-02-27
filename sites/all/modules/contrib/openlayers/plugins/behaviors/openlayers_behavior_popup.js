@@ -35,7 +35,6 @@ Drupal.openlayers.popup = Drupal.openlayers.popup || {};
 Drupal.openlayers.addBehavior('openlayers_behavior_popup', function (data, options) {
   var map = data.openlayers;
   var layers = [];
-  var selectedFeature;
 
   // For backwards compatiability, if layers is not
   // defined, then include all vector layers
@@ -69,23 +68,27 @@ Drupal.openlayers.addBehavior('openlayers_behavior_popup', function (data, optio
           null,
           true,
           function(evt) {
-            Drupal.openlayers.popup.popupSelect.unselect(selectedFeature);
+            Drupal.openlayers.popup.popupSelect.unselect(
+              Drupal.openlayers.popup.selectedFeature
+            );
           }
         );
 
         // Assign popup to feature and map.
-        popup.panMapIfOutOfView = options.panMapIfOutOfView;
-        popup.keepInMap = options.keepInMap;
-        selectedFeature = feature;
         feature.popup = popup;
+        feature.popup.panMapIfOutOfView = options.panMapIfOutOfView;
+        feature.popup.keepInMap = options.keepInMap;
+        feature.layer.map.addPopup(popup);
         Drupal.attachBehaviors();
-        map.addPopup(popup);
+        Drupal.openlayers.popup.selectedFeature = feature;
       },
-      onUnselect: function(feature) {
-        map.removePopup(feature.popup);
-        feature.popup.destroy();
-        feature.popup = null;
-      }
+      unselect: function(feature) {
+        if (feature.popup != null && feature.popup) {
+          map.removePopup(feature.popup);
+          feature.popup.destroy();
+          feature.popup = null;
+        }
+      },
     }
   );
 
