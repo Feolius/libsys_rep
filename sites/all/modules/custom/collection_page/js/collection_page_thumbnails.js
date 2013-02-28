@@ -1,23 +1,25 @@
 (function ($) {
   Drupal.behaviors.collectionThumbnailsView = {
     attach: function (context, settings) {
-      $("#collection_upper_thumbnail").hover(function(){
+      $("#collection-upper-thumbnail").hover(function(){
 
         },function(){
           $("#collection-thumbnail-upper-container").css("display", "none");
-          $("#collection_upper_thumbnail").css("height", 200);
+          $("#collection-upper-thumbnail").css("height", 200);
           $("#collection-thumbnail-metainfo").html("");
         });
       $(".collection-thumbnail").hover(function(){
         var metainfo = $(this).parent().find(".collection-thumbnail-metainfo").html();
+        var nodeLink = $(this).parent().find(".collection-thumbnail-node-link").val();
         var initialLeft = $(this).position().left;
         var initialWidth = $(this).width();
         var padding = parseInt($("#collection-thumbnail-upper-container").css("padding-left"));
         $("#collection-thumbnail-upper-container").css("top", $(this).position().top - padding);
-        $("#collection_upper_thumbnail").attr("src", $(this).attr("src"));
+        $("#collection-upper-thumbnail").attr("src", $(this).attr("src"));
+        $("#collection-upper-thumbnail-link").attr("href", nodeLink);
         if ($("#collection-thumbnail-upper-container").css("display") == "none"){
           $("#collection-thumbnail-upper-container").css("display", "block");
-          $("#collection_upper_thumbnail").animate({
+          $("#collection-upper-thumbnail").animate({
             height: 300
           },{
             duration: 300,
@@ -40,7 +42,7 @@
             }
           });
       }else{
-        $("#collection_upper_thumbnail").attr("src", $(this).attr("src"));
+        $("#collection-upper-thumbnail").attr("src", $(this).attr("src"));
       }
 
       },function(){

@@ -342,12 +342,16 @@ function template_preprocess_collection_standart_thumbnail_view(&$results) {
   //content type we should save it in static variable
   //This variable contatins array which keys are content type names and values are
   //field names that contain image for thumbnail
+  global $base_url;
   $results['collection_thumbnails'] = array();
   $thumbnail_fields = &drupal_static(__FUNCTION__);
   foreach ($results['results'] as $result) {
     $node = $result['node'];
     $bundle = $node->bundle;
     $node = node_load($node->entity_id);
+    $thumbnail_content = array();
+    $path = $base_url . url('node/' . $node->nid);
+    $thumbnail_content['node_link'] = $path;
     if (!isset($thumbnail_fields[$bundle])) {
       $instances = field_info_instances('node', $bundle);
       foreach ($instances as $instance) {
@@ -361,7 +365,7 @@ function template_preprocess_collection_standart_thumbnail_view(&$results) {
             if (!empty($items)) {
               $image_uri = $items[0]['uri'];
               $thumbnail_url = image_style_url($thumbnail_fields[$bundle]['style'], $image_uri);
-              $thumbnail_content = array();
+
               $thumbnail_content['thumbnail_url'] = $thumbnail_url;
               $thumbnail_view = node_view($node, 'collection_thumbnail');
               unset($thumbnail_view[$thumbnail_fields[$bundle]['field_name']]);
@@ -377,7 +381,6 @@ function template_preprocess_collection_standart_thumbnail_view(&$results) {
       if (!empty($items)) {
         $image_uri = $items[0]['uri'];
         $thumbnail_url = image_style_url($thumbnail_fields[$bundle]['style'], $image_uri);
-        $thumbnail_content = array();
         $thumbnail_content['thumbnail_url'] = $thumbnail_url;
         $thumbnail_view = node_view($node, 'collection_thumbnail');
         unset($thumbnail_view[$thumbnail_fields[$bundle]['field_name']]);
@@ -386,6 +389,7 @@ function template_preprocess_collection_standart_thumbnail_view(&$results) {
       }
     }
   }
+
   $results['pager'] = theme('pager', array('tags' => NULL));
 }
 
