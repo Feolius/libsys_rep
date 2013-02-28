@@ -78,13 +78,6 @@ function theme_facet_collection_search_results__alter($variables) {
   foreach ($variables['results'] as $bundle_results) {
     $results = array_merge($results, $bundle_results);
   }
-  //Include on page supports files for building tabs and inserting into them needed views
-  //like timeline, default or location views
-  drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_style.css');
-  drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_tabs.js');
-  drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_thumbnails.js');
-  drupal_add_library('system', 'ui.tabs');
-
   //Define for what bundle current apache_solr request was executed
   $bundle = '';
   if (isset($_GET['f'])) {
@@ -158,6 +151,12 @@ function theme_facet_collection_search_results__alter($variables) {
       '#timeline' => $timeline_view_content,
       '#location' => $location_view_content,
   );
+  //Include on page supports files for building tabs and inserting into them needed views
+  //like timeline, default or location views
+  drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_style.css');
+  drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_tabs.js');
+  drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_thumbnails.js');
+  drupal_add_library('system', 'ui.tabs');
   $views = array_keys($content);
   //Define default and disabled tabs on collection page
   switch ($bundle) {
@@ -430,8 +429,8 @@ function template_preprocess_collection_search_results(&$variables) {
   }
   //If we have it, we don't need pager, we need "More..." link in this case
   if (!$is_set_filter){
-    drupal_add_js(array('collection_book' => array('active' => FALSE)), 'setting');
-    $get_params = $_GET;
+    drupal_add_js(array('collection_page' => array('active' => FALSE)), 'setting');
+    $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));;
     $get_params['f'][] = 'bundle:' . $variables['bundle_machine_name'];
     $options = array(
         'query' => $get_params,
@@ -441,7 +440,7 @@ function template_preprocess_collection_search_results(&$variables) {
     );
     $variables['more_link'] = l(t('More...'), current_path(), array('query' => $get_params, $options));
   }else{
-    drupal_add_js(array('collection_book' => array('active' => 0)), 'setting');
+    drupal_add_js(array('collection_page' => array('active' => 0)), 'setting');
     $variables['pager'] = theme('pager', array('tags' => NULL));
   }
 
