@@ -150,6 +150,7 @@ function facet_collection_entityreference_facet_collection_index_field($filedocu
             }
           }
         } elseif ($inner_field_info['type'] == 'entityreference') {
+          $inner_field_name = $inner_field_info['field_name'];
           $inner_index_key = 'sm_' . $field_name . '_' . $inner_field_name;
           $fields = facet_collection_entityreference_indexing_callback($inner_node, $inner_index_key, $inner_field_info);
           foreach ($fields as $field) {

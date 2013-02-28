@@ -52,6 +52,14 @@ function collection_page_theme() {
       'collection_standart_thumbnail_view' => array(
           'template' => 'theme/collection-standart-thumbnail-view',
           'variables' => array('results' => NULL)
+      ),
+      'collection_search_results' => array(
+          'template' => 'theme/collection-search-results',
+          'variables' => array('results' => NULL, 'bundle_machine_name' => NULL)
+      ),
+      'collection_standart_default_view' => array(
+          'template' => 'theme/collection-standart-default-view',
+          'variables' => array('results' => NULL)
       )
   );
 }
@@ -65,7 +73,11 @@ function collection_page_theme() {
 function theme_facet_collection_search_results__alter($variables) {
   //Put apache_solr request results into SESSION for process those in timeline data callback
   $_SESSION['collection_page_apache_solr_results'] = $variables['results'];
-  $results = $variables['results'];
+  //Sum all results in one array for timeline-view and location-view
+  $results = array();
+  foreach ($variables['results'] as $bundle_results) {
+    $results = array_merge($results, $bundle_results);
+  }
   //Include on page supports files for building tabs and inserting into them needed views
   //like timeline, default or location views
   drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_style.css');
@@ -86,7 +98,7 @@ function theme_facet_collection_search_results__alter($variables) {
   if (isset($_GET['view']) && $_GET['view'] == 'thumb') {
     $rendered_results = theme('collection_standart_thumbnail_view', array('results' => $results));
   } else {
-    $rendered_results = theme('search_results', array('#theme' => 'search_results', '#results' => $results, '#module' => 'collection_page'));
+    $rendered_results = theme('collection_standart_default_view', array('results' => $variables['results']));
   }
   $options = array(
       'query' => array_diff_key($_GET, array('q' => 1, 'view' => 1)),
@@ -289,7 +301,8 @@ function collection_page_apachesolr_query_alter($query) {
   //That field would used in Timeline View.
   //There would taken the last date field in current filtering bundle.
   //If bundle was not defined, field would not be added to params.
-  $indexed_bundles = array('files', 'location', 'people');
+  $environment = apachesolr_default_environment();
+  $indexed_bundles = apachesolr_get_index_bundles($environment, 'node');
   foreach ($indexed_bundles as $bundle) {
     $date_fields = _collection_page_get_date_fields_from_bundle($bundle);
     if (!empty($date_fields)) {
@@ -326,16 +339,17 @@ function _collection_page_get_date_fields_from_bundle($bundle) {
  * Preprocess function for collection_standart_thumbnail_view
  */
 function template_preprocess_collection_standart_thumbnail_view(&$results) {
-  $thumbnail_fields = array();
-  if (!($thumbnail_fields = cache_get('collection_page:thumbnail_fields'))) {
-
-    //We should find a thumbnail field. It could be any image field. If we find it for
-    //content type we should save it in static variable
-    //This variable contatin array which keys are content type names and values are
-    //field names that contain image for thumbnail
-    $environment = apachesolr_default_environment();
-    $bundles = apachesolr_get_index_bundles($environment, 'node');
-    foreach ($bundles as $bundle) {
+  //We should find a thumbnail field. It could be any image field. If we find it for
+  //content type we should save it in static variable
+  //This variable contatins array which keys are content type names and values are
+  //field names that contain image for thumbnail
+  $results['collection_thumbnails'] = array();
+  $thumbnail_fields = &drupal_static(__FUNCTION__);
+  foreach ($results['results'] as $result) {
+    $node = $result['node'];
+    $bundle = $node->bundle;
+    $node = node_load($node->entity_id);
+    if (!isset($thumbnail_fields[$bundle])) {
       $instances = field_info_instances('node', $bundle);
       foreach ($instances as $instance) {
         $field_info = field_info_field($instance['field_name']);
@@ -344,16 +358,22 @@ function template_preprocess_collection_standart_thumbnail_view(&$results) {
           if ($display['type'] != 'hidden') {
             $thumbnail_fields[$bundle]['field_name'] = $instance['field_name'];
             $thumbnail_fields[$bundle]['style'] = $display['settings']['image_style'];
+            $items = field_get_items('node', $node, $thumbnail_fields[$bundle]['field_name']);
+            if (!empty($items)) {
+              $image_uri = $items[0]['uri'];
+              $thumbnail_url = image_style_url($thumbnail_fields[$bundle]['style'], $image_uri);
+              $thumbnail_content = array();
+              $thumbnail_content['thumbnail_url'] = $thumbnail_url;
+              $thumbnail_view = node_view($node, 'collection_thumbnail');
+              unset($thumbnail_view[$thumbnail_fields[$bundle]['field_name']]);
+              $thumbnail_content['meta_info'] = render($thumbnail_view);
+              $results['collection_thumbnails'][] = $thumbnail_content;
+            }
+            break;
           }
         }
       }
-    }
-    cache_set('collection_page:thumbnail_fields', $textfield_names, 'cache', CACHE_TEMPORARY);
-  }
-  $results['collection_thumbnails'] = array();
-  foreach ($results['results'] as $result) {
-    if (isset($thumbnail_fields[$bundle])) {
-      $node = node_load($node->entity_id);
+    } elseif (isset($thumbnail_fields[$bundle])) {
       $items = field_get_items('node', $node, $thumbnail_fields[$bundle]['field_name']);
       if (!empty($items)) {
         $image_uri = $items[0]['uri'];
@@ -365,9 +385,64 @@ function template_preprocess_collection_standart_thumbnail_view(&$results) {
         $thumbnail_content['meta_info'] = render($thumbnail_view);
         $results['collection_thumbnails'][] = $thumbnail_content;
       }
-    }else{
-      drupal_set_message('Please clear cache and check fields in collection thumbnail view set properly');
     }
   }
   $results['pager'] = theme('pager', array('tags' => NULL));
+}
+
+/**
+ * Preprocess function for collection_standart_default_view
+ */
+function template_preprocess_collection_standart_default_view(&$variables) {
+  $results = $variables['results'];
+  drupal_add_library('system', 'ui.accordion');
+  drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_accordion.js');
+  $bundle_list = node_type_get_types();
+  foreach ($results as $bundle => $bundle_results) {
+    $human_bundle_name = $bundle_list[$bundle]->name;
+    $variables['results_content'][$human_bundle_name] = theme('collection_search_results', array('results' => $bundle_results, 'bundle_machine_name' => $bundle));
+  }
+}
+
+/**
+ * Preprocess function for collection_search_results
+ */
+function template_preprocess_collection_search_results(&$variables) {
+  $variables['search_results'] = '';
+  $variables['more_link'] = '';
+  $results = $variables['results'];
+  foreach ($results as $result) {
+    unset($result['user']);
+    unset($result['date']);
+    $variables['search_results'] .= theme('search_result', array('result' => $result, 'module' => 'collection_page'));
+  }
+  //Check if we already have filter by content types
+  $is_set_filter = FALSE;
+  if (isset($_GET['f'])) {
+    $filters = $_GET['f'];
+    foreach ($filters as $filter) {
+      $arr = explode(':', $filter);
+      if ($arr[0] == 'bundle') {
+        $is_set_filter = TRUE;
+        $searched_bundles = $arr[1];
+      }
+    }
+  }
+  //If we have it, we don't need pager, we need "More..." link in this case
+  if (!$is_set_filter){
+    drupal_add_js(array('collection_book' => array('active' => FALSE)), 'setting');
+    $get_params = $_GET;
+    $get_params['f'][] = 'bundle:' . $variables['bundle_machine_name'];
+    $options = array(
+        'query' => $get_params,
+        'attributes' => array(
+            'class' => 'collection-more-link'
+        )
+    );
+    $variables['more_link'] = l(t('More...'), current_path(), array('query' => $get_params, $options));
+  }else{
+    drupal_add_js(array('collection_book' => array('active' => 0)), 'setting');
+    $variables['pager'] = theme('pager', array('tags' => NULL));
+  }
+
 }

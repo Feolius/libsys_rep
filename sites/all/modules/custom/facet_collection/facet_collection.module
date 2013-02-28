@@ -200,9 +200,39 @@ function facet_collection_page() {
   $build = array();
   $environment = apachesolr_default_environment();
   $solr = apachesolr_get_solr($environment);
-  $params = facet_collection_get_params();
+  $params = facet_collection_get_default_params();
   $base_path = arg(0);
-  $results = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
+  //Check if we already have filter by content types
+  $is_set_filter = FALSE;
+  if (isset($_GET['f'])) {
+    $filters = $_GET['f'];
+    foreach ($filters as $filter) {
+      $arr = explode(':', $filter);
+      if ($arr[0] == 'bundle') {
+        $is_set_filter = TRUE;
+        $searched_bundles = $arr[1];
+      }
+    }
+  }
+  //If filter doesn't exist we should perform query for each needed content type and merge results
+  $results = array();
+  if (!$is_set_filter) {
+    $environment = apachesolr_default_environment();
+    $indexed_bundles = apachesolr_get_index_bundles($environment, 'node');
+    foreach ($indexed_bundles as $bundle) {
+      $params['fq'][] = 'bundle:' . $bundle;
+      $bundle_results = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
+      $results[$bundle] = $bundle_results;
+      //Reset static cache to make a query again
+      drupal_static_reset('apachesolr_static_response_cache');
+      //Remove filter query for bundle to replace it new one
+      array_shift($params['fq']);
+    }
+    //Make a fake query to show list of content types filters
+    apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
+  } else {
+   $results[$searched_bundles] = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
+  }
   $hook = 'facet_collection_search_results__alter';
   $build = theme($hook, array('results' => $results));
   return $build;
@@ -211,7 +241,7 @@ function facet_collection_page() {
 /**
  * Get all params to make solr query
  */
-function facet_collection_get_params() {
+function facet_collection_get_default_params() {
 //We use lucene type here because we make specific query that return only documents corresponds to entity type node;
   $params = array();
   $q = arg(1);
@@ -220,6 +250,7 @@ function facet_collection_get_params() {
   } else {
     $params['q'] = $q;
   }
+
   $params['defType'] = 'lucene';
   $params['spellcheck'] = FALSE;
   return $params;
@@ -352,7 +383,6 @@ function facet_collection_get_facet_filters() {
       }
     }
   }
-
   return $content;
 }
 
@@ -514,25 +544,27 @@ function facet_collection_facetapi_facet_info($searcher_info) {
   }
 
   //Get facets and facet groups for each field according
-  foreach ($filter_settings['filter_order'] as $content_type_field_names) {
-    foreach (array_reverse($content_type_field_names) as $field_name) {
-      $field_info = field_info_field($field_name);
-      $field_type = $field_info['type'];
-      if (isset($field_type_facet_list[$field_type])) {
-        $modules = $field_type_facet_list[$field_type];
-        foreach ($modules as $module) {
-          $facet_groups = module_invoke($module, 'facet_collection_field_facet_groups', $field_info);
-          if (!empty($facet_groups)) {
-            foreach ($facet_groups as $facet_group => $field_facets) {
-              if (!isset($facet_collection[$field_type][$facet_group])) {
-                $facet_collection[$field_type][$facet_group] = array();
-              }
-              foreach ($field_facets as $field_facet_name => $field_facet) {
-                if (!in_array($field_facet_name, $facet_collection[$field_type][$facet_group])) {
-                  $facet_collection[$field_type][$facet_group][$field_name][] = $field_facet_name;
+  if (!empty($filter_settings['filter_order'])) {
+    foreach ($filter_settings['filter_order'] as $content_type_field_names) {
+      foreach (array_reverse($content_type_field_names) as $field_name) {
+        $field_info = field_info_field($field_name);
+        $field_type = $field_info['type'];
+        if (isset($field_type_facet_list[$field_type])) {
+          $modules = $field_type_facet_list[$field_type];
+          foreach ($modules as $module) {
+            $facet_groups = module_invoke($module, 'facet_collection_field_facet_groups', $field_info);
+            if (!empty($facet_groups)) {
+              foreach ($facet_groups as $facet_group => $field_facets) {
+                if (!isset($facet_collection[$field_type][$facet_group])) {
+                  $facet_collection[$field_type][$facet_group] = array();
                 }
+                foreach ($field_facets as $field_facet_name => $field_facet) {
+                  if (!in_array($field_facet_name, $facet_collection[$field_type][$facet_group])) {
+                    $facet_collection[$field_type][$facet_group][$field_name][] = $field_facet_name;
+                  }
+                }
+                $facets = array_merge($facets, $field_facets);
               }
-              $facets = array_merge($facets, $field_facets);
             }
           }
         }
