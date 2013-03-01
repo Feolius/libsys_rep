@@ -33,7 +33,7 @@
               $("#collection-thumbnail-metainfo").width(1.5*initialWidth);
             },
             step: function(now, fx){
-              var left = initialLeft - initialWidth*0.5*(now/200 - 1) - padding;
+              var left = initialLeft - initialWidth*0.5*(now/lowHeight - 1) - padding;
               var right = left + now + 2*padding;
               var containerWidth = $("#collection-standart-thumbnail-view-container").width();
               if (right >= containerWidth){
@@ -43,7 +43,7 @@
                 left = 0;
               }
               $("#collection-thumbnail-upper-container").css("left", left);
-              $("#collection-thumbnail-upper-container").width((now/200)*initialWidth);
+              $("#collection-thumbnail-upper-container").width((now/lowHeight)*initialWidth);
             }
           });
       }else{
