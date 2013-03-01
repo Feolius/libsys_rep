@@ -11,12 +11,6 @@
 #collection-standart-thumbnail-view-container{
   position: relative;
 }
-.collection-thumbnail{
-  height: 200px;
-}
-#collection_upper_thumbnail{
-  height: 200px;
-}
 #collection-thumbnail-upper-container {
   padding: 10px;
   background: #FFFFFF;

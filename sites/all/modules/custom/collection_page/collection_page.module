@@ -71,8 +71,6 @@ function collection_page_theme() {
  * @return string
  */
 function theme_facet_collection_search_results__alter($variables) {
-
-
   //Sum all apache_solr request results in one array for timeline-view and location-view
   $results = array();
   foreach ($variables['results'] as $bundle_results) {
@@ -163,7 +161,6 @@ function theme_facet_collection_search_results__alter($variables) {
   //like timeline, default or location views
   drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_style.css');
   drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_tabs.js');
-  drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_thumbnails.js');
   drupal_add_library('system', 'ui.tabs');
   $views = array_keys($content);
   //Define default and disabled tabs on collection page
@@ -358,6 +355,7 @@ function template_preprocess_collection_standart_thumbnail_view(&$results) {
   //This variable contatins array which keys are content type names and values are
   //field names that contain image for thumbnail
   global $base_url;
+  drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_thumbnails.js');
   $results['collection_thumbnails'] = array();
   $thumbnail_fields = & drupal_static(__FUNCTION__);
   foreach ($results['results'] as $result) {
@@ -380,7 +378,6 @@ function template_preprocess_collection_standart_thumbnail_view(&$results) {
             if (!empty($items)) {
               $image_uri = $items[0]['uri'];
               $thumbnail_url = image_style_url($thumbnail_fields[$bundle]['style'], $image_uri);
-
               $thumbnail_content['thumbnail_url'] = $thumbnail_url;
               $thumbnail_view = node_view($node, 'collection_thumbnail');
               unset($thumbnail_view[$thumbnail_fields[$bundle]['field_name']]);
@@ -405,7 +402,13 @@ function template_preprocess_collection_standart_thumbnail_view(&$results) {
       }
     }
   }
-
+  $effects = image_style_effects(image_style_load('collection_thumbnail'));
+  foreach ($effects as $effect) {
+    if ($effect['name'] == 'image_scale') {
+      $height = $effect['data']['height'];
+    }
+  }
+  drupal_add_js(array('collection_page' => array('height' => $height)), 'setting');
   $results['pager'] = theme('pager', array('tags' => NULL));
 }
 
@@ -468,5 +471,4 @@ function template_preprocess_collection_search_results(&$variables) {
     drupal_add_js(array('collection_page' => array('active' => 0)), 'setting');
     $variables['pager'] = theme('pager', array('tags' => NULL));
   }
-
 }

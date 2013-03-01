@@ -1,11 +1,16 @@
 (function ($) {
   Drupal.behaviors.collectionThumbnailsView = {
     attach: function (context, settings) {
+      var height = Drupal.settings.collection_page.height;
+      //Height for visually compressed images
+      var lowHeight = height*2/3;
+       $(".collection-thumbnail").css("height", lowHeight);
+       $(".collection-upper-thumbnail").css("height", lowHeight);
       $("#collection-upper-thumbnail").hover(function(){
 
         },function(){
           $("#collection-thumbnail-upper-container").css("display", "none");
-          $("#collection-upper-thumbnail").css("height", 200);
+          $("#collection-upper-thumbnail").css("height", lowHeight);
           $("#collection-thumbnail-metainfo").html("");
         });
       $(".collection-thumbnail").hover(function(){
@@ -20,7 +25,7 @@
         if ($("#collection-thumbnail-upper-container").css("display") == "none"){
           $("#collection-thumbnail-upper-container").css("display", "block");
           $("#collection-upper-thumbnail").animate({
-            height: 300
+            height: height
           },{
             duration: 300,
             complete: function(){
@@ -28,7 +33,7 @@
               $("#collection-thumbnail-metainfo").width(1.5*initialWidth);
             },
             step: function(now, fx){
-              var left = initialLeft - initialWidth*0.5*(now/200 - 1) - padding;
+              var left = initialLeft - initialWidth*0.5*(now/lowHeight - 1) - padding;
               var right = left + now + 2*padding;
               var containerWidth = $("#collection-standart-thumbnail-view-container").width();
               if (right >= containerWidth){
@@ -38,7 +43,7 @@
                 left = 0;
               }
               $("#collection-thumbnail-upper-container").css("left", left);
-              $("#collection-thumbnail-upper-container").width((now/200)*initialWidth);
+              $("#collection-thumbnail-upper-container").width((now/lowHeight)*initialWidth);
             }
           });
       }else{
