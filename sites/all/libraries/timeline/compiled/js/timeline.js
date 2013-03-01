@@ -1405,7 +1405,7 @@ if(typeof VMM != 'undefined' && typeof VMM.Date == 'undefined') {
 					    // IE 8 < Won't accept dates with a "-" in them.
 						time_parse = d.split("T");
 						if (d.match(":")) {
-							time_array = _time_parse[1].split(":");
+							time_array = time_parse[1].split(":");
 							if (time_array[0] >= 1) {
 								date.setHours(time_array[0]);
 								p.hour = true;
@@ -1423,7 +1423,7 @@ if(typeof VMM != 'undefined' && typeof VMM.Date == 'undefined') {
 								p.millisecond = true;
 							}
 						}
-						_d_array = time_parse[0].split("-");
+						date_array = time_parse[0].split("-");
 						if (date_array[0]) {
 							date.setFullYear(date_array[0]);
 							p.year = true;
@@ -4204,17 +4204,15 @@ if(typeof VMM != 'undefined' && typeof VMM.ExternalAPI == 'undefined') {
 			
 			create: function(m) {
 				trace("WEB THUMB CREATE");
-				//http://pagepeeker.com/t/{size}/{url}
-				//http://api.snapito.com/free/lc?url=
 				
-				var thumb_url	= "http://pagepeeker.com/t/";
+				var thumb_url	= "http://free.pagepeeker.com/v2/thumbs.php?";
 					url			= m.id.replace("http://", "");//.split("/")[0];
 					
 				// Main Image
-				VMM.attachElement("#" + m.uid, "<a href='" + m.id + "' target='_blank'><img src='" + thumb_url + "x/" + url + "'></a>");
+				VMM.attachElement("#" + m.uid, "<a href='" + m.id + "' target='_blank'><img src='" + thumb_url + "size=x&url=" + url + "'></a>");
 				
 				// Thumb
-				VMM.attachElement("#" + m.uid + "_thumb", "<a href='" + m.id + "' target='_blank'><img src='" + thumb_url + "t/" + url + "'></a>");
+				VMM.attachElement("#" + m.uid + "_thumb", "<a href='" + m.id + "' target='_blank'><img src='" + thumb_url + "size=t&url=" + url + "'></a>");
 			},
 			
 			pushQue: function() {
@@ -6753,18 +6751,9 @@ if(typeof VMM != 'undefined' && typeof VMM.StoryJS == 'undefined') {
 	* TimelineJS
 	* Designed and built by Zach Wise at VéritéCo
 
-	* This program is free software: you can redistribute it and/or modify
-	* it under the terms of the GNU General Public License as published by
-	* the Free Software Foundation, either version 3 of the License, or
-	* (at your option) any later version.
-
-	* This program is distributed in the hope that it will be useful,
-	* but WITHOUT ANY WARRANTY; without even the implied warranty of
-	* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	* GNU General Public License for more details.
-
-	* http://www.gnu.org/licenses/
-
+	* This Source Code Form is subject to the terms of the Mozilla Public
+	* License, v. 2.0. If a copy of the MPL was not distributed with this
+	* file, You can obtain one at http://mozilla.org/MPL/2.0/.
 */  
 
 /*	* CodeKit Import
@@ -7328,7 +7317,7 @@ if(typeof VMM != 'undefined' && typeof VMM.Timeline == 'undefined') {
 				*/
 			}
 			
-			if (config.width < 640) {
+			if (config.width < 641) {
 				VMM.Lib.addClass($timeline, "vco-skinny");
 			} else {
 				VMM.Lib.removeClass($timeline, "vco-skinny");
@@ -8346,6 +8335,7 @@ if(typeof VMM.Timeline != 'undefined' && typeof VMM.Timeline.TimeNav == 'undefin
 				var era			= era_markers[i],
 					pos			= positionOnTimeline(interval, era.relative_pos),
 					row_pos		= 0,
+					row			= 0,
 					era_height	= config.nav.marker.height * config.nav.rows.full.length,
 					era_length	= pos.end - pos.begin;
 					
