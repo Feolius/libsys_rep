@@ -103,7 +103,7 @@ class FilesMigration extends LibraryMigration {
   public function __construct() {
     parent::__construct();
     $this->description = t('Migrate Files content type from file table');
-    $this->dependencies = array('FileCollection', 'FileFolder', 'FileCategory');
+    $this->dependencies = array('FileCollection', 'FileFolder', 'FileCategory', 'People', 'Location');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
             ->select('file', 'f')
             ->fields('f', array('ID', 'topic', 'extendedtopic', 'description', 'keypoints', 'extended_summary', 'text', 'keywords',
@@ -240,6 +240,7 @@ class PeopleMigration extends LibraryMigration {
   public function __construct() {
     parent::__construct();
     $this->description = t('Migrate People content type from adv_people table');
+    $this->dependencies = array('Location');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
             ->select('adv_people', 'p')
             ->fields('p', array('ID', 'first_name', 'middle_name', 'last_name', 'maiden_name', 'generic_name',
@@ -273,6 +274,10 @@ class PeopleMigration extends LibraryMigration {
             ->sourceMigration('Files');
     $this->addFieldMapping('field_people_received_files', 'received_files')
             ->sourceMigration('Files');
+    $this->addFieldMapping('field_people_home', 'home')
+            ->sourceMigration('Location');
+    $this->addFieldMapping('field_people_visit_place', 'visit_place')
+            ->sourceMigration('Location');
   }
 
   public function prepareRow($row) {
@@ -280,11 +285,11 @@ class PeopleMigration extends LibraryMigration {
     $middle_name = $row->middle_name;
     $last_name = $row->last_name;
     $email = $row->email;
-    if($first_name || $last_name){
+    if ($first_name || $last_name) {
       $real_title = $first_name . ' ' . $last_name;
-    }elseif($email){
+    } elseif ($email) {
       $real_title = $email;
-    }else{
+    } else {
       return FALSE;
     }
     $row->real_title = $real_title;
@@ -298,7 +303,7 @@ class PeopleMigration extends LibraryMigration {
     $query->condition('l2.tb_id', $row->ID, '=');
     $query->condition('l2.tb_name', 'adv_people', '=');
     $query->condition('l.tb_name', 'file', '=');
-    $query->condition('l2i.linkerinfo_id', '1', '=');
+    $query->condition('l2i.linkerinfo_id', 1, '=');
     $result = $query->execute();
     $record = $result->fetchAssoc();
     $written_files = array();
@@ -306,7 +311,6 @@ class PeopleMigration extends LibraryMigration {
       $written_files[] = $record['tb_id'];
     }
     $row->written_files = $written_files;
-dpm($written_files);
 
     //Add received files
     $query = Database::getConnection('default', 'ImportDatabaseKey')
@@ -317,7 +321,7 @@ dpm($written_files);
     $query->condition('l2.tb_id', $row->ID, '=');
     $query->condition('l2.tb_name', 'adv_people', '=');
     $query->condition('l.tb_name', 'file', '=');
-    $query->condition('l2i.linkerinfo_id', '3', '=');
+    $query->condition('l2i.linkerinfo_id', 3, '=');
     $result = $query->execute();
     $record = $result->fetchAssoc();
     $received_files = array();
@@ -325,7 +329,59 @@ dpm($written_files);
       $received_files[] = $record['tb_id'];
     }
     $row->received_files = $received_files;
+
+    //Add home
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('egw_linker', 'l');
+    $query->addField('l', 'tb_id');
+    $query->leftJoin('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
+    $query->leftJoin('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id AND l2.tb_name != l.tb_name');
+    $query->condition('l2.tb_id', $row->ID, '=');
+    $query->condition('l2.tb_name', 'adv_people', '=');
+    $query->condition('l.tb_name', 'adv_location', '=');
+    $query->condition('l2i.linkerinfo_id', 17, '=');
+    $result = $query->execute();
+    $record = $result->fetchAssoc();
+    $home = array();
+    while ($record = $result->fetchAssoc()) {
+      $home[] = $record['tb_id'];
+    }
+    $row->home = $home;
+
+    //Add visit place
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('egw_linker', 'l');
+    $query->addField('l', 'tb_id');
+    $query->leftJoin('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
+    $query->leftJoin('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id AND l2.tb_name != l.tb_name');
+    $query->condition('l2.tb_id', $row->ID, '=');
+    $query->condition('l2.tb_name', 'adv_people', '=');
+    $query->condition('l.tb_name', 'adv_location', '=');
+    $query->condition('l2i.linkerinfo_id', 18, '=');
+    $result = $query->execute();
+    $record = $result->fetchAssoc();
+    $visit_place = array();
+    while ($record = $result->fetchAssoc()) {
+      $visit_place[] = $record['tb_id'];
+    }
+    $row->visit_place = $visit_place;
   }
+
+  protected function createStub($migration, $source_id) {
+    $node = new stdClass();
+    $node->title = t('Stub for') . $source_id[0];
+    $node->body = t('Stub body');
+    $node->type = $this->destination->getBundle();
+    $node->uid = 1;
+    $node->status = 0;
+    node_save($node);
+    if (isset($node->nid)) {
+      return array($node->nid);
+    } else {
+      return FALSE;
+    }
+  }
+
   public function prepare($node, $row) {
     $node->language = 'en';
     if ($row->official_position == 0) {
@@ -336,13 +392,13 @@ dpm($written_files);
 
 }
 
-/*class LocationMigration extends LibraryMigration {
+class LocationMigration extends LibraryMigration {
 
   public function __construct() {
     parent::__construct();
     $this->description = t('Migrate Location content type from adv_location table');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-            ->select('adv_location', 'p')
+            ->select('adv_location_iso', 'p')
             ->fields('p', array('ID', 'locname', 'address', 'town', 'state', 'country',
         'zipcode', 'description', 'link', 'source'));
     $this->map = new MigrateSQLMap($this->machineName,
@@ -358,7 +414,16 @@ dpm($written_files);
     $this->source = new MigrateSourceSQL($query);
     $this->destination = new MigrateDestinationNode('location');
     $this->addSimpleMappings(array('title', 'description'));
-    $this->addFieldMapping('field_location_link', 'real_title');
+    $this->addFieldMapping('field_location_link', 'link');
+    $this->addFieldMapping('field_location_source', 'source');
+    $this->addFieldMapping('field_location_written_files', 'written_files')
+            ->sourceMigration('Files');
+    $this->addFieldMapping('field_location_received_files', 'received_files')
+            ->sourceMigration('Files');
+    $this->addFieldMapping('field_location_living_people', 'living_people')
+            ->sourceMigration('People');
+    $this->addFieldMapping('field_location_visiter', 'living_people')
+            ->sourceMigration('People');
   }
 
   public function prepareRow($row) {
@@ -381,14 +446,91 @@ dpm($written_files);
       $title = $locname . '(' . $title . ')';
     }
     $row->title = $title;
+
+    //Add written files
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('egw_linker', 'l');
+    $query->addField('l', 'tb_id');
+    $query->leftJoin('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
+    $query->leftJoin('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id AND l2.tb_name != l.tb_name');
+    $query->condition('l2.tb_id', $row->ID, '=');
+    $query->condition('l2.tb_name', 'adv_location', '=');
+    $query->condition('l.tb_name', 'file', '=');
+    $query->condition('l2i.linkerinfo_id', 5, '=');
+    $result = $query->execute();
+    $record = $result->fetchAssoc();
+    $written_files = array();
+    while ($record = $result->fetchAssoc()) {
+      $written_files[] = $record['tb_id'];
+    }
+    $row->written_files = $written_files;
+
+    //Add received files
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('egw_linker', 'l');
+    $query->addField('l', 'tb_id');
+    $query->leftJoin('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
+    $query->leftJoin('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id AND l2.tb_name != l.tb_name');
+    $query->condition('l2.tb_id', $row->ID, '=');
+    $query->condition('l2.tb_name', 'adv_people', '=');
+    $query->condition('l.tb_name', 'file', '=');
+    $query->condition('l2i.linkerinfo_id', 6, '=');
+    $result = $query->execute();
+    $record = $result->fetchAssoc();
+    $received_files = array();
+    while ($record = $result->fetchAssoc()) {
+      $received_files[] = $record['tb_id'];
+    }
+    $row->received_files = $received_files;
+
+    //Add living people
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('egw_linker', 'l');
+    $query->addField('l', 'tb_id');
+    $query->leftJoin('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
+    $query->leftJoin('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id AND l2.tb_name != l.tb_name');
+    $query->condition('l2.tb_id', $row->ID, '=');
+    $query->condition('l2.tb_name', 'adv_location', '=');
+    $query->condition('l.tb_name', 'adv_people', '=');
+    $query->condition('l2i.linkerinfo_id', 17, '=');
+    $result = $query->execute();
+    $record = $result->fetchAssoc();
+    $living_people = array();
+    while ($record = $result->fetchAssoc()) {
+      $living_people[] = $record['tb_id'];
+    }
+    $row->living_people = $living_people;
+
+    //Add visiters
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('egw_linker', 'l');
+    $query->addField('l', 'tb_id');
+    $query->leftJoin('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
+    $query->leftJoin('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id AND l2.tb_name != l.tb_name');
+    $query->condition('l2.tb_id', $row->ID, '=');
+    $query->condition('l2.tb_name', 'adv_location', '=');
+    $query->condition('l.tb_name', 'adv_people', '=');
+    $query->condition('l2i.linkerinfo_id', 18, '=');
+    $result = $query->execute();
+    $record = $result->fetchAssoc();
+    $visiters = array();
+    while ($record = $result->fetchAssoc()) {
+      $visiters[] = $record['tb_id'];
+    }
+    $row->visiters = $visiters;
   }
 
   public function prepare($node, $row) {
     $node->language = 'en';
-    if ($row->official_position == 0) {
-      $node->status = 0;
-      $node->promote = 0;
-    }
+    $addressfield_content = array(
+        'country' => $row->country,
+        'administrative_area' => $row->state,
+        'locality' => $row->town,
+        'postal_code' => $row->zipcode,
+        'thoroughfare' => $row->address,
+        'organisation_name' => $row->locname
+    );
+    $node->field_location_address['und']['0'] = $addressfield_content;
   }
 
-}*/
+}
