@@ -1,0 +1,10 @@
+name = "OpenSeadragon"
+description = "OpenSeadragon provides the ability to create interactively viewable high-resolution images."
+core = 7.x
+
+dependencies[] = image
+dependencies[] = libraries
+
+files[] = openseadragon.module
+files[] = includes/field.module
+files[] = includes/filter.module

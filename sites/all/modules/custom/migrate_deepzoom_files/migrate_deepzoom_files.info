@@ -1,0 +1,10 @@
+name = "Migrate Deepzoom Files"
+description = "Create the nodes with pregenerated deepzoom data and prepared field data"
+package = "Development"
+core = 7.x
+dependencies[] = taxonomy
+dependencies[] = image
+dependencies[] = migrate
+
+files[] = migrate_deezoom_files.migrate.inc
+files[] = deepzoom_nodes_migration.inc
