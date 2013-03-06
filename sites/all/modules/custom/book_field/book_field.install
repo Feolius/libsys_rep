@@ -31,7 +31,9 @@ function book_field_field_schema($field) {
       ),
       'indexes' => array(
           'fid' => array('fid'),
-          'fid_thumb' => array('fid_thumb')
+          'fid_thumb' => array('fid_thumb'),
+          'conversion_done' => array('conversion_done'),
+          'folder_name' => array('folder_name')
       ),
       'foreign keys' => array(
           'fid' => array(
