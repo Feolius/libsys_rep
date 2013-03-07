@@ -456,8 +456,8 @@ class LocationMigration extends LibraryMigration {
     $this->addFieldMapping('field_location_source', 'source');
     $this->addFieldMapping('field_location_written_files', 'written_files')
             ->sourceMigration('Files');
-    /*  $this->addFieldMapping('field_location_received_files', 'received_files')
-      ->sourceMigration('Files'); */
+      $this->addFieldMapping('field_location_received_files', 'received_files')
+      ->sourceMigration('Files'); 
     $this->addFieldMapping('field_location_living_people', 'living_people')
             ->sourceMigration('People');
     $this->addFieldMapping('field_location_visiter', 'living_people')
