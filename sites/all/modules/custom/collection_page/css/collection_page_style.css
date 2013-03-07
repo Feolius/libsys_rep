@@ -5,8 +5,7 @@
 .collection-thumbnail-container {
   padding: 10px;
   display: inline-block;
-  align: center;
-  z-index: 1;
+  align: center; 
 }
 #collection-standart-thumbnail-view-container{
   position: relative;
@@ -20,4 +19,8 @@
 }
 .collection-thumbnail-metainfo {
   display: none;
+}
+#collection-upper-thumbnail {
+width: 100%;
+height: 100%;
 }
