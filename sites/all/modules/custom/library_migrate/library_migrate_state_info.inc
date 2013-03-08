@@ -236,8 +236,8 @@
       'WA' => 'Western Australia',
     );
 
-    if ($iso = array_search($state_name, $states[$country])){
-      return $iso;
+    if (isset($states[$country])){
+      return array_search($state_name, $states[$country]);
     }else{
       return $state_name;
     }

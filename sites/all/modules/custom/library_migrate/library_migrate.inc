@@ -5,21 +5,21 @@ abstract class LibraryMigration extends DynamicMigration {
   public function __construct() {
     parent::__construct();
     //For development on local machine
-    /*$other_database = array(
+    $other_database = array(
         'database' => 'adventists',
         'username' => 'admin',
         'password' => '1234',
         'host' => 'localhost',
         'driver' => 'mysql',
-    );*/
+    );
     //For import on production server
-    $other_database = array(
+   /* $other_database = array(
         'database' => 'archive_library',
         'username' => 'archive_library',
         'password' => 'jkqeq23ffa3rh',
         'host' => 'sql-3',
         'driver' => 'mysql',
-    );
+    );*/
 
     Database::addConnectionInfo('ImportDatabaseKey', 'default', $other_database);
   }
@@ -457,7 +457,7 @@ class LocationMigration extends LibraryMigration {
     $this->addFieldMapping('field_location_written_files', 'written_files')
             ->sourceMigration('Files');
       $this->addFieldMapping('field_location_received_files', 'received_files')
-      ->sourceMigration('Files'); 
+      ->sourceMigration('Files');
     $this->addFieldMapping('field_location_living_people', 'living_people')
             ->sourceMigration('People');
     $this->addFieldMapping('field_location_visiter', 'living_people')
@@ -480,8 +480,14 @@ class LocationMigration extends LibraryMigration {
       $title[] = $country;
     }
     $title = implode(', ', $title);
-    if ($locname) {
-      $title = $locname . '(' . $title . ')';
+    if ($locname != 'Unknown' && !empty($locname)){
+      if(!empty($title)){
+        $title = $locname . ' (' . $title . ')';
+      }else{
+        $title = $locname;
+      }
+    }elseif(empty($title)){
+      return FALSE;
     }
     $row->title = $title;
 
