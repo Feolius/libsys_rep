@@ -4,13 +4,23 @@ abstract class LibraryMigration extends DynamicMigration {
 
   public function __construct() {
     parent::__construct();
+    //For development on local machine
     $other_database = array(
         'database' => 'adventists',
-        'username' => 'admin', // assuming this is necessary
-        'password' => '1234', // assuming this is necessary
-        'host' => 'localhost', // assumes localhost
-        'driver' => 'mysql', // replace with your database driver
+        'username' => 'admin',
+        'password' => '1234',
+        'host' => 'localhost',
+        'driver' => 'mysql',
     );
+    //For import on production server
+   /* $other_database = array(
+        'database' => 'archive_library',
+        'username' => 'archive_library',
+        'password' => 'jkqeq23ffa3rh',
+        'host' => 'sql-3',
+        'driver' => 'mysql',
+    );*/
+
     Database::addConnectionInfo('ImportDatabaseKey', 'default', $other_database);
   }
 
@@ -106,7 +116,7 @@ class FilesMigration extends LibraryMigration {
     $this->dependencies = array('FileCollection', 'FileFolder', 'FileCategory', 'People', 'Location');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
             ->select('file', 'f')
-            ->fields('f', array('ID', 'topic', 'extendedtopic', 'description', 'keypoints', 'extended_summary', 'text', 'keywords',
+            ->fields('f', array('ID', 'topic', 'extendedtopic', 'description', 'keypoints', 'extended_summary', 'text', 'keywords', 'file_extension',
         'original_title', 'category_id', 'source', 'volume', 'number', 'chapter', 'page', 'handwritten', 'typewritten', 'letterhead', 'remarks'));
     $query->leftJoin('file_collection2file', 'c2f', 'c2f.file_id = f.ID');
     $query->addField('c2f', 'collection_id', 'cid');
@@ -197,21 +207,21 @@ class FilesMigration extends LibraryMigration {
 
 
     //Check if this file from collection with id 1,2 or 3
-    /* $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('file_collection2file', 'c2f');
-      $query->addField('c2f', 'collection_id');
-      $query->rightJoin('file', 'f', 'c2f.file_id = f.ID');
-      $query->condition('f.ID', $row->ID . '=');
-      $result = $query->execute();
-      $record = $result->fetchAssoc();
-      switch ($record['collection_id']) {
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('file_collection2file', 'c2f');
+    $query->addField('c2f', 'collection_id');
+    $query->rightJoin('file', 'f', 'c2f.file_id = f.ID');
+    $query->condition('f.ID', $row->ID . '=');
+    $result = $query->execute();
+    $record = $result->fetchAssoc();
+    switch ($record['collection_id']) {
       case 1:
       case 2:
       case 3:
-      return TRUE;
+        return TRUE;
       default:
-      return FALSE;
-      } */
+        return FALSE;
+    }
   }
 
   protected function createStub($migration, $source_id) {
@@ -229,7 +239,35 @@ class FilesMigration extends LibraryMigration {
     }
   }
 
-  public function prepare($node, stdClass $row) {
+  public function prepare($node, $row) {
+    if ($row->file_extension == 'pdf') {
+      $ID = $row->ID;
+      $directory = file_default_scheme() . '://books/' . $ID;
+      if (file_prepare_directory($directory)) {
+        $pdf_uri = $directory . '/' . $ID . '.pdf';
+        $pdf_file = new stdClass();
+        $pdf_file->uri = $pdf_uri;
+        $pdf_file->uid = 1;
+        $pdf_file->status = 1;
+        $pdf_file->filename = $ID . '.pdf';
+        $pdf_file->filemime = 'application/pdf';
+        $pdf_file->filesize = filesize(drupal_realpath($pdf_uri));
+        $pdf_file = file_save($pdf_file);
+        $image_uri = $directory . '/' . $ID . '.jpg';
+        $image_file = new stdClass();
+        $image_file->uri = $image_uri;
+        $image_file->uid = 1;
+        $image_file->status = 1;
+        $image_file->filename = $ID . '.jpg';
+        $image_file->filemime = 'image/jpeg';
+        $image_file->filesize = filesize($image_uri);
+        $image_file = file_save($image_file);
+        $node->field_files_file['und'][0]['fid'] = $pdf_file->fid;
+        $node->field_files_file['und'][0]['fid_thumb'] = $image_file->fid;
+        $node->field_files_file['und'][0]['conversion_done'] = 1;
+        $node->field_files_file['und'][0]['folder_name'] = $ID;
+      }
+    }
     $node->language = 'en';
   }
 
@@ -418,8 +456,8 @@ class LocationMigration extends LibraryMigration {
     $this->addFieldMapping('field_location_source', 'source');
     $this->addFieldMapping('field_location_written_files', 'written_files')
             ->sourceMigration('Files');
-    $this->addFieldMapping('field_location_received_files', 'received_files')
-            ->sourceMigration('Files');
+      $this->addFieldMapping('field_location_received_files', 'received_files')
+      ->sourceMigration('Files');
     $this->addFieldMapping('field_location_living_people', 'living_people')
             ->sourceMigration('People');
     $this->addFieldMapping('field_location_visiter', 'living_people')
@@ -442,8 +480,14 @@ class LocationMigration extends LibraryMigration {
       $title[] = $country;
     }
     $title = implode(', ', $title);
-    if ($locname) {
-      $title = $locname . '(' . $title . ')';
+    if ($locname != 'Unknown' && !empty($locname)){
+      if(!empty($title)){
+        $title = $locname . ' (' . $title . ')';
+      }else{
+        $title = $locname;
+      }
+    }elseif(empty($title)){
+      return FALSE;
     }
     $row->title = $title;
 
@@ -522,9 +566,12 @@ class LocationMigration extends LibraryMigration {
 
   public function prepare($node, $row) {
     $node->language = 'en';
+    require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'library_migrate') . '/library_migrate_state_info.inc';
+    $country = $row->country;
+    $state = library_migrate_state_ISO($country, $row->state);
     $addressfield_content = array(
-        'country' => $row->country,
-        'administrative_area' => $row->state,
+        'country' => $country,
+        'administrative_area' => $state,
         'locality' => $row->town,
         'postal_code' => $row->zipcode,
         'thoroughfare' => $row->address,

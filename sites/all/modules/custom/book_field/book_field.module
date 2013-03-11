@@ -831,8 +831,10 @@ function book_field_field_delete($entity_type, $entity, $field, $instance, $lang
     if (isset($item['fid']) && ($file = file_load($item['fid']))) {
       file_delete($file);
     }
-    $directory = file_default_scheme() . '://books/' . $item['folder_name'];
-    file_unmanaged_delete_recursive($directory);
+    if (!empty($item['folder_name'])) {
+      $directory = file_default_scheme() . '://books/' . $item['folder_name'];
+      file_unmanaged_delete_recursive($directory);
+    }
   }
 }
 

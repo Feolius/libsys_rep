@@ -3,24 +3,22 @@
     attach: function(context, settings) {
       var height = Drupal.settings.collection_page.height;
       var lowHeight = height * 2 / 3;
-
+     
       $(".collection-thumbnail").once('collectionPageThumbnails').each(function() {
-
-        $(this).height(height * 2 / 3);
-        $(this).width(width * 2 / 3);
         var height = $(this).height();
         var width = $(this).width();
+        $(this).height(height * 2 / 3);
+        $(this).width(width * 2 / 3);
         var parent = $(this).parent();
         parent.width(width * 2 / 3);
         parent.height(height * 2 / 3);
-
       });
 
 
       $("#collection-upper-thumbnail", context).once('collectionPageThumbnails').hover(function() {
       }, function() {
         $("#collection-thumbnail-upper-container").css("display", "none");
-
+        
         $("#collection-thumbnail-metainfo").html("");
       });
       $(".collection-thumbnail", context).hover(function() {
@@ -52,17 +50,17 @@
           }, {
             duration: 300,
             queue: false,
-
+            
             complete: function() {
               $(this).css('height', '');
               $("#collection-thumbnail-metainfo").html(metainfo);
               $("#collection-thumbnail-metainfo").width(1.5 * initialWidth);
             },
-            step: function(now, fx) {
-              var cur = $("#collection-thumbnail-upper-container").width() + 10;
+            step: function(now, fx) {             
+              var cur = $("#collection-thumbnail-upper-container").width() + 10;            
               var left = initialLeft - (cur - initialWidth) * 0.5;
               var height = initialHeight*now/initialWidth;
-              $(this).height(height);
+              $(this).height(height);            
               if (left < 0) {
                 left = 0;
               }
@@ -71,7 +69,7 @@
               if (right >= containerWidth) {
                 left = containerWidth - now;
               }
-              $(this).css("left", left);
+              $(this).css("left", left);             
             }
           });
         } else {
