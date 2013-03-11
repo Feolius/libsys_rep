@@ -2,7 +2,7 @@
 
 /**
  * @file
- * The Multistep module adds multiple-step functionality to content types.
+ *       The Multistep module adds multiple-step functionality to content types.
  *
  * @todo Change the step argument so that it's passed in a different REQUEST variable.
  * @todo Calculate (and store) the number of Form steps per form.
@@ -72,44 +72,45 @@ function multistep_adl_menu() {
   foreach (entity_get_info() as $entity_type => $entity_info) {
     if ($entity_info['fieldable'] && $entity_type == 'node') {
       foreach ($entity_info['bundles'] as $bundle_name => $bundle_info) {
+        if (is_multistep_adl($bundle_name)) {
+          if (isset($bundle_info['admin'])) {
+            // Extract path information from the bundle.
+            $path = $bundle_info['admin']['path'];
+            // Different bundles can appear on the same path (e.g. %node_type and
+            // %comment_node_type). To allow field_ui_menu_load() to extract the
+            // actual bundle object from the translated menu router path
+            // arguments, we need to identify the argument position of the bundle
+            // name string ('bundle argument') and pass that position to the menu
+            // loader. The position needs to be casted into a string; otherwise it
+            // would be replaced with the bundle name string.
+            if (isset($bundle_info['admin']['bundle argument'])) {
+              $bundle_arg = $bundle_info['admin']['bundle argument'];
+            }
+            else {
+              $bundle_arg = $bundle_name;
+            }
 
-        if (isset($bundle_info['admin'])) {
-          // Extract path information from the bundle.
-          $path = $bundle_info['admin']['path'];
-          // Different bundles can appear on the same path (e.g. %node_type and
-          // %comment_node_type). To allow field_ui_menu_load() to extract the
-          // actual bundle object from the translated menu router path
-          // arguments, we need to identify the argument position of the bundle
-          // name string ('bundle argument') and pass that position to the menu
-          // loader. The position needs to be casted into a string; otherwise it
-          // would be replaced with the bundle name string.
-          if (isset($bundle_info['admin']['bundle argument'])) {
-            $bundle_arg = $bundle_info['admin']['bundle argument'];
-          }
-          else {
-            $bundle_arg = $bundle_name;
-          }
-
-          // Extract access information, providing defaults.
-          $access = array_intersect_key($bundle_info['admin'], drupal_map_assoc(array(
-            'access callback',
-            'access arguments'
-          )));
-          $access += array(
-            'access callback' => 'user_access',
-            'access arguments' => array('administer site configuration'),
-          );
-          // 'Manage steps' tab on content type structure page.
-          $path_elements = explode('/', $path);
-          if (!in_array('comment', $path_elements)) {
-            $items["$path/steps"] = array(
-              'title' => t('Manage steps'),
-              'page callback' => 'drupal_get_form',
-              'page arguments' => array('multistep_adl_manage_steps_form', $entity_type, $bundle_arg),
-              'type' => MENU_LOCAL_TASK,
-              'weight' => 2,
-              'file' => 'multistep_adl.admin.inc',
-            ) + $access;
+            // Extract access information, providing defaults.
+            $access = array_intersect_key($bundle_info['admin'], drupal_map_assoc(array(
+              'access callback',
+              'access arguments'
+            )));
+            $access += array(
+              'access callback' => 'user_access',
+              'access arguments' => array('administer site configuration'),
+            );
+            // 'Manage steps' tab on content type structure page.
+            $path_elements = explode('/', $path);
+            if (!in_array('comment', $path_elements)) {
+              $items["$path/steps"] = array(
+                'title' => t('Manage steps'),
+                'page callback' => 'drupal_get_form',
+                'page arguments' => array('multistep_adl_manage_steps_form', $entity_type, $bundle_arg),
+                'type' => MENU_LOCAL_TASK,
+                'weight' => 2,
+                'file' => 'multistep_adl.admin.inc',
+              ) + $access;
+            }
           }
         }
       }
@@ -239,7 +240,7 @@ function multistep_adl_block_view($type = '') {
       // Highlight unsubmitted steps.
       $status = _multistep_adl_get_status($nid, $group->group_name);
       $required = FALSE;
-      if ($first_step == $group->group_name || ($node == NULL && $current_step == $first_step)) {
+      if ($first_step == $group->group_name) {
         $required = TRUE;
       }
       else {
@@ -358,6 +359,7 @@ function multistep_adl_field_group_pre_render(&$element, $group, &$form) {
       '#access' => $access,
     );
   }
+  //var_dump($element);
 }
 
 /**
@@ -418,7 +420,7 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
     $form['actions']['previous'] = array(
       '#type' => 'submit',
       '#value' => variable_get('multistep_adl_button_prev', t('< Previous')),
-      '#submit' => array('node_form_submit', 'multistep_adl_submit'),
+      '#submit' => array('multistep_adl_submit'),
       '#weight' => -999,
       '#access' => variable_get('multistep_adl_button_prev', TRUE),
     );
@@ -426,7 +428,7 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
   $form['actions']['save'] = array(
     '#type' => 'submit',
     '#value' => variable_get('multistep_adl_button_save', t('Save')),
-    '#submit' => array('node_form_submit', 'multistep_adl_submit'),
+    '#submit' => array('multistep_adl_submit'),
     '#weight' => 0,
     '#access' => variable_get('multistep_adl_button_save', TRUE),
   );
@@ -434,7 +436,7 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
     $form['actions']['next'] = array(
       '#type' => 'submit',
       '#value' => variable_get('multistep_adl_button_next', t('Next >')),
-      '#submit' => array('node_form_submit', 'multistep_adl_submit'),
+      '#submit' => array('multistep_adl_submit'),
       '#weight' => 999,
     );
   }
@@ -442,11 +444,12 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
     $form['actions']['done'] = array(
       '#type' => 'submit',
       '#value' => variable_get('multistep_adl_button_done', t('Done')),
-      '#submit' => array('node_form_submit', 'multistep_adl_submit'),
+      '#submit' => array('multistep_adl_submit'),
       '#weight' => 999,
     );
   }
   $form['actions']['submit']['#access'] = FALSE;
+  dpm($form);
   /* Check the Published box if the settings need it
    * @todo Verify how this is done in Drupal 7
   if (variable_get('multistep_adl_status_publishing', 'default') == 'complete' && array_search('status', variable_get('node_options_' . $type, array())) !== FALSE) {
@@ -478,17 +481,28 @@ function multistep_adl_node_validate($node, $form, &$form_state) {
  * Submit the form and redirect to the next appropriate step.
  */
 function multistep_adl_submit($form, &$form_state) {
-  $nid = $form_state['nid'];
 
   $current_step = $form['#multistep_adl']['current'];
   $status = module_invoke_all('multistep_adl_update_status', $form_state, 'submitted', $current_step);
-  _multistep_adl_update_status($nid, $status, $current_step);
-  $step = FALSE;
-  $steps_settings = drupal_json_decode(variable_get('multistep_adl_steps_settings', '{}'));
 
   $bundle = $form_state['values']['type'];
   $current_bundle_first_step = multistep_adl_get_first($bundle);
 
+  //Erase from form state values fields, which are note in the current step
+  //and submit the node after that.
+  $groups = field_group_info_groups('node', $bundle, 'form');
+  $current_group_children = $groups[$current_step]->children;
+  $exclude_form_state_fields = array_diff(array_keys(field_info_instances('node', $bundle)), $current_group_children);
+  foreach ($exclude_form_state_fields as $exclude_field) {
+    unset($form_state['values'][$exclude_field]);
+  }
+  node_form_submit($form,$form_state);
+
+  $nid = $form_state['nid'];
+  _multistep_adl_update_status($nid, $status, $current_step);
+
+  $step = FALSE;
+  $steps_settings = drupal_json_decode(variable_get('multistep_adl_steps_settings', '{}'));
   //If the steps settings don't contain the next step for current determining field value
   // or current step isn't the first step, get the next or previous step from form
   if (!$step) {
@@ -535,7 +549,8 @@ function multistep_adl_submit($form, &$form_state) {
       unset($_GET['destination']);
       $query['query'] += $destination;
     }
-    $form_state['redirect'] = array('node/' . $nid . '/edit', $query);
+    //$form_state['redirect'] = array('node/' . $nid . '/edit', $query);
+    $form_state['redirect'] = array($_GET['q'], $query);
   }
 }
 
@@ -610,6 +625,7 @@ function multistep_adl_get_steps($type) {
  *
  * @param $a
  * @param $b
+ *
  * @return int weight difference
  */
 function _multistep_adl_cmp_group_weight($a, $b) {

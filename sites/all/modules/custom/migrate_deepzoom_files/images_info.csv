@@ -1,4 +1,4 @@
-filename,deepzoom_hash,title,gallery
+filename,deepzoom_hash,title,galleries
 1.1.jpg,c95de6cb35df51dbf8c2219895e68480,"E. G. White portrait (oval), c. 1859, (H. C. White, photographer, Monroe, Wis.)",People
 1.2.jpg,9fe115ab67b1a2f44989cc51539647a7,"E. G. White portrait (oval), c. 1859, (H. C. White, photographer, Monroe, Wis.)",People
 10.1.jpg,858b4763c723aad3f46f95c74a60e262,"E. G. White portrait, c. 1875, (Dunham & Bluett's, Oakland, Cal.)",People
@@ -617,7 +617,7 @@ filename,deepzoom_hash,title,gallery
 292.jpg,f70200601739bdc51ad41ca2a0e15c79,Elder Ostrander & family,People
 293.1.jpg,772bb451cdaff4a2d133edcb93e3f878,Dan R. Palmer for W. K. Kellogg given by L. M. Hall to W. C. White; 8/8/21,People
 293.2.jpg,76d9bf733de922142a25ff84c47c631f,Mrs. D. R. Palmer for W. K. Kellogg given to W. C. White by L. M. Hall; 8/8/21,People
-294.jpg,8a097468e6235e3fab4506005cc4fd58,"Elder E. R. Palmer standing beside a stack of E. G. White books 6 feet and inch high 29,084 pages, taken June 11,1928. ",People
+294.jpg,8a097468e6235e3fab4506005cc4fd58,"Elder E. R. Palmer standing beside a stack of E. G. White books 6 feet and inch high 29,084 pages, taken June 11,1928.",People
 295.jpg,ed1e2a0e6afaff3f8f0986ff7ae016f1,Dr. Lynett--Parmerlee & wife,People
 296.1.jpg,3d1172d839b720d48a95f09019fa4862,"Charles Paul and his wife, Jennie Glover Paul. The photo was taken on the day of their marriage in 1880. They were students of old Battle Creek College. They were the parents of six children, two of whom have made splendid records as foreign missionaries. The father died in 1919 and the mother in 1936. They repose in the Bedford cemetery.",People
 296.2.jpg,fed60e0d824f53a89d9802a7249bf145,"The Old Paul Home, near Fine Lake, a few miles N.W. of Battle Creek, Michigan.",People
@@ -671,8 +671,7 @@ filename,deepzoom_hash,title,gallery
 321.5.jpg,e3cef421692323ff901e4ca321252746,Elder A. T. Robinson and wife,People
 321.6.jpg,39b3b36e391c719b896933b0c550850a,"""Elder A. T. Robinson, father of Dores Robinson Grandfather of Virgil, Mabel, and GladysÃ®",People
 321.7.jpg,19c02e6c1dbf7ea2fb627927f020379f,"Asa Loretta Robinson and Glady R. (born 1892) taken at Cape Town, South Africa",People
-321.8.jpg,ea47ac116db23c2adb79a8177b4f36dc,"Dores Eugene Robinson, Pacific Union College about 1934, 55 years old.  Married Ella White granddaughter of Ellen G. White,","People
-"
+321.8.jpg,ea47ac116db23c2adb79a8177b4f36dc,"Dores Eugene Robinson, Pacific Union College about 1934, 55 years old.  Married Ella White granddaughter of Ellen G. White,",People
 321.9.jpg,f8c1cee91027ebb995adffa9849f9179,"Asa and Larettais 50th anniversary, taken at Melruse Hospital",People
 322.1.jpg,e157b2d0b16213047d90d3a1bc99c622,Margaret Rowen,People
 322.2.jpg,0486e0df6036cd8170aab412dab87d44,Margaret Rowen,People
@@ -727,8 +726,7 @@ filename,deepzoom_hash,title,gallery
 353.jpg,a7474096b6e398996efbf0bc3b22f243,"Mr. and Mrs. Tucker, wedding photo",People
 354.jpg,bcd696284303b8c1eba66d0d75684f06,Charles Ulrich,People
 355.1.jpg,304d1cd7e6dea9c7aea7b3bad892df7d,"I. D. Van Horn and J. H. Waggoner photo loaned to W. C. White by J. N. Loughborough, Sept 27. 1921",People
-355.2.jpg,bed33d0739fdc6f927fc58e21f12c35d,"I. D. Van Horn and J. H. Waggoner photo loaned to W. C. White by J. N. Loughborough, Sept 27. 1921","
-People"
+355.2.jpg,bed33d0739fdc6f927fc58e21f12c35d,"I. D. Van Horn and J. H. Waggoner photo loaned to W. C. White by J. N. Loughborough, Sept 27. 1921",People
 356.1.1.jpg,afff81acc4c642135ec3f6990dc5b85b,"Newman Howard Van Horn (son of I. D. and Adelia) age 3 months, Aug 1878",People
 356.1.2.jpg,28546def46367072aab2b36fa3b12d48,Adelia patton Van Horn,People
 356.1.3.jpg,9083d0cfc79301715d2de580f199badc,"Mr. and Mrs. I. D. Van Horn, photo loaned to W. C. White by Loughborough, 9-27-21",People
@@ -883,7 +881,7 @@ People"
 66.2.jpg,8c0c198fe6089008b548684f3650a06d,Central Stereopticon Exchange,People
 66.3.jpg,b899f7a663ae9cf05875c79a222e489f,"James Edson White cottage once used as office of Southern Missionary Society, Edgefield, Tennessee",People
 66.4.jpg,9b9ea44d2ce27b45c9761f46fa84d1bf,James Edson  White residences. Granary. Edgefield,People
-66.5.jpg,99ba56915c303a644844750ca947981b,James Edson  White residences / Printing Offices,63a
+66.5.jpg,99ba56915c303a644844750ca947981b,James Edson  White residences / Printing Offices 63a,People
 66.6.jpg,d858326be21465854502ad98d254c2d9,James Edson  White residences. House sideview. Edgefield.,People
 66.7.jpg,080e9226b3322ad08826d26ded14f3c7,"Barn, James Edson  White, Edgefield, Tenn",People
 66.8.jpg,e9bc696e7c62fc09e708bd4e346680c2,"Schoolhouse in grove, James Edson White, Edgefield, Tennessee",People
@@ -937,17 +935,15 @@ People"
 87.1.7.jpg,11420558a279081fb6d27ea3a594ba98,Henry and Herbert White with Arthur.,People
 87.1.8.1.jpg,8692e07a393b7dfeaebb7750e10964df,"Family Picture. Eld. W. C. White; wife, children: 6 by marriage and 13 grandchildren.",People
 87.1.9.jpg,aa8f687b540514abd4ec55f299449811,Herbert and Anna White,People
-87.2.1.jpg,2457d115a551b1ba6a594d34855f279d,"White, W. C., family of - misc.84. In this picture we are supposed to be smiling but as 
-Herbert says, we look as if we were trying to smile but couldn't.  May 
+87.2.1.jpg,2457d115a551b1ba6a594d34855f279d,"White, W. C., family of - misc.84. <|>ÒIn this picture we are supposed to be smiling but as 
+Herbert says, we look as if we were trying to smile but couldnÕt.Ó  May 
 Lacey White is on the right.  The other two are her sisters, Nora and 
-Marguerite.",People
+Marguerite.<|>",People
 87.3.jpg,c7d0b577bf594498e6c8f9c68d680470,"Front Row (L to R): Viola Ruth Stearns (m Kenneth Lutz), James Audrey White, Gladys Robinson Stearns (Sister of D E Robinson), W C White, Mrs W C White, A T Robinson; Back Row (1 to r): Alta Robinson, Virgil Eugene Robinson, Arthur L White, Frieda White, Ella May White Robinson, Dores Eugene Robinson, Gladys Robinson (married Daniel Kubrock), May Walling.",People
 87.4.jpg,859b075ec24344877165bc04d4e7169f,"Thanksgiving Dinner. Eld. A. G. Daniells standing at the head of the table. White children, grandchildren, except for Jaques family, who were not there. The photo was taken between 1930 - 33 or 34. Mrs. Erthel May White Currow",People
 87.6.jpg,7b25ea30ed343a9452ec0858d9571746,"Marriage: Bride on the left - Anna Johnson, Groom on the left - Herbert White (one of the Twins), Bride on the right - Grace White, Groom on the right - Dr. John Godfrey Jaques. Flower girls (Members of James Family ??)",People
-87.7.jpg,28b9f442b60999a128e67e9938657d55,"White, W. C., family of - misc.84","People
-"
-87.8.jpg,34ee7a27f00da47e4e1e4022fff2b2f1,"White, W. C., family of - misc.84","People
-"
+87.7.jpg,28b9f442b60999a128e67e9938657d55,"White, W. C., family of - misc.84",People
+87.8.jpg,34ee7a27f00da47e4e1e4022fff2b2f1,"White, W. C., family of - misc.84",People
 87.9.1.jpg,802cc1b866d7e5b5cac879ef6333c124,"White, W. C., family of - misc. 84: Back row: Dr. John Jacques, Grace White Jacques, Francis White, Frieda Swingle-White and Arthur L. White.<br>Second row, standing: Wilfred Workman, Junior, Clifford Workman, Mabel White Workman, Wilfred D. Workman, Virgil Robinson, Dores E. Robinson, Ella White-Robinson and Mabel Robinson.<br>Third row, seated: Anna Johnson-White, Herbert C. White, Mrs. W. C. White, Elder W. C. White, J. Henry White, and Margaret Rossiter-White.<br>Front row: Viola Jacques, Dorothy White, Gladys Robinson, Kathryn White, Oliver Jacques, Sylvan Jacques, Daphne White, Donald White and Winnifred White.",People
 87.9.2.jpg,08c76bcbf54524c437f714c19684bb38,"Greeting card from all branches of the W. C. White Family, Elmshaven, St. Helena, California, 1930",People
 88.1.jpg,76f8681dcf3952807ed1c53eec1074da,W. C. White Residences BC 84a,People
@@ -1705,7 +1701,7 @@ a93.jpg,490eb87dc61ee79742ace79db2418faa,Edith and Ernest Ward,People
 634.1b.jpg,af7f27f75736f354ad50b69874c6be97,"SDA Monument. Battle Creek is closely identified with Adventist history. <|>The first church built by Seventh-Day Adventists was erected here in 1855 and the General Conference organized in 1863. The denomination«s first world headquarters, publishing house, sanitarium, school, and college were in Battle Creek. The ""Dime"" Tabernacle, seating 3,200, built on this site in 1878 with contributions from members throughout the nation, burned in 1922 and was replaced in 1924 by this building. <|>",Institutions
 634.2a.jpg,481a17a70df8cf285cb3fbf99238e43c,"Interior of James White Home on Wood Street in Battle Creek, Michigan, stairs to second floor. (color)",Institutions
 634.2b.jpg,c245b3d513465f6df216cb8cd1b3482a,"Home of James and Ellen White. 63 Wood Street in Battle Creek, Michigan (color)",Institutions
-634.2c.jpg,01ba45052af8961e1cd595f79aa57284,"Home of James and Ellen White. 63 Wood Street in Battle Creek, Michigan (color)",
+634.2c.jpg,01ba45052af8961e1cd595f79aa57284,"Home of James and Ellen White. 63 Wood Street in Battle Creek, Michigan (color)",Institutions
 634.3.jpg,cd1083ca31a5a8d37dea6ce020a66833,"Interior of James White Home on Wood Street in Battle Creek, Michigan.",Institutions
 634.3a.jpg,b629906adb68e589b979e321dc347dca,"Home of James and Ellen White. 63 Wood Street in Battle Creek, Michigan (color)",Institutions
 634.3b.jpg,f1b41862c821312116cd52f3c4fca09a,"Cemetery Lot in Oak Hill Cemetery, Battle Creek, Michigan. Resting place of the White family. In the foreground are the headstones marking Elder and Mrs. White«s graves. (color)",Institutions

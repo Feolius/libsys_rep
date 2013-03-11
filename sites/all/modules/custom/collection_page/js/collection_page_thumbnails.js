@@ -1,59 +1,87 @@
-(function ($) {
-  Drupal.behaviors.collectionThumbnailsView = {
-    attach: function (context, settings) {
+(function($) {
+  Drupal.behaviors.collectionPageThumbnails = {
+    attach: function(context, settings) {
       var height = Drupal.settings.collection_page.height;
-      //Height for visually compressed images
-      var lowHeight = height*2/3;
-       $(".collection-thumbnail").css("height", lowHeight);
-       $(".collection-upper-thumbnail").css("height", lowHeight);
-      $("#collection-upper-thumbnail").hover(function(){
+      var lowHeight = height * 2 / 3;
 
-        },function(){
-          $("#collection-thumbnail-upper-container").css("display", "none");
-          $("#collection-upper-thumbnail").css("height", lowHeight);
-          $("#collection-thumbnail-metainfo").html("");
-        });
-      $(".collection-thumbnail").hover(function(){
-        var metainfo = $(this).parent().find(".collection-thumbnail-metainfo").html();
-        var nodeLink = $(this).parent().find(".collection-thumbnail-node-link").val();
-        var initialLeft = $(this).position().left;
-        var initialWidth = $(this).width();
-        var padding = parseInt($("#collection-thumbnail-upper-container").css("padding-left"));
-        $("#collection-thumbnail-upper-container").css("top", $(this).position().top - padding);
-        $("#collection-upper-thumbnail").attr("src", $(this).attr("src"));
-        $("#collection-upper-thumbnail-link").attr("href", nodeLink);
-        if ($("#collection-thumbnail-upper-container").css("display") == "none"){
-          $("#collection-thumbnail-upper-container").css("display", "block");
-          $("#collection-upper-thumbnail").animate({
-            height: height
-          },{
-            duration: 300,
-            complete: function(){
-              $("#collection-thumbnail-metainfo").html(metainfo);
-              $("#collection-thumbnail-metainfo").width(1.5*initialWidth);
-            },
-            step: function(now, fx){
-              var left = initialLeft - initialWidth*0.5*(now/lowHeight - 1) - padding;
-              var right = left + now + 2*padding;
-              var containerWidth = $("#collection-standart-thumbnail-view-container").width();
-              if (right >= containerWidth){
-                left = containerWidth - now;
-              }
-              if (left < 0){
-                left = 0;
-              }
-              $("#collection-thumbnail-upper-container").css("left", left);
-              $("#collection-thumbnail-upper-container").width((now/lowHeight)*initialWidth);
-            }
-          });
-      }else{
-        $("#collection-upper-thumbnail").attr("src", $(this).attr("src"));
-      }
+      $(".collection-thumbnail").once('collectionPageThumbnails').each(function() {
 
-      },function(){
+        $(this).height(height * 2 / 3);
+        $(this).width(width * 2 / 3);
+        var height = $(this).height();
+        var width = $(this).width();
+        var parent = $(this).parent();
+        parent.width(width * 2 / 3);
+        parent.height(height * 2 / 3);
 
       });
+
+
+      $("#collection-upper-thumbnail", context).once('collectionPageThumbnails').hover(function() {
+      }, function() {
+        $("#collection-thumbnail-upper-container").css("display", "none");
+
+        $("#collection-thumbnail-metainfo").html("");
+      });
+      $(".collection-thumbnail", context).hover(function() {
+        $("#collection-thumbnail-upper-container").css("display", "block");
+        var metainfo = $(this).parent().find(".collection-thumbnail-metainfo").html();
+        var nodeLink = $(this).parent().find(".collection-thumbnail-node-link").val();
+        var parentPaddingLeft = parseInt($(this).parent().css("padding-left"));
+        var parentPaddingTop = parseInt($(this).parent().css("padding-top"));
+        var initialLeft = $(this).position().left - parentPaddingLeft;
+        var initialWidth = $(this).width();
+        var initialHeight = $(this).height();
+        var width = initialWidth * 1.5;
+        height = initialHeight * 1.5;
+        var padding = parseInt($("#collection-thumbnail-upper-container").css("padding-left"));
+        $("#collection-thumbnail-upper-container").css("width", initialWidth);
+        $("#collection-thumbnail-upper-container").css("top", $(this).position().top - parentPaddingTop);
+        $("#collection-thumbnail-upper-container").css("left", initialLeft);
+        //$('#collection-upper-thumbnail').html("<div style='background-color:black; width: 100%; height: 100%;'></div>");
+        $("#collection-upper-thumbnail").attr("src", $(this).attr("src"));
+        //$("#collection-upper-thumbnail").width(initialWidth);
+       // $("#collection-upper-thumbnail").height(initialHeight);
+        $("#collection-upper-thumbnail-link").attr("href", nodeLink);
+        $("#collection-thumbnail-upper-container").css("display", "none");
+        var n = 0;
+        if ($("#collection-thumbnail-upper-container").css("display") === "none") {
+          $("#collection-thumbnail-upper-container").css("display", "block");
+          $("#collection-thumbnail-upper-container").animate({
+            width: width
+          }, {
+            duration: 300,
+            queue: false,
+
+            complete: function() {
+              $(this).css('height', '');
+              $("#collection-thumbnail-metainfo").html(metainfo);
+              $("#collection-thumbnail-metainfo").width(1.5 * initialWidth);
+            },
+            step: function(now, fx) {
+              var cur = $("#collection-thumbnail-upper-container").width() + 10;
+              var left = initialLeft - (cur - initialWidth) * 0.5;
+              var height = initialHeight*now/initialWidth;
+              $(this).height(height);
+              if (left < 0) {
+                left = 0;
+              }
+              var right = left + now;
+              var containerWidth = $("#collection-standart-thumbnail-view-container").width();
+              if (right >= containerWidth) {
+                left = containerWidth - now;
+              }
+              $(this).css("left", left);
+            }
+          });
+        } else {
+          $("#collection-upper-thumbnail").attr("src", $(this).attr("src"));
+        }
+
+      }, function() {
+
+      });
+    }
   }
-}
 })(jQuery);
 

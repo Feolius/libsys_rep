@@ -30,7 +30,18 @@ class DeepzoomNodesMigration extends Migration {
 
     // Finally we add simple field mappings
     $this->addFieldMapping('title', 'title');
+    $this->addFieldMapping('field_files_primary_media')
+      ->defaultValue('image');
     $this->addFieldMapping('field_files_description', 'description');
+
+    $this->addFieldMapping('field_files_thumbnail', 'filename');
+    $this->addFieldMapping('field_files_thumbnail:file_class')
+      ->defaultValue('MigrateFileUri');
+    $this->addFieldMapping('field_files_thumbnail:file_replace')
+      ->defaultValue(MigrateFile::FILE_EXISTS_REUSE);
+    $this->addFieldMapping('field_files_thumbnail:preserve_files')
+      ->defaultValue(TRUE);
+
     $this->addFieldMapping('field_files_image', 'filename');
     $this->addFieldMapping('field_files_image:file_class')
       ->defaultValue('MigrateFileUri');
@@ -38,9 +49,11 @@ class DeepzoomNodesMigration extends Migration {
       ->defaultValue(MigrateFile::FILE_EXISTS_REUSE);
     $this->addFieldMapping('field_files_image:preserve_files')
       ->defaultValue(TRUE);
+
     $this->addFieldMapping('field_files_galleries', 'galleries');
     $this->addFieldMapping('field_files_galleries:create_term')
       ->defaultValue(TRUE);
+
     $this->addUnmigratedSources(array('deepzoom_hash'));
   }
 
@@ -51,6 +64,7 @@ class DeepzoomNodesMigration extends Migration {
       $title .= '...';
       $row->description = $row->title;
     }
+    $row->galleries = trim($row->galleries);
     $row->title = $title;
   }
 }

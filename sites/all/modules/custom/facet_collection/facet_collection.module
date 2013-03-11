@@ -19,7 +19,7 @@ function facet_collection_forms($form_id, $args) {
         if (in_array($field['type'], $field_type_list)) {
           $textfield_names[$content_type][] = $instance['field_name'];
           $forms['facet_collection_' . $field['field_name'] . '_form'] = array(
-              'callback' => 'facet_collection_field_search_form',
+            'callback' => 'facet_collection_field_search_form',
           );
         }
       }
@@ -28,7 +28,8 @@ function facet_collection_forms($form_id, $args) {
     //Also we should save searchable field names in cache to provide quick access for them
     cache_set('facet_collection:field_search_field_names', $textfield_names, 'cache', CACHE_TEMPORARY);
     cache_set('facet_collection:field_search_forms', $forms, 'cache', CACHE_TEMPORARY);
-  } else {
+  }
+  else {
     $forms = cache_get('facet_collection:field_search_forms');
     $forms = $forms->data;
   }
@@ -55,27 +56,27 @@ function facet_collection_field_search_form($form, &$form_state, $args) {
     }
   }
   $form = array(
-      'title' => array(
-          '#type' => 'item',
-          '#markup' => '<h3>' . 'Search by ' . $label . '</h3>',
-          '#weight' => -20,
-      ),
-      'textfield' => array(
-          '#type' => 'textfield',
-          '#size' => 10,
-          '#weight' => -15,
-          '#default_value' => $default_value,
-      ),
-      'submit' => array(
-          '#type' => 'submit',
-          '#submit' => array('facet_collection_search_form_submit'),
-          '#value' => t('Search')
-      ),
-      'clear' => array(
-          '#type' => 'submit',
-          '#submit' => array('facet_collection_search_form_remove_filter'),
-          '#value' => t('Remove filter'),
-      )
+    'title' => array(
+      '#type' => 'item',
+      '#markup' => '<h3>' . 'Search by ' . $label . '</h3>',
+      '#weight' => -20,
+    ),
+    'textfield' => array(
+      '#type' => 'textfield',
+      '#size' => 10,
+      '#weight' => -15,
+      '#default_value' => $default_value,
+    ),
+    'submit' => array(
+      '#type' => 'submit',
+      '#submit' => array('facet_collection_search_form_submit'),
+      '#value' => t('Search')
+    ),
+    'clear' => array(
+      '#type' => 'submit',
+      '#submit' => array('facet_collection_search_form_remove_filter'),
+      '#value' => t('Remove filter'),
+    )
   );
   return $form;
 }
@@ -111,15 +112,18 @@ function facet_collection_search_form_submit($form, &$form_state) {
   $search_query_string = implode(' AND ', $current_search_queries);
   $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
   $options = array(
-      'query' => $get_params,
+    'query' => $get_params,
   );
   if (!empty($search_query_string)) {
     $redirect_path = $base_url . '/' . arg(0) . '/' . $search_query_string;
-  } else {
+  }
+  else {
     $redirect_path = $base_url . '/' . arg(0);
   }
   $form_state['redirect'] = array(
-      $redirect_path, $options, 302
+    $redirect_path,
+    $options,
+    302
   );
 }
 
@@ -149,15 +153,20 @@ function facet_collection_search_form_remove_filter($form, &$form_state) {
   $search_query_string = implode(' AND ', $current_search_queries);
   $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
   $options = array(
-      'query' => $get_params,
+    'query' => $get_params,
   );
   if (!empty($search_query_string)) {
     $form_state['redirect'] = array(
-        $base_url . '/' . arg(0) . '/' . $search_query_string, $options, 302
+      $base_url . '/' . arg(0) . '/' . $search_query_string,
+      $options,
+      302
     );
-  } else {
+  }
+  else {
     $form_state['redirect'] = array(
-        $base_url . '/' . arg(0), $options, 302
+      $base_url . '/' . arg(0),
+      $options,
+      302
     );
   }
 }
@@ -167,17 +176,17 @@ function facet_collection_search_form_remove_filter($form, &$form_state) {
  */
 function facet_collection_menu() {
   $items['collection'] = array(
-      'title' => t('Collection'),
-      'type' => MENU_LOCAL_TASK,
-      'page callback' => 'facet_collection_page',
-      'page arguments' => array(),
-      'access arguments' => array('search content'),
+    'title' => t('Collection'),
+    'type' => MENU_LOCAL_TASK,
+    'page callback' => 'facet_collection_page',
+    'page arguments' => array(),
+    'access arguments' => array('search content'),
   );
   //This paths are used for displaing collection teasers
   $items['collection-teaser/node'] = array(
-      'type' => MENU_CALLBACK,
-      'page callback' => 'facet_collection_collection_teaser',
-      'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'page callback' => 'facet_collection_collection_teaser',
+    'access arguments' => array('access content'),
   );
   return $items;
 }
@@ -230,8 +239,9 @@ function facet_collection_page() {
     }
     //Make a fake query to show list of content types filters
     apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
-  } else {
-   $results[$searched_bundles] = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
+  }
+  else {
+    $results[$searched_bundles] = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
   }
   $hook = 'facet_collection_search_results__alter';
   $build = theme($hook, array('results' => $results));
@@ -247,7 +257,8 @@ function facet_collection_get_default_params() {
   $q = arg(1);
   if (empty($q)) {
     $params['q'] = '*:*';
-  } else {
+  }
+  else {
     $params['q'] = $q;
   }
 
@@ -261,7 +272,7 @@ function facet_collection_get_default_params() {
  */
 function facet_collection_block_info() {
   $blocks['content_types_selection'] = array(
-      'info' => t('Filters for nodes')
+    'info' => t('Filters for nodes')
   );
   return $blocks;
 }
@@ -278,8 +289,8 @@ function facet_collection_block_view($delta) {
   $content = facet_collection_sort_content($content);
   $content = array_reverse($content);
   return array(
-      'subject' => t('Filters'),
-      'content' => $content,
+    'subject' => t('Filters'),
+    'content' => $content,
   );
 }
 
@@ -306,7 +317,8 @@ function facet_collection_get_search_filters() {
       }
     }
     cache_set('facet_collection:field_search_field_names', $textfield_names, 'cache', CACHE_TEMPORARY);
-  } else {
+  }
+  else {
     $textfield_names = cache_get('facet_collection:field_search_forms:field_search_field_names');
     $textfield_names = $textfield_names->data;
   }
@@ -328,9 +340,9 @@ function facet_collection_get_search_filters() {
             $field_name = $field_info['field_name'];
             $instance = field_info_instance('node', $field_name, $content_type);
             $args = array(
-                'label' => $instance['label'],
-                'index_field_name' => $index_field_name,
-                'default_value' => '',
+              'label' => $instance['label'],
+              'index_field_name' => $index_field_name,
+              'default_value' => '',
             );
             $content[$field_name] = drupal_get_form('facet_collection_' . $field_name . '_form', $args);
           }
@@ -463,7 +475,7 @@ function facet_collection_sort_content($content) {
  * Get chosen content types
  */
 function facet_collection_get_filtered_content_types() {
-  $content_types = &drupal_static(__FUNCTION__);
+  $content_types = & drupal_static(__FUNCTION__);
   if (empty($content_types)) {
     $environment = apachesolr_default_environment();
     $content_types = apachesolr_get_index_bundles($environment, 'node');
@@ -535,7 +547,8 @@ function facet_collection_facetapi_facet_info($searcher_info) {
         foreach ($field_type_array as $field_type) {
           $field_type_facet_list[$field_type][] = $module;
         }
-      } elseif ($filter_type == 'search') {
+      }
+      elseif ($filter_type == 'search') {
         foreach ($field_type_array as $field_type) {
           $field_type_search_list[$field_type][] = $module;
         }
@@ -607,7 +620,7 @@ function facet_collection_apachesolr_process_results(&$results, DrupalSolrQueryI
     $path = str_replace($base_url . '/', '', $link);
     $get_params['curr'] = $start + $i;
     $options = array(
-        'query' => $get_params
+      'query' => $get_params
     );
     $link = url($path, $options);
     $results[$i]['link'] = $link;
@@ -619,13 +632,13 @@ function facet_collection_apachesolr_process_results(&$results, DrupalSolrQueryI
  */
 function facet_collection_theme() {
   return array(
-      'apachesolr_search_snippets__node' => array(
-          'template' => 'facet-collection-snippet',
-          'variables' => array('doc' => NULL, 'snippets' => array()),
-      ),
-      'facet_collection_search_results' => array(
-          'variables' => array('results' => NULL),
-      ),
+    'apachesolr_search_snippets__node' => array(
+      'template' => 'facet-collection-snippet',
+      'variables' => array('doc' => NULL, 'snippets' => array()),
+    ),
+    'facet_collection_search_results' => array(
+      'variables' => array('results' => NULL),
+    ),
   );
 }
 
@@ -653,7 +666,8 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
       if ($field_info['type'] == 'text_with_summary') {
         if (isset($node_teaser[$field_name])) {
           $text = $node_teaser[$field_name][0]['#markup'];
-        } else {
+        }
+        else {
           ;
           //Else we should get full text
           $items = field_get_items('node', $node, $field_name);
@@ -665,7 +679,8 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
         }
       }
     }
-  } else {
+  }
+  else {
     if (isset($snippets['content'])) {
       $text .= $snippets['content'];
       unset($snippets['content']);
@@ -692,7 +707,8 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
           $styles = image_styles();
           if (in_array($style, array_keys($styles))) {
             $image_path = image_style_url($style, $uri);
-          } else {
+          }
+          else {
             $image_path = file_create_url($uri);
           }
           $variables['image_path'] = $image_path;
@@ -741,9 +757,9 @@ function facet_collection_apachesolr_query_alter($query) {
 function theme_facet_collection_search_results($vars) {
   $results = $vars['results'];
   $build['search_results'] = array(
-      '#theme' => 'search_results',
-      '#results' => $results,
-      '#module' => 'facet_collection'
+    '#theme' => 'search_results',
+    '#results' => $results,
+    '#module' => 'facet_collection'
   );
   return $build;
 }
@@ -754,13 +770,13 @@ function theme_facet_collection_search_results($vars) {
  */
 function facet_collection_entity_info_alter(&$entity_info) {
   $entity_info['node']['view modes'] += array(
-      'collection_teaser' => array(
-          'label' => t('Collection teaser'),
-          'custom settings' => TRUE,
-      ),
-      'collection_thumbnail' => array(
-          'label' => t('Collection thumbnail'),
-          'custom settings' => TRUE,
-      )
+    'collection_teaser' => array(
+      'label' => t('Collection teaser'),
+      'custom settings' => TRUE,
+    ),
+    'collection_thumbnail' => array(
+      'label' => t('Collection thumbnail'),
+      'custom settings' => TRUE,
+    )
   );
 }
