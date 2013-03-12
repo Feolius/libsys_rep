@@ -1,0 +1,36 @@
+name = Ellen G. White Estate
+description = Ellen G. White Estate is a subtheme of CorporateClean theme.
+version = VERSION
+core = 7.x
+
+base theme = corporateclean
+
+stylesheets[all][] = style.css
+stylesheets[all][] = color/colors.css
+
+regions[search_area] = Search area
+regions[highlighted] = Highlighted
+regions[account_controls] = Account Controls
+regions[content] = Content
+regions[sidebar_first] = First sidebar
+regions[social] = Social
+regions[banner] = Banner
+regions[home_left] = Home Left
+regions[home_middle] = Home Middle
+regions[home_right] = Home Right
+regions[footer] = Footer
+regions[footer_bottom_right] = Footer bottom right
+regions[help] = Help
+regions[page_top] = Page top
+regions[page_bottom] = Page bottom
+
+settings[breadcrumb_display]= 1
+
+project = "corporateclean"
+; Information added by drupal.org packaging script on 2012-05-25
+version = "7.x-1.5"
+core = "7.x"
+project = "corporateclean"
+datestamp = "1337952655"
+
+

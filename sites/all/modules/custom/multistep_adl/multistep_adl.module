@@ -449,7 +449,6 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
     );
   }
   $form['actions']['submit']['#access'] = FALSE;
-  dpm($form);
   /* Check the Published box if the settings need it
    * @todo Verify how this is done in Drupal 7
   if (variable_get('multistep_adl_status_publishing', 'default') == 'complete' && array_search('status', variable_get('node_options_' . $type, array())) !== FALSE) {

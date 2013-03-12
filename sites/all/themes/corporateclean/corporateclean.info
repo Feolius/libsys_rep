@@ -3,6 +3,9 @@ description = A flexible, recolorable theme with many regions supported by <a hr
 version = VERSION
 core = 7.x
 
+stylesheets[all and (min-width: 980px)][] = css/960.css
+stylesheets[all and (min-width: 760px) and (max-width: 980px)][] = css/720.css
+stylesheets[all and (max-width: 760px)][] = css/mobile.css
 stylesheets[all][] = style.css
 stylesheets[all][] = color/colors.css
 
@@ -32,9 +35,11 @@ settings[slideshow_effect_time]='10'
 settings[slideshow_randomize]= 0
 settings[slideshow_wrap]= 0
 settings[slideshow_pause]= 0
-; Information added by drupal.org packaging script on 2012-11-11
-version = "7.x-1.7"
+settings[responsive_meta]= 1
+settings[responsive_respond]= 0
+; Information added by drupal.org packaging script on 2013-02-07
+version = "7.x-2.1"
 core = "7.x"
 project = "corporateclean"
-datestamp = "1352677260"
+datestamp = "1360244054"
 

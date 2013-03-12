@@ -22,14 +22,61 @@ function corporateclean_breadcrumb($variables){
   }
 }
 
+function corporateclean_page_alter($page) {
+
+	if (theme_get_setting('responsive_meta','corporateclean')):
+	$mobileoptimized = array(
+		'#type' => 'html_tag',
+		'#tag' => 'meta',
+		'#attributes' => array(
+		'name' =>  'MobileOptimized',
+		'content' =>  'width'
+		)
+	);
+
+	$handheldfriendly = array(
+		'#type' => 'html_tag',
+		'#tag' => 'meta',
+		'#attributes' => array(
+		'name' =>  'HandheldFriendly',
+		'content' =>  'true'
+		)
+	);
+
+	$viewport = array(
+		'#type' => 'html_tag',
+		'#tag' => 'meta',
+		'#attributes' => array(
+		'name' =>  'viewport',
+		'content' =>  'width=device-width, initial-scale=1'
+		)
+	);
+	
+	drupal_add_html_head($mobileoptimized, 'MobileOptimized');
+	drupal_add_html_head($handheldfriendly, 'HandheldFriendly');
+	drupal_add_html_head($viewport, 'viewport');
+	endif;
+	
+}
+
+function corporateclean_preprocess_html(&$variables) {
+
+	if (!theme_get_setting('responsive_respond','corporateclean')):
+	drupal_add_css(path_to_theme() . '/css/basic-layout.css', array('group' => CSS_THEME, 'browsers' => array('IE' => '(lte IE 8)&(!IEMobile)', '!IE' => FALSE), 'preprocess' => FALSE));
+	endif;
+	
+	drupal_add_css(path_to_theme() . '/css/ie.css', array('group' => CSS_THEME, 'browsers' => array('IE' => '(lte IE 8)&(!IEMobile)', '!IE' => FALSE), 'preprocess' => FALSE));
+}
+
 /**
  * Override or insert variables into the html template.
  */
 function corporateclean_process_html(&$vars) {
-  // Hook into color.module
-  if (module_exists('color')) {
-    _color_html_alter($vars);
-  }
+	// Hook into color.module
+	if (module_exists('color')) {
+	_color_html_alter($vars);
+	}
+
 }
 
 /**
@@ -71,14 +118,14 @@ if (theme_get_setting('slideshow_js','corporateclean')):
 	$slideshow_wrap=theme_get_setting('slideshow_wrap','corporateclean');
 	$slideshow_pause=theme_get_setting('slideshow_pause','corporateclean');
 	
-	drupal_add_js('jQuery(document).ready(function($) { 
-
+	drupal_add_js('jQuery(document).ready(function($) {
+	
 	$(window).load(function() {
 	
 		$("#slideshow img").show();
 		$("#slideshow").fadeIn("slow");
 		$("#slider-controls-wrapper").fadeIn("slow");
-
+	
 		$("#slideshow").cycle({
 			fx:    "'.$effect.'",
 			speed:  "slow",
@@ -90,17 +137,35 @@ if (theme_get_setting('slideshow_js','corporateclean')):
 			pagerAnchorBuilder: function(idx, slide) {
 				return "#slider-navigation li:eq(" + (idx) + ") a";
 			},
+			slideResize: true,
+			containerResize: false,
+			height: "auto",
+			fit: 1,
+			before: function(){
+				$(this).parent().find(".slider-item.current").removeClass("current");
+			},
 			after: onAfter
 		});
 	});
 	
-	function onAfter(curr, next, opts, fwd){
+	function onAfter(curr, next, opts, fwd) {
 		var $ht = $(this).height();
-		$(this).parent().animate({height: $ht});
+		$(this).parent().height($ht);
+		$(this).addClass("current");
 	}
-
+	
+	$(window).load(function() {
+		var $ht = $(".slider-item.current").height();
+		$("#slideshow").height($ht);
+	});
+	
+	$(window).resize(function() {
+		var $ht = $(".slider-item.current").height();
+		$("#slideshow").height($ht);
+	});
+	
 	});',
-	array('type' => 'inline', 'scope' => 'header', 'weight' => 5)
+	array('type' => 'inline', 'scope' => 'footer', 'weight' => 5)
 	);
 
 endif;

@@ -8,6 +8,7 @@
  * Preprocess function for a player.
  */
 function template_preprocess_jplayer_waveform(&$vars) {
+
   // Determine a unique player ID.
   $ids = entity_extract_ids($vars['entity_type'], $vars['entity']);
   $vars['player_id'] = _jplayer_waveform_check_id('jplayer-' . $vars['entity_type'] . '-' . $ids[0] . '-' . str_replace('_', '-', $vars['field_name']));

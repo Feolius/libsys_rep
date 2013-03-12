@@ -352,6 +352,7 @@ function jplayer_waveform_add_core_js() {
  * Implement hook_node_insert().
  */
 function jplayer_waveform_node_insert($node) {
+  dpm($node);
   $instances = field_info_instances('node', $node->type);
   foreach ($instances as $field_name => $instance) {
     $field_info = field_info_field($field_name);
