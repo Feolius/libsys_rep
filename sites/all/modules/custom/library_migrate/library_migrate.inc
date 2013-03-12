@@ -13,13 +13,13 @@ abstract class LibraryMigration extends DynamicMigration {
         'driver' => 'mysql',
     );
     //For import on production server
-   /* $other_database = array(
-        'database' => 'archive_library',
-        'username' => 'archive_library',
-        'password' => 'jkqeq23ffa3rh',
-        'host' => 'sql-3',
-        'driver' => 'mysql',
-    );*/
+    /* $other_database = array(
+      'database' => 'archive_library',
+      'username' => 'archive_library',
+      'password' => 'jkqeq23ffa3rh',
+      'host' => 'sql-3',
+      'driver' => 'mysql',
+      ); */
 
     Database::addConnectionInfo('ImportDatabaseKey', 'default', $other_database);
   }
@@ -113,7 +113,7 @@ class FilesMigration extends LibraryMigration {
   public function __construct() {
     parent::__construct();
     $this->description = t('Migrate Files content type from file table');
-    $this->dependencies = array('FileCollection', 'FileFolder', 'FileCategory', 'People', 'Location');
+    //$this->dependencies = array('FileCollection', 'FileFolder', 'FileCategory', 'People', 'Location');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
             ->select('file', 'f')
             ->fields('f', array('ID', 'topic', 'extendedtopic', 'description', 'keypoints', 'extended_summary', 'text', 'keywords', 'file_extension',
@@ -319,6 +319,9 @@ class PeopleMigration extends LibraryMigration {
   }
 
   public function prepareRow($row) {
+    if ($row->official_position == 0) {
+      return FALSE;
+    }
     $first_name = $row->first_name;
     $middle_name = $row->middle_name;
     $last_name = $row->last_name;
@@ -329,6 +332,9 @@ class PeopleMigration extends LibraryMigration {
       $real_title = $email;
     } else {
       return FALSE;
+    }
+    if(strlen($real_title) >= 255){
+      $real_title = substr($real_title, 0, 255);
     }
     $row->real_title = $real_title;
 
@@ -406,15 +412,20 @@ class PeopleMigration extends LibraryMigration {
   }
 
   protected function createStub($migration, $source_id) {
-    $node = new stdClass();
-    $node->title = t('Stub for') . $source_id[0];
-    $node->body = t('Stub body');
-    $node->type = $this->destination->getBundle();
-    $node->uid = 1;
-    $node->status = 0;
-    node_save($node);
-    if (isset($node->nid)) {
-      return array($node->nid);
+    //We should create stubs only when we go from location migration
+    if (get_class($migration) == "LocationMigration") {
+      $node = new stdClass();
+      $node->title = t('Stub for') . $source_id[0];
+      $node->body = t('Stub body');
+      $node->type = $this->destination->getBundle();
+      $node->uid = 1;
+      $node->status = 0;
+      node_save($node);
+      if (isset($node->nid)) {
+        return array($node->nid);
+      } else {
+        return FALSE;
+      }
     } else {
       return FALSE;
     }
@@ -422,10 +433,6 @@ class PeopleMigration extends LibraryMigration {
 
   public function prepare($node, $row) {
     $node->language = 'en';
-    if ($row->official_position == 0) {
-      $node->status = 0;
-      $node->promote = 0;
-    }
   }
 
 }
@@ -456,11 +463,11 @@ class LocationMigration extends LibraryMigration {
     $this->addFieldMapping('field_location_source', 'source');
     $this->addFieldMapping('field_location_written_files', 'written_files')
             ->sourceMigration('Files');
-      $this->addFieldMapping('field_location_received_files', 'received_files')
-      ->sourceMigration('Files');
+    $this->addFieldMapping('field_location_received_files', 'received_files')
+            ->sourceMigration('Files');
     $this->addFieldMapping('field_location_living_people', 'living_people')
             ->sourceMigration('People');
-    $this->addFieldMapping('field_location_visiter', 'living_people')
+    $this->addFieldMapping('field_location_visiter', 'visiters')
             ->sourceMigration('People');
   }
 
@@ -480,14 +487,17 @@ class LocationMigration extends LibraryMigration {
       $title[] = $country;
     }
     $title = implode(', ', $title);
-    if ($locname != 'Unknown' && !empty($locname)){
-      if(!empty($title)){
+    if ($locname != 'Unknown' && !empty($locname)) {
+      if (!empty($title)) {
         $title = $locname . ' (' . $title . ')';
-      }else{
+      } else {
         $title = $locname;
       }
-    }elseif(empty($title)){
+    } elseif (empty($title)) {
       return FALSE;
+    }
+    if(strlen($title) >= 255){
+      $title = substr($title, 0, 255);
     }
     $row->title = $title;
 
@@ -578,6 +588,10 @@ class LocationMigration extends LibraryMigration {
         'organisation_name' => $row->locname
     );
     $node->field_location_address['und']['0'] = $addressfield_content;
+    $field_instance = field_info_instance('node', 'field_location_geofield', 'location');
+    if (($field_value = geocoder_widget_get_field_value('node', $field_instance, $node)) !== FALSE) {
+      $node->{$field_instance['field_name']} = $field_value;
+    }
   }
 
 }
