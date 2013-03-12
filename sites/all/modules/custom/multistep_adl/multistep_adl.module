@@ -359,7 +359,6 @@ function multistep_adl_field_group_pre_render(&$element, $group, &$form) {
       '#access' => $access,
     );
   }
-  //var_dump($element);
 }
 
 /**
@@ -432,7 +431,7 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
     '#weight' => 0,
     '#access' => variable_get('multistep_adl_button_save', TRUE),
   );
-  if ($step == multistep_adl_get_first($entity)) {
+  if ($step != multistep_adl_get_last($entity)) {
     $form['actions']['next'] = array(
       '#type' => 'submit',
       '#value' => variable_get('multistep_adl_button_next', t('Next >')),
@@ -440,7 +439,7 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
       '#weight' => 999,
     );
   }
-  else {
+  if ($step != multistep_adl_get_first($entity)) {
     $form['actions']['done'] = array(
       '#type' => 'submit',
       '#value' => variable_get('multistep_adl_button_done', t('Done')),
@@ -481,8 +480,9 @@ function multistep_adl_node_validate($node, $form, &$form_state) {
  */
 function multistep_adl_submit($form, &$form_state) {
 
+
   $current_step = $form['#multistep_adl']['current'];
-  $status = module_invoke_all('multistep_adl_update_status', $form_state, 'submitted', $current_step);
+  //$status = module_invoke_all('multistep_adl_update_status', $form_state, 'submitted', $current_step);
 
   $bundle = $form_state['values']['type'];
   $current_bundle_first_step = multistep_adl_get_first($bundle);
@@ -492,13 +492,20 @@ function multistep_adl_submit($form, &$form_state) {
   $groups = field_group_info_groups('node', $bundle, 'form');
   $current_group_children = $groups[$current_step]->children;
   $exclude_form_state_fields = array_diff(array_keys(field_info_instances('node', $bundle)), $current_group_children);
+
+
+  if (isset($exclude_form_state_fields['title'])) {
+    unset($exclude_form_state_fields['title']);
+  }
+
   foreach ($exclude_form_state_fields as $exclude_field) {
     unset($form_state['values'][$exclude_field]);
   }
-  node_form_submit($form,$form_state);
+  node_form_submit($form, $form_state);
 
   $nid = $form_state['nid'];
-  _multistep_adl_update_status($nid, $status, $current_step);
+
+  //_multistep_adl_update_status($nid, $status, $current_step);
 
   $step = FALSE;
   $steps_settings = drupal_json_decode(variable_get('multistep_adl_steps_settings', '{}'));
@@ -548,8 +555,8 @@ function multistep_adl_submit($form, &$form_state) {
       unset($_GET['destination']);
       $query['query'] += $destination;
     }
-    //$form_state['redirect'] = array('node/' . $nid . '/edit', $query);
-    $form_state['redirect'] = array($_GET['q'], $query);
+    $form_state['redirect'] = array('node/' . $nid . '/edit', $query);
+    //$form_state['redirect'] = array($_GET['q'], $query);
   }
 }
 
