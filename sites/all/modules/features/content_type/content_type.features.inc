@@ -1,14 +1,22 @@
 <?php
 /**
  * @file
- * content_types.features.inc
+ * content_type.features.inc
  */
 
 /**
  * Implements hook_node_info().
  */
-function content_types_node_info() {
+function content_type_node_info() {
   $items = array(
+    'events' => array(
+      'name' => t('Events'),
+      'base' => 'node_content',
+      'description' => '',
+      'has_title' => '1',
+      'title_label' => t('Title'),
+      'help' => '',
+    ),
     'files' => array(
       'name' => t('Files'),
       'base' => 'node_content',
@@ -30,7 +38,7 @@ function content_types_node_info() {
       'base' => 'node_content',
       'description' => '',
       'has_title' => '1',
-      'title_label' => t('Title'),
+      'title_label' => t('Name'),
       'help' => '',
     ),
   );
