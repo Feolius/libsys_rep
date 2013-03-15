@@ -4,6 +4,7 @@ abstract class LibraryMigration extends DynamicMigration {
 
   public function __construct() {
     parent::__construct();
+    require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'library_migrate') . '/library_migrate_field_names.inc';
     //For development on local machine
     $other_database = array(
         'database' => 'adventists',
@@ -168,6 +169,7 @@ class FilesMigration extends LibraryMigration {
             ->sourceMigration('People');
     $this->addFieldMapping('field_files_receiver', 'receiver')
             ->sourceMigration('People');
+    $this->addFieldMapping('field_files_creation_date', 'creation_date');
   }
 
   public function prepareRow($row) {
@@ -242,6 +244,7 @@ class FilesMigration extends LibraryMigration {
   public function prepare($node, $row) {
     if ($row->file_extension == 'pdf') {
       $ID = $row->ID;
+      //Deal with pdfs and swfs
       $directory = file_default_scheme() . '://books/' . $ID;
       if (file_prepare_directory($directory)) {
         $pdf_uri = $directory . '/' . $ID . '.pdf';
@@ -266,6 +269,52 @@ class FilesMigration extends LibraryMigration {
         $node->field_files_file['und'][0]['fid_thumb'] = $image_file->fid;
         $node->field_files_file['und'][0]['conversion_done'] = 1;
         $node->field_files_file['und'][0]['folder_name'] = $ID;
+      }
+      //Set creation date
+      $query = Database::getConnection('default', 'ImportDatabaseKey')
+              ->select('egw_linker', 'l');
+      $query->addField('l', 'tb_id');
+      $query->leftJoin('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
+      $query->leftJoin('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id AND l2.tb_name != l.tb_name');
+      $query->condition('l2.tb_id', $row->ID, '=');
+      $query->condition('l2.tb_name', 'file', '=');
+      $query->condition('l2i.linkerinfo_id', '4', '=');
+      $result = $query->execute();
+      $record = $result->fetchAssoc();
+      if (isset($record['tb_id'])) {
+        $creation_date_id = $record['tb_id'];
+        dpm($creation_date_id);
+        $query = Database::getConnection('default', 'ImportDatabaseKey')
+                ->select('adv_date_time', 'l');
+        $query->condition('l.ID', $creation_date_id, '=');
+        $query->fields('l', array('start_year', 'start_month', 'start_day'));
+        $result = $query->execute();
+        $record = $result->fetchAssoc();
+        if (isset($record['start_year'])) {
+          $start_year = $record['start_year'];
+          $end_year = $start_year;
+          if (isset($record['start_month'])) {
+            $start_month = $record['start_month'];
+            $end_month = $start_month;
+            if (isset($record['start_day'])) {
+              $start_day = $record['start_day'];
+              $end_day = $start_day;
+            } else {
+              $start_day = '01';
+              $end_day = date_days_in_month($year, $month);
+            }
+          } else {
+            $start_month = '01';
+            $end_month = '12';
+            $start_day = '01';
+            $end_day = '31';
+          }
+          $node->field_files_creation_date['und'][0]['value'] = $start_year . '-' . $start_month . '-' . $start_day . ' 00:00:00';
+          $node->field_files_creation_date['und'][0]['value2'] = $end_year . '-' . $end_month . '-' . $end_day . ' 00:00:00';
+          $node->field_files_creation_date['und'][0]['timezone'] = date_default_timezone();
+          $node->field_files_creation_date['und'][0]['timezone_db'] = 'UTC';
+          $node->field_files_creation_date['und'][0]['date_type'] = 'datetime';
+        }
       }
     }
     $node->language = 'en';
@@ -333,7 +382,7 @@ class PeopleMigration extends LibraryMigration {
     } else {
       return FALSE;
     }
-    if(strlen($real_title) >= 255){
+    if (strlen($real_title) >= 255) {
       $real_title = substr($real_title, 0, 255);
     }
     $row->real_title = $real_title;
@@ -413,7 +462,7 @@ class PeopleMigration extends LibraryMigration {
 
   protected function createStub($migration, $source_id) {
     //We should create stubs only when we go from location migration
-    if (get_class($migration) == "LocationMigration") {
+   // if (get_class($migration) == "LocationMigration") {
       $node = new stdClass();
       $node->title = t('Stub for') . $source_id[0];
       $node->body = t('Stub body');
@@ -426,9 +475,9 @@ class PeopleMigration extends LibraryMigration {
       } else {
         return FALSE;
       }
-    } else {
+    /*} else {
       return FALSE;
-    }
+    }*/
   }
 
   public function prepare($node, $row) {
@@ -496,7 +545,7 @@ class LocationMigration extends LibraryMigration {
     } elseif (empty($title)) {
       return FALSE;
     }
-    if(strlen($title) >= 255){
+    if (strlen($title) >= 255) {
       $title = substr($title, 0, 255);
     }
     $row->title = $title;
@@ -592,6 +641,35 @@ class LocationMigration extends LibraryMigration {
     if (($field_value = geocoder_widget_get_field_value('node', $field_instance, $node)) !== FALSE) {
       $node->{$field_instance['field_name']} = $field_value;
     }
+  }
+}
+
+class EventsMigration extends LibraryMigration{
+
+  public function __construct() {
+    parent::__construct();
+    $this->description = t('Migrate Events content type from adv_events table');
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('adv_events', 'p')
+            ->fields('p', array('ID', 'title', 'description'));
+    $this->map = new MigrateSQLMap($this->machineName,
+                    array(
+                        'ID' => array(
+                            'type' => 'int',
+                            'not null' => FALSE,
+                        )
+                    ),
+                    MigrateDestinationTerm::getKeySchema(),
+                    'ImportDatabaseKey'
+    );
+    $this->source = new MigrateSourceSQL($query);
+    $this->destination = new MigrateDestinationNode('events');
+    $this->addSimpleMappings(array('title'));
+    $this->addFieldMapping('field_events_description', 'description');
+    $this->addFieldMapping('EVENT_FIELD_1', 'author')
+            ->sourceMigration('People');
+    $this->addFieldMapping('EVENT_FIELD_3', 'receiver')
+            ->sourceMigration('People');
   }
 
 }
