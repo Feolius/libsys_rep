@@ -43,32 +43,31 @@ function library_import_submit() {
   Database::addConnectionInfo('ImportDatabaseKey', 'default', $other_database);
   /* $query = Database::getConnection('default', 'ImportDatabaseKey')
             ->select('egw_linker', 'l');
-    $query->addField('l', 'tb_id');
-    $query->leftJoin('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
-    $query->leftJoin('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id AND l2.tb_name != l.tb_name');
-    $query->condition('l2.tb_id', 32, '=');
-    $query->condition('l2.tb_name', 'file', '=');
-    $query->condition('l2i.linkerinfo_id', '1', '=');
-  $result = $query->execute();
-$row = $result->fetchAssoc();
-dpm($row);
-$f = new stdClass();
-$f->a = $row['tb_id'];
-dpm($f);*/
-  $query = Database::getConnection('default', 'ImportDatabaseKey')
-            ->select('adv_people', 'l');
-    $query->addField('l', 'ID');
-    $query->isNull('first_name');
-    $query->isNull('last_name');
-    $query->isNull('email');
-    $query->isNotNull('source');
-    $query->range(0, 10);
+    $query->join('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
+    $query->join('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id  AND l2.tb_name != l.tb_name AND l.tb_name = :pc', array(':pc' => 'adv_date_time'));
+    $query->join('adv_date_time', 'dt', 'dt.ID = l.tb_id');
+    $query->addField('l2i', 'linkerinfo_id');
+   // $query->addField('l2', 'linker_entry_id');
+    $query->addField('dt', 'ID');
+    $query->condition('l2i.linkerinfo_id', 14, '=');
+    //$query->condition('l.tb_name', 'adv_date_time', '=');
+    $query->condition('l2.tb_name', 'adv_events', '=');
+    $query->isNotNull('dt.end_year');
+    //$query->groupBy('l2i.linkerinfo_id');
+    $query->range(0, 20);
+    $result = $query->execute();*/
 
-    $result = $query->execute();
+    //$query->groupBy('l.file_extension');*$query = Database::getConnection('default', 'ImportDatabaseKey')
+  $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('adv_events', 'l');
+$query->addField('l', 'ID');
+$query->isNotNull('l.source');
+$query->range(0, 10);
+$result = $query->execute();
 
   while ($row = $result->fetchAssoc()) {
          dpm($row);
     }
-  $node = node_load(191);
-  dpm($node);
+  /*$node = node_load(12503);
+  dpm($node);*/
 }
