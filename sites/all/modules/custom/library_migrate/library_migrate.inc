@@ -454,6 +454,7 @@ class LocationMigration extends LibraryMigration {
             ->sourceMigration('People');
     $this->addFieldMapping('field_location_visiter', 'visiters')
             ->sourceMigration('People');
+    $this->addFieldMapping(LOCATION_FIELD_14, 'related_entities');
   }
 
   public function prepareRow($row) {
@@ -569,7 +570,7 @@ class EventsMigration extends LibraryMigration {
             ->sourceMigration('People');
     $this->addFieldMapping(EVENT_FIELD_3, 'receiver')
             ->sourceMigration('People');
-    $this->addFieldMapping(EVENT_FIELD_13, 'event_field_13');
+    //$this->addFieldMapping(EVENT_FIELD_13, 'event_field_13');
     $this->addFieldMapping(EVENT_FIELD_14, 'event_field_14');
     $this->addFieldMapping(EVENT_FIELD_18, 'event_field_18');
     $this->addFieldMapping(EVENT_FIELD_23, 'event_field_23');
@@ -587,12 +588,12 @@ class EventsMigration extends LibraryMigration {
     $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_people'), 3);
     $row->receiver = $data['adv_people'];
     ;
+    //Stefan said that this field should give us only datefield
     //Add event_field_13
-    $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_people', 'adv_location'), 13);
-    dpm($data);
+   /* $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_people', 'adv_location'), 13);
     $nids = $this->get_dids_from_map_table('migrate_map_location', $data['adv_location']);
     $nids = array_merge($nids, $this->get_dids_from_map_table('migrate_map_people', $data['adv_people']));
-    $row->event_field_13 = $nids;
+    $row->event_field_13 = $nids;*/
     //Add event_field_14
     $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_people', 'adv_location'), 14);
     $nids = $this->get_dids_from_map_table('migrate_map_location', $data['adv_location']);
@@ -629,7 +630,8 @@ class EventsMigration extends LibraryMigration {
     $node->language = 'en';
     //Add dates
     set_datefield_value(EVENT_FIELD_13_DATE, $node, $row->ID, 'adv_events', 13);
-    set_datefield_value(EVENT_FIELD_14_DATE, $node, $row->ID, 'adv_events', 14);
+    //@see comment in library_migrate_field_names
+    //set_datefield_value(EVENT_FIELD_14_DATE, $node, $row->ID, 'adv_events', 14);
     set_datefield_value(EVENT_FIELD_18_DATE, $node, $row->ID, 'adv_events', 18);
     set_datefield_value(EVENT_FIELD_17_DATE, $node, $row->ID, 'adv_events', 17);
   }
