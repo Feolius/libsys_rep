@@ -13,7 +13,13 @@ function menu_overview_page() {
   $header = array(t('Title'), array('data' => t('Operations'), 'colspan' => '3'));
   $rows = array();
   foreach ($result as $menu) {
-    $row = array(theme('menu_admin_overview', array('title' => $menu['title'], 'name' => $menu['menu_name'], 'description' => $menu['description'])));
+    $row = array(
+      theme('menu_admin_overview', array(
+        'title' => $menu['title'],
+        'name' => $menu['menu_name'],
+        'description' => $menu['description']
+      ))
+    );
     $row[] = array('data' => l(t('list links'), 'admin/structure/menu/manage/' . $menu['menu_name']));
     $row[] = array('data' => l(t('edit menu'), 'admin/structure/menu/manage/' . $menu['menu_name'] . '/edit'));
     $row[] = array('data' => l(t('add link'), 'admin/structure/menu/manage/' . $menu['menu_name'] . '/add'));
@@ -68,7 +74,7 @@ function menu_overview_form($form, &$form_state, $menu) {
   $menu_admin = FALSE;
 
   $form = array_merge($form, _menu_overview_tree_form($tree));
-  $form['#menu'] =  $menu;
+  $form['#menu'] = $menu;
 
   if (element_children($form)) {
     $form['actions'] = array('#type' => 'actions');
@@ -78,7 +84,7 @@ function menu_overview_form($form, &$form_state, $menu) {
     );
   }
   else {
-    $form['#empty_text'] = t('There are no menu links yet. <a href="@link">Add link</a>.', array('@link' => url('admin/structure/menu/manage/'. $form['#menu']['menu_name'] .'/add')));
+    $form['#empty_text'] = t('There are no menu links yet. <a href="@link">Add link</a>.', array('@link' => url('admin/structure/menu/manage/' . $form['#menu']['menu_name'] . '/add')));
   }
   return $form;
 }
@@ -90,7 +96,7 @@ function menu_overview_form($form, &$form_state, $menu) {
  *   The menu_tree retrieved by menu_tree_data.
  */
 function _menu_overview_tree_form($tree) {
-  $form = &drupal_static(__FUNCTION__, array('#tree' => TRUE));
+  $form = & drupal_static(__FUNCTION__, array('#tree' => TRUE));
   foreach ($tree as $data) {
     $title = '';
     $item = $data['link'];
@@ -130,14 +136,26 @@ function _menu_overview_tree_form($tree) {
       );
       // Build a list of operations.
       $operations = array();
-      $operations['edit'] = array('#type' => 'link', '#title' => t('edit'), '#href' => 'admin/structure/menu/item/' . $item['mlid'] . '/edit');
+      $operations['edit'] = array(
+        '#type' => 'link',
+        '#title' => t('edit'),
+        '#href' => 'admin/structure/menu/item/' . $item['mlid'] . '/edit'
+      );
       // Only items created by the menu module can be deleted.
       if ($item['module'] == 'menu' || $item['updated'] == 1) {
-        $operations['delete'] = array('#type' => 'link', '#title' => t('delete'), '#href' => 'admin/structure/menu/item/' . $item['mlid'] . '/delete');
+        $operations['delete'] = array(
+          '#type' => 'link',
+          '#title' => t('delete'),
+          '#href' => 'admin/structure/menu/item/' . $item['mlid'] . '/delete'
+        );
       }
       // Set the reset column.
       elseif ($item['module'] == 'system' && $item['customized']) {
-        $operations['reset'] = array('#type' => 'link', '#title' => t('reset'), '#href' => 'admin/structure/menu/item/' . $item['mlid'] . '/reset');
+        $operations['reset'] = array(
+          '#type' => 'link',
+          '#title' => t('reset'),
+          '#href' => 'admin/structure/menu/item/' . $item['mlid'] . '/reset'
+        );
       }
       $form[$mlid]['operations'] = $operations;
     }
@@ -221,11 +239,14 @@ function theme_menu_overview_form($variables) {
   $rows = array();
   foreach (element_children($form) as $mlid) {
     if (isset($form[$mlid]['hidden'])) {
-      $element = &$form[$mlid];
+      $element = & $form[$mlid];
       // Build a list of operations.
       $operations = array();
       foreach (element_children($element['operations']) as $op) {
-        $operations[] = array('data' => drupal_render($element['operations'][$op]), 'class' => array('menu-operations'));
+        $operations[] = array(
+          'data' => drupal_render($element['operations'][$op]),
+          'class' => array('menu-operations')
+        );
       }
       while (count($operations) < 2) {
         $operations[] = '';
@@ -254,7 +275,11 @@ function theme_menu_overview_form($variables) {
   if (empty($rows)) {
     $rows[] = array(array('data' => $form['#empty_text'], 'colspan' => '7'));
   }
-  $output .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'menu-overview')));
+  $output .= theme('table', array(
+    'header' => $header,
+    'rows' => $rows,
+    'attributes' => array('id' => 'menu-overview')
+  ));
   $output .= drupal_render_children($form);
   return $output;
 }
@@ -265,7 +290,19 @@ function theme_menu_overview_form($variables) {
 function menu_edit_item($form, &$form_state, $type, $item, $menu) {
   if ($type == 'add' || empty($item)) {
     // This is an add form, initialize the menu link.
-    $item = array('link_title' => '', 'mlid' => 0, 'plid' => 0, 'menu_name' => $menu['menu_name'], 'weight' => 0, 'link_path' => '', 'options' => array(), 'module' => 'menu', 'expanded' => 0, 'hidden' => 0, 'has_children' => 0);
+    $item = array(
+      'link_title' => '',
+      'mlid' => 0,
+      'plid' => 0,
+      'menu_name' => $menu['menu_name'],
+      'weight' => 0,
+      'link_path' => '',
+      'options' => array(),
+      'module' => 'menu',
+      'expanded' => 0,
+      'hidden' => 0,
+      'has_children' => 0
+    );
   }
   else {
     // Get the human-readable menu title from the given menu name.
@@ -305,7 +342,11 @@ function menu_edit_item($form, &$form_state, $type, $item, $menu) {
       '#title' => t('Path'),
       '#maxlength' => 255,
       '#default_value' => $path,
-      '#description' => t('The path for this menu link. This can be an internal Drupal path such as %add-node or an external URL such as %drupal. Enter %front to link to the front page.', array('%front' => '<front>', '%add-node' => 'node/add', '%drupal' => 'http://drupal.org')),
+      '#description' => t('The path for this menu link. This can be an internal Drupal path such as %add-node or an external URL such as %drupal. Enter %front to link to the front page.', array(
+        '%front' => '<front>',
+        '%add-node' => 'node/add',
+        '%drupal' => 'http://drupal.org'
+      )),
       '#required' => TRUE,
     );
     $form['actions']['delete'] = array(
@@ -373,10 +414,13 @@ function menu_edit_item($form, &$form_state, $type, $item, $menu) {
  * Validate form values for a menu link being added or edited.
  */
 function menu_edit_item_validate($form, &$form_state) {
-  $item = &$form_state['values'];
+  $item = & $form_state['values'];
   $normal_path = drupal_get_normal_path($item['link_path']);
   if ($item['link_path'] != $normal_path) {
-    drupal_set_message(t('The menu system stores system paths only, but will use the URL alias for display. %link_path has been stored as %normal_path', array('%link_path' => $item['link_path'], '%normal_path' => $normal_path)));
+    drupal_set_message(t('The menu system stores system paths only, but will use the URL alias for display. %link_path has been stored as %normal_path', array(
+      '%link_path' => $item['link_path'],
+      '%normal_path' => $normal_path
+    )));
     $item['link_path'] = $normal_path;
   }
   if (!url_is_external($item['link_path'])) {
@@ -415,7 +459,7 @@ function menu_item_delete_submit($form, &$form_state) {
  * Process menu and menu item add/edit form submissions.
  */
 function menu_edit_item_submit($form, &$form_state) {
-  $item = &$form_state['values'];
+  $item = & $form_state['values'];
 
   // The value of "hidden" is the opposite of the value
   // supplied by the "enabled" checkbox.
@@ -541,7 +585,7 @@ function menu_delete_menu_confirm_submit($form, &$form_state) {
 
   // System-defined menus may not be deleted - only menus defined by this module.
   $system_menus = menu_list_system_menus();
-  if (isset($system_menus[$menu['menu_name']])  || !(db_query("SELECT 1 FROM {menu_custom} WHERE menu_name = :menu", array(':menu' => $menu['menu_name']))->fetchField())) {
+  if (isset($system_menus[$menu['menu_name']]) || !(db_query("SELECT 1 FROM {menu_custom} WHERE menu_name = :menu", array(':menu' => $menu['menu_name']))->fetchField())) {
     return;
   }
 
@@ -597,7 +641,7 @@ function menu_edit_menu_submit($form, &$form_state) {
       ':link' => 'admin/structure/menu',
       ':module' => 'system'
     ))
-    ->fetchField();
+      ->fetchField();
 
     menu_link_save($link);
     menu_save($menu);
