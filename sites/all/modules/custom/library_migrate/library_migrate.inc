@@ -32,21 +32,56 @@ abstract class LibraryMigration extends DynamicMigration {
     $query->addField('l', 'tb_id');
     $query->join('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
     $query->join('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id');
-    $query->condition('l2.tb_id', $reference_id, '=');
+    $query->condition('l2.tb_id', $reference_id);
     $query->condition('l2.tb_name', $reference_tb);
     $condition = db_or();
+    $data = array();
     foreach ($needed_tbs as $needed_tb) {
+      $data[$needed_tb] = array();
       $condition = $condition->condition('l.tb_name', $needed_tb);
     }
     $query->condition($condition);
     $query->addField('l', 'tb_name');
-    $query->condition('l2i.linkerinfo_id', $linkerinfo_id, '=');
+    $query->condition('l2i.linkerinfo_id', $linkerinfo_id);
     $result = $query->execute();
-    $data = array();
     while ($record = $result->fetchAssoc()) {
       $data[$record['tb_name']][] = $record['tb_id'];
     }
     return $data;
+  }
+
+  //Helper function. Check if sids are already exist and if not, creates stubs. Return destids
+  public function sidsHandler($data) {
+    $results = array();
+    foreach ($data as $source_name => $sids) {
+      $source_migration = Migration::getInstance($source_name);
+      foreach ($sids as $sid) {
+        $destids = $source_migration->getMap()->lookupDestinationID(array($sid));
+        if (!empty($destids['destid1'])) {
+          $results = array_merge($destids['destid1'], $results);
+        } else {
+          //We should create stub here
+          $node = new stdClass();
+          $node->title = t('Stub for') . $sid;
+          $node->body = t('Stub body');
+          $node->type = $source_migration->destination->getBundle();
+          $node->uid = 1;
+          $node->status = 0;
+          node_save($node);
+          if (isset($node->nid)) {
+            $destids = array($node->nid);
+            $map_source_key = $source_migration->map->getSourceKey();
+            $data_row = new stdClass;
+            foreach ($map_source_key as $key => $definition) {
+              $data_row->$key = $sid;
+            }
+            $source_migration->map->saveIDMapping($data_row, $destids, MigrateMap::STATUS_NEEDS_UPDATE, $source_migration->defaultRollbackAction);
+            $results = array_merge($destids, $results);
+          }
+        }
+      }
+    }
+    return $results;
   }
 
 }
@@ -397,8 +432,6 @@ class PeopleMigration extends LibraryMigration {
   protected function createStub($migration, $source_id) {
     //We should create stubs only when we go from location migration
     // if (get_class($migration) == "LocationMigration") {
-    dpm($migration);
-    dpm($source_id);
     $node = new stdClass();
     $node->title = t('Stub for') . $source_id[0];
     $node->body = t('Stub body');
@@ -487,7 +520,7 @@ class LocationMigration extends LibraryMigration {
     }
     $row->title = $title;
     //Add written files
-    $data = $this->get_related_sids($row->ID, 'adv_location', array('file'), 5);
+    /*$data = $this->get_related_sids($row->ID, 'adv_location', array('file'), 5);
     $row->written_files = $data['file'];
     //Add received files
     $data = $this->get_related_sids($row->ID, 'adv_location', array('file'), 6);
@@ -497,7 +530,13 @@ class LocationMigration extends LibraryMigration {
     $row->living_people = $data['adv_people'];
     //Add visiters
     $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people'), 18);
-    $row->visiters = $data['adv_people'];
+    $row->visiters = $data['adv_people'];*/
+    //Add related entities
+    $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people', 'adv_events'), 14);
+    $sids = array();
+    $sids['People'] = $data['adv_people'];
+    $sids['Events'] = $data['adv_events'];
+    $row->related_entities = $this->sidsHandler($sids);
   }
 
   public function prepare($node, $row) {
@@ -590,10 +629,10 @@ class EventsMigration extends LibraryMigration {
     ;
     //Stefan said that this field should give us only datefield
     //Add event_field_13
-   /* $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_people', 'adv_location'), 13);
-    $nids = $this->get_dids_from_map_table('migrate_map_location', $data['adv_location']);
-    $nids = array_merge($nids, $this->get_dids_from_map_table('migrate_map_people', $data['adv_people']));
-    $row->event_field_13 = $nids;*/
+    /* $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_people', 'adv_location'), 13);
+      $nids = $this->get_dids_from_map_table('migrate_map_location', $data['adv_location']);
+      $nids = array_merge($nids, $this->get_dids_from_map_table('migrate_map_people', $data['adv_people']));
+      $row->event_field_13 = $nids; */
     //Add event_field_14
     $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_people', 'adv_location'), 14);
     $nids = $this->get_dids_from_map_table('migrate_map_location', $data['adv_location']);
