@@ -834,8 +834,8 @@ function _multistep_adl_update_status($nid, $status, $step = 'all') {
   if (_multistep_adl_get_status($nid, $step)) {
     db_update('multistep_adl')
       ->fields(array(
-      'status' => $status,
-    ))
+        'status' => $status,
+      ))
       ->condition('nid', $nid)
       ->condition('step', $step)
       ->execute();
@@ -843,10 +843,10 @@ function _multistep_adl_update_status($nid, $status, $step = 'all') {
   else {
     db_insert('multistep_adl')
       ->fields(array(
-      'nid' => $nid,
-      'step' => $step,
-      'status' => $status,
-    ))
+        'nid' => $nid,
+        'step' => $step,
+        'status' => $status,
+      ))
       ->execute();
   }
 }
