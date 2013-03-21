@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * content_type.features.inc
+ * content_types.features.inc
  */
 
 /**
  * Implements hook_node_info().
  */
-function content_type_node_info() {
+function content_types_node_info() {
   $items = array(
     'events' => array(
       'name' => t('Events'),

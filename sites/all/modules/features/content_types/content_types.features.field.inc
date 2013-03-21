@@ -1,208 +1,14 @@
 <?php
 /**
  * @file
- * content_type.features.field.inc
+ * content_types.features.field.inc
  */
 
 /**
  * Implements hook_field_default_fields().
  */
-function content_type_field_default_fields() {
+function content_types_field_default_fields() {
   $fields = array();
-
-  // Exported field: 'node-events-field_event_visit_date'.
-  $fields['node-events-field_event_visit_date'] = array(
-    'field_config' => array(
-      'active' => '1',
-      'cardinality' => '-1',
-      'deleted' => '0',
-      'entity_types' => array(),
-      'field_name' => 'field_event_visit_date',
-      'foreign keys' => array(),
-      'indexes' => array(),
-      'locked' => '0',
-      'module' => 'date',
-      'settings' => array(
-        'cache_count' => '4',
-        'cache_enabled' => 0,
-        'granularity' => array(
-          'day' => 'day',
-          'hour' => 0,
-          'minute' => 0,
-          'month' => 'month',
-          'second' => 0,
-          'year' => 'year',
-        ),
-        'timezone_db' => '',
-        'todate' => 'optional',
-        'tz_handling' => 'none',
-      ),
-      'translatable' => '0',
-      'type' => 'datetime',
-    ),
-    'field_instance' => array(
-      'bundle' => 'events',
-      'deleted' => '0',
-      'description' => '',
-      'display' => array(
-        'collection_teaser' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-        'collection_thumbnail' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-        'default' => array(
-          'label' => 'above',
-          'module' => 'date',
-          'settings' => array(
-            'format_type' => 'long',
-            'fromto' => 'both',
-            'multiple_from' => '',
-            'multiple_number' => '',
-            'multiple_to' => '',
-          ),
-          'type' => 'date_default',
-          'weight' => 7,
-        ),
-        'teaser' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-      ),
-      'entity_type' => 'node',
-      'field_name' => 'field_event_visit_date',
-      'label' => 'Visit date',
-      'required' => 0,
-      'settings' => array(
-        'default_value' => 'now',
-        'default_value2' => 'same',
-        'default_value_code' => '',
-        'default_value_code2' => '',
-        'user_register_form' => FALSE,
-      ),
-      'widget' => array(
-        'active' => 1,
-        'module' => 'date',
-        'settings' => array(
-          'increment' => 15,
-          'input_format' => 'm/d/Y - H:i:s',
-          'input_format_custom' => '',
-          'label_position' => 'above',
-          'text_parts' => array(),
-          'year_range' => '-3:+3',
-        ),
-        'type' => 'date_text',
-        'weight' => '10',
-      ),
-    ),
-  );
-
-  // Exported field: 'node-events-field_event_visit_nodes'.
-  $fields['node-events-field_event_visit_nodes'] = array(
-    'field_config' => array(
-      'active' => '1',
-      'cardinality' => '-1',
-      'deleted' => '0',
-      'entity_types' => array(),
-      'field_name' => 'field_event_visit_nodes',
-      'foreign keys' => array(
-        'node' => array(
-          'columns' => array(
-            'target_id' => 'nid',
-          ),
-          'table' => 'node',
-        ),
-      ),
-      'indexes' => array(
-        'target_id' => array(
-          0 => 'target_id',
-        ),
-      ),
-      'locked' => '0',
-      'module' => 'entityreference',
-      'settings' => array(
-        'handler' => 'base',
-        'handler_settings' => array(
-          'behaviors' => array(
-            'views-select-list' => array(
-              'status' => 0,
-            ),
-          ),
-          'sort' => array(
-            'type' => 'none',
-          ),
-          'target_bundles' => array(
-            'location' => 'location',
-            'people' => 'people',
-          ),
-        ),
-        'target_type' => 'node',
-      ),
-      'translatable' => '0',
-      'type' => 'entityreference',
-    ),
-    'field_instance' => array(
-      'bundle' => 'events',
-      'default_value' => NULL,
-      'deleted' => '0',
-      'description' => '',
-      'display' => array(
-        'collection_teaser' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-        'collection_thumbnail' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-        'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 6,
-        ),
-        'teaser' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-      ),
-      'entity_type' => 'node',
-      'field_name' => 'field_event_visit_nodes',
-      'label' => 'Visit nodes',
-      'required' => 0,
-      'settings' => array(
-        'user_register_form' => FALSE,
-      ),
-      'widget' => array(
-        'active' => 1,
-        'module' => 'entityreference',
-        'settings' => array(
-          'match_operator' => 'CONTAINS',
-          'path' => '',
-          'size' => '60',
-        ),
-        'type' => 'entityreference_autocomplete',
-        'weight' => '9',
-      ),
-    ),
-  );
 
   // Exported field: 'node-events-field_events_author'.
   $fields['node-events-field_events_author'] = array(
@@ -272,7 +78,7 @@ function content_type_field_default_fields() {
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => 0,
+          'weight' => 1,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -352,7 +158,7 @@ function content_type_field_default_fields() {
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => 14,
+          'weight' => 0,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -451,7 +257,7 @@ function content_type_field_default_fields() {
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => 9,
+          'weight' => 8,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -476,7 +282,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '12',
+        'weight' => '10',
       ),
     ),
   );
@@ -485,7 +291,7 @@ function content_type_field_default_fields() {
   $fields['node-events-field_events_home_date'] = array(
     'field_config' => array(
       'active' => '1',
-      'cardinality' => '1',
+      'cardinality' => '-1',
       'deleted' => '0',
       'entity_types' => array(),
       'field_name' => 'field_events_home_date',
@@ -539,7 +345,7 @@ function content_type_field_default_fields() {
             'multiple_to' => '',
           ),
           'type' => 'date_default',
-          'weight' => 10,
+          'weight' => 9,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -571,7 +377,7 @@ function content_type_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'date_text',
-        'weight' => '13',
+        'weight' => '11',
       ),
     ),
   );
@@ -644,7 +450,7 @@ function content_type_field_default_fields() {
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => 8,
+          'weight' => 7,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -669,7 +475,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '11',
+        'weight' => '9',
       ),
     ),
   );
@@ -742,7 +548,7 @@ function content_type_field_default_fields() {
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => 13,
+          'weight' => 12,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -767,102 +573,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '16',
-      ),
-    ),
-  );
-
-  // Exported field: 'node-events-field_events_place_date'.
-  $fields['node-events-field_events_place_date'] = array(
-    'field_config' => array(
-      'active' => '1',
-      'cardinality' => '-1',
-      'deleted' => '0',
-      'entity_types' => array(),
-      'field_name' => 'field_events_place_date',
-      'foreign keys' => array(),
-      'indexes' => array(),
-      'locked' => '0',
-      'module' => 'date',
-      'settings' => array(
-        'cache_count' => '4',
-        'cache_enabled' => 0,
-        'granularity' => array(
-          'day' => 'day',
-          'hour' => 0,
-          'minute' => 0,
-          'month' => 'month',
-          'second' => 0,
-          'year' => 'year',
-        ),
-        'timezone_db' => '',
-        'todate' => 'optional',
-        'tz_handling' => 'none',
-      ),
-      'translatable' => '0',
-      'type' => 'datetime',
-    ),
-    'field_instance' => array(
-      'bundle' => 'events',
-      'deleted' => '0',
-      'description' => '',
-      'display' => array(
-        'collection_teaser' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-        'collection_thumbnail' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-        'default' => array(
-          'label' => 'above',
-          'module' => 'date',
-          'settings' => array(
-            'format_type' => 'long',
-            'fromto' => 'both',
-            'multiple_from' => '',
-            'multiple_number' => '',
-            'multiple_to' => '',
-          ),
-          'type' => 'date_default',
-          'weight' => 5,
-        ),
-        'teaser' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-      ),
-      'entity_type' => 'node',
-      'field_name' => 'field_events_place_date',
-      'label' => 'Place date',
-      'required' => 0,
-      'settings' => array(
-        'default_value' => 'now',
-        'default_value2' => 'same',
-        'default_value_code' => '',
-        'default_value_code2' => '',
-        'user_register_form' => FALSE,
-      ),
-      'widget' => array(
-        'active' => 1,
-        'module' => 'date',
-        'settings' => array(
-          'increment' => 15,
-          'input_format' => 'm/d/Y - H:i:s',
-          'input_format_custom' => '',
-          'label_position' => 'above',
-          'text_parts' => array(),
-          'year_range' => '-3:+3',
-        ),
-        'type' => 'date_text',
-        'weight' => '8',
+        'weight' => '14',
       ),
     ),
   );
@@ -961,7 +672,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '7',
+        'weight' => '6',
       ),
     ),
   );
@@ -1034,7 +745,7 @@ function content_type_field_default_fields() {
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => 1,
+          'weight' => 2,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -1060,6 +771,104 @@ function content_type_field_default_fields() {
         ),
         'type' => 'entityreference_autocomplete',
         'weight' => '4',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-events-field_events_route_start'.
+  $fields['node-events-field_events_route_start'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '-1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_events_route_start',
+      'foreign keys' => array(
+        'node' => array(
+          'columns' => array(
+            'target_id' => 'nid',
+          ),
+          'table' => 'node',
+        ),
+      ),
+      'indexes' => array(
+        'target_id' => array(
+          0 => 'target_id',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'entityreference',
+      'settings' => array(
+        'handler' => 'base',
+        'handler_settings' => array(
+          'behaviors' => array(
+            'views-select-list' => array(
+              'status' => 0,
+            ),
+          ),
+          'sort' => array(
+            'type' => 'none',
+          ),
+          'target_bundles' => array(
+            'location' => 'location',
+          ),
+        ),
+        'target_type' => 'node',
+      ),
+      'translatable' => '0',
+      'type' => 'entityreference',
+    ),
+    'field_instance' => array(
+      'bundle' => 'events',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'entityreference',
+          'settings' => array(
+            'link' => FALSE,
+          ),
+          'type' => 'entityreference_label',
+          'weight' => 11,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_events_route_start',
+      'label' => 'Route start',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'entityreference',
+        'settings' => array(
+          'match_operator' => 'CONTAINS',
+          'path' => '',
+          'size' => '60',
+        ),
+        'type' => 'entityreference_autocomplete',
+        'weight' => '13',
       ),
     ),
   );
@@ -1132,7 +941,7 @@ function content_type_field_default_fields() {
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => 11,
+          'weight' => 10,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -1157,105 +966,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '14',
-      ),
-    ),
-  );
-
-  // Exported field: 'node-events-field_events_start_route'.
-  $fields['node-events-field_events_start_route'] = array(
-    'field_config' => array(
-      'active' => '1',
-      'cardinality' => '-1',
-      'deleted' => '0',
-      'entity_types' => array(),
-      'field_name' => 'field_events_start_route',
-      'foreign keys' => array(
-        'node' => array(
-          'columns' => array(
-            'target_id' => 'nid',
-          ),
-          'table' => 'node',
-        ),
-      ),
-      'indexes' => array(
-        'target_id' => array(
-          0 => 'target_id',
-        ),
-      ),
-      'locked' => '0',
-      'module' => 'entityreference',
-      'settings' => array(
-        'handler' => 'base',
-        'handler_settings' => array(
-          'behaviors' => array(
-            'views-select-list' => array(
-              'status' => 0,
-            ),
-          ),
-          'sort' => array(
-            'type' => 'none',
-          ),
-          'target_bundles' => array(
-            'location' => 'location',
-          ),
-        ),
-        'target_type' => 'node',
-      ),
-      'translatable' => '0',
-      'type' => 'entityreference',
-    ),
-    'field_instance' => array(
-      'bundle' => 'events',
-      'default_value' => NULL,
-      'deleted' => '0',
-      'description' => '',
-      'display' => array(
-        'collection_teaser' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-        'collection_thumbnail' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-        'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 12,
-        ),
-        'teaser' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-      ),
-      'entity_type' => 'node',
-      'field_name' => 'field_events_start_route',
-      'label' => 'Start route',
-      'required' => 0,
-      'settings' => array(
-        'user_register_form' => FALSE,
-      ),
-      'widget' => array(
-        'active' => 1,
-        'module' => 'entityreference',
-        'settings' => array(
-          'match_operator' => 'CONTAINS',
-          'path' => '',
-          'size' => '60',
-        ),
-        'type' => 'entityreference_autocomplete',
-        'weight' => '15',
+        'weight' => '12',
       ),
     ),
   );
@@ -1342,6 +1053,101 @@ function content_type_field_default_fields() {
         'active' => 1,
         'module' => 'date',
         'settings' => array(
+          'increment' => '15',
+          'input_format' => 'm/d/Y - H:i:s',
+          'input_format_custom' => '',
+          'label_position' => 'above',
+          'text_parts' => array(),
+          'year_range' => '-3:+3',
+        ),
+        'type' => 'date_text',
+        'weight' => '5',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-events-field_events_visit_date'.
+  $fields['node-events-field_events_visit_date'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '-1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_events_visit_date',
+      'foreign keys' => array(),
+      'indexes' => array(),
+      'locked' => '0',
+      'module' => 'date',
+      'settings' => array(
+        'cache_count' => '4',
+        'cache_enabled' => 0,
+        'granularity' => array(
+          'day' => 'day',
+          'hour' => 0,
+          'minute' => 0,
+          'month' => 'month',
+          'second' => 0,
+          'year' => 'year',
+        ),
+        'timezone_db' => '',
+        'todate' => 'optional',
+        'tz_handling' => 'none',
+      ),
+      'translatable' => '0',
+      'type' => 'datetime',
+    ),
+    'field_instance' => array(
+      'bundle' => 'events',
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'date',
+          'settings' => array(
+            'format_type' => 'long',
+            'fromto' => 'both',
+            'multiple_from' => '',
+            'multiple_number' => '',
+            'multiple_to' => '',
+          ),
+          'type' => 'date_default',
+          'weight' => 6,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_events_visit_date',
+      'label' => 'Visit date',
+      'required' => 0,
+      'settings' => array(
+        'default_value' => 'now',
+        'default_value2' => 'same',
+        'default_value_code' => '',
+        'default_value_code2' => '',
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'date',
+        'settings' => array(
           'increment' => 15,
           'input_format' => 'm/d/Y - H:i:s',
           'input_format_custom' => '',
@@ -1350,19 +1156,19 @@ function content_type_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'date_text',
-        'weight' => '6',
+        'weight' => '8',
       ),
     ),
   );
 
-  // Exported field: 'node-events-field_events_time_nodes'.
-  $fields['node-events-field_events_time_nodes'] = array(
+  // Exported field: 'node-events-field_events_visit_nodes'.
+  $fields['node-events-field_events_visit_nodes'] = array(
     'field_config' => array(
       'active' => '1',
       'cardinality' => '-1',
       'deleted' => '0',
       'entity_types' => array(),
-      'field_name' => 'field_events_time_nodes',
+      'field_name' => 'field_events_visit_nodes',
       'foreign keys' => array(
         'node' => array(
           'columns' => array(
@@ -1424,7 +1230,7 @@ function content_type_field_default_fields() {
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => 2,
+          'weight' => 5,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -1434,8 +1240,8 @@ function content_type_field_default_fields() {
         ),
       ),
       'entity_type' => 'node',
-      'field_name' => 'field_events_time_nodes',
-      'label' => 'Time nodes',
+      'field_name' => 'field_events_visit_nodes',
+      'label' => 'Visit nodes',
       'required' => 0,
       'settings' => array(
         'user_register_form' => FALSE,
@@ -1449,7 +1255,198 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '5',
+        'weight' => '7',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-files-field_fields_photographer'.
+  $fields['node-files-field_fields_photographer'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_fields_photographer',
+      'foreign keys' => array(
+        'node' => array(
+          'columns' => array(
+            'target_id' => 'nid',
+          ),
+          'table' => 'node',
+        ),
+      ),
+      'indexes' => array(
+        'target_id' => array(
+          0 => 'target_id',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'entityreference',
+      'settings' => array(
+        'handler' => 'base',
+        'handler_settings' => array(
+          'behaviors' => array(
+            'views-select-list' => array(
+              'status' => 0,
+            ),
+          ),
+          'sort' => array(
+            'type' => 'none',
+          ),
+          'target_bundles' => array(
+            'people' => 'people',
+          ),
+        ),
+        'target_type' => 'node',
+      ),
+      'translatable' => '0',
+      'type' => 'entityreference',
+    ),
+    'field_instance' => array(
+      'bundle' => 'files',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'entityreference',
+          'settings' => array(
+            'link' => FALSE,
+          ),
+          'type' => 'entityreference_label',
+          'weight' => '42',
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_fields_photographer',
+      'label' => 'Photographer',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'entityreference',
+        'settings' => array(
+          'match_operator' => 'CONTAINS',
+          'path' => '',
+          'size' => '60',
+        ),
+        'type' => 'entityreference_autocomplete',
+        'weight' => '4',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-files-field_files_audio'.
+  $fields['node-files-field_files_audio'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_files_audio',
+      'foreign keys' => array(
+        'fid' => array(
+          'columns' => array(
+            'fid' => 'fid',
+          ),
+          'table' => 'file_managed',
+        ),
+      ),
+      'indexes' => array(
+        'fid' => array(
+          0 => 'fid',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'file',
+      'settings' => array(
+        'display_default' => 0,
+        'display_field' => 0,
+        'uri_scheme' => 'public',
+      ),
+      'translatable' => '0',
+      'type' => 'file',
+    ),
+    'field_instance' => array(
+      'bundle' => 'files',
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'jplayer_waveform',
+          'settings' => array(
+            'autoplay' => '0',
+            'continuous' => '0',
+            'muted' => '0',
+            'preload' => 'metadata',
+            'repeat' => 'none',
+            'solution' => 'html, flash',
+            'volume' => '80',
+          ),
+          'type' => 'jplayer_waveform_player',
+          'weight' => '43',
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_files_audio',
+      'label' => 'Audio',
+      'required' => 0,
+      'settings' => array(
+        'description_field' => 0,
+        'file_directory' => '',
+        'file_extensions' => 'mp3',
+        'max_filesize' => '',
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'file',
+        'settings' => array(
+          'progress_indicator' => 'throbber',
+        ),
+        'type' => 'file_generic',
+        'weight' => '7',
       ),
     ),
   );
@@ -1563,7 +1560,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '12',
+        'weight' => '0',
       ),
     ),
   );
@@ -1627,7 +1624,7 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
@@ -1636,7 +1633,7 @@ function content_type_field_default_fields() {
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => 37,
+          'weight' => '37',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -1673,7 +1670,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '35',
+        'weight' => '25',
       ),
     ),
   );
@@ -1708,7 +1705,7 @@ function content_type_field_default_fields() {
             'parent' => '0',
           ),
         ),
-        'options_list_callback' => NULL,
+        'options_list_callback' => 'i18n_taxonomy_allowed_values',
       ),
       'translatable' => '0',
       'type' => 'taxonomy_term_reference',
@@ -1729,14 +1726,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
-          'module' => 'taxonomy',
+          'module' => 'i18n_taxonomy',
           'settings' => array(),
-          'type' => 'taxonomy_term_reference_link',
-          'weight' => 33,
+          'type' => 'i18n_taxonomy_term_reference_link',
+          'weight' => '33',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -1769,7 +1766,7 @@ function content_type_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '32',
+        'weight' => '21',
       ),
     ),
   );
@@ -1804,7 +1801,7 @@ function content_type_field_default_fields() {
             'parent' => '0',
           ),
         ),
-        'options_list_callback' => NULL,
+        'options_list_callback' => 'i18n_taxonomy_allowed_values',
       ),
       'translatable' => '0',
       'type' => 'taxonomy_term_reference',
@@ -1825,14 +1822,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
-          'module' => 'taxonomy',
+          'module' => 'i18n_taxonomy',
           'settings' => array(),
-          'type' => 'taxonomy_term_reference_link',
-          'weight' => 34,
+          'type' => 'i18n_taxonomy_term_reference_link',
+          'weight' => '34',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -1865,7 +1862,7 @@ function content_type_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '33',
+        'weight' => '22',
       ),
     ),
   );
@@ -1915,7 +1912,7 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
@@ -1928,7 +1925,7 @@ function content_type_field_default_fields() {
             'multiple_to' => '',
           ),
           'type' => 'date_default',
-          'weight' => 36,
+          'weight' => '36',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -1965,7 +1962,7 @@ function content_type_field_default_fields() {
         'module' => 'library_datefield_widget',
         'settings' => array(),
         'type' => 'library_datefield_widget',
-        'weight' => '34',
+        'weight' => '24',
       ),
     ),
   );
@@ -2080,7 +2077,7 @@ function content_type_field_default_fields() {
         'module' => 'library_datefield_widget',
         'settings' => array(),
         'type' => 'library_datefield_widget',
-        'weight' => '6',
+        'weight' => '1',
       ),
     ),
   );
@@ -2181,7 +2178,7 @@ function content_type_field_default_fields() {
           'summary_rows' => 5,
         ),
         'type' => 'text_textarea_with_summary',
-        'weight' => '10',
+        'weight' => '-2',
       ),
     ),
   );
@@ -2216,7 +2213,7 @@ function content_type_field_default_fields() {
             'parent' => '0',
           ),
         ),
-        'options_list_callback' => NULL,
+        'options_list_callback' => 'i18n_taxonomy_allowed_values',
       ),
       'translatable' => '0',
       'type' => 'taxonomy_term_reference',
@@ -2275,13 +2272,13 @@ function content_type_field_default_fields() {
       ),
       'widget' => array(
         'active' => 1,
-        'module' => 'options',
+        'module' => 'exif',
         'settings' => array(
           'exif_field' => 'exif_model',
           'image_field' => 'field_files_image',
         ),
-        'type' => 'options_select',
-        'weight' => '9',
+        'type' => 'exif_readonly',
+        'weight' => '2',
       ),
     ),
   );
@@ -2333,8 +2330,8 @@ function content_type_field_default_fields() {
       'default_value' => array(
         0 => array(
           'fids' => array(
-            'CONVERSION_IDENTIFIER' => 201973433,
-            'UPLOAD_IDENTIFIER' => 1936142398,
+            'CONVERSION_IDENTIFIER' => 1237252774,
+            'UPLOAD_IDENTIFIER' => 0,
             'conversion_done' => '0',
             'fid' => 0,
             'fid_thumb' => 0,
@@ -2370,7 +2367,7 @@ function content_type_field_default_fields() {
           'module' => 'book_field',
           'settings' => array(),
           'type' => 'book_field_formatter',
-          'weight' => 40,
+          'weight' => '41',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -2392,7 +2389,7 @@ function content_type_field_default_fields() {
         'module' => 'book_field',
         'settings' => array(),
         'type' => 'book_field_widget',
-        'weight' => '3',
+        'weight' => '1',
       ),
     ),
   );
@@ -2427,7 +2424,7 @@ function content_type_field_default_fields() {
             'parent' => 0,
           ),
         ),
-        'options_list_callback' => NULL,
+        'options_list_callback' => 'i18n_taxonomy_allowed_values',
       ),
       'translatable' => '0',
       'type' => 'taxonomy_term_reference',
@@ -2452,9 +2449,9 @@ function content_type_field_default_fields() {
         ),
         'default' => array(
           'label' => 'above',
-          'module' => 'taxonomy',
+          'module' => 'i18n_taxonomy',
           'settings' => array(),
-          'type' => 'taxonomy_term_reference_link',
+          'type' => 'i18n_taxonomy_term_reference_link',
           'weight' => '15',
         ),
         'rendered_in_node' => array(
@@ -2487,7 +2484,7 @@ function content_type_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '17',
+        'weight' => '5',
       ),
     ),
   );
@@ -2522,7 +2519,7 @@ function content_type_field_default_fields() {
             'parent' => '0',
           ),
         ),
-        'options_list_callback' => NULL,
+        'options_list_callback' => 'i18n_taxonomy_allowed_values',
       ),
       'translatable' => '0',
       'type' => 'taxonomy_term_reference',
@@ -2543,14 +2540,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
-          'module' => 'taxonomy',
+          'module' => 'i18n_taxonomy',
           'settings' => array(),
-          'type' => 'taxonomy_term_reference_link',
-          'weight' => 32,
+          'type' => 'i18n_taxonomy_term_reference_link',
+          'weight' => '32',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -2583,7 +2580,7 @@ function content_type_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '4',
+        'weight' => '20',
       ),
     ),
   );
@@ -2618,7 +2615,7 @@ function content_type_field_default_fields() {
             'parent' => 0,
           ),
         ),
-        'options_list_callback' => NULL,
+        'options_list_callback' => 'i18n_taxonomy_allowed_values',
       ),
       'translatable' => '0',
       'type' => 'taxonomy_term_reference',
@@ -2643,9 +2640,9 @@ function content_type_field_default_fields() {
         ),
         'default' => array(
           'label' => 'above',
-          'module' => 'taxonomy',
+          'module' => 'i18n_taxonomy',
           'settings' => array(),
-          'type' => 'taxonomy_term_reference_link',
+          'type' => 'i18n_taxonomy_term_reference_link',
           'weight' => '7',
         ),
         'rendered_in_node' => array(
@@ -2656,9 +2653,9 @@ function content_type_field_default_fields() {
         ),
         'search_result' => array(
           'label' => 'above',
-          'module' => 'taxonomy',
+          'module' => 'i18n_taxonomy',
           'settings' => array(),
-          'type' => 'taxonomy_term_reference_link',
+          'type' => 'i18n_taxonomy_term_reference_link',
           'weight' => '16',
         ),
         'teaser' => array(
@@ -2679,7 +2676,7 @@ function content_type_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '7',
+        'weight' => '1',
       ),
     ),
   );
@@ -2730,14 +2727,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'list',
           'settings' => array(),
           'type' => 'list_default',
-          'weight' => 27,
+          'weight' => '27',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -2769,10 +2766,105 @@ function content_type_field_default_fields() {
         'active' => 1,
         'module' => 'options',
         'settings' => array(
-          'display_label' => 1,
+          'display_label' => 0,
         ),
         'type' => 'options_onoff',
-        'weight' => '23',
+        'weight' => '15',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-files-field_files_id3_tags_metadata'.
+  $fields['node-files-field_files_id3_tags_metadata'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '-1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_files_id3_tags_metadata',
+      'foreign keys' => array(
+        'tid' => array(
+          'columns' => array(
+            'tid' => 'tid',
+          ),
+          'table' => 'taxonomy_term_data',
+        ),
+      ),
+      'indexes' => array(
+        'tid' => array(
+          0 => 'tid',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'taxonomy',
+      'settings' => array(
+        'allowed_values' => array(
+          0 => array(
+            'vocabulary' => 'id3_tags_metadata',
+            'parent' => 0,
+          ),
+        ),
+        'options_list_callback' => 'i18n_taxonomy_allowed_values',
+      ),
+      'translatable' => '0',
+      'type' => 'taxonomy_term_reference',
+    ),
+    'field_instance' => array(
+      'bundle' => 'files',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '0',
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'i18n_taxonomy',
+          'settings' => array(),
+          'type' => 'i18n_taxonomy_term_reference_link',
+          'weight' => '39',
+        ),
+        'rendered_in_node' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'search_result' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_files_id3_tags_metadata',
+      'label' => 'ID3 tags metadata',
+      'required' => FALSE,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'module' => 'options',
+        'settings' => array(),
+        'type' => 'options_select',
+        'weight' => '8',
       ),
     ),
   );
@@ -2831,11 +2923,11 @@ function content_type_field_default_fields() {
         ),
         'default' => array(
           'label' => 'hidden',
-          'module' => 'deepzoom',
+          'module' => 'openseadragon',
           'settings' => array(
-            'deepzoom_image_style' => 'large',
+            'openseadragon_image_style' => 'large',
           ),
-          'type' => 'deepzoom_deepzoom',
+          'type' => 'openseadragon_openseadragon',
           'weight' => '0',
         ),
         'rendered_in_node' => array(
@@ -2883,7 +2975,7 @@ function content_type_field_default_fields() {
           'progress_indicator' => 'throbber',
         ),
         'type' => 'image_image',
-        'weight' => '5',
+        'weight' => '0',
       ),
     ),
   );
@@ -2918,7 +3010,7 @@ function content_type_field_default_fields() {
             'parent' => '0',
           ),
         ),
-        'options_list_callback' => NULL,
+        'options_list_callback' => 'i18n_taxonomy_allowed_values',
       ),
       'translatable' => '0',
       'type' => 'taxonomy_term_reference',
@@ -2977,13 +3069,13 @@ function content_type_field_default_fields() {
       ),
       'widget' => array(
         'active' => 1,
-        'module' => 'options',
+        'module' => 'exif',
         'settings' => array(
           'exif_field' => 'exif_filedatetime',
           'image_field' => 'field_files_image',
         ),
-        'type' => 'options_select',
-        'weight' => '11',
+        'type' => 'exif_readonly',
+        'weight' => '3',
       ),
     ),
   );
@@ -3018,7 +3110,7 @@ function content_type_field_default_fields() {
             'parent' => 0,
           ),
         ),
-        'options_list_callback' => NULL,
+        'options_list_callback' => 'i18n_taxonomy_allowed_values',
       ),
       'translatable' => '0',
       'type' => 'taxonomy_term_reference',
@@ -3043,9 +3135,9 @@ function content_type_field_default_fields() {
         ),
         'default' => array(
           'label' => 'above',
-          'module' => 'taxonomy',
+          'module' => 'i18n_taxonomy',
           'settings' => array(),
-          'type' => 'taxonomy_term_reference_link',
+          'type' => 'i18n_taxonomy_term_reference_link',
           'weight' => '13',
         ),
         'rendered_in_node' => array(
@@ -3056,9 +3148,9 @@ function content_type_field_default_fields() {
         ),
         'search_result' => array(
           'label' => 'above',
-          'module' => 'taxonomy',
+          'module' => 'i18n_taxonomy',
           'settings' => array(),
-          'type' => 'taxonomy_term_reference_link',
+          'type' => 'i18n_taxonomy_term_reference_link',
           'weight' => '25',
         ),
         'teaser' => array(
@@ -3079,7 +3171,7 @@ function content_type_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '8',
+        'weight' => '2',
       ),
     ),
   );
@@ -3127,14 +3219,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => 18,
+          'weight' => '18',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -3170,7 +3262,7 @@ function content_type_field_default_fields() {
           'rows' => '5',
         ),
         'type' => 'text_textarea',
-        'weight' => '19',
+        'weight' => '28',
       ),
     ),
   );
@@ -3179,7 +3271,7 @@ function content_type_field_default_fields() {
   $fields['node-files-field_files_keywords'] = array(
     'field_config' => array(
       'active' => '1',
-      'cardinality' => '-1',
+      'cardinality' => '1',
       'deleted' => '0',
       'entity_types' => array(),
       'field_name' => 'field_files_keywords',
@@ -3205,7 +3297,7 @@ function content_type_field_default_fields() {
             'parent' => '0',
           ),
         ),
-        'options_list_callback' => NULL,
+        'options_list_callback' => 'i18n_taxonomy_allowed_values',
       ),
       'translatable' => '0',
       'type' => 'taxonomy_term_reference',
@@ -3226,14 +3318,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
-          'module' => 'taxonomy',
+          'module' => 'i18n_taxonomy',
           'settings' => array(),
-          'type' => 'taxonomy_term_reference_link',
-          'weight' => 20,
+          'type' => 'i18n_taxonomy_term_reference_link',
+          'weight' => '20',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -3266,7 +3358,7 @@ function content_type_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '20',
+        'weight' => '29',
       ),
     ),
   );
@@ -3317,14 +3409,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'list',
           'settings' => array(),
           'type' => 'list_default',
-          'weight' => 29,
+          'weight' => '29',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -3356,126 +3448,10 @@ function content_type_field_default_fields() {
         'active' => 1,
         'module' => 'options',
         'settings' => array(
-          'display_label' => 1,
+          'display_label' => 0,
         ),
         'type' => 'options_onoff',
-        'weight' => '27',
-      ),
-    ),
-  );
-
-  // Exported field: 'node-files-field_files_media'.
-  $fields['node-files-field_files_media'] = array(
-    'field_config' => array(
-      'active' => '1',
-      'cardinality' => '1',
-      'deleted' => '0',
-      'entity_types' => array(),
-      'field_name' => 'field_files_media',
-      'foreign keys' => array(
-        'fid' => array(
-          'columns' => array(
-            'fid' => 'fid',
-          ),
-          'table' => 'file_managed',
-        ),
-      ),
-      'indexes' => array(
-        'fid' => array(
-          0 => 'fid',
-        ),
-      ),
-      'locked' => '0',
-      'module' => 'video',
-      'settings' => array(
-        'autoconversion' => 1,
-        'autothumbnail' => 'no',
-        'default_video_thumbnail' => array(
-          'fid' => 0,
-          'remove_button' => 'Remove',
-          'upload' => '',
-          'upload_button' => 'Upload',
-        ),
-        'presets' => array(),
-        'preview_video_thumb_style' => 'thumbnail',
-        'thumbnail_format' => 'jpg',
-        'uri_scheme' => 'public',
-        'uri_scheme_converted' => 'public',
-        'uri_scheme_thumbnails' => 'public',
-        'views_base_table' => FALSE,
-      ),
-      'translatable' => '0',
-      'type' => 'video',
-    ),
-    'field_instance' => array(
-      'bundle' => 'files',
-      'deleted' => '0',
-      'description' => '',
-      'display' => array(
-        'collection_teaser' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => '11',
-        ),
-        'collection_thumbnail' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => '11',
-        ),
-        'default' => array(
-          'label' => 'above',
-          'module' => 'video',
-          'settings' => array(
-            'poster_image_style' => '',
-            'widthxheight' => '640x360',
-          ),
-          'type' => 'video_formatter_player',
-          'weight' => '2',
-        ),
-        'rendered_in_node' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-        'search_result' => array(
-          'label' => 'above',
-          'module' => 'video',
-          'settings' => array(
-            'poster_image_style' => '',
-            'widthxheight' => '640x360',
-          ),
-          'type' => 'video_formatter_player',
-          'weight' => '3',
-        ),
-        'teaser' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => '13',
-        ),
-      ),
-      'entity_type' => 'node',
-      'field_name' => 'field_files_media',
-      'label' => 'Video Upload',
-      'required' => 0,
-      'settings' => array(
-        'default_dimensions' => '640x360',
-        'file_directory' => 'videos/original',
-        'file_extensions' => 'mp4 ogg avi mov wmv flv ogv webm mp3',
-        'max_filesize' => '512 MB',
-        'user_register_form' => FALSE,
-      ),
-      'widget' => array(
-        'active' => 1,
-        'module' => 'video',
-        'settings' => array(
-          'progress_indicator' => 'throbber',
-        ),
-        'type' => 'video_upload',
-        'weight' => '13',
+        'weight' => '17',
       ),
     ),
   );
@@ -3523,14 +3499,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => 30,
+          'weight' => '30',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -3566,7 +3542,7 @@ function content_type_field_default_fields() {
           'rows' => '5',
         ),
         'type' => 'text_textarea',
-        'weight' => '28',
+        'weight' => '18',
       ),
     ),
   );
@@ -3603,7 +3579,7 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
@@ -3615,7 +3591,7 @@ function content_type_field_default_fields() {
             'thousand_separator' => ' ',
           ),
           'type' => 'number_integer',
-          'weight' => 31,
+          'weight' => '31',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -3652,7 +3628,7 @@ function content_type_field_default_fields() {
         'module' => 'number',
         'settings' => array(),
         'type' => 'number',
-        'weight' => '30',
+        'weight' => '19',
       ),
     ),
   );
@@ -3702,14 +3678,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => 21,
+          'weight' => '21',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -3745,7 +3721,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'text_textfield',
-        'weight' => '21',
+        'weight' => '12',
       ),
     ),
   );
@@ -3768,9 +3744,9 @@ function content_type_field_default_fields() {
       'module' => 'list',
       'settings' => array(
         'allowed_values' => array(
-          'text' => 'Text',
           'document' => 'Document',
           'image' => 'Image',
+          'audio' => 'Audio',
           'video' => 'Video',
         ),
         'allowed_values_function' => '',
@@ -3780,7 +3756,11 @@ function content_type_field_default_fields() {
     ),
     'field_instance' => array(
       'bundle' => 'files',
-      'default_value' => NULL,
+      'default_value' => array(
+        0 => array(
+          'value' => 'document',
+        ),
+      ),
       'deleted' => '0',
       'description' => '',
       'display' => array(
@@ -3826,7 +3806,7 @@ function content_type_field_default_fields() {
       'entity_type' => 'node',
       'field_name' => 'field_files_primary_media',
       'label' => 'Primary Media',
-      'required' => 0,
+      'required' => 1,
       'settings' => array(
         'user_register_form' => FALSE,
       ),
@@ -3835,7 +3815,7 @@ function content_type_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '3',
+        'weight' => '-4',
       ),
     ),
   );
@@ -3870,7 +3850,7 @@ function content_type_field_default_fields() {
             'parent' => 0,
           ),
         ),
-        'options_list_callback' => NULL,
+        'options_list_callback' => 'i18n_taxonomy_allowed_values',
       ),
       'translatable' => '0',
       'type' => 'taxonomy_term_reference',
@@ -3895,9 +3875,9 @@ function content_type_field_default_fields() {
         ),
         'default' => array(
           'label' => 'above',
-          'module' => 'taxonomy',
+          'module' => 'i18n_taxonomy',
           'settings' => array(),
-          'type' => 'taxonomy_term_reference_link',
+          'type' => 'i18n_taxonomy_term_reference_link',
           'weight' => '4',
         ),
         'rendered_in_node' => array(
@@ -3908,9 +3888,9 @@ function content_type_field_default_fields() {
         ),
         'search_result' => array(
           'label' => 'above',
-          'module' => 'taxonomy',
+          'module' => 'i18n_taxonomy',
           'settings' => array(),
-          'type' => 'taxonomy_term_reference_link',
+          'type' => 'i18n_taxonomy_term_reference_link',
           'weight' => '8',
         ),
         'teaser' => array(
@@ -3931,7 +3911,7 @@ function content_type_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '18',
+        'weight' => '27',
       ),
     ),
   );
@@ -4029,7 +4009,7 @@ function content_type_field_default_fields() {
         'module' => 'fivestar',
         'settings' => array(),
         'type' => 'exposed',
-        'weight' => '15',
+        'weight' => '4',
       ),
     ),
   );
@@ -4093,7 +4073,7 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
@@ -4102,7 +4082,7 @@ function content_type_field_default_fields() {
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => 35,
+          'weight' => '35',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -4139,7 +4119,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '33',
+        'weight' => '23',
       ),
     ),
   );
@@ -4203,7 +4183,7 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
@@ -4212,7 +4192,7 @@ function content_type_field_default_fields() {
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => 38,
+          'weight' => '38',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -4249,7 +4229,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '36',
+        'weight' => '26',
       ),
     ),
   );
@@ -4286,7 +4266,7 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
@@ -4298,7 +4278,7 @@ function content_type_field_default_fields() {
             'thousand_separator' => ' ',
           ),
           'type' => 'number_integer',
-          'weight' => 25,
+          'weight' => '25',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -4335,7 +4315,7 @@ function content_type_field_default_fields() {
         'module' => 'number',
         'settings' => array(),
         'type' => 'number',
-        'weight' => '29',
+        'weight' => '15',
       ),
     ),
   );
@@ -4372,7 +4352,7 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
@@ -4384,7 +4364,7 @@ function content_type_field_default_fields() {
             'thousand_separator' => ' ',
           ),
           'type' => 'number_integer',
-          'weight' => 24,
+          'weight' => '24',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -4421,7 +4401,7 @@ function content_type_field_default_fields() {
         'module' => 'number',
         'settings' => array(),
         'type' => 'number',
-        'weight' => '26',
+        'weight' => '14',
       ),
     ),
   );
@@ -4471,14 +4451,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => 26,
+          'weight' => '26',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -4514,7 +4494,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'text_textfield',
-        'weight' => '31',
+        'weight' => '16',
       ),
     ),
   );
@@ -4564,14 +4544,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => 22,
+          'weight' => '22',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -4607,7 +4587,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'text_textfield',
-        'weight' => '22',
+        'weight' => '12',
       ),
     ),
   );
@@ -4644,7 +4624,7 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
@@ -4656,7 +4636,7 @@ function content_type_field_default_fields() {
             'thousand_separator' => ' ',
           ),
           'type' => 'number_integer',
-          'weight' => 23,
+          'weight' => '23',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -4693,7 +4673,7 @@ function content_type_field_default_fields() {
         'module' => 'number',
         'settings' => array(),
         'type' => 'number',
-        'weight' => '25',
+        'weight' => '13',
       ),
     ),
   );
@@ -4743,14 +4723,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => 17,
+          'weight' => '17',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -4786,7 +4766,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'text_textfield',
-        'weight' => '5',
+        'weight' => '13',
       ),
     ),
   );
@@ -4834,14 +4814,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => 39,
+          'weight' => '40',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -4865,114 +4845,6 @@ function content_type_field_default_fields() {
           'rows' => '5',
         ),
         'type' => 'text_textarea',
-        'weight' => '2',
-      ),
-    ),
-  );
-
-  // Exported field: 'node-files-field_files_thumbnail'.
-  $fields['node-files-field_files_thumbnail'] = array(
-    'field_config' => array(
-      'active' => '1',
-      'cardinality' => '1',
-      'deleted' => '0',
-      'entity_types' => array(),
-      'field_name' => 'field_files_thumbnail',
-      'foreign keys' => array(
-        'fid' => array(
-          'columns' => array(
-            'fid' => 'fid',
-          ),
-          'table' => 'file_managed',
-        ),
-      ),
-      'indexes' => array(
-        'fid' => array(
-          0 => 'fid',
-        ),
-      ),
-      'locked' => '0',
-      'module' => 'image',
-      'settings' => array(
-        'default_image' => 0,
-        'uri_scheme' => 'public',
-      ),
-      'translatable' => '0',
-      'type' => 'image',
-    ),
-    'field_instance' => array(
-      'bundle' => 'files',
-      'deleted' => '0',
-      'description' => '',
-      'display' => array(
-        'collection_teaser' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => '14',
-        ),
-        'collection_thumbnail' => array(
-          'label' => 'above',
-          'module' => 'image',
-          'settings' => array(
-            'image_link' => '',
-            'image_style' => 'collection_thumbnail',
-          ),
-          'type' => 'image',
-          'weight' => '0',
-        ),
-        'default' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => '16',
-        ),
-        'rendered_in_node' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-        'search_result' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => '10',
-        ),
-        'teaser' => array(
-          'label' => 'hidden',
-          'module' => 'image',
-          'settings' => array(
-            'image_link' => 'content',
-            'image_style' => 'thumbnail',
-          ),
-          'type' => 'image',
-          'weight' => '1',
-        ),
-      ),
-      'entity_type' => 'node',
-      'field_name' => 'field_files_thumbnail',
-      'label' => 'Thumbnail',
-      'required' => 0,
-      'settings' => array(
-        'alt_field' => 1,
-        'default_image' => 0,
-        'file_directory' => '',
-        'file_extensions' => 'png gif jpg jpeg',
-        'max_filesize' => '',
-        'max_resolution' => '',
-        'min_resolution' => '',
-        'title_field' => 1,
-        'user_register_form' => FALSE,
-      ),
-      'widget' => array(
-        'active' => 1,
-        'module' => 'image',
-        'settings' => array(
-          'preview_image_style' => 'thumbnail',
-          'progress_indicator' => 'throbber',
-        ),
-        'type' => 'image_image',
         'weight' => '14',
       ),
     ),
@@ -5024,14 +4896,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'list',
           'settings' => array(),
           'type' => 'list_default',
-          'weight' => 28,
+          'weight' => '28',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -5063,9 +4935,103 @@ function content_type_field_default_fields() {
         'active' => 1,
         'module' => 'options',
         'settings' => array(
-          'display_label' => 1,
+          'display_label' => 0,
         ),
         'type' => 'options_onoff',
+        'weight' => '16',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-files-field_files_youtube_media'.
+  $fields['node-files-field_files_youtube_media'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_files_youtube_media',
+      'foreign keys' => array(),
+      'indexes' => array(
+        'video_id' => array(
+          0 => 'video_id',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'youtube',
+      'settings' => array(
+        'views_base_table' => 0,
+      ),
+      'translatable' => '0',
+      'type' => 'youtube',
+    ),
+    'field_instance' => array(
+      'bundle' => 'files',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '12',
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '12',
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'youtube',
+          'settings' => array(
+            'youtube_autoplay' => FALSE,
+            'youtube_height' => NULL,
+            'youtube_size' => '420x315',
+            'youtube_width' => NULL,
+          ),
+          'type' => 'youtube_video',
+          'weight' => '3',
+        ),
+        'rendered_in_node' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'search_result' => array(
+          'label' => 'above',
+          'module' => 'youtube',
+          'settings' => array(
+            'youtube_autoplay' => FALSE,
+            'youtube_height' => NULL,
+            'youtube_size' => '420x315',
+            'youtube_width' => NULL,
+          ),
+          'type' => 'youtube_video',
+          'weight' => '4',
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '15',
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_files_youtube_media',
+      'label' => 'Video Youtube',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 0,
+        'module' => 'youtube',
+        'settings' => array(),
+        'type' => 'youtube',
         'weight' => '24',
       ),
     ),
@@ -5089,20 +5055,7 @@ function content_type_field_default_fields() {
     ),
     'field_instance' => array(
       'bundle' => 'location',
-      'default_value' => array(
-        0 => array(
-          'element_key' => 'node|location|field_location_address|und|0',
-          'thoroughfare' => '',
-          'premise' => '',
-          'locality' => '',
-          'administrative_area' => 'CO',
-          'postal_code' => '',
-          'country' => 'US',
-          'organisation_name' => '',
-          'first_name' => '',
-          'last_name' => '',
-        ),
-      ),
+      'default_value' => NULL,
       'deleted' => '0',
       'description' => '',
       'display' => array(
@@ -5157,8 +5110,8 @@ function content_type_field_default_fields() {
           'available_countries' => array(),
           'format_handlers' => array(
             'address' => 'address',
-            'organisation' => 'organisation',
             'address-hide-country' => 0,
+            'organisation' => 0,
             'name-full' => 0,
             'name-oneline' => 0,
           ),
@@ -5169,38 +5122,38 @@ function content_type_field_default_fields() {
     ),
   );
 
-  // Exported field: 'node-location-field_location_date1'.
-  $fields['node-location-field_location_date1'] = array(
+  // Exported field: 'node-location-field_location_county'.
+  $fields['node-location-field_location_county'] = array(
     'field_config' => array(
       'active' => '1',
       'cardinality' => '1',
       'deleted' => '0',
       'entity_types' => array(),
-      'field_name' => 'field_location_date1',
-      'foreign keys' => array(),
-      'indexes' => array(),
-      'locked' => '0',
-      'module' => 'date',
-      'settings' => array(
-        'cache_count' => '4',
-        'cache_enabled' => 0,
-        'granularity' => array(
-          'day' => 0,
-          'hour' => 0,
-          'minute' => 0,
-          'month' => 'month',
-          'second' => 0,
-          'year' => 'year',
+      'field_name' => 'field_location_county',
+      'foreign keys' => array(
+        'format' => array(
+          'columns' => array(
+            'format' => 'format',
+          ),
+          'table' => 'filter_format',
         ),
-        'timezone_db' => '',
-        'todate' => 'optional',
-        'tz_handling' => 'none',
+      ),
+      'indexes' => array(
+        'format' => array(
+          0 => 'format',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'text',
+      'settings' => array(
+        'max_length' => '255',
       ),
       'translatable' => '0',
-      'type' => 'datetime',
+      'type' => 'text',
     ),
     'field_instance' => array(
       'bundle' => 'location',
+      'default_value' => NULL,
       'deleted' => '0',
       'description' => '',
       'display' => array(
@@ -5218,16 +5171,10 @@ function content_type_field_default_fields() {
         ),
         'default' => array(
           'label' => 'above',
-          'module' => 'date',
-          'settings' => array(
-            'format_type' => 'long',
-            'fromto' => 'both',
-            'multiple_from' => '',
-            'multiple_number' => '',
-            'multiple_to' => '',
-          ),
-          'type' => 'date_default',
-          'weight' => 12,
+          'module' => 'text',
+          'settings' => array(),
+          'type' => 'text_default',
+          'weight' => 7,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -5237,29 +5184,21 @@ function content_type_field_default_fields() {
         ),
       ),
       'entity_type' => 'node',
-      'field_name' => 'field_location_date1',
-      'label' => 'Date1',
+      'field_name' => 'field_location_county',
+      'label' => 'County',
       'required' => 0,
       'settings' => array(
-        'default_value' => 'now',
-        'default_value2' => 'same',
-        'default_value_code' => '',
-        'default_value_code2' => '',
+        'text_processing' => '0',
         'user_register_form' => FALSE,
       ),
       'widget' => array(
         'active' => 1,
-        'module' => 'date',
+        'module' => 'text',
         'settings' => array(
-          'increment' => 15,
-          'input_format' => 'm/d/Y - H:i:s',
-          'input_format_custom' => '',
-          'label_position' => 'above',
-          'text_parts' => array(),
-          'year_range' => '-3:+3',
+          'size' => '60',
         ),
-        'type' => 'date_text',
-        'weight' => '39',
+        'type' => 'text_textfield',
+        'weight' => '34',
       ),
     ),
   );
@@ -5396,7 +5335,7 @@ function content_type_field_default_fields() {
             'data' => 'full',
             'map_preset' => 'geofield_formatter_map',
           ),
-          'type' => 'geofield_wkt',
+          'type' => 'geofield_openlayers',
           'weight' => '2',
         ),
         'rendered_in_node' => array(
@@ -5432,11 +5371,11 @@ function content_type_field_default_fields() {
       ),
       'widget' => array(
         'active' => 1,
-        'module' => 'geofield',
+        'module' => 'geocoder',
         'settings' => array(
           'delta_handling' => 'default',
           'geocoder_field' => 'field_location_address',
-          'geocoder_handler' => 'google',
+          'geocoder_handler' => 'yahoo',
           'handler_settings' => array(
             'google' => array(
               'all_results' => 0,
@@ -5445,13 +5384,206 @@ function content_type_field_default_fields() {
                 'APPROXIMATE' => 0,
                 'GEOMETRIC_CENTER' => 0,
                 'RANGE_INTERPOLATED' => 0,
-                'ROOFTOP' => 0,
+                'ROOFTOP' => 'ROOFTOP',
               ),
             ),
           ),
         ),
-        'type' => 'geofield_wkt',
+        'type' => 'geocoder',
         'weight' => '2',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-location-field_location_home_date'.
+  $fields['node-location-field_location_home_date'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '-1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_location_home_date',
+      'foreign keys' => array(),
+      'indexes' => array(),
+      'locked' => '0',
+      'module' => 'date',
+      'settings' => array(
+        'cache_count' => '4',
+        'cache_enabled' => 0,
+        'granularity' => array(
+          'day' => 'day',
+          'hour' => 0,
+          'minute' => 0,
+          'month' => 'month',
+          'second' => 0,
+          'year' => 'year',
+        ),
+        'timezone_db' => '',
+        'todate' => 'optional',
+        'tz_handling' => 'none',
+      ),
+      'translatable' => '0',
+      'type' => 'datetime',
+    ),
+    'field_instance' => array(
+      'bundle' => 'location',
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'date',
+          'settings' => array(
+            'format_type' => 'long',
+            'fromto' => 'both',
+            'multiple_from' => '',
+            'multiple_number' => '',
+            'multiple_to' => '',
+          ),
+          'type' => 'date_default',
+          'weight' => 14,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_location_home_date',
+      'label' => 'Home date',
+      'required' => 0,
+      'settings' => array(
+        'default_value' => 'now',
+        'default_value2' => 'same',
+        'default_value_code' => '',
+        'default_value_code2' => '',
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'date',
+        'settings' => array(
+          'increment' => 15,
+          'input_format' => 'm/d/Y - H:i:s',
+          'input_format_custom' => '',
+          'label_position' => 'above',
+          'text_parts' => array(),
+          'year_range' => '-3:+3',
+        ),
+        'type' => 'date_text',
+        'weight' => '41',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-location-field_location_home_event'.
+  $fields['node-location-field_location_home_event'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '-1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_location_home_event',
+      'foreign keys' => array(
+        'node' => array(
+          'columns' => array(
+            'target_id' => 'nid',
+          ),
+          'table' => 'node',
+        ),
+      ),
+      'indexes' => array(
+        'target_id' => array(
+          0 => 'target_id',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'entityreference',
+      'settings' => array(
+        'handler' => 'base',
+        'handler_settings' => array(
+          'behaviors' => array(
+            'views-select-list' => array(
+              'status' => 0,
+            ),
+          ),
+          'sort' => array(
+            'type' => 'none',
+          ),
+          'target_bundles' => array(
+            'events' => 'events',
+          ),
+        ),
+        'target_type' => 'node',
+      ),
+      'translatable' => '0',
+      'type' => 'entityreference',
+    ),
+    'field_instance' => array(
+      'bundle' => 'location',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'entityreference',
+          'settings' => array(
+            'link' => FALSE,
+          ),
+          'type' => 'entityreference_label',
+          'weight' => 13,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_location_home_event',
+      'label' => 'Home event',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'entityreference',
+        'settings' => array(
+          'match_operator' => 'CONTAINS',
+          'path' => '',
+          'size' => '60',
+        ),
+        'type' => 'entityreference_autocomplete',
+        'weight' => '40',
       ),
     ),
   );
@@ -5537,14 +5669,14 @@ function content_type_field_default_fields() {
     ),
   );
 
-  // Exported field: 'node-location-field_location_living_people'.
-  $fields['node-location-field_location_living_people'] = array(
+  // Exported field: 'node-location-field_location_placed_event'.
+  $fields['node-location-field_location_placed_event'] = array(
     'field_config' => array(
       'active' => '1',
-      'cardinality' => '1',
+      'cardinality' => '-1',
       'deleted' => '0',
       'entity_types' => array(),
-      'field_name' => 'field_location_living_people',
+      'field_name' => 'field_location_placed_event',
       'foreign keys' => array(
         'node' => array(
           'columns' => array(
@@ -5572,7 +5704,7 @@ function content_type_field_default_fields() {
             'type' => 'none',
           ),
           'target_bundles' => array(
-            'people' => 'people',
+            'events' => 'events',
           ),
         ),
         'target_type' => 'node',
@@ -5605,7 +5737,7 @@ function content_type_field_default_fields() {
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => 10,
+          'weight' => 17,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -5615,8 +5747,8 @@ function content_type_field_default_fields() {
         ),
       ),
       'entity_type' => 'node',
-      'field_name' => 'field_location_living_people',
-      'label' => 'Living People',
+      'field_name' => 'field_location_placed_event',
+      'label' => 'Placed event',
       'required' => 0,
       'settings' => array(
         'user_register_form' => FALSE,
@@ -5630,7 +5762,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '37',
+        'weight' => '44',
       ),
     ),
   );
@@ -5739,6 +5871,301 @@ function content_type_field_default_fields() {
     ),
   );
 
+  // Exported field: 'node-location-field_location_related_entities'.
+  $fields['node-location-field_location_related_entities'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '-1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_location_related_entities',
+      'foreign keys' => array(
+        'node' => array(
+          'columns' => array(
+            'target_id' => 'nid',
+          ),
+          'table' => 'node',
+        ),
+      ),
+      'indexes' => array(
+        'target_id' => array(
+          0 => 'target_id',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'entityreference',
+      'settings' => array(
+        'handler' => 'base',
+        'handler_settings' => array(
+          'behaviors' => array(
+            'views-select-list' => array(
+              'status' => 0,
+            ),
+          ),
+          'sort' => array(
+            'type' => 'none',
+          ),
+          'target_bundles' => array(
+            'events' => 'events',
+            'people' => 'people',
+          ),
+        ),
+        'target_type' => 'node',
+      ),
+      'translatable' => '0',
+      'type' => 'entityreference',
+    ),
+    'field_instance' => array(
+      'bundle' => 'location',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'entityreference',
+          'settings' => array(
+            'link' => FALSE,
+          ),
+          'type' => 'entityreference_label',
+          'weight' => 10,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_location_related_entities',
+      'label' => 'Related entities',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'entityreference',
+        'settings' => array(
+          'match_operator' => 'CONTAINS',
+          'path' => '',
+          'size' => '60',
+        ),
+        'type' => 'entityreference_autocomplete',
+        'weight' => '37',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-location-field_location_route_start_event'.
+  $fields['node-location-field_location_route_start_event'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '-1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_location_route_start_event',
+      'foreign keys' => array(
+        'node' => array(
+          'columns' => array(
+            'target_id' => 'nid',
+          ),
+          'table' => 'node',
+        ),
+      ),
+      'indexes' => array(
+        'target_id' => array(
+          0 => 'target_id',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'entityreference',
+      'settings' => array(
+        'handler' => 'base',
+        'handler_settings' => array(
+          'behaviors' => array(
+            'views-select-list' => array(
+              'status' => 0,
+            ),
+          ),
+          'sort' => array(
+            'type' => 'none',
+          ),
+          'target_bundles' => array(
+            'events' => 'events',
+          ),
+        ),
+        'target_type' => 'node',
+      ),
+      'translatable' => '0',
+      'type' => 'entityreference',
+    ),
+    'field_instance' => array(
+      'bundle' => 'location',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'entityreference',
+          'settings' => array(
+            'link' => FALSE,
+          ),
+          'type' => 'entityreference_label',
+          'weight' => 16,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_location_route_start_event',
+      'label' => 'Route start event',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'entityreference',
+        'settings' => array(
+          'match_operator' => 'CONTAINS',
+          'path' => '',
+          'size' => '60',
+        ),
+        'type' => 'entityreference_autocomplete',
+        'weight' => '43',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-location-field_location_route_to_events'.
+  $fields['node-location-field_location_route_to_events'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '-1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_location_route_to_events',
+      'foreign keys' => array(
+        'node' => array(
+          'columns' => array(
+            'target_id' => 'nid',
+          ),
+          'table' => 'node',
+        ),
+      ),
+      'indexes' => array(
+        'target_id' => array(
+          0 => 'target_id',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'entityreference',
+      'settings' => array(
+        'handler' => 'base',
+        'handler_settings' => array(
+          'behaviors' => array(
+            'views-select-list' => array(
+              'status' => 0,
+            ),
+          ),
+          'sort' => array(
+            'type' => 'none',
+          ),
+          'target_bundles' => array(
+            'events' => 'events',
+          ),
+        ),
+        'target_type' => 'node',
+      ),
+      'translatable' => '0',
+      'type' => 'entityreference',
+    ),
+    'field_instance' => array(
+      'bundle' => 'location',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'entityreference',
+          'settings' => array(
+            'link' => FALSE,
+          ),
+          'type' => 'entityreference_label',
+          'weight' => 15,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_location_route_to_events',
+      'label' => 'Route to events',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'entityreference',
+        'settings' => array(
+          'match_operator' => 'CONTAINS',
+          'path' => '',
+          'size' => '60',
+        ),
+        'type' => 'entityreference_autocomplete',
+        'weight' => '42',
+      ),
+    ),
+  );
+
   // Exported field: 'node-location-field_location_source'.
   $fields['node-location-field_location_source'] = array(
     'field_config' => array(
@@ -5820,14 +6247,109 @@ function content_type_field_default_fields() {
     ),
   );
 
-  // Exported field: 'node-location-field_location_visiter'.
-  $fields['node-location-field_location_visiter'] = array(
+  // Exported field: 'node-location-field_location_visit_date'.
+  $fields['node-location-field_location_visit_date'] = array(
     'field_config' => array(
       'active' => '1',
-      'cardinality' => '1',
+      'cardinality' => '-1',
       'deleted' => '0',
       'entity_types' => array(),
-      'field_name' => 'field_location_visiter',
+      'field_name' => 'field_location_visit_date',
+      'foreign keys' => array(),
+      'indexes' => array(),
+      'locked' => '0',
+      'module' => 'date',
+      'settings' => array(
+        'cache_count' => '4',
+        'cache_enabled' => 0,
+        'granularity' => array(
+          'day' => 'day',
+          'hour' => 0,
+          'minute' => 0,
+          'month' => 'month',
+          'second' => 0,
+          'year' => 'year',
+        ),
+        'timezone_db' => '',
+        'todate' => 'optional',
+        'tz_handling' => 'none',
+      ),
+      'translatable' => '0',
+      'type' => 'datetime',
+    ),
+    'field_instance' => array(
+      'bundle' => 'location',
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'date',
+          'settings' => array(
+            'format_type' => 'long',
+            'fromto' => 'both',
+            'multiple_from' => '',
+            'multiple_number' => '',
+            'multiple_to' => '',
+          ),
+          'type' => 'date_default',
+          'weight' => 12,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_location_visit_date',
+      'label' => 'Visit date',
+      'required' => 0,
+      'settings' => array(
+        'default_value' => 'now',
+        'default_value2' => 'same',
+        'default_value_code' => '',
+        'default_value_code2' => '',
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'date',
+        'settings' => array(
+          'increment' => 15,
+          'input_format' => 'm/d/Y - H:i:s',
+          'input_format_custom' => '',
+          'label_position' => 'above',
+          'text_parts' => array(),
+          'year_range' => '-3:+3',
+        ),
+        'type' => 'date_text',
+        'weight' => '39',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-location-field_location_visit_nodes'.
+  $fields['node-location-field_location_visit_nodes'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '-1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_location_visit_nodes',
       'foreign keys' => array(
         'node' => array(
           'columns' => array(
@@ -5855,6 +6377,7 @@ function content_type_field_default_fields() {
             'type' => 'none',
           ),
           'target_bundles' => array(
+            'events' => 'events',
             'people' => 'people',
           ),
         ),
@@ -5898,8 +6421,8 @@ function content_type_field_default_fields() {
         ),
       ),
       'entity_type' => 'node',
-      'field_name' => 'field_location_visiter',
-      'label' => 'Visiter',
+      'field_name' => 'field_location_visit_nodes',
+      'label' => 'Visit nodes',
       'required' => 0,
       'settings' => array(
         'user_register_form' => FALSE,
@@ -6076,7 +6599,7 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '16',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'inline',
@@ -6132,6 +6655,104 @@ function content_type_field_default_fields() {
     ),
   );
 
+  // Exported field: 'node-people-field_people_created_event'.
+  $fields['node-people-field_people_created_event'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '-1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_people_created_event',
+      'foreign keys' => array(
+        'node' => array(
+          'columns' => array(
+            'target_id' => 'nid',
+          ),
+          'table' => 'node',
+        ),
+      ),
+      'indexes' => array(
+        'target_id' => array(
+          0 => 'target_id',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'entityreference',
+      'settings' => array(
+        'handler' => 'base',
+        'handler_settings' => array(
+          'behaviors' => array(
+            'views-select-list' => array(
+              'status' => 0,
+            ),
+          ),
+          'sort' => array(
+            'type' => 'none',
+          ),
+          'target_bundles' => array(
+            'events' => 'events',
+          ),
+        ),
+        'target_type' => 'node',
+      ),
+      'translatable' => '0',
+      'type' => 'entityreference',
+    ),
+    'field_instance' => array(
+      'bundle' => 'people',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'entityreference',
+          'settings' => array(
+            'link' => FALSE,
+          ),
+          'type' => 'entityreference_label',
+          'weight' => 18,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_people_created_event',
+      'label' => 'Created event',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'entityreference',
+        'settings' => array(
+          'match_operator' => 'CONTAINS',
+          'path' => '',
+          'size' => '60',
+        ),
+        'type' => 'entityreference_autocomplete',
+        'weight' => '41',
+      ),
+    ),
+  );
+
   // Exported field: 'node-people-field_people_degree'.
   $fields['node-people-field_people_degree'] = array(
     'field_config' => array(
@@ -6177,14 +6798,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '11',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => '15',
+          'weight' => 15,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -6253,13 +6874,10 @@ function content_type_field_default_fields() {
           'weight' => 0,
         ),
         'collection_thumbnail' => array(
-          'label' => 'inline',
-          'module' => 'text',
-          'settings' => array(
-            'trim_length' => '200',
-          ),
-          'type' => 'text_summary_or_trimmed',
-          'weight' => '1',
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
@@ -6351,14 +6969,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '12',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => '13',
+          'weight' => 13,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -6432,7 +7050,7 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '13',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
@@ -6519,14 +7137,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '15',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => '8',
+          'weight' => 8,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -6600,14 +7218,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '14',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => '12',
+          'weight' => 12,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -6632,104 +7250,6 @@ function content_type_field_default_fields() {
         ),
         'type' => 'text_textfield',
         'weight' => '35',
-      ),
-    ),
-  );
-
-  // Exported field: 'node-people-field_people_home'.
-  $fields['node-people-field_people_home'] = array(
-    'field_config' => array(
-      'active' => '1',
-      'cardinality' => '1',
-      'deleted' => '0',
-      'entity_types' => array(),
-      'field_name' => 'field_people_home',
-      'foreign keys' => array(
-        'node' => array(
-          'columns' => array(
-            'target_id' => 'nid',
-          ),
-          'table' => 'node',
-        ),
-      ),
-      'indexes' => array(
-        'target_id' => array(
-          0 => 'target_id',
-        ),
-      ),
-      'locked' => '0',
-      'module' => 'entityreference',
-      'settings' => array(
-        'handler' => 'base',
-        'handler_settings' => array(
-          'behaviors' => array(
-            'views-select-list' => array(
-              'status' => 0,
-            ),
-          ),
-          'sort' => array(
-            'type' => 'none',
-          ),
-          'target_bundles' => array(
-            'location' => 'location',
-          ),
-        ),
-        'target_type' => 'node',
-      ),
-      'translatable' => '0',
-      'type' => 'entityreference',
-    ),
-    'field_instance' => array(
-      'bundle' => 'people',
-      'default_value' => NULL,
-      'deleted' => '0',
-      'description' => '',
-      'display' => array(
-        'collection_teaser' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-        'collection_thumbnail' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-        'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 18,
-        ),
-        'teaser' => array(
-          'label' => 'above',
-          'settings' => array(),
-          'type' => 'hidden',
-          'weight' => 0,
-        ),
-      ),
-      'entity_type' => 'node',
-      'field_name' => 'field_people_home',
-      'label' => 'Home',
-      'required' => 0,
-      'settings' => array(
-        'user_register_form' => FALSE,
-      ),
-      'widget' => array(
-        'active' => 1,
-        'module' => 'entityreference',
-        'settings' => array(
-          'match_operator' => 'CONTAINS',
-          'path' => '',
-          'size' => '60',
-        ),
-        'type' => 'entityreference_autocomplete',
-        'weight' => '41',
       ),
     ),
   );
@@ -6777,23 +7297,18 @@ function content_type_field_default_fields() {
           'weight' => 0,
         ),
         'collection_thumbnail' => array(
-          'label' => 'inline',
-          'module' => 'image',
-          'settings' => array(
-            'image_link' => 'content',
-            'image_style' => 'collection_thumbnail',
-          ),
-          'type' => 'image',
-          'weight' => '0',
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'hidden',
-          'module' => 'image',
+          'module' => 'deepzoom',
           'settings' => array(
-            'image_link' => 'content',
-            'image_style' => '',
+            'deepzoom_image_style' => 'medium',
           ),
-          'type' => 'image',
+          'type' => 'deepzoom_deepzoom',
           'weight' => '0',
         ),
         'rendered_in_node' => array(
@@ -6886,14 +7401,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '10',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => '10',
+          'weight' => 10,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -6967,14 +7482,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '9',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => '11',
+          'weight' => 11,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -7056,7 +7571,7 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '4',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
@@ -7150,14 +7665,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '3',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => '9',
+          'weight' => 9,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -7232,14 +7747,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '2',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'list',
           'settings' => array(),
           'type' => 'list_default',
-          'weight' => '16',
+          'weight' => 16,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -7267,11 +7782,208 @@ function content_type_field_default_fields() {
     ),
   );
 
+  // Exported field: 'node-people-field_people_place'.
+  $fields['node-people-field_people_place'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '-1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_people_place',
+      'foreign keys' => array(
+        'node' => array(
+          'columns' => array(
+            'target_id' => 'nid',
+          ),
+          'table' => 'node',
+        ),
+      ),
+      'indexes' => array(
+        'target_id' => array(
+          0 => 'target_id',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'entityreference',
+      'settings' => array(
+        'handler' => 'base',
+        'handler_settings' => array(
+          'behaviors' => array(
+            'views-select-list' => array(
+              'status' => 0,
+            ),
+          ),
+          'sort' => array(
+            'type' => 'none',
+          ),
+          'target_bundles' => array(
+            'events' => 'events',
+            'location' => 'location',
+          ),
+        ),
+        'target_type' => 'node',
+      ),
+      'translatable' => '0',
+      'type' => 'entityreference',
+    ),
+    'field_instance' => array(
+      'bundle' => 'people',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'entityreference',
+          'settings' => array(
+            'link' => FALSE,
+          ),
+          'type' => 'entityreference_label',
+          'weight' => 20,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_people_place',
+      'label' => 'Place',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'entityreference',
+        'settings' => array(
+          'match_operator' => 'CONTAINS',
+          'path' => '',
+          'size' => '60',
+        ),
+        'type' => 'entityreference_autocomplete',
+        'weight' => '43',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-people-field_people_received_event'.
+  $fields['node-people-field_people_received_event'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '-1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_people_received_event',
+      'foreign keys' => array(
+        'node' => array(
+          'columns' => array(
+            'target_id' => 'nid',
+          ),
+          'table' => 'node',
+        ),
+      ),
+      'indexes' => array(
+        'target_id' => array(
+          0 => 'target_id',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'entityreference',
+      'settings' => array(
+        'handler' => 'base',
+        'handler_settings' => array(
+          'behaviors' => array(
+            'views-select-list' => array(
+              'status' => 0,
+            ),
+          ),
+          'sort' => array(
+            'type' => 'none',
+          ),
+          'target_bundles' => array(
+            'events' => 'events',
+          ),
+        ),
+        'target_type' => 'node',
+      ),
+      'translatable' => '0',
+      'type' => 'entityreference',
+    ),
+    'field_instance' => array(
+      'bundle' => 'people',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'entityreference',
+          'settings' => array(
+            'link' => FALSE,
+          ),
+          'type' => 'entityreference_label',
+          'weight' => 19,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_people_received_event',
+      'label' => 'Received event',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'entityreference',
+        'settings' => array(
+          'match_operator' => 'CONTAINS',
+          'path' => '',
+          'size' => '60',
+        ),
+        'type' => 'entityreference_autocomplete',
+        'weight' => '42',
+      ),
+    ),
+  );
+
   // Exported field: 'node-people-field_people_received_files'.
   $fields['node-people-field_people_received_files'] = array(
     'field_config' => array(
       'active' => '1',
-      'cardinality' => '-1',
+      'cardinality' => '1',
       'deleted' => '0',
       'entity_types' => array(),
       'field_name' => 'field_people_received_files',
@@ -7326,7 +8038,7 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '5',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
@@ -7335,7 +8047,7 @@ function content_type_field_default_fields() {
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => '7',
+          'weight' => 7,
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -7367,6 +8079,104 @@ function content_type_field_default_fields() {
         ),
         'type' => 'entityreference_autocomplete',
         'weight' => '8',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-people-field_people_related_event'.
+  $fields['node-people-field_people_related_event'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '-1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_people_related_event',
+      'foreign keys' => array(
+        'node' => array(
+          'columns' => array(
+            'target_id' => 'nid',
+          ),
+          'table' => 'node',
+        ),
+      ),
+      'indexes' => array(
+        'target_id' => array(
+          0 => 'target_id',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'entityreference',
+      'settings' => array(
+        'handler' => 'base',
+        'handler_settings' => array(
+          'behaviors' => array(
+            'views-select-list' => array(
+              'status' => 0,
+            ),
+          ),
+          'sort' => array(
+            'type' => 'none',
+          ),
+          'target_bundles' => array(
+            'events' => 'events',
+          ),
+        ),
+        'target_type' => 'node',
+      ),
+      'translatable' => '0',
+      'type' => 'entityreference',
+    ),
+    'field_instance' => array(
+      'bundle' => 'people',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'entityreference',
+          'settings' => array(
+            'link' => FALSE,
+          ),
+          'type' => 'entityreference_label',
+          'weight' => 23,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_people_related_event',
+      'label' => 'Related event',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'entityreference',
+        'settings' => array(
+          'match_operator' => 'CONTAINS',
+          'path' => '',
+          'size' => '60',
+        ),
+        'type' => 'entityreference_autocomplete',
+        'weight' => '46',
       ),
     ),
   );
@@ -7416,14 +8226,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '6',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => '17',
+          'weight' => 17,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -7497,14 +8307,14 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '8',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => '14',
+          'weight' => 14,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -7533,14 +8343,109 @@ function content_type_field_default_fields() {
     ),
   );
 
-  // Exported field: 'node-people-field_people_visit_place'.
-  $fields['node-people-field_people_visit_place'] = array(
+  // Exported field: 'node-people-field_people_visit_date'.
+  $fields['node-people-field_people_visit_date'] = array(
     'field_config' => array(
       'active' => '1',
-      'cardinality' => '1',
+      'cardinality' => '-1',
       'deleted' => '0',
       'entity_types' => array(),
-      'field_name' => 'field_people_visit_place',
+      'field_name' => 'field_people_visit_date',
+      'foreign keys' => array(),
+      'indexes' => array(),
+      'locked' => '0',
+      'module' => 'date',
+      'settings' => array(
+        'cache_count' => '4',
+        'cache_enabled' => 0,
+        'granularity' => array(
+          'day' => 'day',
+          'hour' => 0,
+          'minute' => 0,
+          'month' => 'month',
+          'second' => 0,
+          'year' => 'year',
+        ),
+        'timezone_db' => '',
+        'todate' => 'optional',
+        'tz_handling' => 'none',
+      ),
+      'translatable' => '0',
+      'type' => 'datetime',
+    ),
+    'field_instance' => array(
+      'bundle' => 'people',
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'date',
+          'settings' => array(
+            'format_type' => 'long',
+            'fromto' => 'both',
+            'multiple_from' => '',
+            'multiple_number' => '',
+            'multiple_to' => '',
+          ),
+          'type' => 'date_default',
+          'weight' => 22,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_people_visit_date',
+      'label' => 'Visit date',
+      'required' => 0,
+      'settings' => array(
+        'default_value' => 'now',
+        'default_value2' => 'same',
+        'default_value_code' => '',
+        'default_value_code2' => '',
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'date',
+        'settings' => array(
+          'increment' => 15,
+          'input_format' => 'm/d/Y - H:i:s',
+          'input_format_custom' => '',
+          'label_position' => 'above',
+          'text_parts' => array(),
+          'year_range' => '-3:+3',
+        ),
+        'type' => 'date_text',
+        'weight' => '45',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-people-field_people_visit_nodes'.
+  $fields['node-people-field_people_visit_nodes'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '-1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_people_visit_nodes',
       'foreign keys' => array(
         'node' => array(
           'columns' => array(
@@ -7568,6 +8473,7 @@ function content_type_field_default_fields() {
             'type' => 'none',
           ),
           'target_bundles' => array(
+            'events' => 'events',
             'location' => 'location',
           ),
         ),
@@ -7601,7 +8507,7 @@ function content_type_field_default_fields() {
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => 19,
+          'weight' => 21,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -7611,8 +8517,8 @@ function content_type_field_default_fields() {
         ),
       ),
       'entity_type' => 'node',
-      'field_name' => 'field_people_visit_place',
-      'label' => 'Visit place',
+      'field_name' => 'field_people_visit_nodes',
+      'label' => 'Visit nodes',
       'required' => 0,
       'settings' => array(
         'user_register_form' => FALSE,
@@ -7626,7 +8532,7 @@ function content_type_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '42',
+        'weight' => '44',
       ),
     ),
   );
@@ -7635,7 +8541,7 @@ function content_type_field_default_fields() {
   $fields['node-people-field_people_written_files'] = array(
     'field_config' => array(
       'active' => '1',
-      'cardinality' => '-1',
+      'cardinality' => '1',
       'deleted' => '0',
       'entity_types' => array(),
       'field_name' => 'field_people_written_files',
@@ -7690,7 +8596,7 @@ function content_type_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => '7',
+          'weight' => 0,
         ),
         'default' => array(
           'label' => 'above',
@@ -7699,7 +8605,7 @@ function content_type_field_default_fields() {
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => '6',
+          'weight' => 6,
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -7738,15 +8644,17 @@ function content_type_field_default_fields() {
   // Translatables
   // Included for use with string extractors like potx.
   t('Address');
+  t('Audio');
   t('Author');
   t('Author Location');
   t('Birthday');
   t('Category');
   t('Chapter');
   t('Collection');
+  t('County');
+  t('Created event');
   t('Creation Date');
   t('Date');
-  t('Date1');
   t('Degree');
   t('Description');
   t('Favorite food');
@@ -7760,6 +8668,8 @@ function content_type_field_default_fields() {
   t('Handwritten');
   t('Home');
   t('Home date');
+  t('Home event');
+  t('ID3 tags metadata');
   t('Image');
   t('Image Date');
   t('Images');
@@ -7768,7 +8678,6 @@ function content_type_field_default_fields() {
   t('Last name');
   t('Letterhead');
   t('Link');
-  t('Living People');
   t('Maiden name');
   t('Main character');
   t('Marriage Date');
@@ -7781,29 +8690,32 @@ function content_type_field_default_fields() {
   t('Original place');
   t('Original title');
   t('Page');
-  t('Place date');
+  t('Photographer');
+  t('Place');
   t('Place nodes');
+  t('Placed event');
   t('Primary Media');
   t('Publication');
   t('Rating');
   t('Received Files');
+  t('Received event');
   t('Receiver');
   t('Receiver Location');
+  t('Related entities');
+  t('Related event');
+  t('Route start');
+  t('Route start event');
   t('Route to');
+  t('Route to events');
   t('Source');
-  t('Start route');
   t('Subtitle');
   t('Text');
-  t('Thumbnail');
   t('Time');
-  t('Time nodes');
   t('Title');
   t('Typewritten');
-  t('Video Upload');
+  t('Video Youtube');
   t('Visit date');
   t('Visit nodes');
-  t('Visit place');
-  t('Visiter');
   t('Volume');
   t('Written Files');
   t('e-mail');

@@ -1,0 +1,12 @@
+name = Location View Views Feature
+description = Provides map and data layer for location view on collection page
+core = 7.x
+package = Features
+php = 5.2.4
+version = 7.x-1.0
+project = location_view_views_feature
+dependencies[] = ctools
+dependencies[] = views
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:1
+features[views_view][] = location_view
