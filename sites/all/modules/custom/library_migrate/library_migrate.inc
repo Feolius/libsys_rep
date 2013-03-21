@@ -58,9 +58,9 @@ abstract class LibraryMigration extends DynamicMigration {
       foreach ($sids as $sid) {
         $destids = $source_migration->getMap()->lookupDestinationID(array($sid));
         if (!empty($destids['destid1'])) {
-          $results = array_merge($destids['destid1'], $results);
+          $results[] = $destids['destid1'];
         } else {
-          //We should create stub here
+          //We should create a stub here
           $node = new stdClass();
           $node->title = t('Stub for') . $sid;
           $node->body = t('Stub body');
@@ -82,6 +82,81 @@ abstract class LibraryMigration extends DynamicMigration {
       }
     }
     return $results;
+  }
+
+  //Method find all dates according to given reference entry id, reference table name and linker and put it in node inside given field
+  public function set_datefield_value($field_name, $node, $reference_ID, $reference_tb, $linkerinfo_id) {
+    $data = $this->get_related_sids($reference_ID, $reference_tb, array('adv_date_time'), $linkerinfo_id);
+    if (isset($data['adv_date_time']['tb_id'])) {
+      foreach ($data['adv_date_time']['tb_id'] as $creation_date_id) {
+        $query = Database::getConnection('default', 'ImportDatabaseKey')
+                ->select('adv_date_time', 'l');
+        $query->condition('l.ID', $creation_date_id, '=');
+        $query->fields('l', array('start_year', 'start_month', 'start_day', 'end_year', 'end_month', 'end_day'));
+        $result = $query->execute();
+        $i = 0;
+        $record = $result->fetchAssoc();
+        if (isset($record['start_year'])) {
+          $start_year = $record['start_year'];
+          if (isset($record['end_year'])) {
+            $end_year = $record['end_year'];
+          } else {
+            $end_year = $start_year;
+          }
+          if (isset($record['start_month'])) {
+            $start_month = $record['start_month'];
+            if (isset($record['start_day'])) {
+              $start_day = $record['start_day'];
+            } else {
+              $start_day = '01';
+              $end_day = date_days_in_month($year, $month);
+            }
+          } else {
+            $start_month = '01';
+            $start_day = '01';
+          }
+          if (isset($record['end_month'])) {
+            $end_month = $record['end_month'];
+            if (isset($record['end_day'])) {
+              $end_day = $record['end_day'];
+            } else {
+              $end_day = date_days_in_month($end_year, $end_month);
+            }
+          } else {
+            $end_month = '12';
+            $end_day = '31';
+          }
+          $node->{$field_name}['und'][$i]['value'] = $start_year . '-' . $start_month . '-' . $start_day . ' 00:00:00';
+          $node->{$field_name}['und'][$i]['value2'] = $end_year . '-' . $end_month . '-' . $end_day . ' 00:00:00';
+          $node->{$field_name}['und'][$i]['timezone'] = date_default_timezone();
+          $node->{$field_name}['und'][$i]['timezone_db'] = 'UTC';
+          $node->{$field_name}['und'][$i]['date_type'] = 'datetime';
+          $i++;
+        }
+      }
+    }
+  }
+
+  //Method allows to get destination ids from mapping tables
+  public function get_dids_from_map_table($table_name, $sids) {
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select($table_name, 'l');
+    $query->addField('l', 'destid1');
+    $condition = db_or();
+    if (!empty($sids)) {
+      foreach ($sids as $sid) {
+        $condition = $condition->condition('l.sourceid1', $sid);
+      }
+    } else {
+      return array();
+    }
+    $query->condition($condition);
+    $result = $query->execute();
+    $dids = array();
+    while ($record = $result->fetchAssoc()) {
+      $dids[] = $record['destid1'];
+    }
+    return $dids;
   }
 
 }
@@ -394,6 +469,9 @@ class PeopleMigration extends LibraryMigration {
             ->sourceMigration('Location');
     $this->addFieldMapping('field_people_visit_place', 'visit_place')
             ->sourceMigration('Location');
+    $this->addFieldMapping(PEOPLE_FIELD_1, 'people_field_1');
+    $this->addFieldMapping(PEOPLE_FIELD_3, 'people_field_3');
+    $this->addFieldMapping(PEOPLE_FIELD_14, 'people_field_14');
   }
 
   public function prepareRow($row) {
@@ -415,18 +493,25 @@ class PeopleMigration extends LibraryMigration {
       $real_title = substr($real_title, 0, 255);
     }
     $row->real_title = $real_title;
-    //Add written files
-    $data = $this->get_related_sids($row->ID, 'adv_people', array('file'), 1);
+    $data = $this->get_related_sids($row->ID, 'adv_people', array('file', 'adv_events'), 1);
     $row->written_files = $data['file'];
-    //Add received files
+    $sids = array();
+    $sids['Events'] = $data['adv_events'];
+    $row->people_field_1 = $this->sidsHandler($sids);
     $data = $this->get_related_sids($row->ID, 'adv_people', array('file'), 3);
     $row->received_files = $data['file'];
-    //Add home
+    $sids = array();
+    $sids['Events'] = $data['adv_events'];
+    $row->people_field_3 = $this->sidsHandler($sids);
     $data = $this->get_related_sids($row->ID, 'adv_people', array('adv_location'), 17);
     $row->home = $data['adv_location'];
-    //Add visit place
     $data = $this->get_related_sids($row->ID, 'adv_people', array('adv_location'), 18);
     $row->visit_place = $data['adv_location'];
+    $data = $this->get_related_sids($row->ID, 'adv_people', array('adv_events', 'adv_location'), 1);
+    $sids = array();
+    $sids['Events'] = $data['adv_events'];
+    $sids['Location'] = $data['adv_location'];
+    $row->people_field_14 = $this->sidsHandler($sids);
   }
 
   protected function createStub($migration, $source_id) {
@@ -487,7 +572,11 @@ class LocationMigration extends LibraryMigration {
             ->sourceMigration('People');
     $this->addFieldMapping('field_location_visiter', 'visiters')
             ->sourceMigration('People');
-    $this->addFieldMapping(LOCATION_FIELD_14, 'related_entities');
+    $this->addFieldMapping(LOCATION_FIELD_14, 'location_field_14');
+    $this->addFieldMapping(LOCATION_FIELD_18, 'location_field_18');
+    $this->addFieldMapping(LOCATION_FIELD_20, 'location_field_20');
+    $this->addFieldMapping(LOCATION_FIELD_21, 'location_field_21');
+    $this->addFieldMapping(LOCATION_FIELD_22, 'location_field_22');
   }
 
   public function prepareRow($row) {
@@ -531,12 +620,29 @@ class LocationMigration extends LibraryMigration {
     //Add visiters
     $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people'), 18);
     $row->visiters = $data['adv_people'];*/
-    //Add related entities
     $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people', 'adv_events'), 14);
     $sids = array();
     $sids['People'] = $data['adv_people'];
     $sids['Events'] = $data['adv_events'];
-    $row->related_entities = $this->sidsHandler($sids);
+    $row->location_field_14 = $this->sidsHandler($sids);
+    $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people', 'adv_events'), 18);
+    $sids = array();
+    $sids['People'] = $data['adv_people'];
+    $sids['Events'] = $data['adv_events'];
+    $row->location_field_18 = $this->sidsHandler($sids);
+    $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_events'), 20);
+    $sids = array();
+    $sids['Events'] = $data['adv_events'];
+    $row->location_field_20 = $this->sidsHandler($sids);
+    $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_events'), 21);
+    $sids = array();
+    $sids['Events'] = $data['adv_events'];
+    $row->location_field_21 = $this->sidsHandler($sids);
+    $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_events'), 22);
+    $sids = array();
+    $sids['Events'] = $data['adv_events'];
+    $row->location_field_22 = $this->sidsHandler($sids);
+
   }
 
   public function prepare($node, $row) {
@@ -557,6 +663,9 @@ class LocationMigration extends LibraryMigration {
     if (($field_value = geocoder_widget_get_field_value('node', $field_instance, $node)) !== FALSE) {
       $node->{$field_instance['field_name']} = $field_value;
     }
+    //Add datefields
+    $this->set_datefield_value(LOCATION_FIELD_18_DATE, $node, $row->ID, 'adv_location', 18);
+    $this->set_datefield_value(LOCATION_FIELD_17_DATE, $node, $row->ID, 'adv_location', 17);
   }
 
   //@TODO Maybe this is need to be remove if we start import from locations
@@ -633,33 +742,26 @@ class EventsMigration extends LibraryMigration {
       $nids = $this->get_dids_from_map_table('migrate_map_location', $data['adv_location']);
       $nids = array_merge($nids, $this->get_dids_from_map_table('migrate_map_people', $data['adv_people']));
       $row->event_field_13 = $nids; */
-    //Add event_field_14
     $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_people', 'adv_location'), 14);
     $nids = $this->get_dids_from_map_table('migrate_map_location', $data['adv_location']);
     $nids = array_merge($nids, $this->get_dids_from_map_table('migrate_map_people', $data['adv_people']));
     $row->event_field_14 = $nids;
-    //Add event_field_18
     $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_people', 'adv_location'), 18);
     $nids = $this->get_dids_from_map_table('migrate_map_location', $data['adv_location']);
     $nids = array_merge($nids, $this->get_dids_from_map_table('migrate_map_people', $data['adv_people']));
     $row->event_field_18 = $nids;
-    //Add event_field_23
     $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_people'), 23);
     $nids = $this->get_dids_from_map_table('migrate_map_people', $data['adv_people']);
     $row->event_field_23 = $nids;
-    //Add event_field_17
     $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_location'), 17);
     $nids = $this->get_dids_from_map_table('migrate_map_location', $data['adv_location']);
     $row->event_field_17 = $nids;
-    //Add event_field_20
     $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_location'), 20);
     $nids = $this->get_dids_from_map_table('migrate_map_location', $data['adv_location']);
     $row->event_field_20 = $nids;
-    //Add event_field_21
     $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_location'), 21);
     $nids = $this->get_dids_from_map_table('migrate_map_location', $data['adv_location']);
     $row->event_field_21 = $nids;
-    //Add event_field_22
     $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_location'), 22);
     $nids = $this->get_dids_from_map_table('migrate_map_location', $data['adv_location']);
     $row->event_field_22 = $nids;
@@ -668,86 +770,11 @@ class EventsMigration extends LibraryMigration {
   public function prepare($node, $row) {
     $node->language = 'en';
     //Add dates
-    set_datefield_value(EVENT_FIELD_13_DATE, $node, $row->ID, 'adv_events', 13);
+    $this->set_datefield_value(EVENT_FIELD_13_DATE, $node, $row->ID, 'adv_events', 13);
     //@see comment in library_migrate_field_names
     //set_datefield_value(EVENT_FIELD_14_DATE, $node, $row->ID, 'adv_events', 14);
-    set_datefield_value(EVENT_FIELD_18_DATE, $node, $row->ID, 'adv_events', 18);
-    set_datefield_value(EVENT_FIELD_17_DATE, $node, $row->ID, 'adv_events', 17);
-  }
-
-  //Method allows to get destination ids from mapping tables
-  public function get_dids_from_map_table($table_name, $sids) {
-    $query = Database::getConnection('default', 'ImportDatabaseKey')
-            ->select($table_name, 'l');
-    $query->addField('l', 'destid1');
-    $condition = db_or();
-    if (!empty($sids)) {
-      foreach ($sids as $sid) {
-        $condition = $condition->condition('l.sourceid1', $sid);
-      }
-    } else {
-      return array();
-    }
-    $query->condition($condition);
-    $result = $query->execute();
-    $dids = array();
-    while ($record = $result->fetchAssoc()) {
-      $dids[] = $record['destid1'];
-    }
-    return $dids;
-  }
-
-  //Method find all dates according to given reference entry id, reference table name and linker and put it in node inside given field
-  public function set_datefield_value($field_name, $node, $reference_ID, $reference_tb, $linkerinfo_id) {
-    $data = $this->get_related_sids($reference_ID, $reference_tb, array('adv_date_time'), $linkerinfo_id);
-    if (isset($data['adv_date_time']['tb_id'])) {
-      foreach ($data['adv_date_time']['tb_id'] as $creation_date_id) {
-        $query = Database::getConnection('default', 'ImportDatabaseKey')
-                ->select('adv_date_time', 'l');
-        $query->condition('l.ID', $creation_date_id, '=');
-        $query->fields('l', array('start_year', 'start_month', 'start_day', 'end_year', 'end_month', 'end_day'));
-        $result = $query->execute();
-        $i = 0;
-        $record = $result->fetchAssoc();
-        if (isset($record['start_year'])) {
-          $start_year = $record['start_year'];
-          if (isset($record['end_year'])) {
-            $end_year = $record['end_year'];
-          } else {
-            $end_year = $start_year;
-          }
-          if (isset($record['start_month'])) {
-            $start_month = $record['start_month'];
-            if (isset($record['start_day'])) {
-              $start_day = $record['start_day'];
-            } else {
-              $start_day = '01';
-              $end_day = date_days_in_month($year, $month);
-            }
-          } else {
-            $start_month = '01';
-            $start_day = '01';
-          }
-          if (isset($record['end_month'])) {
-            $end_month = $record['end_month'];
-            if (isset($record['end_day'])) {
-              $end_day = $record['end_day'];
-            } else {
-              $end_day = date_days_in_month($end_year, $end_month);
-            }
-          } else {
-            $end_month = '12';
-            $end_day = '31';
-          }
-          $node->{$field_name}['und'][$i]['value'] = $start_year . '-' . $start_month . '-' . $start_day . ' 00:00:00';
-          $node->{$field_name}['und'][$i]['value2'] = $end_year . '-' . $end_month . '-' . $end_day . ' 00:00:00';
-          $node->{$field_name}['und'][$i]['timezone'] = date_default_timezone();
-          $node->{$field_name}['und'][$i]['timezone_db'] = 'UTC';
-          $node->{$field_name}['und'][$i]['date_type'] = 'datetime';
-          $i++;
-        }
-      }
-    }
+    $this->set_datefield_value(EVENT_FIELD_18_DATE, $node, $row->ID, 'adv_events', 18);
+    $this->set_datefield_value(EVENT_FIELD_17_DATE, $node, $row->ID, 'adv_events', 17);
   }
 
 }
