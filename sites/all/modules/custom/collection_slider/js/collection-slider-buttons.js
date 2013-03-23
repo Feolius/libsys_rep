@@ -4,7 +4,7 @@
             arrow_left_url = Drupal.settings.collection_arrows.previous_node_html,
             arrow_right = $('<div/>'),
             arrow_right_url = Drupal.settings.collection_arrows.next_node_html,
-            back_to_collection = $('<span/>');
+            back_to_library = $('<span/>');
 
         arrow_left.addClass("collection_slider_button_left");
         arrow_left.append(arrow_left_url);
@@ -15,11 +15,11 @@
         $('body').append(arrow_left);
         $('body').append(arrow_right);
 
-        back_to_collection.addClass("breadcrumb-separator");
-        back_to_collection.text("/");
+        back_to_library.addClass("breadcrumb-separator");
+        back_to_library.text(":");
 
-        $(".breadcrumb").append(back_to_collection);
-        $(".breadcrumb").append(Drupal.settings.collection_arrows.back_to_collection_html);
+        $(".breadcrumb").append(back_to_library);
+        $(".breadcrumb").append(Drupal.settings.collection_arrows.back_to_library_html);
 
     });
     collectionLayout = {

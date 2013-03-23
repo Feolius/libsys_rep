@@ -86,10 +86,12 @@ function collection_slider_set_arrows_urls()
     unset($collection_get_options['collection']);
     unset($collection_get_options['q']);
 
+   
+
     if ($_GET['query'] != '*:*') {
-        $back_to_collection_html = l('Back to Collection', 'collection/' . $_GET['query'], array('query' => $collection_get_options));
+        $back_to_library_html = url('Library', 'library/' . $_GET['query'], array('query' => $collection_get_options));
     } else {
-        $back_to_collection_html = l('Back to Collection', 'collection', array('query' => $collection_get_options));
+        $back_to_library_html = l('Library', 'library', array('query' => $collection_get_options));
     }
-    drupal_add_js(array('collection_arrows' => array('back_to_collection_html' => $back_to_collection_html)), 'setting');
+    drupal_add_js(array('collection_arrows' => array('back_to_library_html' => $back_to_library_html)), 'setting');
 }

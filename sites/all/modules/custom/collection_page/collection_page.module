@@ -89,16 +89,8 @@ function theme_facet_collection_search_results__alter($variables) {
       }
     }
   }
-  if (!empty($bundle)) {
-    $entity_type = 'node';
-    $info = entity_get_info($entity_type);
-    $page_title = !empty($info['bundles'][$bundle]['label']) ? $info['bundles'][$bundle]['label'] : 'Library';
-    drupal_set_title($page_title);
-  }
-  else {
-    drupal_set_title('Library');
-  }
-
+  //Set page title
+  drupal_set_title('Library');
 
   if (isset($_GET['view']) && $_GET['view'] == 'thumb') {
     $rendered_results = theme('collection_standart_thumbnail_view', array('results' => $results));
