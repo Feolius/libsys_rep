@@ -86,10 +86,10 @@ function collection_slider_set_arrows_urls()
     unset($collection_get_options['collection']);
     unset($collection_get_options['q']);
 
-   
+  //dpm(url('library/', array('query' => $collection_get_options)));
 
     if ($_GET['query'] != '*:*') {
-        $back_to_library_html = url('Library', 'library/' . $_GET['query'], array('query' => $collection_get_options));
+        $back_to_library_html = l('Library', 'library/' . $_GET['query'], array('query' => $collection_get_options));
     } else {
         $back_to_library_html = l('Library', 'library', array('query' => $collection_get_options));
     }
