@@ -3,14 +3,14 @@
 /**
  * Implements hook_facet_collection_ui_field_type_info().
  */
-function facet_collection_ui_text_facet_collection_ui_field_type_info() {
-  return array('text', 'text_with_summary', 'text_long');
+function facet_collection_ui_list_facet_collection_ui_field_type_info() {
+  return array('list_integer', 'list_float', 'list_text', 'list_boolean');
 }
 
 /**
  * Implements hook_facet_collection_ui_delete_field().
  */
-function facet_collection_ui_text_facet_collection_ui_delete_field($field, $bundle, &$facet_filters_settings, $filter) {
+function facet_collection_ui_list_facet_collection_ui_delete_field($field, $bundle, &$facet_filters_settings, $filter) {
   if ($filter['state'] == 'visible') {
     if (array_key_exists($field['field_name'], $facet_filters_settings[$field['type']])) {
       unset($facet_filters_settings[$field['type']][$field['field_name']]);
@@ -21,7 +21,7 @@ function facet_collection_ui_text_facet_collection_ui_delete_field($field, $bund
 /**
  * Implements hook_facet_collection_ui_add_field().
  */
-function facet_collection_ui_text_facet_collection_ui_add_field($field, $bundle, &$facet_filters_settings, $filter) {
+function facet_collection_ui_list_facet_collection_ui_add_field($field, $bundle, &$facet_filters_settings, $filter) {
   if ($filter['state'] == 'visible') {
     $facet_filters_settings[$field['type']][$field['field_name']] = $bundle;
   }
@@ -30,6 +30,6 @@ function facet_collection_ui_text_facet_collection_ui_add_field($field, $bundle,
 /**
  * Implements hook_facet_collection_ui_filter_by().
  */
-function facet_collection_ui_text_facet_collection_ui_filter_by($field) {
-  return 'Text';
+function facet_collection_ui_list_facet_collection_ui_filter_by($field) {
+  return 'List';
 }

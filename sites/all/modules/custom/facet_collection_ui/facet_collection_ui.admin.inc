@@ -7,25 +7,27 @@
 
 function facet_collection_ui_admin_settings_flush_data_form($form, &$form_state) {
   $form = array();
-  $form['#description'] = t('This form will flush all the facet collection ui data.') . '<br /><strong>' . t('Warning! Flushing the settings for a facet collection ui will disable all already enabled filters!') . '</strong>';
-//  $options = array('' => '- Select -');
-//  foreach (node_type_get_types() as $type) {
-//    if (is_multistep($type)) {
-//      $options[$type->type] = $type->name;
-//    }
-//  }
-//  $form['multistep_type'] = array(
-//    '#type' => 'select',
-//    '#title' => t('Content type'),
-//    '#options' => $options,
-//    '#required' => TRUE,
-//    '#weight' => -1,
-//  );
+  $form['#description'] = t('This form will flush the facet collection ui data.') . '<br /><strong>' . t('Warning! Flushing the settings for a facet collection ui may disable all already enabled filters!') . '</strong>';
   // Show reset button if multistep is enabled for this content type.
-  $form['facet_collection_ui_flush'] = array(
+  $form['facet_collection_ui_flush_facet_collection_structure'] = array(
     '#type' => 'submit',
-    '#value' => t("Let's flush data for fun!"),
+    '#value' => t("Flush facet_collection_filters_settings(used in the facet_collection module) structure"),
     '#weight' => 1,
+    '#submit' => array('facet_collection_ui_flush_facet_collection_settings_structure_submit'),
+    '#access' => user_access('administer facet_collection_ui'),
+  );
+  $form['facet_collection_ui_flush_facet_collection_ui_form_structure'] = array(
+    '#type' => 'submit',
+    '#value' => t("Flush facet_collection_filters(used in the facet_collection_ui module) structure"),
+    '#weight' => 1,
+    '#submit' => array('facet_collection_ui_flush_facet_collection_structure_submit'),
+    '#access' => user_access('administer facet_collection_ui'),
+  );
+  $form['facet_collection_ui_flush_both_structures'] = array(
+    '#type' => 'submit',
+    '#value' => t("Flush both structures"),
+    '#weight' => 1,
+    '#submit' => array('facet_collection_ui_flush_both_structures_submit'),
     '#access' => user_access('administer facet_collection_ui'),
   );
   return $form;
@@ -34,12 +36,21 @@ function facet_collection_ui_admin_settings_flush_data_form($form, &$form_state)
 /**
  * Resets the multistep table data for the selected content type.
  */
-function facet_collection_ui_admin_settings_flush_data_form_submit($form, &$form_state) {
-  variable_del('facet_collection_filters');
+function facet_collection_ui_flush_facet_collection_settings_structure_submit($form, &$form_state) {
   variable_del('facet_collection_filters_settings');
-  drupal_set_message(t('Data was successfully flushed'));
+  drupal_set_message(t('Facet_collection_filters_settings structure was successfully flushed'));
 }
 
+function facet_collection_ui_flush_facet_collection_structure_submit($form, &$form_state) {
+  variable_del('facet_collection_filters');
+  drupal_set_message(t('Facet_collection_filters structure was successfully flushed'));
+}
+
+function facet_collection_ui_flush_both_structures_submit($form, &$form_state) {
+  variable_del('facet_collection_filters');
+  variable_del('facet_collection_filters_settings');
+  drupal_set_message(t('Both structures was successfully flushed'));
+}
 
 /**
  * Determines the rendering order of an array representing a tree.
@@ -667,6 +678,9 @@ function facet_collection_ui_filters_overview_form_submit($form, &$form_state) {
     }
   }
 
+  //Clear information about current bundle filters orger
+  unset($facet_filters_settings['filter_order'][$bundle]);
+
   //Save changed filters setting in more convenient for apache_solr form at
   //facet_collections_filters_settings common variable
   foreach ($content_type_filters as $filter_name => $filter) {
@@ -675,13 +689,16 @@ function facet_collection_ui_filters_overview_form_submit($form, &$form_state) {
     if (function_exists($function)) {
       $function($field, $bundle, $facet_filters_settings, $filter);
     }
+    //Save the filters order in structure for facet_collection module
     if ($filter['state'] == 'visible') {
       $facet_filters_settings['filter_order'][$bundle][$filter['weight']] = $field['field_name'];
     }
   }
+
   if (isset($facet_filters_settings['filter_order'][$bundle])) {
     ksort($facet_filters_settings['filter_order'][$bundle]);
   }
+
   //Save filters settings at the variables
   $facet_filters[$bundle] = $content_type_filters;
   variable_set('facet_collection_filters', drupal_json_encode($facet_filters));
