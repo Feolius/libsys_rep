@@ -9,89 +9,101 @@
 /**
  * Implements hook_preprocess_page().
  */
-function collection_slider_preprocess_page(&$variables)
-{
-    if (arg(0) == 'node'
-        && is_numeric(arg(1))
-        && (isset($_GET['collection']) && $_GET['collection'] == 'true')
-        && isset($_GET['curr'])
-    ) {
-        drupal_add_css(drupal_get_path('module', 'collection_slider') . '/css/collection-slider-buttons-style.css');
-        drupal_add_js(drupal_get_path('module', 'collection_slider') . '/js/collection-slider-buttons.js');
-        collection_slider_set_arrows_urls();
-    }
+function collection_slider_preprocess_page(&$variables) {
+
+  if (arg(0) == 'node'
+    && is_numeric(arg(1))
+    && (isset($_GET['collection']) && $_GET['collection'] == 'true')
+    && isset($_GET['curr'])
+  ) {
+    drupal_add_css(drupal_get_path('module', 'collection_slider') . '/css/collection-slider-buttons-style.css');
+    drupal_add_js(drupal_get_path('module', 'collection_slider') . '/js/collection-slider-buttons.js');
+    collection_slider_set_arrows_urls();
+  }
 }
 
 /**
  * Set the next and previous url on slider arrow using apache_solr
  */
-function collection_slider_set_arrows_urls()
-{
-    //Get apache_solr params from $_GET
-    $params = array();
-    $params['q'] = $_GET['query'];
-    $params['defType'] = 'lucene';
-    $params['spellcheck'] = FALSE;
-    $params['start'] = ($_GET['curr'] > 0) ? $_GET['curr'] - 1 : $_GET['curr'];
-    $params['rows'] = ($_GET['curr'] > 0) ? 3 : 2;
+function collection_slider_set_arrows_urls() {
+  //Get apache_solr params from $_GET
+  $params = array();
+  $params['q'] = $_GET['query'];
+  $params['defType'] = 'lucene';
+  $params['spellcheck'] = FALSE;
+  $params['start'] = ($_GET['curr'] > 0) ? $_GET['curr'] - 1 : $_GET['curr'];
+  $params['rows'] = ($_GET['curr'] > 0) ? 3 : 2;
 
-    $query = apachesolr_drupal_query('apachesolr', $params);
-    $searcher = $query->getSearcher();
-    if (module_exists('facetapi')) {
-        // Gets enabled facets, adds filter queries to $params.
-        $adapter = facetapi_adapter_load($searcher);
-        if ($adapter) {
-            $adapter->addActiveFilters($query);
-        }
+  $query = apachesolr_drupal_query('apachesolr', $params);
+  $searcher = $query->getSearcher();
+  if (module_exists('facetapi')) {
+    // Gets enabled facets, adds filter queries to $params.
+    $adapter = facetapi_adapter_load($searcher);
+    if ($adapter) {
+      $adapter->addActiveFilters($query);
     }
-    $keys = $query->getParam('q');
-    $response = $query->search($keys);
+  }
+  $keys = $query->getParam('q');
+  $response = $query->search($keys);
 
-    $next_node_html = '';
-    $previous_node_html = '';
+  $next_node_html = '';
+  $previous_node_html = '';
 
-    //Build next and previous urls for slider arrows
-    $options = array('query' => array());
-    $options['query'] ['collection'] = 'true';
-    if (isset($_GET['f'])) {
-        $f = $_GET['f'];
-        $options['query'] ['f'] = $f;
-    }
-    $options['query']['query'] = $_GET['query'];
-    $options['query']['numFound'] = $_GET['numFound'];
+  //Build next and previous urls for slider arrows
+  $options = array('query' => array());
+  $options['query'] ['collection'] = 'true';
+  if (isset($_GET['f'])) {
+    $f = $_GET['f'];
+    $options['query'] ['f'] = $f;
+  }
+  $options['query']['query'] = $_GET['query'];
+  $options['query']['numFound'] = $_GET['numFound'];
 
-    if ($_GET['curr'] > 0) {
-        $options['query']['curr'] = $_GET['curr'] - 1;
-        $options['attributes']['class'] = array('collection-slider-button-icon-swapleft', ' active');
-        $previous_node_id = $response->response->docs[0]->entity_id;
-        $previous_node_url = 'node/' . $previous_node_id . '';
-        $previous_node_html = l('', $previous_node_url, $options);
-    }
+  if ($_GET['curr'] > 0) {
+    $options['query']['curr'] = $_GET['curr'] - 1;
+    $options['attributes']['class'] = array('collection-slider-button-icon-swapleft', ' active');
+    $previous_node_id = $response->response->docs[0]->entity_id;
+    $previous_node_url = 'node/' . $previous_node_id . '';
+    $previous_node_html = l('', $previous_node_url, $options);
+  }
 
-    if ($_GET['curr'] + 1 < $response->response->numFound) {
-        $options['query']['curr'] = $_GET['curr'] + 1;
-        $options['attributes']['class'] = array('collection-slider-button-icon-swapright', ' active');
-        $next_node_id = $response->response->docs[count($response->response->docs) - 1]->entity_id;
-        $next_node_url = 'node/' . $next_node_id . '';
-        $next_node_html = l('', $next_node_url, $options);
-    }
+  if ($_GET['curr'] + 1 < $response->response->numFound) {
+    $options['query']['curr'] = $_GET['curr'] + 1;
+    $options['attributes']['class'] = array('collection-slider-button-icon-swapright', ' active');
+    $next_node_id = $response->response->docs[count($response->response->docs) - 1]->entity_id;
+    $next_node_url = 'node/' . $next_node_id . '';
+    $next_node_html = l('', $next_node_url, $options);
+  }
 
-    drupal_add_js(array('collection_arrows' => array('next_node_html' => $next_node_html, 'previous_node_html' => $previous_node_html)), 'setting');
+  drupal_add_js(array(
+    'collection_arrows' => array(
+      'next_node_html' => $next_node_html,
+      'previous_node_html' => $previous_node_html
+    )
+  ), 'setting');
+}
 
-    //Build link at collection page
-    $collection_get_options = $_GET;
-    unset($collection_get_options['query']);
-    unset($collection_get_options['numFound']);
-    unset($collection_get_options['curr']);
-    unset($collection_get_options['collection']);
-    unset($collection_get_options['q']);
+function collection_slider_preprocess_breadcrumb(&$variables) {
+  if (arg(0) == 'node'
+    && is_numeric(arg(1))
+    && (isset($_GET['collection']) && $_GET['collection'] == 'true')
+    && isset($_GET['curr'])
+  ) {
 
-  //dpm(url('library/', array('query' => $collection_get_options)));
+    //Build link at library page
+    $library_get_options = $_GET;
+    unset($library_get_options['query']);
+    unset($library_get_options['numFound']);
+    unset($library_get_options['curr']);
+    unset($library_get_options['collection']);
+    unset($library_get_options['q']);
 
     if ($_GET['query'] != '*:*') {
-        $back_to_library_html = l('Library', 'library/' . $_GET['query'], array('query' => $collection_get_options));
-    } else {
-        $back_to_library_html = l('Library', 'library', array('query' => $collection_get_options));
+      $back_to_library_html = l('Library', 'library/' . $_GET['query'], array('query' => $library_get_options));
     }
-    drupal_add_js(array('collection_arrows' => array('back_to_library_html' => $back_to_library_html)), 'setting');
+    else {
+      $back_to_library_html = l('Library', 'library', array('query' => $library_get_options));
+    }
+    $variables['breadcrumb'][1] = $back_to_library_html;
+  }
 }
