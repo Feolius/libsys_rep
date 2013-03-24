@@ -87,7 +87,6 @@ abstract class LibraryMigration extends DynamicMigration {
   //Method find all dates according to given reference entry id, reference table name and linker and put it in node inside given field
   public function set_datefield_value($field_name, $node, $reference_ID, $reference_tb, $linkerinfo_id) {
     $data = $this->get_related_sids($reference_ID, $reference_tb, array('adv_date_time'), $linkerinfo_id);
-    dpm($data);
     if (isset($data['adv_date_time'])) {
       foreach ($data['adv_date_time'] as $creation_date_id) {
         $query = Database::getConnection('default', 'ImportDatabaseKey')
@@ -127,7 +126,6 @@ abstract class LibraryMigration extends DynamicMigration {
             $end_month = '12';
             $end_day = '31';
           }
-          dpm($start_day);
           $node->{$field_name}['und'][$i]['value'] = $start_year . '-' . $start_month . '-' . $start_day . ' 00:00:00';
           $node->{$field_name}['und'][$i]['value2'] = $end_year . '-' . $end_month . '-' . $end_day . ' 00:00:00';
           $node->{$field_name}['und'][$i]['timezone'] = date_default_timezone();
@@ -629,17 +627,17 @@ class LocationMigration extends LibraryMigration {
     }
     $row->title = $title;
     //Add written files
-    /*$data = $this->get_related_sids($row->ID, 'adv_location', array('file'), 5);
-    $row->written_files = $data['file'];
-    //Add received files
-    $data = $this->get_related_sids($row->ID, 'adv_location', array('file'), 6);
-    $row->received_files = $data['file'];
-    //Add living people
-    $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people'), 17);
-    $row->living_people = $data['adv_people'];
-    //Add visiters
-    $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people'), 18);
-    $row->visiters = $data['adv_people'];*/
+    /* $data = $this->get_related_sids($row->ID, 'adv_location', array('file'), 5);
+      $row->written_files = $data['file'];
+      //Add received files
+      $data = $this->get_related_sids($row->ID, 'adv_location', array('file'), 6);
+      $row->received_files = $data['file'];
+      //Add living people
+      $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people'), 17);
+      $row->living_people = $data['adv_people'];
+      //Add visiters
+      $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people'), 18);
+      $row->visiters = $data['adv_people']; */
     $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people', 'adv_events'), 14);
     $sids = array();
     $sids['People'] = $data['adv_people'];
@@ -662,7 +660,6 @@ class LocationMigration extends LibraryMigration {
     $sids = array();
     $sids['Events'] = $data['adv_events'];
     $row->location_field_22 = $this->sidsHandler($sids);
-
   }
 
   public function prepare($node, $row) {
@@ -719,7 +716,7 @@ class EventsMigration extends LibraryMigration {
     //$this->dependencies = array('Location', 'People');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
             ->select('adv_events', 'p')
-            ->fields('p', array('ID', 'title', 'description'));
+            ->fields('p', array('ID', 'events_id', 'title', 'description'));
     $this->map = new MigrateSQLMap($this->machineName,
                     array(
                         'ID' => array(
@@ -795,6 +792,102 @@ class EventsMigration extends LibraryMigration {
     //set_datefield_value(EVENT_FIELD_14_DATE, $node, $row->ID, 'adv_events', 14);
     $this->set_datefield_value(EVENT_FIELD_18_DATE, $node, $row->ID, 'adv_events', 18);
     $this->set_datefield_value(EVENT_FIELD_17_DATE, $node, $row->ID, 'adv_events', 17);
+  }
+
+  public function complete($node, $row) {
+    //We should distinguish ID and events_id column while build hierarchy
+    $this->buildHierarchy($node, $row->ID, $row->events_id);
+  }
+
+  //Save node and its parents recursively in drupal. Return mlid.
+  public function buildHierarchy($node, $sid, $events_id) {
+    //Try to get parent source id
+    $parent_info = $this->getParentSid($events_id);
+    if (!empty($parent_info)) {
+      //If exists, check if drupal already has corresponding node
+      $parent_did = $this->get_dids_from_map_table('migrate_map_events', array($parent_info['parent_sid']));
+      $parent_sid = $parent_info['parent_sid'];
+      $parent_id = $parent_info['parent_id'];
+      if (empty($parent_did)) {
+        //If drupal doesn't have corresponding node, we should create a stub for it
+        $source_migration = Migration::getInstance('Events');
+        $parent_node = new stdClass();
+        $parent_node->title = t('Stub for') . $parent_sid;
+        $parent_node->body = t('Stub body');
+        $parent_node->type = $source_migration->destination->getBundle();
+        $parent_node->uid = 1;
+        $parent_node->status = 0;
+        node_save($parent_node);
+        if (isset($parent_node->nid)) {
+          $destids = array($parent_node->nid);
+          $map_source_key = $source_migration->map->getSourceKey();
+          $data_row = new stdClass;
+          foreach ($map_source_key as $key => $definition) {
+            $data_row->$key = $parent_sid;
+          }
+          $source_migration->map->saveIDMapping($data_row, $destids, MigrateMap::STATUS_NEEDS_UPDATE, $source_migration->defaultRollbackAction);
+        }
+        $parent_nid = $parent_node->nid;
+        //Build hierarchy for parent and get plid
+        $parent_node = node_load($parent_nid);
+        $plid = $this->buildHierarchy($parent_node, $parent_sid, $parent_id);
+      } else {
+        $parent_nid = $parent_did[0];
+        //If drupal has parent node we should check if we already have mlid for it
+        //@TODO maybe it would be better to add condition for menu name to be certanly sure that we have needed plid
+        $plid = _nodehierarchy_get_node_mlids($parent_nid);
+        if (!empty($plid)) {
+          $plid = $plid[0];
+        } else {
+          //Build hierarchy for parent and get plid
+          $parent_node = node_load($parent_nid);
+          $plid = $this->buildHierarchy($parent_node, $parent_sid, $parent_id);
+        }
+      }
+      //Creat link for given node
+      $menu_link = _nodehierarchy_default_menu_link($node->nid, $plid);
+      $menu_link['link_title'] = $node->title;
+      $menu_link['weight'] = $parent_info['pos'];
+      $mlid = menu_link_save($menu_link);
+      _nodehierarchy_create_nodehierarchy_menu_link_reference($menu_link);
+      return $mlid;
+    } else {
+      //If parent doesn't exist, it means that this is a first parent
+      //We should check if corresponding link exists and, if not, create link for it
+      $mlid = _nodehierarchy_get_node_mlids($node->nid);
+      if (!empty($mlid)) {
+        $mlid = $mlid[0];
+      } else {
+        $menu_link = _nodehierarchy_default_menu_link($node->nid);
+        $menu_link['link_title'] = $node->title;
+        $mlid = menu_link_save($menu_link);
+        _nodehierarchy_create_nodehierarchy_menu_link_reference($menu_link);
+      }
+      return $mlid;
+    }
+  }
+
+  //Return parent source id and position of current event
+  public function getParentSid($event_id) {
+    $info = array();
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('adv_events_parents', 'l');
+    $query->condition('l.event_id', $event_id);
+    $query->addField('l', 'parent_event_id');
+    $query->addField('l', 'pos');
+    $result = $query->execute();
+    if (($record = $result->fetchAssoc())) {
+      $info['pos'] = $record['pos'];
+      $info['parent_id'] = $record['parent_event_id'];
+      $query = Database::getConnection('default', 'ImportDatabaseKey')
+              ->select('adv_events', 'l');
+      $query->condition('l.events_id', $record['parent_event_id']);
+      $query->addField('l', 'ID');
+      $result = $query->execute();
+      $result = $result->fetchAssoc();
+      $info['parent_sid'] = $result['ID'];
+    }
+    return $info;
   }
 
 }
