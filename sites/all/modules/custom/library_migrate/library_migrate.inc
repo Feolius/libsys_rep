@@ -87,8 +87,9 @@ abstract class LibraryMigration extends DynamicMigration {
   //Method find all dates according to given reference entry id, reference table name and linker and put it in node inside given field
   public function set_datefield_value($field_name, $node, $reference_ID, $reference_tb, $linkerinfo_id) {
     $data = $this->get_related_sids($reference_ID, $reference_tb, array('adv_date_time'), $linkerinfo_id);
-    if (isset($data['adv_date_time']['tb_id'])) {
-      foreach ($data['adv_date_time']['tb_id'] as $creation_date_id) {
+    dpm($data);
+    if (isset($data['adv_date_time'])) {
+      foreach ($data['adv_date_time'] as $creation_date_id) {
         $query = Database::getConnection('default', 'ImportDatabaseKey')
                 ->select('adv_date_time', 'l');
         $query->condition('l.ID', $creation_date_id, '=');
@@ -126,6 +127,7 @@ abstract class LibraryMigration extends DynamicMigration {
             $end_month = '12';
             $end_day = '31';
           }
+          dpm($start_day);
           $node->{$field_name}['und'][$i]['value'] = $start_year . '-' . $start_month . '-' . $start_day . ' 00:00:00';
           $node->{$field_name}['und'][$i]['value2'] = $end_year . '-' . $end_month . '-' . $end_day . ' 00:00:00';
           $node->{$field_name}['und'][$i]['timezone'] = date_default_timezone();
@@ -472,6 +474,9 @@ class PeopleMigration extends LibraryMigration {
     $this->addFieldMapping(PEOPLE_FIELD_1, 'people_field_1');
     $this->addFieldMapping(PEOPLE_FIELD_3, 'people_field_3');
     $this->addFieldMapping(PEOPLE_FIELD_14, 'people_field_14');
+    $this->addFieldMapping(PEOPLE_FIELD_18, 'people_field_18');
+    $this->addFieldMapping(PEOPLE_FIELD_23, 'people_field_23');
+    $this->addFieldMapping(PEOPLE_FIELD_17, 'people_field_17');
   }
 
   public function prepareRow($row) {
@@ -507,11 +512,24 @@ class PeopleMigration extends LibraryMigration {
     $row->home = $data['adv_location'];
     $data = $this->get_related_sids($row->ID, 'adv_people', array('adv_location'), 18);
     $row->visit_place = $data['adv_location'];
-    $data = $this->get_related_sids($row->ID, 'adv_people', array('adv_events', 'adv_location'), 1);
+    $data = $this->get_related_sids($row->ID, 'adv_people', array('adv_events', 'adv_location'), 14);
     $sids = array();
     $sids['Events'] = $data['adv_events'];
     $sids['Location'] = $data['adv_location'];
     $row->people_field_14 = $this->sidsHandler($sids);
+    $data = $this->get_related_sids($row->ID, 'adv_people', array('adv_events', 'adv_location'), 18);
+    $sids = array();
+    $sids['Events'] = $data['adv_events'];
+    $sids['Location'] = $data['adv_location'];
+    $row->people_field_18 = $this->sidsHandler($sids);
+    $data = $this->get_related_sids($row->ID, 'adv_people', array('adv_events'), 23);
+    $sids = array();
+    $sids['Events'] = $data['adv_events'];
+    $row->people_field_23 = $this->sidsHandler($sids);
+    $data = $this->get_related_sids($row->ID, 'adv_people', array('adv_location'), 17);
+    $sids = array();
+    $sids['Location'] = $data['adv_location'];
+    $row->people_field_17 = $this->sidsHandler($sids);
   }
 
   protected function createStub($migration, $source_id) {
@@ -536,6 +554,8 @@ class PeopleMigration extends LibraryMigration {
 
   public function prepare($node, $row) {
     $node->language = 'en';
+    $this->set_datefield_value(PEOPLE_FIELD_17_DATE, $node, $row->ID, 'adv_people', 17);
+    $this->set_datefield_value(PEOPLE_FIELD_18_DATE, $node, $row->ID, 'adv_people', 18);
   }
 
 }

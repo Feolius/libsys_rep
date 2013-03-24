@@ -40,6 +40,10 @@ define('PEOPLE_FIELD_18', 'field_people_visit_nodes');
 define('PEOPLE_FIELD_18_DATE', 'field_people_visit_date');
 //People: Main Character. ID 23. Link to events.
 define('PEOPLE_FIELD_23', 'field_people_related_event');
+//@TODO. Add this field on site
+//Location: Home. ID 17. Link to  locations, date.
+define('PEOPLE_FIELD_17', 'field_people_home_nodes');
+define('PEOPLE_FIELD_17_DATE', 'field_people_home_date');
 
 //Location content type
 //Location: Place of Event. ID 14. Link to events, people.
