@@ -6,22 +6,21 @@ abstract class LibraryMigration extends DynamicMigration {
     parent::__construct();
     require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'library_migrate') . '/library_migrate_field_names.inc';
     //For development on local machine
-    $other_database = array(
+   /* $other_database = array(
         'database' => 'adventists',
         'username' => 'admin',
         'password' => '1234',
         'host' => 'localhost',
         'driver' => 'mysql',
-    );
+    );*/
     //For import on production server
-    /* $other_database = array(
+     $other_database = array(
       'database' => 'archive_library',
       'username' => 'archive_library',
       'password' => 'jkqeq23ffa3rh',
       'host' => 'sql-3',
       'driver' => 'mysql',
-      ); */
-
+      ); 
     Database::addConnectionInfo('ImportDatabaseKey', 'default', $other_database);
   }
 
@@ -126,12 +125,18 @@ abstract class LibraryMigration extends DynamicMigration {
             $end_month = '12';
             $end_day = '31';
           }
-          $node->{$field_name}['und'][$i]['value'] = $start_year . '-' . $start_month . '-' . $start_day . ' 00:00:00';
-          $node->{$field_name}['und'][$i]['value2'] = $end_year . '-' . $end_month . '-' . $end_day . ' 00:00:00';
-          $node->{$field_name}['und'][$i]['timezone'] = date_default_timezone();
-          $node->{$field_name}['und'][$i]['timezone_db'] = 'UTC';
-          $node->{$field_name}['und'][$i]['date_type'] = 'datetime';
-          $i++;
+          if (checkdate($start_month, $start_day, $start_year) && checkdate($end_month, $end_day, $end_year)) {
+            $node->{$field_name}['und'][$i]['value'] = $start_year . '-' . $start_month . '-' . $start_day . ' 00:00:00';
+            $node->{$field_name}['und'][$i]['timezone'] = date_default_timezone();
+            $node->{$field_name}['und'][$i]['timezone_db'] = 'UTC';
+            $node->{$field_name}['und'][$i]['date_type'] = 'datetime';
+            if (checkdate($end_month, $end_day, $end_year)) {
+              $node->{$field_name}['und'][$i]['value2'] = $end_year . '-' . $end_month . '-' . $end_day . ' 00:00:00';
+            }
+            $i++;
+          } else {
+            continue;
+          }
         }
       }
     }
@@ -248,7 +253,7 @@ class FilesMigration extends LibraryMigration {
   public function __construct() {
     parent::__construct();
     $this->description = t('Migrate Files content type from file table');
-    //$this->dependencies = array('FileCollection', 'FileFolder', 'FileCategory', 'People', 'Location');
+    $this->dependencies = array('FileCollection', 'FileFolder', 'FileCategory', 'People', 'Location');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
             ->select('file', 'f')
             ->fields('f', array('ID', 'topic', 'extendedtopic', 'description', 'keypoints', 'extended_summary', 'text', 'keywords', 'file_extension',
@@ -478,9 +483,9 @@ class PeopleMigration extends LibraryMigration {
   }
 
   public function prepareRow($row) {
-    /* if ($row->official_position == 0) {
+    if ($row->official_position == 0) {
       return FALSE;
-      } */
+    }
     $first_name = $row->first_name;
     $middle_name = $row->middle_name;
     $last_name = $row->last_name;
@@ -532,22 +537,22 @@ class PeopleMigration extends LibraryMigration {
 
   protected function createStub($migration, $source_id) {
     //We should create stubs only when we go from location migration
-    // if (get_class($migration) == "LocationMigration") {
-    $node = new stdClass();
-    $node->title = t('Stub for') . $source_id[0];
-    $node->body = t('Stub body');
-    $node->type = $this->destination->getBundle();
-    $node->uid = 1;
-    $node->status = 0;
-    node_save($node);
-    if (isset($node->nid)) {
-      return array($node->nid);
+    if (get_class($migration) == "LocationMigration") {
+      $node = new stdClass();
+      $node->title = t('Stub for') . $source_id[0];
+      $node->body = t('Stub body');
+      $node->type = $this->destination->getBundle();
+      $node->uid = 1;
+      $node->status = 0;
+      node_save($node);
+      if (isset($node->nid)) {
+        return array($node->nid);
+      } else {
+        return FALSE;
+      }
     } else {
       return FALSE;
     }
-    /* } else {
-      return FALSE;
-      } */
   }
 
   public function prepare($node, $row) {
@@ -627,17 +632,17 @@ class LocationMigration extends LibraryMigration {
     }
     $row->title = $title;
     //Add written files
-    /* $data = $this->get_related_sids($row->ID, 'adv_location', array('file'), 5);
-      $row->written_files = $data['file'];
-      //Add received files
-      $data = $this->get_related_sids($row->ID, 'adv_location', array('file'), 6);
-      $row->received_files = $data['file'];
-      //Add living people
-      $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people'), 17);
-      $row->living_people = $data['adv_people'];
-      //Add visiters
-      $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people'), 18);
-      $row->visiters = $data['adv_people']; */
+    $data = $this->get_related_sids($row->ID, 'adv_location', array('file'), 5);
+    $row->written_files = $data['file'];
+    //Add received files
+    $data = $this->get_related_sids($row->ID, 'adv_location', array('file'), 6);
+    $row->received_files = $data['file'];
+    //Add living people
+    $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people'), 17);
+    $row->living_people = $data['adv_people'];
+    //Add visiters
+    $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people'), 18);
+    $row->visiters = $data['adv_people'];
     $data = $this->get_related_sids($row->ID, 'adv_location', array('adv_people', 'adv_events'), 14);
     $sids = array();
     $sids['People'] = $data['adv_people'];
@@ -685,27 +690,6 @@ class LocationMigration extends LibraryMigration {
     $this->set_datefield_value(LOCATION_FIELD_17_DATE, $node, $row->ID, 'adv_location', 17);
   }
 
-  //@TODO Maybe this is need to be remove if we start import from locations
-  protected function createStub($migration, $source_id) {
-    //We should create stubs only when we go from location migration
-    // if (get_class($migration) == "LocationMigration") {
-    $node = new stdClass();
-    $node->title = t('Stub for') . $source_id[0];
-    $node->body = t('Stub body');
-    $node->type = $this->destination->getBundle();
-    $node->uid = 1;
-    $node->status = 0;
-    node_save($node);
-    if (isset($node->nid)) {
-      return array($node->nid);
-    } else {
-      return FALSE;
-    }
-    /* } else {
-      return FALSE;
-      } */
-  }
-
 }
 
 class EventsMigration extends LibraryMigration {
@@ -713,7 +697,7 @@ class EventsMigration extends LibraryMigration {
   public function __construct() {
     parent::__construct();
     $this->description = t('Migrate Events content type from adv_events table');
-    //$this->dependencies = array('Location', 'People');
+    $this->dependencies = array('Location', 'People');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
             ->select('adv_events', 'p')
             ->fields('p', array('ID', 'events_id', 'title', 'description'));
@@ -743,6 +727,10 @@ class EventsMigration extends LibraryMigration {
     $this->addFieldMapping(EVENT_FIELD_20, 'event_field_20');
     $this->addFieldMapping(EVENT_FIELD_21, 'event_field_21');
     $this->addFieldMapping(EVENT_FIELD_22, 'event_field_22');
+    $this->addFieldMapping('field_events_related_publication', 'publication')
+            ->sourceMigration('Publications');
+    $this->addFieldMapping('field_events_encyclopedia', 'encyclopedia')
+            ->sourceMigration('Encyclopedia');
   }
 
   public function prepareRow($row) {
@@ -782,6 +770,30 @@ class EventsMigration extends LibraryMigration {
     $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_location'), 22);
     $nids = $this->get_dids_from_map_table('migrate_map_location', $data['adv_location']);
     $row->event_field_22 = $nids;
+    //Add encyclopedia and publication
+    $data = $this->get_related_sids($row->ID, 'adv_events', array('adv_entities'), 25);
+    if (!empty($data['adv_entities'])) {
+      $query = Database::getConnection('default', 'ImportDatabaseKey')
+              ->select('adv_entities', 'l');
+      $condition = db_or();
+      foreach ($data['adv_entities'] as $entity_id) {
+        $condition = $condition->condition('l.ID', $entity_id);
+      }
+      $query->condition($condition);
+      $query->fields('l', array('ID', 'kind'));
+      $result = $query->execute();
+      $publications = array();
+      $encyclopedias = array();
+      while ($record = $result->fetchAssoc()) {
+        if ($record['kind'] == 1 || $record['kind'] == 5) {
+          $publications[] = $record['ID'];
+        } elseif ($record['kind'] == 2 || $record['kind'] == 4) {
+          $encyclopedias[] = $record['ID'];
+        }
+      }
+      $row->publication = $publications;
+      $row->encyclopedia = $encyclopedias;
+    }
   }
 
   public function prepare($node, $row) {
@@ -890,4 +902,105 @@ class EventsMigration extends LibraryMigration {
     return $info;
   }
 
+}
+
+class PublicationsMigration extends LibraryMigration {
+
+  public function __construct() {
+    parent::__construct();
+    $this->description = t('Migrate Publications content type from adv_entities table');
+    $this->dependencies = array('Events');
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('adv_entities', 'e')
+            ->fields('e', array('ID', 'title', 'description', 'kind'));
+    $this->map = new MigrateSQLMap($this->machineName,
+                    array(
+                        'ID' => array(
+                            'type' => 'int',
+                            'not null' => FALSE,
+                        )
+                    ),
+                    MigrateDestinationTerm::getKeySchema(),
+                    'ImportDatabaseKey'
+    );
+    $this->source = new MigrateSourceSQL($query);
+    $this->destination = new MigrateDestinationNode('publications');
+    $this->addSimpleMappings(array('title'));
+    $this->addFieldMapping('field_publications_description', 'description');
+    $this->addFieldMapping('field_publications_related_event', 'event');
+  }
+
+  public function prepareRow($row) {
+    if ($row->kind != 1 && $row->kind != 5) {
+      return FALSE;
+    }
+    $data = $this->get_related_sids($row->ID, 'adv_entities', array('adv_events'), 25);
+    $row->event = $data['adv_events'];
+  }
+
+  protected function createStub($migration, $source_id) {
+    $node = new stdClass();
+    $node->title = t('Stub for') . $source_id[0];
+    $node->body = t('Stub body');
+    $node->type = $this->destination->getBundle();
+    $node->uid = 1;
+    $node->status = 0;
+    node_save($node);
+    if (isset($node->nid)) {
+      return array($node->nid);
+    } else {
+      return FALSE;
+    }
+  }
+
+}
+
+class EncyclopediaMigration extends LibraryMigration {
+
+  public function __construct() {
+    parent::__construct();
+    $this->description = t('Migrate Encyclopedia content type from adv_entities table');
+    $this->dependencies = array('Events');
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+            ->select('adv_entities', 'e')
+            ->fields('e', array('ID', 'title', 'description', 'kind'));
+    $this->map = new MigrateSQLMap($this->machineName,
+                    array(
+                        'ID' => array(
+                            'type' => 'int',
+                            'not null' => FALSE,
+                        )
+                    ),
+                    MigrateDestinationTerm::getKeySchema(),
+                    'ImportDatabaseKey'
+    );
+    $this->source = new MigrateSourceSQL($query);
+    $this->destination = new MigrateDestinationNode('encyclopedia');
+    $this->addSimpleMappings(array('title'));
+    $this->addFieldMapping('field_encyclopedia_description', 'description');
+    $this->addFieldMapping('field_encyclopedia_related_event', 'event');
+  }
+
+  public function prepareRow($row) {
+    if ($row->kind != 2 && $row->kind != 4) {
+      return FALSE;
+    }
+    $data = $this->get_related_sids($row->ID, 'adv_entities', array('adv_events'), 25);
+    $row->event = $data['adv_events'];
+  }
+
+  protected function createStub($migration, $source_id) {
+    $node = new stdClass();
+    $node->title = t('Stub for') . $source_id[0];
+    $node->body = t('Stub body');
+    $node->type = $this->destination->getBundle();
+    $node->uid = 1;
+    $node->status = 0;
+    node_save($node);
+    if (isset($node->nid)) {
+      return array($node->nid);
+    } else {
+      return FALSE;
+    }
+  }
 }

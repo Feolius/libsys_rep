@@ -14,6 +14,8 @@ function library_migrate_migrate_api() {
           'People' => array('class_name' => 'PeopleMigration'),
           'Location' => array('class_name' => 'LocationMigration'),
           'Events' => array('class_name' => 'EventsMigration'),
+          'Publications' => array('class_name' => 'PublicationsMigration'),
+          'Encyclopedia' => array('class_name' => 'EncyclopediaMigration'),
       ),
   );
   return $api;
