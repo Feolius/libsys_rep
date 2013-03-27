@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * Implements hook_facetapi_widgets().
+ */
+function facetapi_library_links_widget_facetapi_widgets() {
+  return array(
+      'facetapi_library_links_widget' => array(
+          'handler' => array(
+              'label' => t('Library links'),
+              'class' => 'FacetapiWidgetLibraryLinks',
+              'query types' => array('term'),
+          ),
+      ),
+  );
+}

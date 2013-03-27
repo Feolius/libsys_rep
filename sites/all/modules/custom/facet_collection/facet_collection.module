@@ -217,6 +217,7 @@ function facet_collection_page() {
     $filters = $_GET['f'];
     foreach ($filters as $filter) {
       $arr = explode(':', $filter);
+      dpm($arr);
       if ($arr[0] == 'bundle') {
         $is_set_filter = TRUE;
         $searched_bundles = $arr[1];
@@ -239,8 +240,7 @@ function facet_collection_page() {
     }
     //Make a fake query to show list of content types filters
     apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
-  }
-  else {
+  }else {
     $results[$searched_bundles] = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
   }
   $hook = 'facet_collection_search_results__alter';
@@ -255,7 +255,7 @@ function facet_collection_get_default_params() {
 //We use lucene type here because we make specific query that return only documents corresponds to entity type node;
   $params = array();
   $q = arg(1);
-  if (empty($q)) {
+  if (is_null($q)) {
     $params['q'] = '*:*';
   }
   else {
