@@ -482,6 +482,7 @@ function menu_get_item($path = NULL, $router_item = NULL) {
       }
     }
     $router_items[$path] = $router_item;
+
   }
   return $router_items[$path];
 }

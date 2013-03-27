@@ -14,6 +14,7 @@ The structure of variable facet_collection_filters_settings:
 (           -> vocabulary_name(for term_reference)     -> array of bundle_name(bundle_names is keys)                                                                           )
 (field_type -> field_name(for entityreference)         -> state (TRUE if filter is enabled and FALSE if not)                                                                   )
 (                                                      -> settings(for referenced filters)                   -> array of field_name(for all filterable types except date types))
-(           -> bundle_name(for date types)
-
+(           -> bundle_name(for date types)                                                                                                                                     )
+(           -> field_name(for text types)              -> bundle_name                                                                                                          )
+(           -> field_name(for list types)              -> bundle_name                                                                                                          )
 All names and types is machine-readable and in lower case.

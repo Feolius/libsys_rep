@@ -3,4 +3,5 @@ description = Allow use filtering by book fields
 package = Facet Collection
 core = 7.x
 dependencies[] = facet_collection_ui
+dependencies[] = facet_collection_book_field
 dependencies[] = book_field

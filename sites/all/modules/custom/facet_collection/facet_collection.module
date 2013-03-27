@@ -175,8 +175,8 @@ function facet_collection_search_form_remove_filter($form, &$form_state) {
  * Implements hook_menu()
  */
 function facet_collection_menu() {
-  $items['collection'] = array(
-    'title' => t('Collection'),
+  $items['library'] = array(
+    'title' => t('Library'),
     'type' => MENU_LOCAL_TASK,
     'page callback' => 'facet_collection_page',
     'page arguments' => array(),
@@ -479,7 +479,6 @@ function facet_collection_get_filtered_content_types() {
   if (empty($content_types)) {
     $environment = apachesolr_default_environment();
     $content_types = apachesolr_get_index_bundles($environment, 'node');
-
 //By defaults all content types are shown. If we take content type filters the list of content types will be changed.
     $content_types_by_filters = FALSE;
     if (isset($_GET['f'])) {
@@ -723,7 +722,7 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
  * Implements hook_apachesolr_query_alter()
  */
 function facet_collection_apachesolr_query_alter($query) {
-  if (arg(0) == 'collection') {
+  if (arg(0) == 'library') {
     //First we should determine wether we need highlight or not
     //If there is query from search block we enable highlight
     $q = $query->getParam('q');
