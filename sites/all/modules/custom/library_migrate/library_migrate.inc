@@ -6,21 +6,21 @@ abstract class LibraryMigration extends DynamicMigration {
     parent::__construct();
     require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'library_migrate') . '/library_migrate_field_names.inc';
     //For development on local machine
-   /* $other_database = array(
+    $other_database = array(
         'database' => 'adventists',
         'username' => 'admin',
         'password' => '1234',
         'host' => 'localhost',
         'driver' => 'mysql',
-    );*/
+    );
     //For import on production server
-     $other_database = array(
+    /* $other_database = array(
       'database' => 'archive_library',
       'username' => 'archive_library',
       'password' => 'jkqeq23ffa3rh',
       'host' => 'sql-3',
       'driver' => 'mysql',
-      );
+      );*/
     Database::addConnectionInfo('ImportDatabaseKey', 'default', $other_database);
     set_time_limit(0);
   }
@@ -747,10 +747,8 @@ class EventsMigration extends LibraryMigration {
     $this->addFieldMapping(EVENT_FIELD_20, 'event_field_20');
     $this->addFieldMapping(EVENT_FIELD_21, 'event_field_21');
     $this->addFieldMapping(EVENT_FIELD_22, 'event_field_22');
-    $this->addFieldMapping('field_events_related_publication', 'publication')
-            ->sourceMigration('Publications');
-    $this->addFieldMapping('field_events_encyclopedia', 'encyclopedia')
-            ->sourceMigration('Encyclopedia');
+    $this->addFieldMapping('field_events_related_topic', 'topic')
+            ->sourceMigration('Topics');
   }
 
   public function prepareRow($row) {
@@ -792,28 +790,7 @@ class EventsMigration extends LibraryMigration {
     $row->event_field_22 = $nids;
     //Add encyclopedia and publication
     $data = $this->getRelatedSids($row->events_id, 'adv_events', array('adv_entities'), 25);
-    if (!empty($data['adv_entities'])) {
-      $query = Database::getConnection('default', 'ImportDatabaseKey')
-              ->select('adv_entities', 'l');
-      $condition = db_or();
-      foreach ($data['adv_entities'] as $entity_id) {
-        $condition = $condition->condition('l.ID', $entity_id);
-      }
-      $query->condition($condition);
-      $query->fields('l', array('ID', 'kind'));
-      $result = $query->execute();
-      $publications = array();
-      $encyclopedias = array();
-      while ($record = $result->fetchAssoc()) {
-        if ($record['kind'] == 1 || $record['kind'] == 5) {
-          $publications[] = $record['ID'];
-        } elseif ($record['kind'] == 2 || $record['kind'] == 4) {
-          $encyclopedias[] = $record['ID'];
-        }
-      }
-      $row->publication = $publications;
-      $row->encyclopedia = $encyclopedias;
-    }
+    $row->topic = $data['adv_entities'];
   }
 
   public function prepare($node, $row) {
@@ -923,11 +900,11 @@ class EventsMigration extends LibraryMigration {
 
 }
 
-class PublicationsMigration extends LibraryMigration {
+class TopicsMigration extends LibraryMigration {
 
   public function __construct() {
     parent::__construct();
-    $this->description = t('Migrate Publications content type from adv_entities table');
+    $this->description = t('Migrate Topics content type from adv_entities table');
     $this->dependencies = array('Events');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
             ->select('adv_entities', 'e')
@@ -940,15 +917,33 @@ class PublicationsMigration extends LibraryMigration {
                     ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
     );
     $this->source = new MigrateSourceSQL($query);
-    $this->destination = new MigrateDestinationNode('publications');
+    $this->destination = new MigrateDestinationNode('topics');
     $this->addSimpleMappings(array('title'));
-    $this->addFieldMapping('field_publications_description', 'description');
-    $this->addFieldMapping('field_publications_related_event', 'event');
+    $this->addFieldMapping('field_topics_body', 'description');
+    $this->addFieldMapping('field_topics_related_event', 'event');
+    $this->addFieldMapping('field_topics_kind', 'kind')
+            ->arguments(array('create_term' => TRUE));
   }
 
   public function prepareRow($row) {
-    if ($row->kind != 1 && $row->kind != 5) {
-      return FALSE;
+    switch ($row->kind){
+      case 1:
+        $row->kind = 'periodical/magazine/bulletin/journal';
+        break;
+      case 2:
+        $row->kind = 'organization/group/party/unit/ministry/position/department/agency/network/association/society/club';
+        break;
+      case 3:
+        $row->kind = 'theological topic';
+        break;
+      case 4:
+        $row->kind = 'miscellaneous';
+        break;
+      case 5:
+        $row->kind = 'book';
+        break;
+      default:
+        $row->kind = NULL;
     }
     $data = $this->getRelatedSids($row->ID, 'adv_entities', array('adv_events'), 25);
     $row->event = $data['adv_events'];
@@ -971,58 +966,8 @@ class PublicationsMigration extends LibraryMigration {
 
   public function prepare($node, $row) {
     $node->language = 'en';
+    $node->field_topics_body['und'][0]['format'] = 'filtered_html';
   }
 
 }
 
-class EncyclopediaMigration extends LibraryMigration {
-
-  public function __construct() {
-    parent::__construct();
-    $this->description = t('Migrate Encyclopedia content type from adv_entities table');
-    $this->dependencies = array('Events');
-    $query = Database::getConnection('default', 'ImportDatabaseKey')
-            ->select('adv_entities', 'e')
-            ->fields('e', array('ID', 'title', 'description', 'kind'));
-    $this->map = new MigrateSQLMap($this->machineName, array(
-                'ID' => array(
-                    'type' => 'int',
-                    'not null' => FALSE,
-                )
-                    ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
-    );
-    $this->source = new MigrateSourceSQL($query);
-    $this->destination = new MigrateDestinationNode('encyclopedia');
-    $this->addSimpleMappings(array('title'));
-    $this->addFieldMapping('field_encyclopedia_description', 'description');
-    $this->addFieldMapping('field_encyclopedia_related_event', 'event');
-  }
-
-  public function prepareRow($row) {
-    if ($row->kind != 2 && $row->kind != 4) {
-      return FALSE;
-    }
-    $data = $this->getRelatedSids($row->ID, 'adv_entities', array('adv_events'), 25);
-    $row->event = $data['adv_events'];
-  }
-
-  protected function createStub($migration, $source_id) {
-    $node = new stdClass();
-    $node->title = t('Stub for') . $source_id[0];
-    $node->body = t('Stub body');
-    $node->type = $this->destination->getBundle();
-    $node->uid = 1;
-    $node->status = 0;
-    node_save($node);
-    if (isset($node->nid)) {
-      return array($node->nid);
-    } else {
-      return FALSE;
-    }
-  }
-
-  public function prepare($node, $row) {
-    $node->language = 'en';
-  }
-
-}
