@@ -51,7 +51,7 @@
                 left = 0;
               }
               var right = left + now;
-              var containerWidth = $("#collection-standart-thumbnail-view-container").width();
+              var containerWidth = $("#collection-standard-thumbnail-view-container").width();
               if (right >= containerWidth) {
                 left = containerWidth - now;
               }

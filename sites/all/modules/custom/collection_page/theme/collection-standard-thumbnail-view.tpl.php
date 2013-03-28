@@ -1,4 +1,4 @@
-<div id="collection-standart-thumbnail-view-container">
+<div id="collection-standard-thumbnail-view-container">
   <div id="collection-thumbnail-upper-container">
     <a id="collection-upper-thumbnail-link" href="">
       <img id="collection-upper-thumbnail" src="">

@@ -490,8 +490,15 @@ function multistep_adl_submit($form, &$form_state) {
   //Erase from form state values fields, which are note in the current step
   //and submit the node after that.
   $groups = field_group_info_groups('node', $bundle, 'form');
-  $current_group_children = $groups[$current_step]->children;
-  $exclude_form_state_fields = array_diff(array_keys(field_info_instances('node', $bundle)), $current_group_children);
+  $current_step_fields = $groups[$current_step]->children;
+  foreach ($groups as $group) {
+    if ($group->parent_name == $current_step) {
+      $current_step_fields += $group->children;
+    }
+  }
+
+
+  $exclude_form_state_fields = array_diff(array_keys(field_info_instances('node', $bundle)), $current_step_fields);
 
 
   if (isset($exclude_form_state_fields['title'])) {
