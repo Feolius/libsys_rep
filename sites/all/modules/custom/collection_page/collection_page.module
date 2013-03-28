@@ -35,6 +35,7 @@ function collection_page_theme() {
     ),
     'collection_page' => array(
       'template' => 'theme/collection-page',
+      'variables' => array('content' => NULL, 'default_url' => NULL, 'thumbnail_url' => NULL)
     ),
     'timeline_json' => array(
       'template' => 'theme/timeline-json-page',
@@ -45,20 +46,20 @@ function collection_page_theme() {
     'timeline_iframe' => array(
       'template' => 'theme/timeline-iframe-page',
     ),
-    'collection_standart_view' => array(
-      'template' => 'theme/collection-standart-view',
-      'variables' => array('content' => NULL, 'default_url' => NULL, 'thumbnail_url' => NULL)
+    'collection_standard_view' => array(
+      'template' => 'theme/collection-standard-view',
+      'variables' => array('content' => NULL)
     ),
-    'collection_standart_thumbnail_view' => array(
-      'template' => 'theme/collection-standart-thumbnail-view',
+    'collection_standard_thumbnail_view' => array(
+      'template' => 'theme/collection-standard-thumbnail-view',
       'variables' => array('results' => NULL)
     ),
     'collection_search_results' => array(
       'template' => 'theme/collection-search-results',
       'variables' => array('results' => NULL, 'bundle_machine_name' => NULL)
     ),
-    'collection_standart_default_view' => array(
-      'template' => 'theme/collection-standart-default-view',
+    'collection_standard_default_view' => array(
+      'template' => 'theme/collection-standard-default-view',
       'variables' => array('results' => NULL)
     )
   );
@@ -93,26 +94,22 @@ function theme_facet_collection_search_results__alter($variables) {
   drupal_set_title('Library');
 
   if (isset($_GET['view']) && $_GET['view'] == 'thumb') {
-    $rendered_results = theme('collection_standart_thumbnail_view', array('results' => $results));
+    $rendered_results = theme('collection_standard_thumbnail_view', array('results' => $results));
+    $standard_view_type_label = 'Thumbnail';
   }
   else {
-    $rendered_results = theme('collection_standart_default_view', array('results' => $variables['results']));
+    $rendered_results = theme('collection_standard_default_view', array('results' => $variables['results']));
+    $standard_view_type_label = 'Default';
   }
   $options = array(
     'query' => array_diff_key($_GET, array('q' => 1, 'view' => 1)),
   );
-  $default_url = url(arg(0), $options);
-  $options['query']['view'] = 'thumb';
-  $thumbnail_url = url(arg(0), $options);
-  $standart_view_content = array(
-    '#id' => 'standart-view',
-    '#title' => t('Standart View'),
+
+  $standard_view_content = array(
+    '#id' => 'standard-view',
+    '#title' => 'Standard View (<span id="standard-view-type-title">'. $standard_view_type_label .'</span>)',
     '#content' => array(
-      '#view' => theme('collection_standart_view', array(
-        'content' => $rendered_results,
-        'default_url' => $default_url,
-        'thumbnail_url' => $thumbnail_url
-      )),
+      '#view' => $rendered_results,
     ),
   );
   $timeline_view_content = array(
@@ -157,18 +154,17 @@ function theme_facet_collection_search_results__alter($variables) {
   );
   //Define the views.
   $content = array(
-    '#standart' => $standart_view_content,
+    '#standard' => $standard_view_content,
     '#timeline' => $timeline_view_content,
     '#location' => $location_view_content,
   );
   //Include on page supports files for building tabs and inserting into them needed views
   //like timeline, default or location views
+  drupal_add_library('system', 'ui.tabs');
   drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_style.css');
   drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_tabs.js');
-
   drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_thumbnails.js');
 
-  drupal_add_library('system', 'ui.tabs');
   $views = array_keys($content);
   //Define default and disabled tabs on collection page
   switch ($bundle) {
@@ -181,7 +177,7 @@ function theme_facet_collection_search_results__alter($variables) {
       $disabled_tab = array_search('#timeline', $views);
       break;
     default:
-      $default_tab = array_search('#standart', $views);
+      $default_tab = array_search('#standard', $views);
       ;
       $disabled_tab = -1;
       break;
@@ -202,7 +198,12 @@ function theme_facet_collection_search_results__alter($variables) {
     unset($content['#location']);
   }
 
-  return theme('collection_page', array('elements' => $content));
+  //Set the urls for thumbnail and default standard view types buttons
+  $default_standard_view_url = url(arg(0), $options);
+  $options['query']['view'] = 'thumb';
+  $thumbnail_standard_view_url = url(arg(0), $options);
+
+  return theme('collection_page', array('content' => $content, 'default_url' => $default_standard_view_url,'thumbnail_url' => $thumbnail_standard_view_url ));
 }
 
 /**
@@ -354,9 +355,9 @@ function _collection_page_get_date_fields_from_bundle($bundle) {
 }
 
 /**
- * Preprocess function for collection_standart_thumbnail_view
+ * Preprocess function for collection_standard_thumbnail_view
  */
-function template_preprocess_collection_standart_thumbnail_view(&$results) {
+function template_preprocess_collection_standard_thumbnail_view(&$results) {
   //We should find a thumbnail field. It could be any image field. If we find it for
   //content type we should save it in static variable
   //This variable contatins array which keys are content type names and values are
@@ -430,9 +431,9 @@ function template_preprocess_collection_standart_thumbnail_view(&$results) {
 }
 
 /**
- * Preprocess function for collection_standart_default_view
+ * Preprocess function for collection_standard_default_view
  */
-function template_preprocess_collection_standart_default_view(&$variables) {
+function template_preprocess_collection_standard_default_view(&$variables) {
   $results = $variables['results'];
   drupal_add_library('system', 'ui.accordion');
   drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_accordion.js');
