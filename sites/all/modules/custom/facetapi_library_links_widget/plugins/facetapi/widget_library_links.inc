@@ -13,8 +13,8 @@ class FacetapiWidgetLibraryLinks extends FacetapiWidgetLinks {
     $entity_info = entity_get_info('node');
     $element = &$this->build[$this->facet['field alias']];
     dpm($element);
-    foreach($indexed_bundles as $bundle){
-      if(!isset($element[$bundle])){
+    foreach ($indexed_bundles as $bundle) {
+      if (!isset($element[$bundle])) {
         $element[$bundle] = array(
             '#markup' => $entity_info['bundles'][$bundle]['label'],
             '#path' => arg(0) . '/' . arg(1),
@@ -26,9 +26,6 @@ class FacetapiWidgetLibraryLinks extends FacetapiWidgetLinks {
             '#item_children' => array(),
             '#query' => array('f' => array('bundle:' . $bundle)),
         );
-
-
-
       }
     }
     // Sets each item's theme hook, builds item list.
@@ -62,6 +59,17 @@ class FacetapiWidgetLibraryLinks extends FacetapiWidgetLinks {
     $keys = $query->getParam('q');
     $response = $query->search($keys);
     return $response;
+  }
+
+  public function setThemeHooks(array &$build) {
+    foreach ($build as $value => &$item) {
+      $item['#theme'] = ($item['#active']) ? 'facetapi_library_link_active' : 'facetapi_link_inactive';
+    }
+    return $this;
+  }
+
+  function buildListItems($build) {
+    
   }
 
 }

@@ -14,3 +14,18 @@ function facetapi_library_links_widget_facetapi_widgets() {
       ),
   );
 }
+
+/**
+ * Implements hook_theme().
+ */
+function facetapi_library_links_widget_theme() {
+  return array(
+    'facetapi_library_link_active' => array(
+      'arguments' => array('text' => NULL, 'path' => NULL, 'options' => array(), 'count' => 0),
+    ),
+  );
+}
+
+function theme_facetapi_library_link_active(){
+  
+}
