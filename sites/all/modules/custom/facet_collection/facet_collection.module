@@ -655,6 +655,7 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
   $variables['nid'] = $nid;
   $node = node_load($nid);
   $instances = field_info_instances('node', $node->type);
+ // dpm($instances);
   if (empty($snippets)) {
     //We take a text for snippet from long text with summary field
     foreach ($instances as $instance) {
