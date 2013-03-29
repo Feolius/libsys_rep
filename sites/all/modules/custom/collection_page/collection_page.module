@@ -252,6 +252,9 @@ function collection_page_timeline_json_callback() {
             else {
               $image_path = file_create_url($uri);
             }
+            break;
+          }
+          if(!empty($image_path)){
             $asset->media = $image_path;
             break;
           }
@@ -262,7 +265,7 @@ function collection_page_timeline_json_callback() {
     if (!empty($date_fields)) {
       foreach ($date_fields as $field_name) {
         $item_date = date('Y,m,d', strtotime($result['fields']['dm_facet_collection_' . $field_name][0]));
-        //If the node have more then ine date fields, the earliest one would be chosen.
+        //If the node have more then one date fields, the earliest one would be chosen.
         if (isset($timeline_item->startDate)) {
           $timeline_item->startDate = (strtotime($timeline_item->startDate) > strtotime($item_date)) ? $item_date : $timeline_item->startDate;
         }
