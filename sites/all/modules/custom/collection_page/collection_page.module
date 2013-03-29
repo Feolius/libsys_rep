@@ -103,7 +103,7 @@ function theme_facet_collection_search_results__alter($variables) {
 
   $standard_view_content = array(
     '#id' => 'standard-view',
-    '#title' => 'Standard View (<span id="standard-view-type-title">' . $standard_view_type_label . '</span>)',
+    '#title' => 'Standard View (<span class="standard-view-type-title" id="standard-view-tab-button-type-title">' . $standard_view_type_label . '</span>)',
     '#content' => array(
       '#view' => $rendered_results,
     ),

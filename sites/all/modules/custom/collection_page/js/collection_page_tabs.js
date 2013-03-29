@@ -2,7 +2,7 @@
     Drupal.behaviors.collection_page_tabs = {
         attach: function () {
             var standard_view_tab_button = $("#tab-button-standard-view"),
-                stantard_view_types = $("#library-standard-view-types"),
+                standard_view_types = $("#library-standard-view-types-menu"),
                 library_tabs = $("#collection_page_tabs");
 
 
@@ -22,29 +22,48 @@
                 library_tabs.tabs({disabled: [Drupal.settings.collection_page.disabled_tab] });
             }
 
-            standard_view_tab_button.mouseenter(function () {
-                var left = $(this).position().left;
-                var top = $(this).position().top;
-                var width = $(this).width();
-                var height = $(this).height()
-                stantard_view_types.css("width", width);
-                stantard_view_types.css("top", top);
-                stantard_view_types.css("left", left);
-                stantard_view_types.css("height", height);
-                stantard_view_types.show();
+            $('.standard-view-type-title').click(function () {
+                if ($(this).parent().get(0).id == 'library-standard-view-button') {
+                    standard_view_types.hide();
+                } else {
+                    var left = standard_view_tab_button.position().left;
+                    var top = standard_view_tab_button.position().top;
+                    var width = standard_view_tab_button.width();
+                    var height = standard_view_tab_button.height()
+                    standard_view_types.css("width", width);
+                    standard_view_types.css("top", top);
+                    standard_view_types.css("left", left);
+                    standard_view_types.css("height", height * 3);
+                    $(".library-standard-view-type").css("height", height);
+                    $(".library-standard-view-type").css("width", width);
+                    standard_view_types.show();
+                }
+
             });
 
-            stantard_view_types.mouseleave(function () {
-                stantard_view_types.hide();
+            standard_view_types.mouseleave(function () {
+                standard_view_types.hide();
             });
 
             $("#library-standard-view-default-type").click(function () {
-                stantard_view_types.hide();
-                window.location = $("#library-standard-view-default-type").attr('link');
+                standard_view_types.hide();
+                library_tabs.tabs('select', 0);
+                if ($('#standard-view-tab-button-type-title').text().toLowerCase() == 'thumbnail') {
+                    $('#standard-view-tab-button-type-title').text('Default')
+                    window.location = $(this).attr('link');
+                }
             });
             $("#library-standard-view-thumbnail-type").click(function () {
-                stantard_view_types.hide();
-                window.location = $("#library-standard-view-thumbnail-type").attr('link');
+                standard_view_types.hide();
+                library_tabs.tabs('select', 0);
+                if ($('#standard-view-tab-button-type-title').text().toLowerCase() == 'default') {
+                    $('#standard-view-tab-button-type-title').text('Thumbnail')
+                    window.location = $(this).attr('link');
+                }
+            });
+            $("#library-standard-view-button").click(function () {
+                standard_view_types.hide();
+                library_tabs.tabs('select', 0);
             });
 
 

@@ -30,21 +30,21 @@
     height: 100%;
 }
 
-#tab-button-standard-view {
-
-}
-
-#library-standard-view-types {
+#library-standard-view-types-menu {
     position: absolute;
     display: none;
     z-index: 5000;
 }
 
 .library-standard-view-type {
-    height: 16px;
-    padding: 10px;
+    text-transform: uppercase;
     text-align: center;
     border-top: 1px solid #AAAAAA;
     border-bottom: 1px solid #AAAAAA;
     background-color: #EEEEEE;
 }
+
+.standard-view-type-title{
+    text-decoration: underline;
+}
+
