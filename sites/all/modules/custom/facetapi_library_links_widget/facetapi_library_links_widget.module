@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * Implements hook_facetapi_widgets().
+ */
+function facetapi_library_links_widget_facetapi_widgets() {
+  return array(
+      'facetapi_library_links_widget' => array(
+          'handler' => array(
+              'label' => t('Library links'),
+              'class' => 'FacetapiWidgetLibraryLinks',
+              'query types' => array('term'),
+          ),
+      ),
+  );
+}
+
+/**
+ * Implements hook_theme().
+ */
+function facetapi_library_links_widget_theme() {
+  return array(
+    'facetapi_library_link_active' => array(
+      'arguments' => array('text' => NULL, 'path' => NULL, 'options' => array(), 'count' => 0),
+    ),
+  );
+}
+
+function theme_facetapi_library_link_active($variables){
+  return theme('facetapi_deactivate_widget', $variables) . $variables['text'] . ' (' . $variables['count'] . ')';
+}

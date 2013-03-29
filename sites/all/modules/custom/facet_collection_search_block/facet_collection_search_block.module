@@ -29,7 +29,7 @@ function facet_collection_search_block_form($form, &$form_state) {
   $search_query_string = arg(1);
   $current_search_queries = array();
   $default_value = '';
-  if (!empty($search_query_string) && arg(0) == 'collection') {
+  if (!empty($search_query_string) && arg(0) == 'library') {
     $current_search_queries = explode(' AND ', $search_query_string);
     foreach ($current_search_queries as $key => $query) {
       $query_parts = explode(':', $query);
@@ -49,7 +49,7 @@ function facet_collection_search_block_form($form, &$form_state) {
   );
 
   $form['actions'] = array('#type' => 'actions');
-  if (arg(0) == 'collection'){
+  if (arg(0) == 'library'){
     $get_value = json_encode(array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1)));
   }else{
     $get_value = json_encode(array());
@@ -63,7 +63,7 @@ function facet_collection_search_block_form($form, &$form_state) {
       '#submit' => array('facet_collection_search_block_form_submit'),
       '#value' => t('Search')
   );
-  if (arg(0) == 'collection') {
+  if (arg(0) == 'library') {
     $clear_access = TRUE;
   } else {
     $clear_access = FALSE;
@@ -106,8 +106,15 @@ function facet_collection_search_block_form_submit($form, &$form_state) {
   $current_search_queries[] = trim($form_state['values'][$form_id]);
   $search_query_string = implode(' AND ', $current_search_queries);
   $get = json_decode($form_state['values']['get'], TRUE);
+  //Check if we have filters. If not, then we should set filter by content type files, because it means that we go from another page
+  if(!isset($get['f'])){
+    $get['f'][] = 'bundle:files';
+  }
+  if(!isset($get['bundle'])){
+
+  }
   if (!empty($search_query_string)) {
-    $redirect_path = 'collection/' . $search_query_string;
+    $redirect_path = 'library/' . $search_query_string;
   }
   if (!empty($info) && $info['module'] == 'apachesolr_search') {
     $form_state['redirect'] = array($redirect_path, array('query' => $get));
@@ -140,9 +147,9 @@ function facet_collection_search_block_form_remove_filter($form, &$form_state) {
   }
   $search_query_string = implode(' AND ', $current_search_queries);
   if (empty($search_query_string)) {
-    $redirect_path = 'collection';
+    $redirect_path = 'library';
   } else {
-    $redirect_path = 'collection/' . $search_query_string;
+    $redirect_path = 'library/' . $search_query_string;
   }
   if (!empty($info) && $info['module'] == 'apachesolr_search') {
     $form_state['redirect'] = array($redirect_path, array('query' => $get));

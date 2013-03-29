@@ -1,0 +1,6 @@
+name = Library Links Widget
+description = "Provides facetapi links widget which don't hide items for AND operator"
+package = Search Toolkit
+core = 7.x
+dependencies[] = facetapi
+files[] = plugins/facetapi/widget_library_links.inc

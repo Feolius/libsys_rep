@@ -211,40 +211,8 @@ function facet_collection_page() {
   $solr = apachesolr_get_solr($environment);
   $params = facet_collection_get_default_params();
   $base_path = arg(0);
-  //Check if we already have filter by content types
-  $is_set_filter = FALSE;
-  if (isset($_GET['f'])) {
-    $filters = $_GET['f'];
-    foreach ($filters as $filter) {
-      $arr = explode(':', $filter);
-      if ($arr[0] == 'bundle') {
-        $is_set_filter = TRUE;
-        $searched_bundles = $arr[1];
-      }
-    }
-  }
-  //If filter doesn't exist we should perform query for each needed content type and merge results
-  $results = array();
-  if (!$is_set_filter) {
-    $environment = apachesolr_default_environment();
-    $indexed_bundles = apachesolr_get_index_bundles($environment, 'node');
-    foreach ($indexed_bundles as $bundle) {
-      $params['fq'][] = 'bundle:' . $bundle;
-      $bundle_results = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
-      $results[$bundle] = $bundle_results;
-      //Reset static cache to make a query again
-      drupal_static_reset('apachesolr_static_response_cache');
-      //Remove filter query for bundle to replace it new one
-      array_shift($params['fq']);
-    }
-    //Make a fake query to show list of content types filters
-    apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
-  }
-  else {
-    $results[$searched_bundles] = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
-  }
-  $hook = 'facet_collection_search_results__alter';
-  $build = theme($hook, array('results' => $results));
+  $results = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
+  $build = theme('facet_collection_search_results__alter', array('results' => $results));
   return $build;
 }
 
@@ -657,25 +625,23 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
   $instances = field_info_instances('node', $node->type);
   if (empty($snippets)) {
     //We take a text for snippet from long text with summary field
-    $node_teaser = node_view($node, 'teaser');
     foreach ($instances as $instance) {
       $field_name = $instance['field_name'];
       $field_info = field_info_field($field_name);
+      $node_teaser = node_view($node, 'teaser');
       //If there is a trim display in node teaser we take it
       if ($field_info['type'] == 'text_with_summary') {
         if (isset($node_teaser[$field_name])) {
           $text = $node_teaser[$field_name][0]['#markup'];
-          break;
         }
         else {
+          ;
           //Else we should get full text
           $items = field_get_items('node', $node, $field_name);
           if (!empty($items)) {
             foreach ($items as $item) {
               $text = $item['value'];
-              break;
             }
-            break;
           }
         }
       }
@@ -716,7 +682,6 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
           break;
         }
       }
-      break;
     }
   }
 }
