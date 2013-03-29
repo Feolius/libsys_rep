@@ -26,6 +26,6 @@ function facetapi_library_links_widget_theme() {
   );
 }
 
-function theme_facetapi_library_link_active(){
-  
+function theme_facetapi_library_link_active($variables){
+  return theme('facetapi_deactivate_widget', $variables) . $variables['text'] . ' (' . $variables['count'] . ')';
 }

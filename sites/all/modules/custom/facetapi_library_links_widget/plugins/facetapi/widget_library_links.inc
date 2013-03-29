@@ -12,7 +12,6 @@ class FacetapiWidgetLibraryLinks extends FacetapiWidgetLinks {
     $indexed_bundles = apachesolr_get_index_bundles($environment, 'node');
     $entity_info = entity_get_info('node');
     $element = &$this->build[$this->facet['field alias']];
-    dpm($element);
     foreach ($indexed_bundles as $bundle) {
       if (!isset($element[$bundle])) {
         $element[$bundle] = array(
@@ -66,10 +65,6 @@ class FacetapiWidgetLibraryLinks extends FacetapiWidgetLinks {
       $item['#theme'] = ($item['#active']) ? 'facetapi_library_link_active' : 'facetapi_link_inactive';
     }
     return $this;
-  }
-
-  function buildListItems($build) {
-    
   }
 
 }
