@@ -1,0 +1,5 @@
+name = Facet Collection UI for List
+description = Allow use filtering by list fields
+package = Facet Collection
+core = 7.x
+dependencies[] = facet_collection_ui

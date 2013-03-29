@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Location View Map Feature feature.
+ */
+
+include_once 'location_view_map_feature.features.inc';

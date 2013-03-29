@@ -3,6 +3,7 @@ description = "Provides set of filters for nodes to allow user choose content th
 package = Facet Collection
 core = 7.x
 dependencies[] = apachesolr
+dependencies[] = apachesolr_search
 dependencies[] = facetapi
 files[] = plugins/facetapi/FacetapiWidgetOneblock.inc
 

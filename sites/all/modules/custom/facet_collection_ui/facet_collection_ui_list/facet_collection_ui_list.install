@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * Implements hook_uninstall().
+ */
+function facet_collection_ui_list_uninstall() {
+  $facet_filters_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
+  unset($facet_filters_settings['list_integer']);
+  unset($facet_filters_settings['list_float']);
+  unset($facet_filters_settings['list_text']);
+  unset($facet_filters_settings['list_boolean']);
+  variable_set('facet_collection_filters_settings', drupal_json_encode($facet_filters_settings));
+}

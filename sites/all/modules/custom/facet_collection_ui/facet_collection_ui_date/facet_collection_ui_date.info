@@ -3,4 +3,5 @@ description = Allow use filtering by date fields
 package = Facet Collection
 core = 7.x
 dependencies[] = facet_collection_ui
+dependencies[] = facet_collection_date
 dependencies[] = date

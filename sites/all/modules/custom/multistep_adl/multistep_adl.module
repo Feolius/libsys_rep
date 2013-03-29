@@ -490,8 +490,15 @@ function multistep_adl_submit($form, &$form_state) {
   //Erase from form state values fields, which are note in the current step
   //and submit the node after that.
   $groups = field_group_info_groups('node', $bundle, 'form');
-  $current_group_children = $groups[$current_step]->children;
-  $exclude_form_state_fields = array_diff(array_keys(field_info_instances('node', $bundle)), $current_group_children);
+  $current_step_fields = $groups[$current_step]->children;
+  foreach ($groups as $group) {
+    if ($group->parent_name == $current_step) {
+      $current_step_fields += $group->children;
+    }
+  }
+
+
+  $exclude_form_state_fields = array_diff(array_keys(field_info_instances('node', $bundle)), $current_step_fields);
 
 
   if (isset($exclude_form_state_fields['title'])) {
@@ -522,11 +529,22 @@ function multistep_adl_submit($form, &$form_state) {
         break;
     }
   }
+  if (!isset($form_state['values'][$steps_settings[$bundle]['determining_field']]['und'][0]['value'])) {
+    $node = node_load($nid);
+    $determining_field_name = $steps_settings[$bundle]['determining_field'];
+    if (isset($node->$determining_field_name)) {
+      $determining_item = $node->$determining_field_name;
+      $determining_field_value = $determining_item ['und'][0]['value'];
+    }
+  }
+  else {
+    $determining_field_value = $form_state['values'][$steps_settings[$bundle]['determining_field']]['und'][0]['value'];
+  }
 
   //Get the next step for current value of determining field from steps settings
   if (isset($steps_settings[$bundle]['determining_field'])
     && isset($steps_settings[$bundle]['values'])
-    && isset($form_state['values'][$steps_settings[$bundle]['determining_field']]['und'][0]['value'])
+    && $determining_field_value
   ) {
     if ($current_bundle_first_step == $current_step && $form_state['triggering_element']['#parents'][0] == 'next') {
       $form_field_value = $form_state['values'][$steps_settings[$bundle]['determining_field']]['und'][0]['value'];
@@ -535,15 +553,15 @@ function multistep_adl_submit($form, &$form_state) {
     }
     elseif ($form_state['triggering_element']['#parents'][0] == 'previous') {
       $key = array_search($current_step, $steps_settings[$bundle]['values']);
-      if ($key == $form_state['values'][$steps_settings[$bundle]['determining_field']]['und'][0]['value']) {
+      if ($key == $determining_field_value) {
         $step = $current_bundle_first_step;
       }
     }
   }
 
 
-  //If the next or previous step is defined redirect to the page for this step.
-  //Otherwise redirect on the page from form_state which is set by default.
+//If the next or previous step is defined redirect to the page for this step.
+//Otherwise redirect on the page from form_state which is set by default.
   if ($step) {
     $query = array(
       'query' => array(
@@ -556,7 +574,6 @@ function multistep_adl_submit($form, &$form_state) {
       $query['query'] += $destination;
     }
     $form_state['redirect'] = array('node/' . $nid . '/edit', $query);
-    //$form_state['redirect'] = array($_GET['q'], $query);
   }
 }
 
@@ -834,8 +851,8 @@ function _multistep_adl_update_status($nid, $status, $step = 'all') {
   if (_multistep_adl_get_status($nid, $step)) {
     db_update('multistep_adl')
       ->fields(array(
-      'status' => $status,
-    ))
+        'status' => $status,
+      ))
       ->condition('nid', $nid)
       ->condition('step', $step)
       ->execute();
@@ -843,10 +860,10 @@ function _multistep_adl_update_status($nid, $status, $step = 'all') {
   else {
     db_insert('multistep_adl')
       ->fields(array(
-      'nid' => $nid,
-      'step' => $step,
-      'status' => $status,
-    ))
+        'nid' => $nid,
+        'step' => $step,
+        'status' => $status,
+      ))
       ->execute();
   }
 }
