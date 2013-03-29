@@ -46,10 +46,6 @@ function collection_page_theme() {
     'timeline_iframe' => array(
       'template' => 'theme/timeline-iframe-page',
     ),
-    'collection_standard_view' => array(
-      'template' => 'theme/collection-standard-view',
-      'variables' => array('content' => NULL)
-    ),
     'collection_standard_thumbnail_view' => array(
       'template' => 'theme/collection-standard-thumbnail-view',
       'variables' => array('results' => NULL)
@@ -107,7 +103,7 @@ function theme_facet_collection_search_results__alter($variables) {
 
   $standard_view_content = array(
     '#id' => 'standard-view',
-    '#title' => 'Standard View (<span id="standard-view-type-title">'. $standard_view_type_label .'</span>)',
+    '#title' => 'Standard View (<span id="standard-view-type-title">' . $standard_view_type_label . '</span>)',
     '#content' => array(
       '#view' => $rendered_results,
     ),
@@ -164,6 +160,7 @@ function theme_facet_collection_search_results__alter($variables) {
   drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_style.css');
   drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_tabs.js');
   drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_thumbnails.js');
+  drupal_add_js(libraries_get_path('jquery_cookie') . '/jquery.cookie.js');
 
   $views = array_keys($content);
   //Define default and disabled tabs on collection page
@@ -203,7 +200,11 @@ function theme_facet_collection_search_results__alter($variables) {
   $options['query']['view'] = 'thumb';
   $thumbnail_standard_view_url = url(arg(0), $options);
 
-  return theme('collection_page', array('content' => $content, 'default_url' => $default_standard_view_url,'thumbnail_url' => $thumbnail_standard_view_url ));
+  return theme('collection_page', array(
+    'content' => $content,
+    'default_url' => $default_standard_view_url,
+    'thumbnail_url' => $thumbnail_standard_view_url
+  ));
 }
 
 /**
