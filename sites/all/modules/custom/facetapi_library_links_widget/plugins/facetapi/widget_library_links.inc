@@ -11,20 +11,22 @@ class FacetapiWidgetLibraryLinks extends FacetapiWidgetLinks {
     $environment = apachesolr_default_environment();
     $indexed_bundles = apachesolr_get_index_bundles($environment, 'node');
     $entity_info = entity_get_info('node');
-    $element = &$this->build[$this->facet['field alias']];
+    $element = &$this->build[$this->facet['field alias']];    
     foreach ($indexed_bundles as $bundle) {
       if (!isset($element[$bundle])) {
-        $element[$bundle] = array(
-            '#markup' => $entity_info['bundles'][$bundle]['label'],
-            '#path' => arg(0) . '/' . arg(1),
-            '#html' => FALSE,
-            '#indexed_value' => $bundle,
-            '#count' => $response->facet_counts->facet_fields->bundle->{$bundle},
-            '#active' => 0,
-            '#item_parents' => array(),
-            '#item_children' => array(),
-            '#query' => array('f' => array('bundle:' . $bundle)),
-        );
+        if (isset($response->facet_counts->facet_fields->bundle->{$bundle})) {
+          $element[$bundle] = array(
+              '#markup' => $entity_info['bundles'][$bundle]['label'],
+              '#path' => arg(0) . '/' . arg(1),
+              '#html' => FALSE,
+              '#indexed_value' => $bundle,
+              '#count' => $response->facet_counts->facet_fields->bundle->{$bundle},
+              '#active' => 0,
+              '#item_parents' => array(),
+              '#item_children' => array(),
+              '#query' => array('f' => array('bundle:' . $bundle)),
+          );
+        }
       }
     }
     // Sets each item's theme hook, builds item list.
