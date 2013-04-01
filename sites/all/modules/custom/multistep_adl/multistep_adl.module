@@ -496,8 +496,6 @@ function multistep_adl_submit($form, &$form_state) {
       $current_step_fields += $group->children;
     }
   }
-
-
   $exclude_form_state_fields = array_diff(array_keys(field_info_instances('node', $bundle)), $current_step_fields);
 
 

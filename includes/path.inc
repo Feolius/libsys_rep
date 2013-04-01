@@ -47,9 +47,9 @@ function drupal_lookup_path($action, $path = '', $path_language = NULL) {
   // Use the advanced drupal_static() pattern, since this is called very often.
   static $drupal_static_fast;
   if (!isset($drupal_static_fast)) {
-    $drupal_static_fast['cache'] = & drupal_static(__FUNCTION__);
+    $drupal_static_fast['cache'] = &drupal_static(__FUNCTION__);
   }
-  $cache = & $drupal_static_fast['cache'];
+  $cache = &$drupal_static_fast['cache'];
 
   if (!isset($cache)) {
     $cache = array(
@@ -203,7 +203,7 @@ function drupal_lookup_path($action, $path = '', $path_language = NULL) {
 function drupal_cache_system_paths() {
   // Check if the system paths for this page were loaded from cache in this
   // request to avoid writing to cache on every request.
-  $cache = & drupal_static('drupal_lookup_path', array());
+  $cache = &drupal_static('drupal_lookup_path', array());
   if (empty($cache['system_paths']) && !empty($cache['map'])) {
     // Generate a cache ID (cid) specifically for this page.
     $cid = current_path();
@@ -285,9 +285,9 @@ function drupal_is_front_page() {
   // Use the advanced drupal_static() pattern, since this is called very often.
   static $drupal_static_fast;
   if (!isset($drupal_static_fast)) {
-    $drupal_static_fast['is_front_page'] = & drupal_static(__FUNCTION__);
+    $drupal_static_fast['is_front_page'] = &drupal_static(__FUNCTION__);
   }
-  $is_front_page = & $drupal_static_fast['is_front_page'];
+  $is_front_page = &$drupal_static_fast['is_front_page'];
 
   if (!isset($is_front_page)) {
     // As drupal_path_initialize updates $_GET['q'] with the 'site_frontpage' path,
@@ -310,14 +310,14 @@ function drupal_is_front_page() {
  *   Boolean value: TRUE if the path matches a pattern, FALSE otherwise.
  */
 function drupal_match_path($path, $patterns) {
-  $regexps = & drupal_static(__FUNCTION__);
+  $regexps = &drupal_static(__FUNCTION__);
 
   if (!isset($regexps[$patterns])) {
     // Convert path settings to a regular expression.
     // Therefore replace newlines with a logical or, /* with asterisks and the <front> with the frontpage.
     $to_replace = array(
       '/(\r\n?|\n)/', // newlines
-      '/\\\\\*/', // asterisks
+      '/\\\\\*/',     // asterisks
       '/(^|\|)\\\\<front\\\\>($|\|)/' // <front>
     );
     $replacements = array(
@@ -328,7 +328,7 @@ function drupal_match_path($path, $patterns) {
     $patterns_quoted = preg_quote($patterns, '/');
     $regexps[$patterns] = '/^(' . preg_replace($to_replace, $replacements, $patterns_quoted) . ')$/';
   }
-  return (bool) preg_match($regexps[$patterns], $path);
+  return (bool)preg_match($regexps[$patterns], $path);
 }
 
 /**
@@ -493,7 +493,7 @@ function path_delete($criteria) {
  * @see hook_admin_paths_alter()
  */
 function path_is_admin($path) {
-  $path_map = & drupal_static(__FUNCTION__);
+  $path_map = &drupal_static(__FUNCTION__);
   if (!isset($path_map['admin'][$path])) {
     $patterns = path_get_admin_paths();
     $path_map['admin'][$path] = drupal_match_path($path, $patterns['admin']);
@@ -515,7 +515,7 @@ function path_is_admin($path) {
  * @see hook_admin_paths_alter()
  */
 function path_get_admin_paths() {
-  $patterns = & drupal_static(__FUNCTION__);
+  $patterns = &drupal_static(__FUNCTION__);
   if (!isset($patterns)) {
     $paths = module_invoke_all('admin_paths');
     drupal_alter('admin_paths', $paths);
@@ -560,16 +560,15 @@ function drupal_valid_path($path, $dynamic_allowed = FALSE) {
   elseif ($dynamic_allowed && preg_match('/\/\%/', $path)) {
     // Path is dynamic (ie 'user/%'), so check directly against menu_router table.
     if ($item = db_query("SELECT * FROM {menu_router} where path = :path", array(':path' => $path))->fetchAssoc()) {
-      $item['link_path'] = $form_item['link_path'];
+      $item['link_path']  = $form_item['link_path'];
       $item['link_title'] = $form_item['link_title'];
-      $item['external'] = FALSE;
+      $item['external']   = FALSE;
       $item['options'] = '';
       _menu_link_translate($item);
     }
   }
   else {
     $item = menu_get_item($path);
-
   }
   $menu_admin = FALSE;
   return $item && $item['access'];

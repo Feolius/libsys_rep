@@ -3,10 +3,20 @@
         attach: function () {
             var standard_view_tab_button = $("#tab-button-standard-view"),
                 standard_view_types = $("#library-standard-view-types-menu"),
-                library_tabs = $("#collection_page_tabs");
+                library_tabs = $("#collection_page_tabs"),
+                last_time_active_tab = parseInt($.cookie('collection_page_last_time_active_tab'));
 
+            library_tabs.tabs();
 
-            if (Drupal.settings.collection_page.default_tab != false && $.cookie('collection_page_last_time_active_tab').empty()) {
+            if (Drupal.settings.collection_page.disabled_tab != false && Drupal.settings.collection_page.disabled_tab > 0) {
+                library_tabs.tabs({disabled: [Drupal.settings.collection_page.disabled_tab] });
+            }
+
+            if (Drupal.settings.collection_page.default_tab != false
+                && (
+                (last_time_active_tab == NaN || last_time_active_tab == null)
+                    || last_time_active_tab == Drupal.settings.collection_page.disabled_tab)
+                ) {
                 library_tabs.tabs('select', Drupal.settings.collection_page.default_tab);
             } else {
                 library_tabs.tabs('select', parseInt($.cookie('collection_page_last_time_active_tab')));
@@ -17,10 +27,6 @@
                     $.cookie('collection_page_last_time_active_tab', ui.index);
                 }
             });
-
-            if (Drupal.settings.collection_page.disabled_tab != false && Drupal.settings.collection_page.disabled_tab > 0) {
-                library_tabs.tabs({disabled: [Drupal.settings.collection_page.disabled_tab] });
-            }
 
             $('.standard-view-type-title').click(function () {
                 if ($(this).parent().get(0).id == 'library-standard-view-button') {
@@ -65,8 +71,6 @@
                 standard_view_types.hide();
                 library_tabs.tabs('select', 0);
             });
-
-
         }
     }
 })
