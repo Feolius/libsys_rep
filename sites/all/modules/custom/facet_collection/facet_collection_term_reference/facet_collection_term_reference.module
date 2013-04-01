@@ -1,4 +1,3 @@
-
 <?php
 
 /**
@@ -88,7 +87,6 @@ function facet_collection_term_reference_facet_collection_facet_content_types($f
     $facet_content_types_array = array();
     $facet = facetapi_facet_load($facet_name, $searcher);
     $facet_field_info = field_info_field($facet['field api name']);
-    $facet_field_name = $facet_field_info['field_name'];
     $voc_machine_name = $facet_field_info['settings']['allowed_values'][0]['vocabulary'];
     if (isset($filter_settings['taxonomy_term_reference'][$voc_machine_name])) {
         $facet_content_types_array = array_keys($filter_settings['taxonomy_term_reference'][$voc_machine_name]);

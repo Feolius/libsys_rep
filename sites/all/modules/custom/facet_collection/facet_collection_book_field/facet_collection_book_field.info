@@ -3,5 +3,6 @@ description = "Provides indexing files attached to book field for collection"
 package = Facet Collection
 core = 7.x
 dependencies[] = facet_collection
+dependencies[] = book_field
 
 

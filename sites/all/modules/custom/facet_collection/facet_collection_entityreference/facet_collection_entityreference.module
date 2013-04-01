@@ -19,7 +19,6 @@ function facet_collection_entityreference_facet_collection_field_facet_groups($f
     return array();
   }
   $field_name = $field_info['field_name'];
-  $map_options = $field_info;
   $query_types = array('term');
   $default_widget = 'facetapi_links';
 

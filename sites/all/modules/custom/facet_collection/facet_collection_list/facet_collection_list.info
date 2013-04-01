@@ -1,0 +1,6 @@
+name = Facet collection list filters
+description = "Provides facet collection filters for list field"
+package = Facet Collection
+core = 7.x
+dependencies[] = facet_collection
+dependencies[] = list

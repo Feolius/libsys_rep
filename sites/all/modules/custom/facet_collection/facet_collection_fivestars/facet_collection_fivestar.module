@@ -72,7 +72,6 @@ function facet_collection_fivestar_facet_collection_facet_content_types($filter_
     $facet_content_types_array = array();
     $facet = facetapi_facet_load($facet_name, $searcher);
     $facet_field_info = field_info_field($facet['field api name']);
-    $facet_field_name = $facet_field_info['field_name'];
     $axis = $facet_field_info['settings']['axis'];
     if (isset($filter_settings['fivestar'][$axis])) {
         $facet_content_types_array = array_keys($filter_settings['fivestar'][$axis]);
