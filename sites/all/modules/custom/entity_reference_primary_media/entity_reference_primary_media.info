@@ -1,0 +1,10 @@
+name = Entity Reference Primary Media
+description = "Provides the formatter for entity reference field which change the output depending on primary content type"
+package = Media
+core = 7.x
+dependencies[] = entityreference
+dependencies[] = book_field
+dependencies[] = jplayer_waveform
+dependencies[] = youtube
+dependencies[] = openseadragon
+
