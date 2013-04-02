@@ -13,7 +13,7 @@
 function entity_reference_primary_media_field_formatter_info() {
   return array(
     'entity_reference_primary_media' => array(
-      'label' => t('Entity reference primary content'),
+      'label' => t('Entity reference primary media'),
       'field types' => array('entityreference'),
       'description' => t('Display the primary content for referenced node'),
     ),
@@ -30,44 +30,48 @@ function entity_reference_primary_media_field_formatter_view($entity_type, $enti
     if ($field['settings']['target_type'] == 'node'
       && in_array('files', $field['settings']['handler_settings']['target_bundles'])
     ) {
-      $referenced_nid = $items[0]['target_id'];
-      $node = node_load($referenced_nid);
-      if ($node->type == 'files' && property_exists($node, 'field_files_primary_media')) {
-        $primary_media_field_items = field_get_items('node', $node, 'field_files_primary_media', $langcode);
-        if (!empty($primary_media_field_items)) {
-          $primary_media = $primary_media_field_items[0]['value'];
-          $ref_entity_type = 'node';
-          $ref_entity = $node;
-          $ref_langcode = $langcode;
-          switch ($primary_media) {
-            case 'document':
-              $ref_field_name = 'field_files_file';
-              break;
-            case 'image':
-              $ref_field_name = 'field_files_image';
-              break;
-            case 'audio':
-              $ref_field_name = 'field_files_audio';
-              break;
-            case 'video':
-              $ref_field_name = 'field_files_youtube_media';
-              break;
-          }
-          $ref_field = field_info_field($ref_field_name);
-          $ref_instance = field_info_instance($ref_entity_type, $ref_field_name, 'files');
-          $ref_display = field_get_display($ref_instance, 'default', $ref_entity);
-          $ref_items = field_get_items($ref_entity_type, $ref_entity, $ref_field_name, $ref_langcode);
-          if (!empty($ref_items)) {
-            $element = module_invoke($ref_display['module'], 'field_formatter_view', $ref_entity_type, $ref_entity, $ref_field, $ref_instance, $ref_langcode, $ref_items, $ref_display);
-            return $element;
+      foreach ($items as $delta => $item) {
+        $referenced_nid = $item['target_id'];
+        $node = node_load($referenced_nid);
+        if ($node->type == 'files' && property_exists($node, 'field_files_primary_media')) {
+          $primary_media_field_items = field_get_items('node', $node, 'field_files_primary_media', $langcode);
+          if (!empty($primary_media_field_items)) {
+            $primary_media = $primary_media_field_items[0]['value'];
+            $ref_entity_type = 'node';
+            $ref_entity = $node;
+            $ref_langcode = $langcode;
+            switch ($primary_media) {
+              case 'document':
+                $ref_field_name = 'field_files_file';
+                break;
+              case 'image':
+                $ref_field_name = 'field_files_image';
+                break;
+              case 'audio':
+                $ref_field_name = 'field_files_audio';
+                break;
+              case 'video':
+                $ref_field_name = 'field_files_youtube_media';
+                break;
+            }
+            $ref_field = field_info_field($ref_field_name);
+            $ref_instance = field_info_instance($ref_entity_type, $ref_field_name, 'files');
+            $ref_display = field_get_display($ref_instance, 'default', $ref_entity);
+            $ref_items = field_get_items($ref_entity_type, $ref_entity, $ref_field_name, $ref_langcode);
+            if (!empty($ref_items)) {
+              $element[$delta] = module_invoke($ref_display['module'], 'field_formatter_view', $ref_entity_type, $ref_entity, $ref_field, $ref_instance, $ref_langcode, $ref_items, $ref_display);
+            }
           }
         }
       }
     }
-    $tmp_display = $display;
-    $tmp_display['type'] = 'entityreference_label';
-    $tmp_display['settings']['link'] = TRUE;
-    $element = entityreference_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $tmp_display);
+
+    if (empty($element)) {
+      $tmp_display = $display;
+      $tmp_display['type'] = 'entityreference_label';
+      $tmp_display['settings']['link'] = TRUE;
+      $element = entityreference_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $tmp_display);
+    }
   }
   return $element;
 }
