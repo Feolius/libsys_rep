@@ -26,3 +26,6 @@ sites/all/themes/README.txt
 
 # Ignore Mac folder index files
 .DS_Store
+
+# Ignore phpStorm project folder and files
+.idea/
