@@ -6,6 +6,7 @@ core = 7.x
 base theme = corporateclean
 
 stylesheets[all][] = style.css
+stylesheets[all][] = style_templates.css 
 stylesheets[all][] = color/colors.css
 
 regions[search_area] = Search area
