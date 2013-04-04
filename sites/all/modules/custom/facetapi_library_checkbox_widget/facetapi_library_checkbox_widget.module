@@ -1,0 +1,115 @@
+<?php
+
+/**
+ * Implements hook_facetapi_widgets().
+ */
+function facetapi_library_checkbox_widget_facetapi_widgets() {
+  return array(
+    'facetapi_library_checkbox_widget' => array(
+      'handler' => array(
+        'label' => t('Library checkboxes'),
+        'class' => 'FacetapiWidgetLibraryCheckbox',
+        'query types' => array('term'),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_forms().
+ */
+function facetapi_library_checkbox_widget_forms($form_id, $args) {
+  $forms = array();
+  $searcher_info = facetapi_get_searcher_info();
+  $searchers = array_keys($searcher_info);
+  $searcher = array_shift($searchers);
+  $adapter = facetapi_adapter_load($searcher);
+  $enabled_facets = $adapter->getEnabledFacets();
+  foreach ($enabled_facets as $enabled_facet) {
+      $forms['facetapi_library_checkbox_widget_' . $enabled_facet['name'] . '_form'] = array(
+        'callback' => 'facetapi_library_checkbox_widget_filter_form',
+      );
+  }
+  return $forms;
+}
+
+/**
+* Form callback for library checkbox widget
+*/
+function facetapi_library_checkbox_widget_filter_form($form, &$form_state, $args) {
+  $field_alias = $args['field alias'];
+  $searcher_info = facetapi_get_searcher_info();
+  $searchers = array_keys($searcher_info);
+  $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
+  $active_checkboxes = array();
+  if (isset($get_params['f'])) {
+    $f = $get_params['f'];
+    foreach ($f as $key => $row) {
+      $arr = explode(':', $row);
+      if($arr[0] == $field_alias){
+        $active_checkboxes[] = $arr[1];
+      }
+    }
+  }
+  dpm($active_checkboxes);
+  $searcher = $searchers[0];
+  $form = array(
+    'title' => array(
+      '#type' => 'item',
+      '#markup' => '<h3>' . $args['label'] . '</h3>',
+      '#weight' => -20,
+    ),
+    'checkboxes' => array(
+      '#type' => 'checkboxes',
+      '#options' => drupal_map_assoc($args['variants']),
+      '#default_value' => $active_checkboxes
+    ),
+    'filter_button' => array(
+      '#type' => 'submit',
+      '#value' => t('Filter'),
+      '#description' => t('Format:'),
+      '#weight' => 14,
+      '#submit' => array('facetapi_library_checkbox_widget_filter_submit'),
+    ),
+  );
+  return $form;
+}
+
+/**
+ * Submit callback for library checkbox widget
+ */
+function facetapi_library_checkbox_widget_filter_submit($form, &$form_state){
+  $search_path = $form_state['build_info']['args'][0]['search path'];
+  $field_alias = $form_state['build_info']['args'][0]['field alias'];
+  $checkboxes = $form_state['input']['checkboxes'];
+  foreach($checkboxes as $key => $checkbox){
+    if(is_null($checkbox)){
+      unset($checkboxes[$key]);
+    }
+  }
+  $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
+  if (isset($get_params['f'])) {
+    $f = $get_params['f'];
+    foreach ($f as $key => $row) {
+      $arr = explode(':', $row);
+      if($arr[0] == $field_alias){
+        unset($f[$key]);
+      }
+    }
+  }
+  foreach($checkboxes as $checkbox){
+    $f[] = $field_alias . ':' . $checkbox;
+  }
+  if(!empty($f)){
+    $get_params['f'] = $f;
+  }
+
+  $options = array(
+    'query' => $get_params
+  );
+ $form_state['redirect'] = array(
+   $search_path,
+    $options,
+    302
+  );
+}
