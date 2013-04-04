@@ -1,7 +1,0 @@
-name = Library datefield widget
-description = Provide datefield widget that allow user to omit some parts of date to lower precision of a date.
-dependencies[] = date_api
-dependencies[] = date
-package = Date/Time
-core = 7.x
-

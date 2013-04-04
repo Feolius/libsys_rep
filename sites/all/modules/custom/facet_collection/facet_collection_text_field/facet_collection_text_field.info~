@@ -1,7 +1,0 @@
-name = Facet collection textfields search
-description = "Provides facet collection filters for nodereferences"
-package = Facet Collection
-core = 7.x
-dependencies[] = facet_collection
-
-

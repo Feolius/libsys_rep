@@ -1,6 +1,0 @@
-name = Library Import
-description = "Module for database import"
-package = Library Import
-core = 7.x
-
-

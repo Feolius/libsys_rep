@@ -1,8 +1,0 @@
-name = Library checkbox widget
-description = "Provides facetapi checkbox widget."
-package = Search Toolkit
-core = 7.x
-dependencies[] = facetapi
-files[] = plugins/facetapi/widget_library_checkbox.inc
-
-

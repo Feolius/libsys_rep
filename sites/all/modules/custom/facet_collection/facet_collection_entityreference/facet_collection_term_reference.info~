@@ -1,7 +1,0 @@
-name = Term reference filters
-description = "Provides set of filters for nodes to allow user choose content that he want to see. Filtration perform through apache solr facets."
-package = Facet collection
-core = 7.x
-dependencies[] = facet_collection
-files[] = plugins/facetapi/FacetapiWidgetOneblock.inc
-

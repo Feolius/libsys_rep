@@ -1,6 +1,0 @@
-name = Book field search
-description = "Provides apache solr searching for book field."
-package = Book field
-core = 7.x
-dependencies[] = Book field, Apache Solr framework, Apache Solr search attachments
-

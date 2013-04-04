@@ -1,6 +1,0 @@
-name = Collection Pager Block
-description = "Provides a block that allow user to choose certain number of node to be shown in collection."
-package = Facet collection
-core = 7.x
-dependencies[] = facet_collection
-
