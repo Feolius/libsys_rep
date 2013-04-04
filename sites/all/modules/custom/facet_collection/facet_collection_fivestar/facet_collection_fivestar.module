@@ -1,0 +1,95 @@
+<?php
+
+define('FACET_COLLECTION_FIVESTAR_LOWER_LIMIT', 0);
+define('FACET_COLLECTION_FIVESTAR_UPPER_LIMIT', 100);
+
+/**
+ * Implements hook_facet_collection_field_type_info()
+ */
+function facet_collection_fivestar_facet_collection_field_type_info() {
+    return array('facet' => array('fivestar'));
+}
+
+/**
+ * Implements hook_facet_collection_field_facet_groups()
+ */
+function facet_collection_fivestar_facet_collection_field_facet_groups($field_info) {
+    $facet_groups = array();
+    $facet_groups['default'] = array();
+    $facets = array();
+    $field_name = $field_info['field_name'];
+    $query_types = array('term');
+    $default_widget = 'facetapi_slider_widget';
+    $axis = $field_info['settings']['axis'];
+    $facet_name = 'collection_' . $axis;
+    $label = $axis;
+    $min_callback = 'facet_collection_min_fivestar_rating';
+    $max_callback = 'facet_collection_max_fivestar_rating';
+    $index_field_name = 'fs_' . $axis;
+    $map_options = array();
+
+    $facets[$facet_name] = array(
+        'name' => $facet_name,
+        'label' => t($label),
+        'description' => t('Automatically created facet for facet collection module'),
+        'field' => $index_field_name,
+        'field alias' => $index_field_name,
+        'field api name' => $field_name,
+        'field api bundles' => array(),
+        'query types' => $query_types,
+        'default widget' => $default_widget,
+        'allowed operators' => array(FACETAPI_OPERATOR_AND => TRUE, FACETAPI_OPERATOR_OR => FALSE),
+        'facet mincount allowed' => TRUE,
+        'facet missing allowed' => TRUE,
+        'map callback' => FALSE,
+        'map options' => $map_options,
+        'min callback' => $min_callback,
+        'max callback' => $max_callback,
+    );
+    $facet_groups['default'] = $facets;
+    return $facet_groups;
+}
+
+/**
+ * Implements hook_facet_collection_index_field()
+ */
+function facet_collection_fivestar_facet_collection_index_field($filedocument, $node, $field_info) {
+    $field_name = $field_info['field_name'];
+    $axis = $field_info['settings']['axis'];
+    $index_field_name = 'fs_' . $axis;
+    $items = field_get_items('node', $node, $field_name);
+    if (isset($items) && !empty($items)) {
+        $item = $items[0];
+        $filedocument->addField($index_field_name, $item['average']);
+    }
+    return $filedocument;
+}
+
+/**
+ * Implements hook_facet_collection_facet_content_types()
+ */
+function facet_collection_fivestar_facet_collection_facet_content_types($filter_settings, $facet_group, $facet_name, $searcher) {
+    $facet_content_types_array = array();
+    $facet = facetapi_facet_load($facet_name, $searcher);
+    $facet_field_info = field_info_field($facet['field api name']);
+    $axis = $facet_field_info['settings']['axis'];
+    if (isset($filter_settings['fivestar'][$axis])) {
+        $facet_content_types_array = array_keys($filter_settings['fivestar'][$axis]);
+    }
+    return $facet_content_types_array;
+}
+
+/**
+ * Min callback for fivestars facets
+ */
+function facet_collection_min_fivestar_rating() {
+    return FACET_COLLECTION_FIVESTAR_LOWER_LIMIT;
+}
+
+/**
+ * Max callback for fivestars facets
+ */
+function facet_collection_max_fivestar_rating() {
+    return FACET_COLLECTION_FIVESTAR_UPPER_LIMIT;
+}
+

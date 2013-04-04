@@ -333,7 +333,7 @@ function facet_collection_get_facet_filters() {
   //We need searcher for further actions.
   $searcher_info = facetapi_get_searcher_info();
   $searchers = array_keys($searcher_info);
-  $searcher = array_shift($searchers);
+  $searcher = $searchers[0];
 
 //Get adapter and build block realm to grab all build information
   $adapter = facetapi_adapter_load($searcher);
