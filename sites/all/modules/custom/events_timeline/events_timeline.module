@@ -1,0 +1,134 @@
+<?php
+
+/**
+ * @file
+ * The main file of Collection Page module.
+ * Provides three types of view for collection page -
+ * timeline, location and default views.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function events_timeline_menu() {
+  $items = array();
+  $items['events-timeline-json-data'] = array(
+    'access callback' => TRUE,
+    'page callback' => 'events_timeline_json_callback',
+    'type' => MENU_CALLBACK,
+  );
+  $items['events-timeline'] = array(
+    'access callback' => TRUE,
+    'page callback' => 'events_timeline_page_callback',
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function events_timeline_theme() {
+  return array(
+    'events_timeline_json' => array(
+      'template' => 'theme/events-timeline-json-page',
+      'arguments' => array(
+        'options' => NULL,
+      ),
+    ),
+    'events_timeline_iframe' => array(
+      'template' => 'theme/events-timeline-iframe-page',
+    ),
+  );
+}
+
+
+/**
+ * Page callback for Timeline View on Collection Page.
+ */
+function events_timeline_timeline_frame_callback() {
+  $options = new stdClass();
+  $options->start_slide = 0;
+  $options->timeline_lib_url = $GLOBALS['base_url'] . '/' . libraries_get_path('timeline') . '/compiled/js/storyjs-embed.js';
+  echo theme('timeline_json', array('options' => $options));
+  exit;
+}
+
+/**
+ * Page callback for data for TimeLine View
+ */
+function events_timeline_timeline_json_callback() {
+  $date = array();
+  $results = $_SESSION['events_timeline_apache_solr_results'];
+
+  foreach ($results as $result) {
+    $asset = new stdClass();
+    $timeline_item = new stdClass();
+    $asset->media = "";
+    $asset->credit = "";
+    $asset->caption = "";
+
+    //For each node, which was filtered by apache_solr using chosen filters
+    //get image,as media content, and date for time line.
+    //There would taken the last image field in node and the last date field in node.
+    $node = node_load($result['node']->entity_id);
+    $instances = field_info_instances('node', $node->type);
+    foreach ($instances as $field_name => $instance) {
+      $field_info = field_info_field($field_name);
+      if ($field_info['type'] == 'image') {
+        $items = field_get_items('node', $node, $field_info['field_name']);
+        if (!empty($items)) {
+          foreach ($items as $item) {
+            $uri = $item['uri'];
+            $style = 'thumbnail';
+            $styles = image_styles();
+            if (in_array($style, array_keys($styles))) {
+              $image_path = image_style_url($style, $uri);
+            }
+            else {
+              $image_path = file_create_url($uri);
+            }
+            break;
+          }
+          if (!empty($image_path)) {
+            $asset->media = $image_path;
+            break;
+          }
+        }
+      }
+    }
+    $date_fields = _events_timeline_get_date_fields_from_bundle($result['bundle']);
+    if (!empty($date_fields)) {
+      foreach ($date_fields as $field_name) {
+        $item_date = date('Y,m,d', strtotime($result['fields']['dm_facet_collection_' . $field_name][0]));
+        //If the node have more then one date fields, the earliest one would be chosen.
+        if (isset($timeline_item->startDate)) {
+          $timeline_item->startDate = (strtotime($timeline_item->startDate) > strtotime($item_date)) ? $item_date : $timeline_item->startDate;
+        }
+        else {
+          $timeline_item->startDate = $item_date;
+        }
+      }
+    }
+
+    $timeline_item->headline = $result['title'];
+    $timeline_item->text = l('read more', $GLOBALS['base_url'] . $result['link'], array(
+      'attributes' => array(
+        'target' => '_parent',
+        'class' => 'active'
+      )
+    ));
+    $timeline_item->asset = $asset;
+    $date[] = $timeline_item;
+  }
+
+  $json_class = new stdClass();
+  $json_class->timeline = new stdClass();
+  $json_class->timeline->headline = "";
+  $json_class->timeline->type = "default";
+  $json_class->timeline->startDate = "0";
+  $json_class->timeline->text = "";
+  $json_class->timeline->date = $date;
+  echo drupal_json_output($json_class);
+  exit;
+}

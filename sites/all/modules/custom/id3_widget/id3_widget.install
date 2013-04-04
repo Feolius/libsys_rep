@@ -20,6 +20,7 @@ function id3_widget_install() {
   time                                  Time (hours and minutes)
   attached_picture                      Attached picture
   audio_encryption                      Audio encryption
+  playtime                              Playtime
   band                                  Band/orchestra/accompaniment
   composer                              Composer
   conductor                             Conductor/Performer refinement

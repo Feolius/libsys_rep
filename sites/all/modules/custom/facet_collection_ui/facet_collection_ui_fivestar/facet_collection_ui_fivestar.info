@@ -3,5 +3,5 @@ description = Allow use filtering by fivestar fields
 package = Facet Collection
 core = 7.x
 dependencies[] = facet_collection_ui
-dependencies[] = facet_collection_fivestar
+dependencies[] = facet_collection_fivestars
 dependencies[] = fivestar

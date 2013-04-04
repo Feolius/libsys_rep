@@ -1,0 +1,6 @@
+name = Events Timeline
+description = "Provides a block for representing a part of events hierarchy"
+package = Media
+core = 7.x
+dependencies[] = view_timelinejs
+

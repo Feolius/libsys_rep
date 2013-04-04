@@ -26,6 +26,7 @@ function facet_collection_list_facet_collection_field_facet_groups($field_info) 
   $label = $instance['label'];
   $index_field_name = 'sm_' . $field_name;
   $map_options = array();
+
   $facets[$facet_name] = array(
     'name' => $facet_name,
     'label' => t($label),

@@ -279,7 +279,6 @@ function _id3_widget_fetch_id3_field_data($node, $widget_instances) {
         }
       }
       elseif ($id3_tag_field == 'date' || $id3_tag_field == 'time' || $id3_tag_field == 'year') {
-        // elseif ($id3_tag_field == 'date_full') {
         $date_id3_fields = array('date', 'time', 'year');
         foreach ($date_id3_fields as $id3_tag_field) {
           if (isset($audio_file_metadata['tags']['id3v2'][$id3_tag_field])) {
@@ -289,6 +288,9 @@ function _id3_widget_fetch_id3_field_data($node, $widget_instances) {
             $result[$instance_name]['value'][$id3_tag_field] = $audio_file_metadata['tags']['id3v1'][$id3_tag_field][0];
           }
         }
+      }
+      elseif ($id3_tag_field == 'playtime') {
+        $result[$instance_name]['value'] = $audio_file_metadata['playtime_string'];
       }
       else {
         if (isset($audio_file_metadata['tags']['id3v2'][$id3_tag_field])) {
