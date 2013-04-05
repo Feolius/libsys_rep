@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dd5d7f11-d9f0-40a7-bb9a-2abfab543ed8" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/collection_pager_block.module" afterPath="$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/collection_pager_block.module" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="libsys_rep.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -39,7 +38,7 @@
       <file leaf-file-name="collection_page.module" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_page/collection_page.module">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="283" column="41" selection-start="10313" selection-end="10313" vertical-scroll-proportion="0.053380784">
+            <state line="295" column="45" selection-start="10307" selection-end="10307" vertical-scroll-proportion="0.19572954">
               <folding />
             </state>
           </provider>
@@ -413,7 +412,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_page/collection_page.module">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="283" column="41" selection-start="10313" selection-end="10313" vertical-scroll-proportion="0.053380784">
+        <state line="295" column="45" selection-start="10307" selection-end="10307" vertical-scroll-proportion="0.19572954">
           <folding />
         </state>
       </provider>

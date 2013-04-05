@@ -25,8 +25,7 @@
  * @return array
  *   An array containing field types.
  */
-function hook_facet_collection_ui_field_type_info()
-{
+function hook_facet_collection_ui_field_type_info() {
 }
 
 
@@ -42,8 +41,7 @@ function hook_facet_collection_ui_field_type_info()
  * @param $filter
  *  Information about field, that was taken from facet_collection_filters structure.
  */
-function hook_facet_collection_ui_add_field($field, $bundle, &$facet_filters_settings, $filter)
-{
+function hook_facet_collection_ui_add_field($field, $bundle, &$facet_filters_settings, $filter) {
 
 }
 
@@ -60,8 +58,7 @@ function hook_facet_collection_ui_add_field($field, $bundle, &$facet_filters_set
  * @param $filter
  *  Information about field, that was taken from facet_collection_filters structure.
  */
-function hook_facet_collection_ui_delete_field($field, $bundle, &$facet_filters_settings, $filter)
-{
+function hook_facet_collection_ui_delete_field($field, $bundle, &$facet_filters_settings, $filter) {
 
 }
 
@@ -74,8 +71,7 @@ function hook_facet_collection_ui_delete_field($field, $bundle, &$facet_filters_
  * @return string
  *  String label, described by what current field would be filtered.
  */
-function hook_facet_collection_ui_filter_by($field)
-{
+function hook_facet_collection_ui_filter_by($field) {
 
 }
 
@@ -89,8 +85,7 @@ function hook_facet_collection_ui_filter_by($field)
  * @return string
  *  String, which consist of summary for each enables referenced filter.
  */
-function hook_facet_collection_ui_summary($field, $ref_filters)
-{
+function hook_facet_collection_ui_summary($field, $ref_filters) {
 
 }
 
@@ -110,7 +105,6 @@ function hook_facet_collection_ui_summary($field, $ref_filters)
  *  Return settings form, if referenced content types have filterable field,
  *  and empty array if not.
  */
-function hook_facet_collection_ui_settings_form($field, $ref_filters, $form, &$form_state)
-{
+function hook_facet_collection_ui_settings_form($field, $ref_filters, $form, &$form_state) {
 
 }
