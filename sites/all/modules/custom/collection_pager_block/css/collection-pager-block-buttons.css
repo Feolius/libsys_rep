@@ -1,0 +1,27 @@
+#edit-previous-page-button {
+    background: url(../../collection_pager_block/img/collection-pager-block-buttons-icons.png) -60px -14px no-repeat;
+    width: 30px;
+    height: 31px;
+    border: none;
+    display: inline-block;
+}
+
+#edit-previous-page-button:disabled {
+    background-color: gray;
+}
+
+#edit-next-page-button {
+    background: url(../../collection_pager_block/img/collection-pager-block-buttons-icons.png) 0 -14px no-repeat;
+    width: 30px;
+    height: 31px;
+    border: none;
+    display: inline-block;
+}
+
+#edit-next-page-button:disabled {
+    background-color: gray;
+}
+
+#edit-progress-label {
+    display: inline-block;
+}

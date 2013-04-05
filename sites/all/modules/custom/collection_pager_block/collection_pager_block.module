@@ -4,89 +4,118 @@
  * Implements hook_block_info()
  */
 function collection_pager_block_block_info() {
-    $blocks['collection_pager'] = array(
-        'info' => t('Collection pager')
-    );
-    return $blocks;
+  $blocks['collection_pager'] = array(
+    'info' => t('Collection pager')
+  );
+  return $blocks;
 }
 
 /**
  * Implements hook_block_view()
  */
 function collection_pager_block_block_view($delta) {
-    if(isset($_GET['collection'])) {
-        $block['subject'] = t('Collection Pager');
-        $block['content'] = drupal_get_form('collection_pager_block_form');
-        return $block;
-    }
+  if (isset($_GET['collection'])) {
+    $block['subject'] = t('Collection Pager');
+    $block['content'] = drupal_get_form('collection_pager_block_form');
+    drupal_add_css(drupal_get_path('module', 'collection_pager_block') . '/css/collection-pager-block-buttons.css');
+    return $block;
+  }
 }
 
 /**
  * Form callback for collection pager block
  */
 function collection_pager_block_form($form, &$form_state) {
-    $current = $_GET['curr'] + 1;
-    $numfound = $_GET['numFound'];
-    $label = $current . ' of ' . $numfound;
-    $form = array(
-        'label' => array(
-            '#type' => 'item',
-            '#markup' => '<div class="desription">' . $label . ' </div>',
-        ),
-        'result_number' => array(
-            '#type' => 'textfield',
-            '#description' => t('Enter number of result here'),
-            '#size' => 10,
-        ),
-        'submit' => array(
-            '#type' => 'submit',
-            '#value' => t('Go!'),
-            '#submit' => array('collection_pager_block_submit'),
-        )
-    );
-    return $form;
+  $current = $_GET['curr'] + 1;
+  $numfound = $_GET['numFound'];
+  $label = $current . ' of ' . $numfound;
+  $previous_button_disabled = ($current == 1);
+  $next_button_disabled = ($current == $numfound);
+  $form = array(
+    'previous_page_button' => array(
+      '#type' => 'submit',
+     // '#value' => t('Previous'),
+      '#disabled' => $previous_button_disabled,
+      '#submit' => array('collection_pager_block_submit'),
+    ),
+    'progress_label' => array(
+      '#type' => 'item',
+      '#markup' => '<div class="desription">' . $label . ' </div>',
+    ),
+    'next_page_button' => array(
+      '#type' => 'submit',
+    //  '#value' => t('Next'),
+      '#disabled' => $next_button_disabled,
+      '#submit' => array('collection_pager_block_submit'),
+    ),
+    'result_number' => array(
+      '#type' => 'textfield',
+      '#description' => t('Enter page number'),
+      '#size' => 10,
+    ),
+    'go_to_the_page_button' => array(
+      '#type' => 'submit',
+      '#value' => t('Go!'),
+      '#submit' => array('collection_pager_block_submit'),
+    ),
+  );
+  return $form;
 }
 
 /**
  * Submit callback for collection pager form
  */
-function collection_pager_block_submit($form, &$form_state){
-    $number = (Integer) ($form_state['input']['result_number'] - 1);
-
-    //We should make solr query to find needed nid
-    $params = array();
-    $params['q'] = $_GET['query'];
-    $params['defType'] = 'lucene';
-    $params['spellcheck'] = FALSE;
-    $params['start'] = $number;
-    $params['rows'] = 1;
-    $query = apachesolr_drupal_query('apachesolr', $params);
-    $searcher = $query->getSearcher();
-    if (module_exists('facetapi')) {
-        // Gets enabled facets, adds filter queries to $params.
-        $adapter = facetapi_adapter_load($searcher);
-        if ($adapter) {
-            $adapter->addActiveFilters($query);
-        }
+function collection_pager_block_submit($form, &$form_state) {
+  $triggering_element = isset($form_state['triggering_element']['#parents'][0]) ? $form_state['triggering_element']['#parents'][0] : NULL;
+  switch ($triggering_element) {
+    case 'go_to_the_page_button':
+      $number = (Integer) ($form_state['input']['result_number'] - 1);
+      break;
+    case 'previous_page_button':
+      $number = $_GET['curr'] - 1;
+      break;
+    case 'next_page_button':
+      $number = $_GET['curr'] + 1;
+      break;
+  }
+  //We should make solr query to find needed nid
+  $params = array();
+  $params['q'] = $_GET['query'];
+  $params['defType'] = 'lucene';
+  $params['spellcheck'] = FALSE;
+  $params['start'] = $number;
+  $params['rows'] = 1;
+  $query = apachesolr_drupal_query('apachesolr', $params);
+  $searcher = $query->getSearcher();
+  if (module_exists('facetapi')) {
+    // Gets enabled facets, adds filter queries to $params.
+    $adapter = facetapi_adapter_load($searcher);
+    if ($adapter) {
+      $adapter->addActiveFilters($query);
     }
-    $keys = $query->getParam('q');
-    $response = $query->search($keys);
-    $nid = $response->response->docs[0]->entity_id;
+  }
+  $keys = $query->getParam('q');
+  $response = $query->search($keys);
+  $nid = $response->response->docs[0]->entity_id;
 
-    //Submit form with needed GET params
-    $options = array('query' => array());
-    $options['query'] ['collection'] = 'true';
-    if (isset($_GET['f'])) {
-        $f = $_GET['f'];
-        $options['query']['f'] = $f;
-    }
-    $options['query']['query'] = $_GET['query'];
-    $options['query']['numFound'] = $_GET['numFound'];
-    $options['query']['curr'] = $number;
-    $path = 'node/' . $nid;
-    $form_state['redirect'] = array(
-        $path, $options, 302
-    );
+  //Submit form with needed GET params
+  $options = array('query' => array());
+  $options['query'] ['collection'] = 'true';
+  if (isset($_GET['f'])) {
+    $f = $_GET['f'];
+    $options['query']['f'] = $f;
+  }
+  $options['query']['query'] = $_GET['query'];
+  $options['query']['numFound'] = $_GET['numFound'];
+
+
+  $options['query']['curr'] = $number;
+  $path = 'node/' . $nid;
+  $form_state['redirect'] = array(
+    $path,
+    $options,
+    302
+  );
 }
 
 /**
@@ -94,14 +123,17 @@ function collection_pager_block_submit($form, &$form_state){
  */
 function collection_pager_block_form_validate($form, &$form_state) {
 
+  $triggering_element = isset($form_state['triggering_element']['#parents'][0]) ? $form_state['triggering_element']['#parents'][0] : NULL;
+  if ($triggering_element == 'go_to_the_page_button') {
     //Check that input information is integer and less than number of results
     $number = $form_state['input']['result_number'];
-    $is_int = !is_int($number) ? (ctype_digit($number)) : true;
-    if($is_int == FALSE){
-        form_set_error('result_number', t('Only numbers can be put there.'));
+    $is_int = !is_int($number) ? (ctype_digit($number)) : TRUE;
+    if ($is_int == FALSE) {
+      form_set_error('result_number', t('Only numbers can be put there.'));
     }
-    $max_number = $_GET['numFound']-1;
-    if($number > $max_number){
-        form_set_error('result_number', t('Please put a correct number. Number should be less than @numFound', array('@numFound' => $max_number)));
+    $max_number = $_GET['numFound'];
+    if ($number > $max_number) {
+      form_set_error('result_number', t('Please put a correct number. Number should be less than @numFound', array('@numFound' => $max_number)));
     }
+  }
 }
