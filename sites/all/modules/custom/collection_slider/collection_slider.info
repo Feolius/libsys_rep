@@ -1,6 +1,0 @@
-name = Collection Slider
-description = "Provide slider arrows for collection node page"
-package = Facet Collection
-core = 7.x
-dependencies[] = facet_collection
-

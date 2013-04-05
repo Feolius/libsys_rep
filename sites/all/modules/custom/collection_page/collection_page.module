@@ -13,14 +13,14 @@
 function collection_page_menu() {
   $items = array();
   $items['timeline-json'] = array(
-      'access callback' => TRUE,
-      'page callback' => 'collection_page_timeline_json_callback',
-      'type' => MENU_CALLBACK,
+    'access callback' => TRUE,
+    'page callback' => 'collection_page_timeline_json_callback',
+    'type' => MENU_CALLBACK,
   );
   $items['timeline-iframe'] = array(
-      'access callback' => TRUE,
-      'page callback' => 'collection_page_timeline_frame_callback',
-      'type' => MENU_CALLBACK,
+    'access callback' => TRUE,
+    'page callback' => 'collection_page_timeline_frame_callback',
+    'type' => MENU_CALLBACK,
   );
   return $items;
 }
@@ -30,34 +30,34 @@ function collection_page_menu() {
  */
 function collection_page_theme() {
   return array(
-      'facet_collection_search_results__alter' => array(
-          'variables' => array('results' => NULL),
+    'facet_collection_search_results__alter' => array(
+      'variables' => array('results' => NULL),
+    ),
+    'collection_page' => array(
+      'template' => 'theme/collection-page',
+      'variables' => array('content' => NULL, 'default_url' => NULL, 'thumbnail_url' => NULL)
+    ),
+    'timeline_json' => array(
+      'template' => 'theme/timeline-json-page',
+      'arguments' => array(
+        'options' => NULL,
       ),
-      'collection_page' => array(
-          'template' => 'theme/collection-page',
-          'variables' => array('content' => NULL, 'default_url' => NULL, 'thumbnail_url' => NULL)
-      ),
-      'timeline_json' => array(
-          'template' => 'theme/timeline-json-page',
-          'arguments' => array(
-              'options' => NULL,
-          ),
-      ),
-      'timeline_iframe' => array(
-          'template' => 'theme/timeline-iframe-page',
-      ),
-      'collection_standard_thumbnail_view' => array(
-          'template' => 'theme/collection-standard-thumbnail-view',
-          'variables' => array('results' => NULL)
-      ),
-      'collection_search_results' => array(
-          'template' => 'theme/collection-search-results',
-          'variables' => array('results' => NULL, 'bundle_machine_name' => NULL)
-      ),
-      'collection_standard_default_view' => array(
-          'template' => 'theme/collection-standard-default-view',
-          'variables' => array('results' => NULL)
-      )
+    ),
+    'timeline_iframe' => array(
+      'template' => 'theme/timeline-iframe-page',
+    ),
+    'collection_standard_thumbnail_view' => array(
+      'template' => 'theme/collection-standard-thumbnail-view',
+      'variables' => array('results' => NULL)
+    ),
+    'collection_search_results' => array(
+      'template' => 'theme/collection-search-results',
+      'variables' => array('results' => NULL, 'bundle_machine_name' => NULL)
+    ),
+    'collection_standard_default_view' => array(
+      'template' => 'theme/collection-standard-default-view',
+      'variables' => array('results' => NULL)
+    )
   );
 }
 
@@ -87,28 +87,29 @@ function theme_facet_collection_search_results__alter($variables) {
   if (isset($_GET['view']) && $_GET['view'] == 'thumb') {
     $rendered_results = theme('collection_standard_thumbnail_view', array('results' => $results));
     $standard_view_type_label = 'Thumbnail';
-  } else {
+  }
+  else {
     $rendered_results = theme('collection_standard_default_view', array('results' => $variables['results']));
     $standard_view_type_label = 'Default';
   }
   $options = array(
-      'query' => array_diff_key($_GET, array('q' => 1, 'view' => 1)),
+    'query' => array_diff_key($_GET, array('q' => 1, 'view' => 1)),
   );
 
   $standard_view_content = array(
-      '#id' => 'standard-view',
-      '#title' => 'Standard View (<span class="standard-view-type-title" id="standard-view-tab-button-type-title">' . $standard_view_type_label . '</span>)',
-      '#content' => array(
-          '#view' => $rendered_results,
-      ),
+    '#id' => 'standard-view',
+    '#title' => 'Standard View (<span class="standard-view-type-title" id="standard-view-tab-button-type-title">' . $standard_view_type_label . '</span>)',
+    '#content' => array(
+      '#view' => $rendered_results,
+    ),
   );
   $timeline_view_content = array(
-      '#id' => 'timeline-view',
-      '#title' => t('Timeline View'),
-      '#content' => array(
-          '#view' => theme('timeline_iframe'),
-          '#pager' => theme('pager', array('tags' => NULL)),
-      ),
+    '#id' => 'timeline-view',
+    '#title' => t('Timeline View'),
+    '#content' => array(
+      '#view' => theme('timeline_iframe'),
+      '#pager' => theme('pager', array('tags' => NULL)),
+    ),
   );
 
   $node_ids = '';
@@ -126,7 +127,8 @@ function theme_facet_collection_search_results__alter($variables) {
           }
         }
       }
-    } elseif ($node->type == 'location') {
+    }
+    elseif ($node->type == 'location') {
       //Collect NIDs of nodes for bundle Location
       $node_ids = implode(',', array($node_ids, $result['node']->entity_id));
     }
@@ -134,18 +136,18 @@ function theme_facet_collection_search_results__alter($variables) {
   $node_ids = substr($node_ids, 1);
   //Build location view using special view with openlayers map
   $location_view_content = array(
-      '#id' => 'location-view',
-      '#title' => t('Location View'),
-      '#content' => array(
-          '#view' => views_embed_view('location_view', 'map', $node_ids),
-          '#pager' => theme('pager', array('tags' => NULL)),
-      ),
+    '#id' => 'location-view',
+    '#title' => t('Location View'),
+    '#content' => array(
+      '#view' => views_embed_view('location_view', 'map', $node_ids),
+      '#pager' => theme('pager', array('tags' => NULL)),
+    ),
   );
   //Define the views.
   $content = array(
-      '#standard' => $standard_view_content,
-      '#timeline' => $timeline_view_content,
-      '#location' => $location_view_content,
+    '#standard' => $standard_view_content,
+    '#timeline' => $timeline_view_content,
+    '#location' => $location_view_content,
   );
   //Include on page supports files for building tabs and inserting into them needed views
   //like timeline, default or location views
@@ -194,10 +196,10 @@ function theme_facet_collection_search_results__alter($variables) {
   $thumbnail_standard_view_url = url(arg(0), $options);
 
   return theme('collection_page', array(
-              'content' => $content,
-              'default_url' => $default_standard_view_url,
-              'thumbnail_url' => $thumbnail_standard_view_url
-          ));
+    'content' => $content,
+    'default_url' => $default_standard_view_url,
+    'thumbnail_url' => $thumbnail_standard_view_url
+  ));
 }
 
 /**
@@ -241,7 +243,8 @@ function collection_page_timeline_json_callback() {
             $styles = image_styles();
             if (in_array($style, array_keys($styles))) {
               $image_path = image_style_url($style, $uri);
-            } else {
+            }
+            else {
               $image_path = file_create_url($uri);
             }
             break;
@@ -260,7 +263,8 @@ function collection_page_timeline_json_callback() {
         //If the node have more then one date fields, the earliest one would be chosen.
         if (isset($timeline_item->startDate)) {
           $timeline_item->startDate = (strtotime($timeline_item->startDate) > strtotime($item_date)) ? $item_date : $timeline_item->startDate;
-        } else {
+        }
+        else {
           $timeline_item->startDate = $item_date;
         }
       }
@@ -268,11 +272,11 @@ function collection_page_timeline_json_callback() {
 
     $timeline_item->headline = $result['title'];
     $timeline_item->text = l('read more', $GLOBALS['base_url'] . $result['link'], array(
-        'attributes' => array(
-            'target' => '_parent',
-            'class' => 'active'
-        )
-            ));
+      'attributes' => array(
+        'target' => '_parent',
+        'class' => 'active'
+      )
+    ));
     $timeline_item->asset = $asset;
     $date[] = $timeline_item;
   }
@@ -402,7 +406,8 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
           }
         }
       }
-    } elseif (isset($thumbnail_fields[$bundle])) {
+    }
+    elseif (isset($thumbnail_fields[$bundle])) {
       $items = field_get_items('node', $node, $thumbnail_fields[$bundle]['field_name']);
       if (!empty($items)) {
         $image_uri = $items[0]['uri'];
@@ -439,9 +444,9 @@ function template_preprocess_collection_standard_default_view(&$variables) {
   $bundle_name = $bundle_list[$bundle]->name;
   $variables['bundle'] = $bundle_name;
   $variables['results'] = theme('collection_search_results', array(
-      'results' => $results,
-      'bundle_machine_name' => $bundle
-          ));
+    'results' => $results,
+    'bundle_machine_name' => $bundle
+  ));
 }
 
 /**
@@ -456,4 +461,29 @@ function template_preprocess_collection_search_results(&$variables) {
     $variables['search_results'] .= theme('search_result', array('result' => $result, 'module' => 'collection_page'));
   }
   $variables['pager'] = theme('pager', array('tags' => NULL));
+}
+
+function collection_page_preprocess_breadcrumb(&$variables) {
+  if (arg(0) == 'node'
+    && is_numeric(arg(1))
+    && (isset($_GET['collection']) && $_GET['collection'] == 'true')
+    && isset($_GET['curr'])
+  ) {
+
+    //Build link at library page
+    $library_get_options = $_GET;
+    unset($library_get_options['query']);
+    unset($library_get_options['numFound']);
+    unset($library_get_options['curr']);
+    unset($library_get_options['collection']);
+    unset($library_get_options['q']);
+
+    if ($_GET['query'] != '*:*') {
+      $back_to_library_html = l('Library', 'library/' . $_GET['query'], array('query' => $library_get_options));
+    }
+    else {
+      $back_to_library_html = l('Library', 'library', array('query' => $library_get_options));
+    }
+    $variables['breadcrumb'][1] = $back_to_library_html;
+  }
 }
