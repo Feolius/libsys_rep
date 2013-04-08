@@ -408,6 +408,8 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
   if (module_exists('content_profile') && is_content_profile($type)) {
     unset($form['#redirect']);
   }*/
+  $bundle = $entity->type;
+  $steps_settings = drupal_json_decode(variable_get('multistep_adl_steps_settings', '{}'));
   $step = multistep_adl_get_step($entity);
   $form['#multistep_adl'] = array(
     'previous' => multistep_adl_get_previous($entity, $step),
@@ -415,7 +417,10 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
     'next' => multistep_adl_get_next($entity, $step),
   );
   // This adds different submitting buttons (Previous, Save, Next, Done).
-  if ($step != multistep_adl_get_first($entity)) {
+  if ($step != multistep_adl_get_first($entity)
+    && (!isset($steps_settings[$bundle]['determining_field'])
+      || multistep_adl_get_step($entity) != $steps_settings[$bundle]['determining_field'])
+  ) {
     $form['actions']['previous'] = array(
       '#type' => 'submit',
       '#value' => variable_get('multistep_adl_button_prev', t('< Previous')),
@@ -431,7 +436,9 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
     '#weight' => 0,
     '#access' => variable_get('multistep_adl_button_save', TRUE),
   );
-  if ($step != multistep_adl_get_last($entity)) {
+  if ($step != multistep_adl_get_last($entity) && (!isset($steps_settings[$bundle]['determining_field'])
+    || multistep_adl_get_step($entity) == multistep_adl_get_first($entity))
+  ) {
     $form['actions']['next'] = array(
       '#type' => 'submit',
       '#value' => variable_get('multistep_adl_button_next', t('Next >')),
