@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the Files Field Groups feature.
- */
-
-include_once 'files_field_groups.features.inc';

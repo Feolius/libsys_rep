@@ -1,0 +1,16 @@
+name = Features CT Article
+description = features_library_ct_article
+core = 7.x
+package = Content types
+php = 5.2.4
+version = 7.x-1.0
+project = features_library_ct_article
+dependencies[] = features
+dependencies[] = image
+dependencies[] = library_taxonomy
+dependencies[] = taxonomy
+features[features_api][] = api:1
+features[field][] = node-article-body
+features[field][] = node-article-field_image
+features[field][] = node-article-field_tags
+features[node][] = article

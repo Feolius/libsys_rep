@@ -1,13 +1,13 @@
 <?php
 /**
  * @file
- * files_field_groups.field_group.inc
+ * features_library_ct_files.field_group.inc
  */
 
 /**
  * Implements hook_field_group_info().
  */
-function files_field_groups_field_group_info() {
+function features_library_ct_files_field_group_info() {
   $export = array();
 
   $field_group = new stdClass();
@@ -23,10 +23,13 @@ function files_field_groups_field_group_info() {
     'label' => 'Audio',
     'weight' => '5',
     'children' => array(
-      0 => 'field_files_id3_tags_metadata',
-      1 => 'field_files_audio',
+      0 => 'field_files_audio',
+      1 => 'field_files_artist',
+      2 => 'field_files_topics',
+      3 => 'field_files_album_poster',
+      4 => 'field_files_year',
     ),
-    'format_type' => 'multistep_adl',
+    'format_type' => 'div',
     'format_settings' => array(
       'formatter' => '',
     ),
@@ -44,7 +47,7 @@ function files_field_groups_field_group_info() {
   $field_group->parent_name = 'group_files_text';
   $field_group->data = array(
     'label' => 'Additional info',
-    'weight' => '2',
+    'weight' => '3',
     'children' => array(
       0 => 'field_files_author_location',
       1 => 'field_files_category',
@@ -63,11 +66,16 @@ function files_field_groups_field_group_info() {
       14 => 'field_files_receiver_location',
       15 => 'field_files_subtitle',
       16 => 'field_files_typewritten',
-      17 => 'field_files_text2',
     ),
-    'format_type' => 'multistep_adl',
+    'format_type' => 'fieldset',
     'format_settings' => array(
-      'formatter' => '',
+      'label' => 'Additional info',
+      'instance_settings' => array(
+        'required_fields' => 0,
+        'classes' => '',
+        'description' => '',
+      ),
+      'formatter' => 'collapsed',
     ),
   );
   $export['group_files_additional_info|node|files|form'] = $field_group;
@@ -91,7 +99,7 @@ function files_field_groups_field_group_info() {
       3 => 'field_files_image_date',
       4 => 'field_fields_photographer',
     ),
-    'format_type' => 'multistep_adl',
+    'format_type' => 'div',
     'format_settings' => array(
       'formatter' => '',
       'instance_settings' => NULL,
@@ -116,9 +124,8 @@ function files_field_groups_field_group_info() {
       1 => 'field_files_file_type',
       2 => 'field_files_images',
       3 => 'field_files_rating',
-      4 => 'path',
     ),
-    'format_type' => 'multistep_adl',
+    'format_type' => 'div',
     'format_settings' => array(
       'formatter' => '',
       'instance_settings' => NULL,
@@ -137,7 +144,7 @@ function files_field_groups_field_group_info() {
   $field_group->parent_name = 'group_files_text';
   $field_group->data = array(
     'label' => 'Source',
-    'weight' => '3',
+    'weight' => '4',
     'children' => array(
       0 => 'field_files_source_chapter',
       1 => 'field_files_source_number',
@@ -145,9 +152,15 @@ function files_field_groups_field_group_info() {
       3 => 'field_files_source_title',
       4 => 'field_files_source_volume',
     ),
-    'format_type' => 'multistep_adl',
+    'format_type' => 'fieldset',
     'format_settings' => array(
-      'formatter' => '',
+      'label' => 'Source',
+      'instance_settings' => array(
+        'required_fields' => 0,
+        'classes' => '',
+        'description' => '',
+      ),
+      'formatter' => 'collapsed',
     ),
   );
   $export['group_files_source|node|files|form'] = $field_group;
@@ -169,7 +182,7 @@ function files_field_groups_field_group_info() {
       1 => 'field_files_primary_media',
       2 => 'title',
     ),
-    'format_type' => 'multistep_adl',
+    'format_type' => 'div',
     'format_settings' => array(
       'formatter' => '',
       'instance_settings' => NULL,
@@ -192,10 +205,11 @@ function files_field_groups_field_group_info() {
     'children' => array(
       0 => 'field_files_author',
       1 => 'field_files_file',
-      2 => 'group_files_additional_info',
-      3 => 'group_files_source',
+      2 => 'field_files_text',
+      3 => 'group_files_additional_info',
+      4 => 'group_files_source',
     ),
-    'format_type' => 'multistep_adl',
+    'format_type' => 'div',
     'format_settings' => array(
       'formatter' => '',
       'instance_settings' => NULL,
@@ -218,7 +232,7 @@ function files_field_groups_field_group_info() {
     'children' => array(
       0 => 'field_files_youtube_media',
     ),
-    'format_type' => 'multistep_adl',
+    'format_type' => 'div',
     'format_settings' => array(
       'formatter' => '',
       'instance_settings' => NULL,

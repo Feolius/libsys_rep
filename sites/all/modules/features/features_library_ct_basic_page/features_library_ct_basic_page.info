@@ -1,0 +1,13 @@
+name = Features CT Basic Page
+description = features_library_ct_basic_page
+core = 7.x
+package = Content types
+version = 7.x-1.0
+project = features_library_ct_basic_page
+dependencies[] = features
+dependencies[] = field_sql_storage
+dependencies[] = node
+dependencies[] = text
+features[features_api][] = api:1
+features[field][] = node-page-body
+features[node][] = page

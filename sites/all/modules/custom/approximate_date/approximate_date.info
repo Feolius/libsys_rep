@@ -1,0 +1,4 @@
+name = Approximate date
+description = Provide a field to display approximate date for some events
+package = Date/Time
+core = 7.x
