@@ -34,8 +34,8 @@ function collection_pager_block_form($form, &$form_state) {
   $form = array(
     'previous_page_button' => array(
       '#type' => 'submit',
-     // '#value' => t('Previous'),
       '#disabled' => $previous_button_disabled,
+      '#name' => 'previous_page_button',
       '#submit' => array('collection_pager_block_submit'),
     ),
     'progress_label' => array(
@@ -44,8 +44,8 @@ function collection_pager_block_form($form, &$form_state) {
     ),
     'next_page_button' => array(
       '#type' => 'submit',
-    //  '#value' => t('Next'),
       '#disabled' => $next_button_disabled,
+      '#name' => 'next_page_button',
       '#submit' => array('collection_pager_block_submit'),
     ),
     'result_number' => array(
@@ -56,6 +56,7 @@ function collection_pager_block_form($form, &$form_state) {
     'go_to_the_page_button' => array(
       '#type' => 'submit',
       '#value' => t('Go!'),
+      '#name' => 'go_to_the_page_button',
       '#submit' => array('collection_pager_block_submit'),
     ),
   );
@@ -66,7 +67,7 @@ function collection_pager_block_form($form, &$form_state) {
  * Submit callback for collection pager form
  */
 function collection_pager_block_submit($form, &$form_state) {
-  $triggering_element = isset($form_state['triggering_element']['#parents'][0]) ? $form_state['triggering_element']['#parents'][0] : NULL;
+  $triggering_element = isset($form_state['triggering_element']['#name']) ? $form_state['triggering_element']['#name'] : NULL;
   switch ($triggering_element) {
     case 'go_to_the_page_button':
       $number = (Integer) ($form_state['input']['result_number'] - 1);
@@ -78,6 +79,7 @@ function collection_pager_block_submit($form, &$form_state) {
       $number = $_GET['curr'] + 1;
       break;
   }
+
   //We should make solr query to find needed nid
   $params = array();
   $params['q'] = $_GET['query'];
@@ -107,7 +109,6 @@ function collection_pager_block_submit($form, &$form_state) {
   }
   $options['query']['query'] = $_GET['query'];
   $options['query']['numFound'] = $_GET['numFound'];
-
 
   $options['query']['curr'] = $number;
   $path = 'node/' . $nid;

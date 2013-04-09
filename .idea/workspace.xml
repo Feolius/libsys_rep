@@ -2,11 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dd5d7f11-d9f0-40a7-bb9a-2abfab543ed8" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/collection_pager_block.module" afterPath="$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/collection_pager_block.module" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="libsys_rep.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="dd5d7f11-d9f0-40a7-bb9a-2abfab543ed8" time="1365146767768" ignored="false" />
+    <file path="/Dummy.txt" changelist="dd5d7f11-d9f0-40a7-bb9a-2abfab543ed8" time="1365521794838" ignored="false" />
+    <file path="/collection_pager_block.module" changelist="dd5d7f11-d9f0-40a7-bb9a-2abfab543ed8" time="1365531112409" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,8 +28,35 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="collection_pager_block.module" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="collection_pager_block.module" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/collection_pager_block.module">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="52" column="47" selection-start="1584" selection-end="1584" vertical-scroll-proportion="0.30337077">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="collection_pager_block.module" pinned="false" current="false" current-in-tab="false">
+        <entry file="file:///private/var/folders/c0/2glx7m8j02587dh_5xjlldnh0000gn/T/fz3temp-1/collection_pager_block.module">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="69" column="32" selection-start="2070" selection-end="2070" vertical-scroll-proportion="-33.25">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="collection-pager-block-buttons.css" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/css/collection-pager-block-buttons.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="27" column="0" selection-start="638" selection-end="638" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="collection_pager_block.info" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/collection_pager_block.info">
           <provider selected="true" editor-type-id="text-editor">
             <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
@@ -35,16 +64,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="collection_page.module" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="collection_page.module" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_page/collection_page.module">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="295" column="45" selection-start="10307" selection-end="10307" vertical-scroll-proportion="0.19572954">
+            <state line="295" column="45" selection-start="10307" selection-end="10307" vertical-scroll-proportion="-73.125">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FindManager">
+    <FindUsagesManager>
+      <setting name="OPEN_NEW_TAB" value="false" />
+    </FindUsagesManager>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -59,15 +93,17 @@
       <list>
         <option value="$PROJECT_DIR$/sites/all/modules/contrib/entityreference/entityreference.migrate.inc" />
         <option value="$PROJECT_DIR$/sites/all/modules/custom/collection_page/collection_page.module" />
+        <option value="/private/var/folders/c0/2glx7m8j02587dh_5xjlldnh0000gn/T/fz3temp-1/collection_pager_block.module" />
+        <option value="$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/collection_pager_block.module" />
       </list>
     </option>
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="69" />
+    <option name="x" value="83" />
     <option name="y" value="22" />
-    <option name="width" value="1620" />
-    <option name="height" value="1028" />
+    <option name="width" value="2477" />
+    <option name="height" value="1418" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -95,7 +131,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -220,12 +255,47 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="collection_page" />
+              <option name="myItemId" value="collection_pager_block" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="libsys_rep" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="libsys_rep" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sites" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="all" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="custom" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="collection_pager_block" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="css" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -234,8 +304,8 @@
     <property name="options.lastSelected" value="preferences.keymap" />
     <property name="last_opened_file_path" value="C:/xampp/htdocs/drupal7" />
     <property name="FullScreen" value="false" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -255,14 +325,14 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="69" y="22" width="1620" height="1028" extended-state="0" />
+    <frame x="83" y="22" width="2477" height="1418" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2642948" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.26655698" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -338,6 +408,13 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_page/collection_page.module">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="295" column="45" selection-start="10307" selection-end="10307" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/collection_pager_block.module">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -394,13 +471,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/collection_pager_block.module">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/sites/default/settings.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="205" column="17" selection-start="7320" selection-end="7320" vertical-scroll-proportion="0.3446191" />
@@ -413,7 +483,35 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_page/collection_page.module">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="295" column="45" selection-start="10307" selection-end="10307" vertical-scroll-proportion="0.19572954">
+        <state line="295" column="45" selection-start="10307" selection-end="10307" vertical-scroll-proportion="-73.125">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/css/collection-pager-block-buttons.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="27" column="0" selection-start="638" selection-end="638" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/collection_pager_block.info">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///private/var/folders/c0/2glx7m8j02587dh_5xjlldnh0000gn/T/fz3temp-1/collection_pager_block.module">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="69" column="32" selection-start="2070" selection-end="2070" vertical-scroll-proportion="-33.25">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sites/all/modules/custom/collection_pager_block/collection_pager_block.module">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="52" column="47" selection-start="1584" selection-end="1584" vertical-scroll-proportion="0.30337077">
           <folding />
         </state>
       </provider>
