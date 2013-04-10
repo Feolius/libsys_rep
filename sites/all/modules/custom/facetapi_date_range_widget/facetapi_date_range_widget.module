@@ -5,13 +5,13 @@
  */
 function facetapi_date_range_widget_facetapi_widgets() {
   return array(
-      'facetapi_date_range_widget' => array(
-          'handler' => array(
-              'label' => t('Date Range'),
-              'class' => 'FacetapiWidgetDateRange',
-              'query types' => array('term', 'date'),
-          ),
+    'facetapi_date_range_widget' => array(
+      'handler' => array(
+        'label' => t('Date Range'),
+        'class' => 'FacetapiWidgetDateRange',
+        'query types' => array('term', 'date'),
       ),
+    ),
   );
 }
 
@@ -28,7 +28,7 @@ function facetapi_date_range_widget_forms($form_id, $args) {
   foreach ($enabled_facets as $enabled_facet) {
     if (in_array('date', $enabled_facet['query types'])) {
       $forms['facetapi_date_range_widget_' . $enabled_facet['name'] . '_form'] = array(
-          'callback' => 'facetapi_date_range_widget_filter_form',
+        'callback' => 'facetapi_date_range_widget_filter_form',
       );
     }
   }
@@ -99,17 +99,21 @@ function facetapi_date_range_widget_filter_submit($form, &$form_state) {
     if ($merge) {
       $f = array_merge($f, array($request));
     }
-  }else
+  }
+  else {
     $f = array($request);
+  }
   $options = array(
-      'query' => array(
-          'f' => $f,
-          'min_' . $facet_name => $min_date,
-          'max_' . $facet_name => $max_date,
-      ),
+    'query' => array(
+      'f' => $f,
+      'min_' . $facet_name => $min_date,
+      'max_' . $facet_name => $max_date,
+    ),
   );
   $form_state['redirect'] = array(
-      $basic_path, $options, 302
+    $basic_path,
+    $options,
+    302
   );
 }
 
@@ -134,14 +138,16 @@ function facetapi_date_range_widget_reset_submit($form, &$form_state) {
 
     if (!empty($f)) {
       $options = array(
-          'query' => array(
-              'f' => $f,
-          ),
+        'query' => array(
+          'f' => $f,
+        ),
       );
     }
   }
   $form_state['redirect'] = array(
-      $basic_path, $options, 302
+    $basic_path,
+    $options,
+    302
   );
 }
 
@@ -161,7 +167,8 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
   if (empty($_GET['min_' . $facet_name])) {
     $min_date = $args['min date'];
     $max_date = $args['max date'];
-  } else {
+  }
+  else {
     $min_date = $_GET['min_' . $facet_name];
     $max_date = $_GET['max_' . $facet_name];
   }
@@ -172,11 +179,12 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
   $form_id = strtr(drupal_strtolower($form_id), array(' ' => '-', '_' => '-', '[' => '-', ']' => ''));
   $form_id = preg_replace('/[^A-Za-z0-9\-_]/', '', $form_id);
   $form_id = preg_replace('/\-+/', '-', $form_id);
-  $seen_ids = &drupal_static('drupal_html_id');
+  $seen_ids = & drupal_static('drupal_html_id');
   if (isset($seen_ids[$form_id])) {
     $seen_id = $seen_ids[$form_id] + 1;
     $form_id = $form_id . '--' . $seen_id;
-  } else {
+  }
+  else {
     $seen_id = 1;
   }
   $facet_name = $args['facet name'];
@@ -186,7 +194,8 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
     $max_datepicker_id = 'facetapi-datepicker-max-' . $facet_name;
     $min_date_id = 'facetapi-range-min-' . $facet_name;
     $max_date_id = 'facetapi-range-max-' . $facet_name;
-  } else {
+  }
+  else {
     $slider_id = 'facetapi-slider-' . $facet_name . '-' . $seen_id;
     $min_datepicker_id = 'facetapi-datepicker-min-' . $facet_name . '-' . $seen_id;
     $max_datepicker_id = 'facetapi-datepicker-max-' . $facet_name . '-' . $seen_id;
@@ -194,20 +203,20 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
     $max_date_id = 'facetapi-range-max-' . $facet_name . '-' . $seen_id;
   }
   $settings = array(
-      'forms' => array(
-          $form_id => array(
-              'minValueId' => $min_date_id,
-              'maxValueId' => $max_date_id,
-              'minDatepickerID' => $min_datepicker_id,
-              'maxDatepickerID' => $max_datepicker_id,
-              'leftLimit' => $left_limit,
-              'rightLimit' => $right_limit,
-              'minValue' => $min_date,
-              'maxValue' => $max_date,
-              'sliderID' => $slider_id,
-          ),
+    'forms' => array(
+      $form_id => array(
+        'minValueId' => $min_date_id,
+        'maxValueId' => $max_date_id,
+        'minDatepickerID' => $min_datepicker_id,
+        'maxDatepickerID' => $max_datepicker_id,
+        'leftLimit' => $left_limit,
+        'rightLimit' => $right_limit,
+        'minValue' => $min_date,
+        'maxValue' => $max_date,
+        'sliderID' => $slider_id,
       ),
-      'iconPath' => base_path() . drupal_get_path('module', 'facetapi_date_range_widget') . '/images/calendar.gif',
+    ),
+    'iconPath' => base_path() . drupal_get_path('module', 'facetapi_date_range_widget') . '/images/calendar.gif',
   );
 
   //Add js settings and files
@@ -218,63 +227,62 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
   drupal_add_css(drupal_get_path('module', 'facetapi_date_range_widget') . '/css/facetapi_date_range.css');
 
   $form = array(
-      'title' => array(
-          '#type' => 'item',
-          '#markup' => '<h3>' . $label . '</h3>',
-          '#weight' => -20,
-      ),
-      'min_date_picker' => array(
-          '#type' => 'item',
-          '#markup' => '<input id="' . $min_datepicker_id . '" class="facetapi_datepicker" type="text">',
-          '#weight' => -15,
-          '#description' => t('Left limit'),
-      ),
-      'max_date_picker' => array(
-          '#type' => 'item',
-          '#markup' => '<input id="' . $max_datepicker_id . '" class="facetapi_datepicker" type="text">',
-          '#weight' => -14,
-          '#description' => t('Right limit'),
-      ),
-      'min_date' => array(
-          '#type' => 'textfield',
-          '#size' => 16,
-          '#weight' => -15,
-          '#default_value' => $min_date,
-          '#attributes' => array(
-              'id' => $min_date_id,
-          )
-      ),
-      'max_date' => array(
-          '#type' => 'textfield',
-          '#size' => 16,
-          '#weight' => -14,
-          '#default_value' => $max_date,
-          '#attributes' => array(
-              'id' => $max_date_id,
-          )
-      ),
-      'label' => array(
-          '#type' => 'item',
-          '#markup' => '<div class="desription">' . $format . ' </div>',
-      ),
-      'slider' => array(
-          '#type' => 'item',
-          '#markup' => '<div id="' . $slider_id . '"></div>',
-      ),
-      'filter_button' => array(
-          '#type' => 'submit',
-          '#value' => t('Filter'),
-          '#description' => t('Format:'),
-          '#weight' => 14,
-          '#submit' => array('facetapi_date_range_widget_filter_submit'),
-      ),
-      'reset_button' => array(
-          '#type' => 'submit',
-          '#value' => t('Reset'),
-          '#description' => t('Format:'),
-          '#weight' => 15,
-          '#submit' => array('facetapi_date_range_widget_reset_submit'),
-      ),
+    'title' => array(
+      '#type' => 'item',
+      '#markup' => '<h3>' . $label . '</h3>',
+      '#weight' => -21,
+    ),
+    'min_date_picker' => array(
+      '#type' => 'item',
+      '#markup' => '<input id="' . $min_datepicker_id . '" class="facetapi_datepicker" type="text">',
+      '#weight' => -18,
+      '#description' => t('Left limit'),
+    ),
+    'max_date_picker' => array(
+      '#type' => 'item',
+      '#markup' => '<input id="' . $max_datepicker_id . '" class="facetapi_datepicker" type="text">',
+      '#weight' => -16,
+      '#description' => t('Right limit'),
+    ),
+    'min_date' => array(
+      '#type' => 'textfield',
+      '#size' => 16,
+      '#weight' => -19,
+      '#default_value' => $min_date,
+      '#attributes' => array(
+        'id' => $min_date_id,
+      )
+    ),
+    'max_date' => array(
+      '#type' => 'textfield',
+      '#size' => 16,
+      '#weight' => -17,
+      '#default_value' => $max_date,
+      '#attributes' => array(
+        'id' => $max_date_id,
+      )
+    ),
+    'label' => array(
+      '#type' => 'item',
+      '#markup' => '<div class="desription">' . $format . ' </div>',
+    ),
+    'slider' => array(
+      '#type' => 'item',
+      '#markup' => '<div id="' . $slider_id . '" class="facetapi-daterange-slider"></div>',
+      '#weight' => -20,
+    ),
+    'filter_button' => array(
+      '#type' => 'submit',
+      '#value' => t('Filter'),
+      '#weight' => 14,
+      '#submit' => array('facetapi_date_range_widget_filter_submit'),
+    ),
+    'reset_button' => array(
+      '#type' => 'submit',
+      '#value' => t('Reset'),
+      '#weight' => 15,
+      '#submit' => array('facetapi_date_range_widget_reset_submit'),
+    ),
   );
   return $form;
 }

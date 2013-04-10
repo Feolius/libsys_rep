@@ -54,7 +54,7 @@
           }
         });
         $( "#" + minDatepickerID ).datepicker('setDate', minDateObj);
-        $( "#" + minDatepickerID ).datepicker( "option", "dateFormat", "yy/mm/dd" );
+        $( "#" + minDatepickerID ).datepicker( "option", "dateFormat", "yy/mm/dd" );        
         $( "#" + minValueId ).focusout(function(eventObject){
           var value = eventObject.currentTarget.value;
           value = checkMinDate(value, leftLimit);
