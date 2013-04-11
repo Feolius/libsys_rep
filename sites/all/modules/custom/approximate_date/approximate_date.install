@@ -1,0 +1,28 @@
+<?php
+
+/**
+ * Implements hook_field_schema().
+ */
+function approximate_date_field_schema($field) {
+
+  $columns = array(
+      'value' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'sortable' => TRUE,
+        'views' => TRUE,
+      ),
+      'rounding' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'views' => TRUE,
+      ),
+  );
+
+ // If a second date is needed for 'End date', make a copy of the first one.
+ if (!empty($field['settings']['todate'])) {
+   $columns['value2'] = $columns['value'];
+   $columns['rounding2'] = $columns['rounding'];
+ }
+  return array('columns' => $columns);
+}

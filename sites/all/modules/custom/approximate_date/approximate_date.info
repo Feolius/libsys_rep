@@ -1,4 +1,5 @@
-name = Approximate date
-description = Provide a field to display approximate date for some events
+name = Approximate date field
+description = Provide a field to display approximate date
 package = Date/Time
 core = 7.x
+dependencies[] = date
