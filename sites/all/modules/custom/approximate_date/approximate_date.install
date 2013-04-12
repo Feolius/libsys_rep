@@ -20,7 +20,7 @@ function approximate_date_field_schema($field) {
   );
 
  // If a second date is needed for 'End date', make a copy of the first one.
- if (!empty($field['settings']['todate'])) {
+ if ($field['settings']['enddate_get'] == TRUE) {
    $columns['value2'] = $columns['value'];
    $columns['rounding2'] = $columns['rounding'];
  }
