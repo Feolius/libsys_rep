@@ -33,6 +33,7 @@ class FacetapiWidgetLibraryCheckbox extends FacetapiWidget {
       $element = & $this->build[$this->facet['field alias']];
       $field_name = $facet['field api name'];
       $field_info = field_info_field($field_name);
+      $variants = array();
       switch ($field_info['type']) {
         case 'list_integer':
         case 'list_float':
