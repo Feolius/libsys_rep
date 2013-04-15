@@ -22,7 +22,6 @@ function library_datefield_set_date($item, $processed) {
       $day = '31';
       $month = '12';
     }
-
     if ($rounding == LIBRARY_DATAFIELD_ROUNDING_FOR_YEARS) {
       array_unshift($values, $month, $day);
       $item = implode('/', $values);
