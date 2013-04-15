@@ -45,8 +45,12 @@
       <?php if ($content['right_sidebar']): ?>
         <?php print $content['right_sidebar']; ?>
       <?php endif; ?>
-      <?php if ($content['footer']): ?>
-        <?php print $content['footer']; ?>
+      <?php if (!empty($content['footer'])): ?>
+        <div id="footer-bottom">
+          <div id="footer-bottom-inside">
+            <?php print $content['footer']; ?>
+          </div>
+        </div>
       <?php endif; ?>
     </div>
   </div>

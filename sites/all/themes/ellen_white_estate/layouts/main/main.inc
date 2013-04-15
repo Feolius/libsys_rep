@@ -14,6 +14,6 @@ $plugin = array(
     'header_search_block' => t('Header search block'),
     'content' => t('Content'),
     'right_sidebar' => t('Right sidebar'),
-    'footer' => t('Footer')
+    'footer' => t('Footer'),
   ),
 );
