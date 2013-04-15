@@ -22,6 +22,7 @@ function library_datefield_set_date($item, $processed) {
       $day = '31';
       $month = '12';
     }
+
     if ($rounding == LIBRARY_DATAFIELD_ROUNDING_FOR_YEARS) {
       array_unshift($values, $month, $day);
       $item = implode('/', $values);
@@ -32,7 +33,7 @@ function library_datefield_set_date($item, $processed) {
       $item = implode('/', $values);
     }
 
-    // Creating date;
+    // Creating date.
     $value = date('d/m/y', strtotime($item));
     $date = new DateObject($value);
     $timestamp = date_timestamp_get($date);
