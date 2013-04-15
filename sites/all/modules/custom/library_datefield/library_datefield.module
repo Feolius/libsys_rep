@@ -12,6 +12,7 @@ require_once __DIR__ . '/library_datefield.inc';
  */
 function library_datefield_field_info() {
   $settings = array(
+    'enddate_get' => FALSE,
     'granularity' => drupal_map_assoc(array('year', 'month', 'day')),
     'tz_handling' => 'site',
     'timezone_db' => 'UTC',
@@ -61,13 +62,13 @@ function library_datefield_field_settings_form($field, $instance, $has_data) {
     '#type' => 'checkbox',
     '#title' => t('Collect an end date'),
     '#description' => $description,
-    '#default_value' => FALSE,
+    '#default_value' => (empty($settings['enddate_get']) ? FALSE : TRUE),
     '#disabled' => $has_data,
   );
   $form['enddate_required'] = array(
     '#type' => 'checkbox',
     '#title' => t('Required'),
-    '#default_value' => FALSE,
+    '#default_value' => (empty($settings['enddate_required']) ? FALSE : TRUE),
     '#disabled' => $has_data,
     '#states' => array(
       'invisible' => array(
@@ -103,7 +104,7 @@ function library_datefield_field_presave($entity_type, $entity, $field, $instanc
 
   $field_name = $field['field_name'];
   $settings = $field['settings'];
-  $process = date_process_values($field);
+  $process = library_datefield_process_values($field);
   if ($field['settings']['enddate_get'] == TRUE) {
     $process[] = 'value2';
   }
@@ -257,7 +258,7 @@ function library_datefield_field_widget_info() {
 
   $info = array(
     'library_datefield_text' => array(
-      'label' =>  t('Approximate date widget'),
+      'label' =>  t('Library date field'),
       'field types' => array('library_datefield'),
     ) + $settings,
   );
@@ -272,6 +273,13 @@ function library_datefield_field_widget_info() {
  */
 function library_datefield_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $item, $delta, $element) {
   $process = library_datefield_process_values($field);
+
+  if (sizeof($process) == 2 && $field['settings']['enddate_get']) {
+    $element['show_end_date'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Show End Date'),
+    );
+  }
 
   foreach ($process as $processed) {
 
@@ -334,7 +342,6 @@ function library_datefield_field_widget_settings_form($field, $instance) {
     'instance' => $instance,
   );
   drupal_alter('date_field_widget_settings_form', $form, $context);
-
   return $form;
 }
 
@@ -355,9 +362,10 @@ function library_datefield_field_formatter_info() {
  */
 function library_datefield_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
+  $process = library_datefield_process_values($field);
   foreach ($items as $delta => $item) {
-    $output = !empty($item['value']) ? $item['value'] : $item['value'];
-    if (!empty($item['value2'])) {
+    $output = !empty($item['value']) ? $item['value'] : '';
+    if (sizeof($process) == 2) {
       $output .= " - {$item['value2']}";
     }
     $element[$delta] = array('#markup' => $output);

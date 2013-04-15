@@ -241,7 +241,7 @@ function date_default_value_part($item, $field, $instance, $langcode, $part = 'v
  * Process an individual date element.
  */
 function date_combo_element_process($element, &$form_state, $form) {
-    
+
   if (date_hidden_element($element)) {
     // A hidden value for a new entity that had its end date set to blank
     // will not get processed later to populate the end date, so set it here.
