@@ -18,7 +18,7 @@
       <?php if (!empty($content['header_left']) || !empty($content['header_right'])): ?>
       <div id="header">
         <div id="header-inside">
-          <?php if (!empty($content['header_left']))  : ?>
+          <?php if (!empty($content['header_left'])): ?>
             <div id="header-inside-left">
               <?php print $content['header_left']; ?>
             </div>
