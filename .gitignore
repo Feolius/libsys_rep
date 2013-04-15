@@ -29,3 +29,4 @@ sites/all/themes/README.txt
 
 # Ignore phpStorm project folder and files
 .idea/
+.idea/workspace.xml
