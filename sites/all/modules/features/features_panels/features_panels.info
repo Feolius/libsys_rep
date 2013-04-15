@@ -1,0 +1,13 @@
+name = Features Panels
+core = 7.x
+package = Features
+php = 5.2.4
+version = 7.x-1.0
+project = features_panels
+dependencies[] = ctools
+dependencies[] = page_manager
+features[ctools][] = page_manager:pages_default:1
+features[features_api][] = api:1
+features[page_manager_handlers][] = node_view_panel_context
+features[page_manager_handlers][] = search_apachesolr_search_panel_context
+features[page_manager_handlers][] = site_template_panel_context
