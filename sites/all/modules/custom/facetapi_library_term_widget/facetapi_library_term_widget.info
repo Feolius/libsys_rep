@@ -1,0 +1,6 @@
+name = Library Term Widget
+description = "Provides facetapi widget for terms with combobox"
+package = Search Toolkit
+core = 7.x
+dependencies[] = facetapi
+files[] = plugins/facetapi/widget_library_term.inc
