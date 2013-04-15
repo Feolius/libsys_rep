@@ -1,0 +1,5 @@
+name = Library date field
+description = Provide a field to display library date field
+package = Date/Time
+core = 7.x
+dependencies[] = date

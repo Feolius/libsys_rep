@@ -99,7 +99,7 @@ save_memory_usage('load core theme cache', $usage);
 $path = $_coder_upgrade_modules_base . '/coder/coder_upgrade';
 $files = array(
   'coder_upgrade.inc',
-  'includes/main.inc',
+  'includes/page_node.inc',
   'includes/utility.inc',
 );
 foreach ($files as $file) {

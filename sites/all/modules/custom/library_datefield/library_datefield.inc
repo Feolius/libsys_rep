@@ -1,0 +1,99 @@
+<?php
+
+define('LIBRARY_DATAFIELD_ROUNDING_FOR_YEARS', 1);
+define('LIBRARY_DATAFIELD_ROUNDING_FOR_MONTH', 2);
+define('LIBRARY_DATAFIELD_NO_ROUNDING', 3);
+
+/**
+ * Function for set date.
+ */
+function library_datefield_set_date($item, $processed) {
+  if (empty($item)) {
+    return;
+  }
+  else {
+    $values = explode('/', $item);
+    $rounding = sizeof($values);
+
+    if ($processed == 'value') {
+      $day = '01';
+      $month = '01';
+    } else {
+      $day = '31';
+      $month = '12';
+    }
+
+    if ($rounding == LIBRARY_DATAFIELD_ROUNDING_FOR_YEARS) {
+      array_unshift($values, $month, $day);
+      $item = implode('/', $values);
+    }
+    elseif ($rounding == LIBRARY_DATAFIELD_ROUNDING_FOR_MONTH) {
+      $day = (string) cal_days_in_month(CAL_GREGORIAN, $values[0], $values[1]);
+      array_unshift($values, $day);
+      $item = implode('/', $values);
+    }
+
+    // Creating date;
+    $value = date('d/m/y', strtotime($item));
+    $date = new DateObject($value);
+    $timestamp = date_timestamp_get($date);
+    $output = array(
+      'date' => $timestamp,
+      'rounding' => $rounding,
+    );
+    return $output;
+  }
+}
+
+/**
+ * Function for set date.
+ */
+function library_datefield_get_date($item, $processed) {
+  if (empty($item)) {
+    return;
+  }
+  else {
+    $rounding = ($processed == 'value') ? 'rounding' : 'rounding2' ;
+    if ($item[$rounding] == LIBRARY_DATAFIELD_ROUNDING_FOR_MONTH) {
+      $output = date("F Y", $item[$processed]);
+    }
+    elseif ($item[$rounding] == LIBRARY_DATAFIELD_ROUNDING_FOR_YEARS) {
+      $output = date("Y", $item[$processed]);
+    }
+    else {
+      $output = date("d F Y", $item[$processed]);
+    }
+    return $output;
+  }
+}
+
+/**
+ * Function for return approximate date.
+ */
+function library_datefield_return_date($item, $processed) {
+  if (empty($item)) {
+    return;
+  }
+  else {
+    $rounding = ($processed == 'value') ? 'rounding' : 'rounding2' ;
+    $month = ($processed == 'value') ? '01' : '12';
+    if ($item[$rounding] == LIBRARY_DATAFIELD_ROUNDING_FOR_MONTH) {
+      $output = date("m/Y", strtotime($month . $item[$processed]));
+    }
+    elseif($item[$rounding] == LIBRARY_DATAFIELD_ROUNDING_FOR_YEARS) {
+      $output = $item[$processed];
+    }
+    else {
+      $output = date("d/m/Y", (int) $item[$processed]);
+    }
+    return $output;
+  }
+}
+
+/**
+ * Helper function to create an array of the approximate date values in a
+ * field that need to be processed.
+ */
+function library_datefield_process_values($field) {
+  return $field['settings']['enddate_get'] ? array('value', 'value2') : array('value');
+}

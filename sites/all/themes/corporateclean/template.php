@@ -79,17 +79,6 @@ function corporateclean_process_html(&$vars) {
 
 }
 
-/**
- * Override or insert variables into the page template.
- */
-function corporateclean_process_page(&$variables) {
-  // Hook into color.module.
-  if (module_exists('color')) {
-    _color_page_alter($variables);
-  }
- 
-}
-
 function corporateclean_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'search_block_form') {
   

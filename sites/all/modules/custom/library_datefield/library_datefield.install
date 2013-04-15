@@ -3,7 +3,7 @@
 /**
  * Implements hook_field_schema().
  */
-function approximate_date_field_schema($field) {
+function library_datefield_field_schema($field) {
 
   $columns = array(
       'value' => array(

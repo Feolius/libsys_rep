@@ -895,7 +895,7 @@ function drupal_find_base_themes($themes, $key, $used_keys = array()) {
  * structure that follows the template naming structure used by the theme's
  * rendering engine (for example, since the Bartik theme uses the PHPTemplate
  * rendering engine, it overrides the default implementation of the 'page' theme
- * hook by containing a 'page.tpl.php' file within its folder structure).
+ * hook by containing a 'page.php' file within its folder structure).
  *
  * If the implementation is a template file, several functions are called
  * before the template file is invoked, to modify the $variables array. These
@@ -2513,10 +2513,10 @@ function template_preprocess_html(&$variables) {
 }
 
 /**
- * Preprocess variables for page.tpl.php
+ * Preprocess variables for page.php
  *
- * Most themes utilize their own copy of page.tpl.php. The default is located
- * inside "modules/system/page.tpl.php". Look in there for the full list of
+ * Most themes utilize their own copy of page.php. The default is located
+ * inside "modules/system/page.php". Look in there for the full list of
  * variables.
  *
  * Uses the arg() function to generate a series of page template suggestions
@@ -2527,7 +2527,7 @@ function template_preprocess_html(&$variables) {
  *
  * @see drupal_render_page()
  * @see template_process_page()
- * @see page.tpl.php
+ * @see page.php
  */
 function template_preprocess_page(&$variables) {
   // Move some variables to the top level for themer convenience and template cleanliness.
@@ -2572,13 +2572,13 @@ function template_preprocess_page(&$variables) {
 }
 
 /**
- * Process variables for page.tpl.php
+ * Process variables for page.php
  *
  * Perform final addition of variables before passing them into the template.
  * To customize these variables, simply set them in an earlier step.
  *
  * @see template_preprocess_page()
- * @see page.tpl.php
+ * @see page.php
  */
 function template_process_page(&$variables) {
   if (!isset($variables['breadcrumb'])) {
@@ -2693,7 +2693,7 @@ function theme_get_suggestions($args, $base, $delimiter = '__') {
 }
 
 /**
- * Process variables for maintenance-page.tpl.php.
+ * Process variables for maintenance-page.php.
  *
  * The variables array generated here is a mirror of
  * template_preprocess_page(). This preprocessor will run its course when
@@ -2704,7 +2704,7 @@ function theme_get_suggestions($args, $base, $delimiter = '__') {
  * The $variables array contains the following arguments:
  * - $content
  *
- * @see maintenance-page.tpl.php
+ * @see maintenance-page.php
  */
 function template_preprocess_maintenance_page(&$variables) {
   // Add favicon
@@ -2798,7 +2798,7 @@ function template_preprocess_maintenance_page(&$variables) {
  * The variables array generated here is a mirror of template_process_html().
  * This processor will run its course when theme_maintenance_page() is invoked.
  *
- * @see maintenance-page.tpl.php
+ * @see maintenance-page.php
  * @see template_process_html()
  */
 function template_process_maintenance_page(&$variables) {

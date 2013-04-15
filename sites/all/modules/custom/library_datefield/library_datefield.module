@@ -1,0 +1,366 @@
+<?php
+
+require_once __DIR__ . '/library_datefield.inc';
+
+/**
+ * @file
+ * Field hooks to implement a approximate date field.
+ */
+
+/**
+ * Implements hook_field_info().
+ */
+function library_datefield_field_info() {
+  $settings = array(
+    'granularity' => drupal_map_assoc(array('year', 'month', 'day')),
+    'tz_handling' => 'site',
+    'timezone_db' => 'UTC',
+  );
+  $instance_settings = array(
+    'default_value' => '',
+    'default_value2' => '',
+    'rounding' => '',
+    'rounding2' => '',
+  );
+
+  return array(
+    'library_datefield' => array(
+      'label' => t('Library date field'),
+      'description' => t('This field to display approximate time for some events.'),
+      'default_widget' => 'library_datefield_text',
+      'default_formatter' => 'library_datefield_default',
+      'settings' => $settings,
+      '$instance_settings' => $instance_settings,
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_is_empty().
+ */
+function library_datefield_field_is_empty($item, $field) {
+  if ($field['type'] == 'library_datefield') {
+    if (empty($item['value'])) {
+      return TRUE;
+    }
+    elseif ($field['settings']['enddate_required'] == TRUE && empty($item['value2'])) {
+      return TRUE;
+    }
+    return FALSE;
+  }
+}
+
+/**
+ * Implements hook_field_settings_form().
+ */
+function library_datefield_field_settings_form($field, $instance, $has_data) {
+  $settings = $field['settings'];
+  $tz_handling = $settings['tz_handling'];
+  $description = t('End dates are used to collect duration. E.g., allow an event to start on September 15, and end on September 16.');
+  $form['enddate_get'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Collect an end date'),
+    '#description' => $description,
+    '#default_value' => FALSE,
+    '#disabled' => $has_data,
+  );
+  $form['enddate_required'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Required'),
+    '#default_value' => FALSE,
+    '#disabled' => $has_data,
+    '#states' => array(
+      'invisible' => array(
+        'input[name="field[settings][enddate_get]"]' => array('checked' => FALSE),
+      ),
+    ),
+  );
+
+  // Force this value to hidden because we don't want to allow it to be changed
+  // right now, but allow it to be a variable if needed.
+  $form['timezone_db'] = array(
+    '#type' => 'hidden',
+    '#value' => date_get_timezone_db($tz_handling),
+  );
+
+  $context = array(
+    'field' => $field,
+    'instance' => $instance,
+    'has_data' => $has_data,
+  );
+  drupal_alter('library_datefield_field_settings_form', $form, $context);
+
+  return $form;
+}
+
+/**
+ * Implements hook_field_presave().
+ */
+function library_datefield_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items) {
+  if (empty($items)) {
+    return;
+  }
+
+  $field_name = $field['field_name'];
+  $settings = $field['settings'];
+  $process = date_process_values($field);
+  if ($field['settings']['enddate_get'] == TRUE) {
+    $process[] = 'value2';
+  }
+  foreach ($items as $delta => $item) {kpr($item);
+    foreach ($process as $processed) {
+      $timezone = isset($item['timezone']) ? $item['timezone'] : '';
+      if (is_array($item)) {
+        $date = library_datefield_set_date($item[$processed], $processed);
+        $items[$delta][$processed] = ($date) ? $date['date'] : '';
+        $items[$delta]['timezone'] = date_get_timezone($settings['tz_handling'], $timezone);
+        $items[$delta]['timezone_db'] = date_get_timezone_db($settings['tz_handling']);
+        if ($processed == 'value2') {
+          $items[$delta]['rounding2'] = ($date) ? $date['rounding'] : '';
+        } else {
+          $items[$delta]['rounding'] = ($date) ? $date['rounding'] : '';
+        }
+      }
+    }
+  }
+  $entity->{$field_name}[$langcode] = $items;
+}
+
+/**
+ * Implements hook_field_validate().
+ */
+function library_datefield_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
+  if (!form_get_errors()) {
+    $date = date('d/m/Y');
+    $process = library_datefield_process_values($field);
+    foreach ($items as $delta => $item) {
+      foreach ($process as $processed) {
+        $value = !empty($item[$processed]) ? $item[$processed] : NULL;
+        if (!empty($value)) {
+          if (strlen($value) > 10) {
+            $errors[$field['field_name']][$langcode][$delta][] = array(
+              'error' => $processed,
+              'message' => t("Please enter a data in right format: Format: $date"),
+            );
+          }
+          else {
+            $pieces = explode('/', $value);
+            $count = sizeof($pieces);
+            if ($count > 0 && $count < 4) {
+              switch ($count) {
+                case 1:
+                  $day = 01;
+                  $month = 01;
+                  $year = (int) $pieces[0];
+                  break;
+                case 2:
+                  $day = 01;
+                  $month = (int) $pieces[0];
+                  $year = (int) $pieces[1];
+                  break;
+                case 3:
+                  $day = (int) $pieces[0];
+                  $month = (int) $pieces[1];
+                  $year = (int) $pieces[2];
+                  break;
+                default:
+                  $day = 0;
+                  $month = 0;
+                  $year = 0;
+                  break;
+              }
+              if (sizeof($day) != 2 && sizeof($month) != 2 && sizeof($year) != 4) {
+                if (!checkdate($month, $day, $year)) {
+                  $errors[$field['field_name']][$langcode][$delta][] = array(
+                    'error' => $processed,
+                    'message' => t("Please enter a data in right format: Format: $date"),
+                  );
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_insert().
+ */
+function library_datefield_field_insert($entity_type, $entity, $field, $instance, $langcode, &$items) {
+  $context = array(
+    'entity_type' => $entity_type,
+    'entity' => $entity,
+    'field' => $field,
+    'instance' => $instance,
+    'langcode' => $langcode,
+  );
+  drupal_alter('library_datefield_insert', $items, $context);
+}
+
+/**
+ * Implements hook_field_update().
+ */
+function library_datefield_field_update($entity_type, $entity, $field, $instance, $langcode, &$items) {
+  $context = array(
+    'entity_type' => $entity_type,
+    'entity' => $entity,
+    'field' => $field,
+    'instance' => $instance,
+    'langcode' => $langcode,
+  );
+  drupal_alter('library_datefield_update', $items, $context);
+}
+
+/**
+ * Implements hook_field_load().
+ */
+function library_datefield_field_load($entity_type, $entities, $field, $instances, $langcode, &$items, $age) {
+  $timezone_db = date_get_timezone_db($field['settings']['tz_handling']);
+  $process = library_datefield_process_values($field);
+  foreach ($entities as $id => $entity) {
+    foreach ($items[$id] as $delta => &$item) {
+      foreach ($process as $processed) {
+
+        // If the file does not exist, mark the entire item as empty.
+        if (is_array($item)) {
+          $timezone = isset($item['timezone']) ? $item['timezone'] : '';
+          $item['timezone'] = date_get_timezone($field['settings']['tz_handling'], $timezone);
+          $item['timezone_db'] = $timezone_db;
+          $date = library_datefield_get_date($item, $processed);
+          $item[$processed] = $date;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_widget_info().
+ */
+function library_datefield_field_widget_info() {
+  $settings = array(
+    'settings' => array(
+      'input_format' => date_default_format('date_select'),
+      'input_format_custom' => '',
+      'increment' => 15,
+      'text_parts' => array(),
+      'year_range' => '-3:+3',
+      'label_position' => 'above',
+    ),
+    'behaviors' => array(
+      'multiple values' => FIELD_BEHAVIOR_DEFAULT,
+      'default value' => FIELD_BEHAVIOR_DEFAULT,
+    ),
+  );
+
+  $info = array(
+    'library_datefield_text' => array(
+      'label' =>  t('Approximate date widget'),
+      'field types' => array('library_datefield'),
+    ) + $settings,
+  );
+  // The date text widget should use an increment of 1.
+  $info['library_datefield_text']['increment'] = 1;
+
+  return $info;
+}
+
+/**
+ * Implements hook_field_widget_form().
+ */
+function library_datefield_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $item, $delta, $element) {
+  $process = library_datefield_process_values($field);
+
+  foreach ($process as $processed) {
+
+    if ($item && $item[$delta][$processed]) {
+      $defaul_value = library_datefield_return_date($item[$delta], $processed);
+    }elseif(!empty($instance['default_value'])){
+      $defaul_value = $instance['default_value'][$delta][$processed];
+    }else{
+      $defaul_value = NULL;
+    }
+
+    if ($instance['widget']['type'] == 'library_datefield_text') {
+      $element[$processed] = array(
+        '#type' => 'textfield',
+        '#title' => t($instance['label']),
+        '#default_value' => $defaul_value,
+        '#required' => $instance['required'],
+        '#date_label_position' => $instance['widget']['settings']['label_position'],
+      );
+    }
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_field_widget_settings_form().
+ */
+function library_datefield_field_widget_settings_form($field, $instance) {
+  $widget = $instance['widget'];
+  $settings = $widget['settings'];
+
+  $form['label_position'] = array(
+    '#type' => 'value',
+    '#value' => $settings['label_position'],
+  );
+  $form['text_parts'] = array(
+    '#type' => 'value',
+    '#value' => $settings['text_parts'],
+  );
+
+  $text_parts = (array) $settings['text_parts'];
+  foreach (date_granularity_names() as $key => $value) {
+    if ($widget['type'] == 'date_select') {
+      $form['advanced']['text_parts'][$key] = array(
+        '#type' => 'radios',
+        '#default_value' => in_array($key, $text_parts) ? 1 : 0,
+        '#options' => array(0 => '', 1 => ''),
+      );
+    }
+    else {
+      $form['advanced']['text_parts'][$key] = array(
+        '#type' => 'value',
+        '#value' => (int) in_array($key, (array) $settings['text_parts']),
+      );
+    }
+  }
+
+  $context = array(
+    'field' => $field,
+    'instance' => $instance,
+  );
+  drupal_alter('date_field_widget_settings_form', $form, $context);
+
+  return $form;
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function library_datefield_field_formatter_info() {
+  return array(
+    'library_datefield_default' => array(
+      'label' => t('Default'),
+      'field types' => array('library_datefield'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function library_datefield_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  foreach ($items as $delta => $item) {
+    $output = !empty($item['value']) ? $item['value'] : $item['value'];
+    if (!empty($item['value2'])) {
+      $output .= " - {$item['value2']}";
+    }
+    $element[$delta] = array('#markup' => $output);
+  }
+  return $element;
+}

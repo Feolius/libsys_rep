@@ -113,7 +113,7 @@ function _color_html_alter(&$vars) {
  *
  * A theme that supports the color module should call this function from its
  * THEME_process_page() function, so that the correct logo is included when
- * page.tpl.php is rendered.
+ * page.php is rendered.
  *
  * @see theme()
  */
