@@ -1,0 +1,6 @@
+name = Node Hierarchy Navigation
+description = "Provides an representation of node hierarchy like in a core book module"
+package = "Node Hierarchy"
+core = 7.x
+dependencies[] = menu
+
