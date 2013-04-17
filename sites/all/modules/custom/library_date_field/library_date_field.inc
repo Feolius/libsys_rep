@@ -44,8 +44,9 @@ function library_date_field_set_date($item, $processed) {
 
     // Creating date.
     $timestamp = strtotime($item);
+    $date = date("Y-m-d H:i:s", $timestamp);
     $output = array(
-      'date' => $timestamp,
+      'date' => $date,
       'rounding' => $rounding,
     );
     return $output;
@@ -61,14 +62,15 @@ function library_date_field_get_date($item, $processed) {
   }
   else {
     $rounding = ($processed == 'value') ? 'rounding' : 'rounding2' ;
+    $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $item[$processed]);
     if ($item[$rounding] == LIBRARY_DATA_FIELD_ROUNDING_FOR_MONTH) {
-      $output = date("F Y", $item[$processed]);
+      $output = $datetime->format('F Y');
     }
     elseif ($item[$rounding] == LIBRARY_DATA_FIELD_ROUNDING_FOR_YEARS) {
-      $output = date("Y", $item[$processed]);
+      $output = $datetime->format('Y');
     }
     elseif($item[$rounding] == LIBRARY_DATA_FIELD_NO_ROUNDING) {
-      $output = date("d F Y", $item[$processed]);
+      $output = $datetime->format('d F Y');
     }
     return $output;
   }

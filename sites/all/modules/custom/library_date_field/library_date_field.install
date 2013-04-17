@@ -8,6 +8,10 @@ function library_date_field_field_schema($field) {
   $columns = array(
       'value' => array(
         'type' => 'datetime',
+        'mysql_type' => 'datetime',
+        'pgsql_type' => 'timestamp without time zone',
+        'sqlite_type' => 'varchar',
+        'sqlsrv_type' => 'smalldatetime',
         'not null' => FALSE,
         'sortable' => TRUE,
         'views' => TRUE,
