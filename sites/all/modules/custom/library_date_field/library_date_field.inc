@@ -34,6 +34,9 @@ function library_date_field_set_date($item, $processed) {
       array_unshift($values, $day);
       $item = implode('/', $values);
     }
+    elseif ($rounding == LIBRARY_DATA_FIELD_NO_ROUNDING) {
+      $item = implode('/', $values);
+    }
 
     // Creating date.
     $timestamp = strtotime($item);

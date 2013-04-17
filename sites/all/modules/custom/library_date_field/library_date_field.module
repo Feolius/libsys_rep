@@ -269,7 +269,7 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
     $element['show_end_date'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show end date'),
-      '#defaul_value' => '',
+      '#defaul_value' => TRUE,
     );
   }
 
