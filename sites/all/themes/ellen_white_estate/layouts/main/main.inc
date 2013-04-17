@@ -9,6 +9,7 @@ $plugin = array(
   'category' => t('Library'),
   'icon' => 'main.png',
   'theme' => 'main',
+  'admin css' => 'main.css',
   'regions' => array(
     'header_left' => t('Header left'),
     'header_search_block' => t('Header search block'),
