@@ -97,7 +97,7 @@ function library_date_field_field_presave($entity_type, $entity, $field, $instan
   $field_name = $field['field_name'];
   $settings = $field['settings'];
   $process = library_date_field_process_values($field);
-  if ($field['settings']['show_end_date'] == 'period') {
+  if ($field['settings']['type'] == 'period') {
     $process[] = 'value2';
   }
   foreach ($items as $delta => $item) {kpr($item);
