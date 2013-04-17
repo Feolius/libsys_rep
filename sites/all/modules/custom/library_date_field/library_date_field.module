@@ -97,7 +97,7 @@ function library_date_field_field_presave($entity_type, $entity, $field, $instan
   $field_name = $field['field_name'];
   $settings = $field['settings'];
   $process = library_date_field_process_values($field);
-  foreach ($items as $delta => $item) {kpr($item);
+  foreach ($items as $delta => $item) {
     foreach ($process as $processed) {
       $timezone = isset($item['timezone']) ? $item['timezone'] : '';
       if (is_array($item)) {
@@ -263,13 +263,15 @@ function library_date_field_field_widget_info() {
 function library_date_field_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $item, $delta, $element) {
   $process = library_date_field_process_values($field);
   $field_name = $instance['field_name'];
-  $date = date('d/m/Y');
+  $date_full = date('d/m/Y');
+  $date_middle = date('m/Y');
+  $date_short = date('Y');
   if ($field['settings']['type'] == 'period') {
     $process[] = 'value2';
     $element['show_end_date'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show end date'),
-      '#defaul_value' => '',
+      '#default_value' => TRUE,
     );
   }
 
@@ -292,7 +294,7 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
     if ($instance['widget']['type'] == 'library_date_field_text') {
       $element[$processed] = array(
         '#type' => 'textfield',
-        '#description' => "Format: {$date}",
+        '#description' => "Formats: {$date_full} , {$date_middle} , {$date_short}",
         '#default_value' => $defaul_value,
         '#required' => $instance['required'],
         '#date_label_position' => $instance['widget']['settings']['label_position'],
