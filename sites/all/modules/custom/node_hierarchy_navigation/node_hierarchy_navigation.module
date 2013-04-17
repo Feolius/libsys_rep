@@ -1,0 +1,361 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function node_hierarchy_navigation_theme() {
+  return array(
+    'node_hierarchy_navigation' => array(
+      'variables' => array('node_link' => NULL),
+      'template' => 'theme/node-hierarchy-navigation',
+    ),
+  );
+}
+
+/**
+ * Processes variables for node-hierarchy-navigation.tpl.php.
+ *
+ * @param $variables
+ *   An associative array containing the following key:
+ *   - node_link
+ *
+ * @see node-hierarchy-navigation.tpl.php
+ */
+function template_preprocess_node_hierarchy_navigation(&$variables) {
+  $node_link = $variables['node_link'];
+  // Provide extra variables for themers. Not needed by default.
+  $variables['node_id'] = $node_link['nid'];
+  $variables['node_title'] = check_plain($node_link['link_title']);
+  $variables['node_url'] = 'node/' . $node_link['nid'];
+  $variables['current_depth'] = $node_link['depth'];
+  $variables['tree'] = '';
+
+  if ($node_link['mlid']) {
+    $variables['tree'] = node_hierarchy_navigation_children($node_link);
+
+    if ($prev = node_hierarchy_navigation_prev($node_link)) {
+      $prev_href = url($prev['href']);
+      drupal_add_html_head_link(array('rel' => 'prev', 'href' => $prev_href));
+      $variables['prev_url'] = $prev_href;
+      $variables['prev_title'] = check_plain($prev['title']);
+    }
+
+    if ($node_link['plid'] && $parent = node_hierarchy_navigation_link_load($node_link['plid'])) {
+      $parent_href = url($parent['href']);
+      drupal_add_html_head_link(array('rel' => 'up', 'href' => $parent_href));
+      $variables['parent_url'] = $parent_href;
+      $variables['parent_title'] = check_plain($parent['title']);
+    }
+
+    if ($next = node_hierarchy_navigation_next($node_link)) {
+      $next_href = url($next['href']);
+      drupal_add_html_head_link(array('rel' => 'next', 'href' => $next_href));
+      $variables['next_url'] = $next_href;
+      $variables['next_title'] = check_plain($next['title']);
+    }
+  }
+
+  $variables['has_links'] = FALSE;
+  // Link variables to filter for values and set state of the flag variable.
+  $links = array('prev_url', 'prev_title', 'parent_url', 'parent_title', 'next_url', 'next_title');
+  foreach ($links as $link) {
+    if (isset($variables[$link])) {
+      // Flag when there is a value.
+      $variables['has_links'] = TRUE;
+    }
+    else {
+      // Set empty to prevent notices.
+      $variables[$link] = '';
+    }
+  }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function node_hierarchy_navigation_block_info() {
+  $info['node_hierarchy_navigation'] = array(
+    'info' => t('Node Hierarchy Navigation'),
+  );
+  return $info;
+}
+
+
+/**
+ * Implements hook_block_view().
+ */
+function node_hierarchy_navigation_block_view($delta = '') {
+  if ($delta == 'node_hierarchy_navigation') {
+    if (arg(0) == 'node' && is_numeric(arg(1)) && !arg(2)) {
+      $node = node_load(arg(1));
+      if (!empty($node->nodehierarchy_menu_links[0]['nid']) && empty($node->in_preview)) {
+        $block['content'] = array(
+          '#markup' => theme('node_hierarchy_navigation', array('node_link' => $node->nodehierarchy_menu_links[0])),
+          '#weight' => 100,
+        );
+        ;
+        drupal_add_css(drupal_get_path('module', 'node_hierarchy_navigation') . '/theme/node-hierarchy-navigation.css');
+        return $block;
+      }
+    }
+  }
+}
+
+
+/**
+ * Formats the menu links for the child pages of the current page.
+ *
+ * @param $node_link
+ *   A fully loaded menu link that is part of the node hierarchy.
+ *
+ * @return
+ *   HTML for the links to the child pages of the current page.
+ */
+function node_hierarchy_navigation_children($node_link) {
+  $flat = node_hierarchy_navigation_get_flat_menu($node_link);
+  $children = array();
+  if ($node_link['has_children']) {
+    // Walk through the array until we find the current page.
+    do {
+      $link = array_shift($flat);
+    } while ($link && ($link['mlid'] != $node_link['mlid']));
+
+    // Continue though the array and collect the links whose parent is this page.
+    while (($link = array_shift($flat)) && $link['plid'] == $node_link['mlid']) {
+      $data['link'] = $link;
+      $data['link']['hidden'] = 0;
+      $data['below'] = '';
+      $children[] = $data;
+    }
+
+  }
+
+  if ($children) {
+    $elements = menu_tree_output($children);
+    return drupal_render($elements);
+  }
+  return '';
+}
+
+
+/**
+ * Fetches the menu link for the next node.
+ *
+ * @param $node_link
+ *   A fully loaded menu link that is part of the node hierarchy.
+ *
+ * @return
+ *   A fully loaded menu link for the node after the one represented in
+ *   $node_link.
+ */
+function node_hierarchy_navigation_next($node_link) {
+  $flat = node_hierarchy_navigation_get_flat_menu($node_link);
+  // Assigning the array to $flat resets the array pointer for use with each().
+  do {
+    list($key, $curr) = each($flat);
+  } while ($key && $key != $node_link['mlid']);
+
+  if ($key == $node_link['mlid']) {
+    return current($flat);
+  }
+}
+
+/**
+ * Fetches the menu link for the previous page of the book.
+ *
+ * @param $node_link
+ *   A fully loaded menu link that is part of the book hierarchy.
+ *
+ * @return
+ *   A fully loaded menu link for the page before the one represented in
+ *   $node_link.
+ */
+function node_hierarchy_navigation_prev($node_link) {
+  // If the parent is zero, we are at the start of a book.
+  if ($node_link['plid'] == 0) {
+    return NULL;
+  }
+  $flat = node_hierarchy_navigation_get_flat_menu($node_link);
+  // Assigning the array to $flat resets the array pointer for use with each().
+  $curr = NULL;
+  do {
+    $prev = $curr;
+    list($key, $curr) = each($flat);
+  } while ($key && $key != $node_link['mlid']);
+
+  if ($key == $node_link['mlid']) {
+    // The previous page in the book may be a child of the previous visible link.
+    if ($prev['depth'] == $node_link['depth'] && $prev['has_children']) {
+      // The subtree will have only one link at the top level - get its data.
+      $tree = node_hierarchy_navigation_menu_subtree_data($prev);
+      $data = array_shift($tree);
+      // The link of interest is the last child - iterate to find the deepest one.
+      while ($data['below']) {
+        $data = end($data['below']);
+      }
+
+      return $data['link'];
+    }
+    else {
+      return $prev;
+    }
+  }
+}
+
+/**
+ * Recursively converts a tree of menu links to a flat array.
+ *
+ * @param $tree
+ *   A tree of menu links in an array.
+ * @param $flat
+ *   A flat array of the menu links from $tree, passed by reference.
+ *
+ * @see book_get_flat_menu().
+ */
+function _node_hierarchy_navigation_flatten_menu($tree, &$flat) {
+  foreach ($tree as $data) {
+    if (!$data['link']['hidden']) {
+      $flat[$data['link']['mlid']] = $data['link'];
+      if ($data['below']) {
+        _node_hierarchy_navigation_flatten_menu($data['below'], $flat);
+      }
+    }
+  }
+}
+
+/**
+ * Gets the book menu tree for a page and returns it as a linear array.
+ *
+ * @param $node_link
+ *   A fully loaded menu link that is part of the node hierarchy.
+ *
+ * @return
+ *   A linear array of menu links in the order that the links are shown in the
+ *   menu, so the previous and next pages are the elements before and after the
+ *   element corresponding to the current node. The children of the current node
+ *   (if any) will come immediately after it in the array, and links will only
+ *   be fetched as deep as one level deeper than $node_link.
+ */
+function node_hierarchy_navigation_get_flat_menu($node_link) {
+  $flat = & drupal_static(__FUNCTION__, array());
+
+  if (!isset($flat[$node_link['mlid']])) {
+    // Call menu_tree_all_data() to take advantage of the menu system's caching.
+    $tree = menu_tree_all_data($node_link['menu_name'], $node_link, $node_link['depth'] + 1);
+
+    $flat[$node_link['mlid']] = array();
+    _node_hierarchy_navigation_flatten_menu($tree, $flat[$node_link['mlid']]);
+  }
+
+  return $flat[$node_link['mlid']];
+}
+
+/**
+ * Gets a node hierarchy menu link by its menu link ID.
+ *
+ * Like menu_link_load(), but adds additional data from the {node hierarchy} table.
+ *
+ * Do not call when loading a node, since this function may call node_load().
+ *
+ * @param $mlid
+ *   The menu link ID of the menu item.
+ *
+ * @return
+ *   A menu link, with the link translated for rendering and data added from the
+ *   {node hierarchy} table. FALSE if there is an error.
+ */
+function node_hierarchy_navigation_link_load($mlid) {
+  if ($item = db_query("SELECT * FROM {menu_links} ml INNER JOIN {nodehierarchy_menu_links} n ON n.mlid = ml.mlid LEFT JOIN {menu_router} m ON m.path = ml.router_path WHERE ml.mlid = :mlid", array(
+    ':mlid' => $mlid,
+  ))->fetchAssoc()
+  ) {
+    _menu_link_translate($item);
+    return $item;
+  }
+
+  return FALSE;
+}
+
+/**
+ * Gets the data representing a subtree of the node hierarchy.
+ *
+ * The root of the subtree will be the link passed as a parameter, so the
+ * returned tree will contain this item and all its descendents in the menu
+ * tree.
+ *
+ * @param $link
+ *   A fully loaded menu link.
+ *
+ * @return
+ *   An subtree of menu links in an array, in the order they should be rendered.
+ */
+function node_hierarchy_navigation_menu_subtree_data($link) {
+  $tree = & drupal_static(__FUNCTION__, array());
+
+  // Generate a cache ID (cid) specific for this $menu_name and $link.
+  $cid = 'links:' . $link['menu_name'] . ':subtree-cid:' . $link['mlid'];
+
+  if (!isset($tree[$cid])) {
+    $cache = cache_get($cid, 'cache_menu');
+
+    if ($cache && isset($cache->data)) {
+      // If the cache entry exists, it will just be the cid for the actual data.
+      // This avoids duplication of large amounts of data.
+      $cache = cache_get($cache->data, 'cache_menu');
+
+      if ($cache && isset($cache->data)) {
+        $data = $cache->data;
+      }
+    }
+
+    // If the subtree data was not in the cache, $data will be NULL.
+    if (!isset($data)) {
+      $query = db_select('menu_links', 'ml', array('fetch' => PDO::FETCH_ASSOC));
+      $query->join('menu_router', 'm', 'm.path = ml.router_path');
+      $query->join('node', 'n', 'ml.mlid = e.mlid');
+      $query->fields('e');
+      $query->fields('m', array(
+        'load_functions',
+        'to_arg_functions',
+        'access_callback',
+        'access_arguments',
+        'page_callback',
+        'page_arguments',
+        'delivery_callback',
+        'title',
+        'title_callback',
+        'title_arguments',
+        'type'
+      ));
+      $query->fields('ml');
+      $query->condition('menu_name', $link['menu_name']);
+      for ($i = 1; $i <= MENU_MAX_DEPTH && $link["p$i"]; ++$i) {
+        $query->condition("p$i", $link["p$i"]);
+      }
+      for ($i = 1; $i <= MENU_MAX_DEPTH; ++$i) {
+        $query->orderBy("p$i");
+      }
+      $links = array();
+      foreach ($query->execute() as $item) {
+        $links[] = $item;
+      }
+      $data['tree'] = menu_tree_data($links, array(), $link['depth']);
+      $data['node_links'] = array();
+      menu_tree_collect_node_links($data['tree'], $data['node_links']);
+      // Compute the real cid for book subtree data.
+      $tree_cid = 'links:' . $item['menu_name'] . ':subtree-data:' . hash('sha256', serialize($data));
+      // Cache the data, if it is not already in the cache.
+
+      if (!cache_get($tree_cid, 'cache_menu')) {
+        cache_set($tree_cid, $data, 'cache_menu');
+      }
+      // Cache the cid of the (shared) data using the menu and item-specific cid.
+      cache_set($cid, $tree_cid, 'cache_menu');
+    }
+    // Check access for the current user to each item in the tree.
+    menu_tree_check_access($data['tree'], $data['node_links']);
+    $tree[$cid] = $data['tree'];
+  }
+
+  return $tree[$cid];
+}
