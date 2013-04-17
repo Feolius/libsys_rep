@@ -3,7 +3,7 @@
 /**
  * Implements hook_field_schema().
  */
-function library_datefield_field_schema($field) {
+function library_date_field_field_schema($field) {
 
   $columns = array(
       'value' => array(
@@ -20,7 +20,7 @@ function library_datefield_field_schema($field) {
   );
 
  // If a second date is needed for 'End date', make a copy of the first one.
- if ($field['settings']['enddate_get'] == TRUE) {
+ if ($field['settings']['type'] == 'period') {
    $columns['value2'] = $columns['value'];
    $columns['rounding2'] = $columns['rounding'];
  }

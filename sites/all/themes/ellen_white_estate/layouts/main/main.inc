@@ -7,13 +7,15 @@
 $plugin = array(
   'title' => t('Main layout'),
   'category' => t('Library'),
-  'icon' => 'page_node.png',
+  'icon' => 'main.png',
   'theme' => 'main',
   'regions' => array(
     'header_left' => t('Header left'),
     'header_search_block' => t('Header search block'),
+    'header_menu' => t('Header menu'),
     'content' => t('Content'),
-    'right_sidebar' => t('Right sidebar'),
     'footer' => t('Footer'),
+    'footer_left' => t('Footer left'),
+    'footer_right' => t('Footer right'),
   ),
 );

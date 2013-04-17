@@ -3,9 +3,9 @@
 /**
  * Implements hook_field_widget_info().
  */
-function library_datefield_widget_field_widget_info() {
+function library_date_field_widget_field_widget_info() {
   return array(
-      'library_datefield_widget' => array(
+      'library_date_field_widget' => array(
           'label' => t('Library datefield widget'),
           'field types' => array('date', 'datestamp', 'datetime'),
           'behaviors' => array(
@@ -19,7 +19,7 @@ function library_datefield_widget_field_widget_info() {
 /**
  * Implements hook_field_widget_form().
  */
-function library_datefield_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+function library_date_field_widget_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   $widget = $instance['widget'];
 
   //Get today date for using in description
@@ -43,7 +43,7 @@ function library_datefield_widget_field_widget_form(&$form, &$form_state, $field
       $default_value = date_format_date($date_value_obj, 'custom', 'Y/m');
     }
   }
-  if ($widget['type'] == 'library_datefield_widget') {
+  if ($widget['type'] == 'library_date_field_widget') {
     $element['library_date'] = array(
         '#title' => t('Date'),
         '#type' => 'textfield',
@@ -52,11 +52,11 @@ function library_datefield_widget_field_widget_form(&$form, &$form_state, $field
     );
     $element['value'] = array(
         '#type' => 'hidden',
-        '#value_callback' => 'library_datefield_widget_value',
+        '#value_callback' => 'library_date_field_widget_value',
     );
     $element['value2'] = array(
         '#type' => 'hidden',
-        '#value_callback' => 'library_datefield_widget_value2',
+        '#value_callback' => 'library_date_field_widget_value2',
     );
     $element['timezone'] = array(
         '#type' => 'hidden',
@@ -69,7 +69,7 @@ function library_datefield_widget_field_widget_form(&$form, &$form_state, $field
 /**
  * Value callback for start date
  */
-function library_datefield_widget_value($element, $input = FALSE, $form_state) {
+function library_date_field_widget_value($element, $input = FALSE, $form_state) {
   if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'])) {
     $date_string = $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'];
     $date_array = explode('/', $date_string);
@@ -90,7 +90,7 @@ function library_datefield_widget_value($element, $input = FALSE, $form_state) {
 /**
  * Value callback for end date
  */
-function library_datefield_widget_value2($element, $input = FALSE, $form_state) {
+function library_date_field_widget_value2($element, $input = FALSE, $form_state) {
   if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'])) {
     $date_string = $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['library_date'];
     $date_array = explode('/', $date_string);

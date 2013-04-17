@@ -112,9 +112,9 @@ function features_library_ct_people_field_default_fields() {
       ),
       'widget' => array(
         'active' => 0,
-        'module' => 'library_datefield_widget',
+        'module' => 'library_date_field_widget',
         'settings' => array(),
-        'type' => 'library_datefield_widget',
+        'type' => 'library_date_field_widget',
         'weight' => '3',
       ),
     ),
@@ -1272,9 +1272,9 @@ function features_library_ct_people_field_default_fields() {
       ),
       'widget' => array(
         'active' => 0,
-        'module' => 'library_datefield_widget',
+        'module' => 'library_date_field_widget',
         'settings' => array(),
-        'type' => 'library_datefield_widget',
+        'type' => 'library_date_field_widget',
         'weight' => '4',
       ),
     ),

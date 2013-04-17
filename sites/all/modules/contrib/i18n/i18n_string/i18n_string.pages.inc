@@ -44,7 +44,7 @@ function i18n_string_translate_page_overview($object, $strings) {
  * Provide a core translation module like overview page for this object.
  */
 function i18n_string_translate_page_overview_form($form, &$form_state, $object, $strings) {
-  //include_once DRUPAL_ROOT . '/includes/language.inc';
+  //include_once DRUPAL_ROOT . '/includes/languages.inc';
   // Set the default item key, assume it's the first.
   $item_title = reset($strings);
   $header = array(
