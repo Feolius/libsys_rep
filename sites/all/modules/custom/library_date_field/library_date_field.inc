@@ -81,13 +81,13 @@ function library_date_field_return_date($item, $processed) {
     $rounding = ($processed == 'value') ? 'rounding' : 'rounding2' ;
     $month = ($processed == 'value') ? '01' : '12';
     if ($item[$rounding] == LIBRARY_DATA_FIELD_ROUNDING_FOR_MONTH) {
-      $output = date("m/Y", strtotime($month . $item[$processed]));
+      $output = date("m/Y", strtotime($item[$processed]));
     }
     elseif($item[$rounding] == LIBRARY_DATA_FIELD_ROUNDING_FOR_YEARS) {
       $output = $item[$processed];
     }
     else {
-      $output = date("d/m/Y", (int) $item[$processed]);
+      $output = date("d/m/Y", strtotime($item[$processed]));
     }
     return $output;
   }
