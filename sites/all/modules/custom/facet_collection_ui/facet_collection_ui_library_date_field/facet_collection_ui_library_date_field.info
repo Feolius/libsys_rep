@@ -1,0 +1,6 @@
+name = Facet Collection UI for Library Date Field
+description = Allow use filtering by library date fields
+package = Facet Collection
+core = 7.x
+dependencies[] = facet_collection_ui
+dependencies[] = library_date_field
