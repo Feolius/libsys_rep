@@ -1,0 +1,95 @@
+/*
+* Template - files
+*/
+.rating {
+    text-align: right;
+    margin-top: -55px;
+    margin-bottom: 20px;
+}
+
+.rating .field.field-name-field-files-rating {
+    display: inline-block;
+    width: 85px;
+    text-align: left;
+}
+.rating .field.field-name-field-files-rating .fivestar-summary{
+    text-align: right;
+}
+
+.section .ui-widget-content {
+    background: none;
+    border: none;
+    padding: 3px 0 0 0;
+}
+.section .ui-widget-header {
+    background: none;
+    border: none;
+}
+
+.additional-info {
+    margin-bottom: 20px;
+}
+.audio-meta {
+    margin: -30px 0 20px 0;
+}
+.audio-download {
+    text-align: right;
+    margin-top: 25px;
+}
+
+.audio-download a {
+    display: inline-block;
+    width: 90px;
+    height: 25px;
+    background-color: rgb(0, 155, 227);
+    text-align: center;
+    font-size: 16px;
+    color: rgb(255, 255, 255);
+    padding-top: 3px;
+}
+
+.additional-info .info-label,
+.audio-meta .info-label,
+.document-section1 .info-label{
+    float: left;
+    width: 100px;
+    font-weight: bold;
+}
+
+.document-section1 .field-label,
+.document-section2 .field-label,
+.document-section3 .field-label {
+    width: 100px;
+}
+
+.document-section1 .field-name-field-files-author-location,
+.document-section1 .field-name-field-files-author,
+.document-section1 .field-name-field-files-receiver,
+.document-section1 .field-name-field-files-receiver-location {
+    float:left;
+    margin-right: 10px;
+}
+
+.document-section1, .document-section2 {
+    margin-top: 15px;
+}
+.document-section1 .author {
+    font-weight: bold;
+    clear: left;
+    margin: 0;
+}
+.document-section1 .clear{
+    height: 10px;
+    clear: both;
+}
+.document-section3 {
+    margin-bottom: 15px;
+}
+.album-cover {
+    float: left;
+}
+
+.field-name-field-files-audio .jp-interface {
+     width: 640px;
+ }
+

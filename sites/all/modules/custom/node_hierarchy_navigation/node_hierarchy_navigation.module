@@ -172,9 +172,9 @@ function node_hierarchy_navigation_next($node_link) {
  */
 function node_hierarchy_navigation_prev($node_link) {
   // If the parent is zero, we are at the start of a book.
-  if ($node_link['plid'] == 0) {
-    return NULL;
-  }
+//  if ($node_link['plid'] == 0) {
+//    return NULL;
+//  }
   $flat = node_hierarchy_navigation_get_flat_menu($node_link);
   // Assigning the array to $flat resets the array pointer for use with each().
   $curr = NULL;
@@ -312,8 +312,8 @@ function node_hierarchy_navigation_menu_subtree_data($link) {
     if (!isset($data)) {
       $query = db_select('menu_links', 'ml', array('fetch' => PDO::FETCH_ASSOC));
       $query->join('menu_router', 'm', 'm.path = ml.router_path');
-      $query->join('node', 'n', 'ml.mlid = e.mlid');
-      $query->fields('e');
+      $query->join('nodehierarchy_menu_links', 'n', 'ml.mlid = n.mlid');
+      $query->fields('n');
       $query->fields('m', array(
         'load_functions',
         'to_arg_functions',
