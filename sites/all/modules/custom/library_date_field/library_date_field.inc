@@ -24,7 +24,7 @@ function library_date_field_set_date($item, $processed) {
     }
 
     if ($rounding == LIBRARY_DATA_FIELD_ROUNDING_FOR_YEARS) {
-      array_unshift($values, $day, $month);
+      array_unshift($values, $month, $day);
       $item = implode('/', $values);
     }
     elseif ($rounding == LIBRARY_DATA_FIELD_ROUNDING_FOR_MONTH) {
