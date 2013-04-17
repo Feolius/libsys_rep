@@ -263,7 +263,9 @@ function library_date_field_field_widget_info() {
 function library_date_field_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $item, $delta, $element) {
   $process = library_date_field_process_values($field);
   $field_name = $instance['field_name'];
-  $date = date('d/m/Y');
+  $date_full = date('d/m/Y');
+  $date_middle = date('m/Y');
+  $date_short = date('Y');
   if ($field['settings']['type'] == 'period') {
     $process[] = 'value2';
     $element['show_end_date'] = array(
@@ -292,7 +294,7 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
     if ($instance['widget']['type'] == 'library_date_field_text') {
       $element[$processed] = array(
         '#type' => 'textfield',
-        '#description' => "Format: {$date}",
+        '#description' => "Formats: {$date_full} , {$date_middle} , {$date_short}",
         '#default_value' => $defaul_value,
         '#required' => $instance['required'],
         '#date_label_position' => $instance['widget']['settings']['label_position'],
