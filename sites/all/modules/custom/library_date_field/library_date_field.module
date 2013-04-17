@@ -97,7 +97,7 @@ function library_date_field_field_presave($entity_type, $entity, $field, $instan
   $field_name = $field['field_name'];
   $settings = $field['settings'];
   $process = library_date_field_process_values($field);
-  foreach ($items as $delta => $item) {kpr($item);
+  foreach ($items as $delta => $item) {
     foreach ($process as $processed) {
       $timezone = isset($item['timezone']) ? $item['timezone'] : '';
       if (is_array($item)) {

@@ -24,17 +24,21 @@ function library_date_field_set_date($item, $processed) {
     }
 
     if ($rounding == LIBRARY_DATA_FIELD_ROUNDING_FOR_YEARS) {
-      array_unshift($values, $month, $day);
+      array_unshift($values, $day, $month);
       $item = implode('/', $values);
     }
     elseif ($rounding == LIBRARY_DATA_FIELD_ROUNDING_FOR_MONTH) {
       if ($processed == 'value2') {
         $day = (string) cal_days_in_month(CAL_GREGORIAN, $values[0], $values[1]);
       }
-      array_unshift($values, $day);
+      $values[2] = $values[1];
+      $values[1] = $day;
       $item = implode('/', $values);
     }
     elseif ($rounding == LIBRARY_DATA_FIELD_NO_ROUNDING) {
+      $day = $values[0];
+      $values[0] = $values[1];
+      $values[1] = $day;
       $item = implode('/', $values);
     }
 
@@ -63,7 +67,7 @@ function library_date_field_get_date($item, $processed) {
     elseif ($item[$rounding] == LIBRARY_DATA_FIELD_ROUNDING_FOR_YEARS) {
       $output = date("Y", $item[$processed]);
     }
-    else {
+    elseif($item[$rounding] == LIBRARY_DATA_FIELD_NO_ROUNDING) {
       $output = date("d F Y", $item[$processed]);
     }
     return $output;
