@@ -28,15 +28,15 @@ function library_date_field_set_date($item, $processed) {
       $item = implode('/', $values);
     }
     elseif ($rounding == LIBRARY_DATA_FIELD_ROUNDING_FOR_MONTH) {
-      $day = (string) cal_days_in_month(CAL_GREGORIAN, $values[0], $values[1]);
+      if ($processed == 'value2') {
+        $day = (string) cal_days_in_month(CAL_GREGORIAN, $values[0], $values[1]);
+      }
       array_unshift($values, $day);
       $item = implode('/', $values);
     }
 
     // Creating date.
-    $value = date('d/m/y', strtotime($item));
-    $date = new DateObject($value);
-    $timestamp = date_timestamp_get($date);
+    $timestamp = strtotime($item);
     $output = array(
       'date' => $timestamp,
       'rounding' => $rounding,
