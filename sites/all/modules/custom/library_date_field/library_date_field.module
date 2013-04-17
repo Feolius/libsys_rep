@@ -271,13 +271,6 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
       '#title' => t('Show end date'),
       '#defaul_value' => '',
     );
-    $element['value2']['#title'] = t('to:');
-    $element['value2']['#states'] = array(
-      'visible' => array(
-        _library_date_field_process_states($field_name, $langcode, $delta, 'show_end_date') =>
-      array('checked' => TRUE),
-      ),
-    );
   }
 
   // Add fieldset.
@@ -306,6 +299,16 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
       );
     }
   }
+  if ($field['settings']['type'] == 'period') {
+    $element['value2']['#title'] = t('to:');
+    $element['value2']['#states'] = array(
+      'visible' => array(
+        _library_date_field_process_states($field_name, $langcode, $delta, 'show_end_date') =>
+        array('checked' => TRUE),
+      ),
+    );
+  }
+
   return $element;
 }
 
