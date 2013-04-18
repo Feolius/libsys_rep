@@ -12,7 +12,7 @@ $plugin = array(
   'category' => t('Library'),
   'hook theme' => 'library_admin_languages_content_type_theme',
 );
-die;
+
 /**
  * Output function for the 'languages' content type.
  */
