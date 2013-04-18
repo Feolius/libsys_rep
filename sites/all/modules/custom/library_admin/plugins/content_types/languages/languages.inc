@@ -4,14 +4,20 @@
  * @file
  * Languages content type.
  */
-$plugin = array(
-  'title' => t('Languages'),
-  'single' => TRUE,
-  'icon' => 'languages.png',
-  'description' => t('Add the languages block.'),
-  'category' => t('Library'),
-  'hook theme' => 'library_admin_languages_content_type_theme',
-);
+
+/**
+ * Implements hook_ctools_content_types().
+ */
+function library_admin_languages_ctools_content_types() {
+  return array(
+    'title' => t('Languages'),
+    'single' => TRUE,
+    'icon' => 'languages.png',
+    'description' => t('Add the languages block.'),
+    'category' => t('Library'),
+    'hook theme' => 'library_admin_languages_content_type_theme',
+  );
+}
 
 /**
  * Output function for the 'languages' content type.
