@@ -25,5 +25,12 @@ function library_admin_settings_form() {
     '#default_value' => variable_get('library_admin_language'),
   );
 
+  $form['footer']['library_admin_copyright'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Copyright text'),
+    '#description' => t('Copyright text to display in the footer'),
+    '#default_value' => variable_get('library_admin_copyright'),
+  );
+
   return system_settings_form($form);
 }

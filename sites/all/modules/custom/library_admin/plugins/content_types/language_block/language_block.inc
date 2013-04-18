@@ -10,7 +10,7 @@
 function library_admin_language_block_ctools_content_types() {
   return array(
     'single' => TRUE,
-    'title' => t('Language'),
+    'title' => t('Language list'),
     'description' => t(''),
     'category' => t('Library'),
     'icon' => 'language_block.png',

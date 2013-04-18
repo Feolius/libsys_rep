@@ -13,7 +13,13 @@
  */
 ?>
 <div class="panel-panel panel-node">
+  <?php if ($content['breadcrumb']): ?>
+    <?php print $content['breadcrumb']; ?>
+  <?php endif; ?>
   <?php if ($content['content']): ?>
     <?php print $content['content']; ?>
+  <?php endif; ?>
+  <?php if ($content['sidebar']): ?>
+    <?php print $content['sidebar']; ?>
   <?php endif; ?>
 </div>

@@ -10,6 +10,8 @@ $plugin = array(
   'icon' => 'page_node.png',
   'theme' => 'page_node',
   'regions' => array(
+    'breadcrumb' => t('Breadcrumb'),
     'content' => t('Content'),
+    'sidebar' => t('Sidebar'),
   ),
 );
