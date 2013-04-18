@@ -121,7 +121,6 @@ function library_date_field_field_presave($entity_type, $entity, $field, $instan
  */
 function library_date_field_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
   if (!form_get_errors()) {
-    $date = date('d/m/Y');
     $process = library_date_field_process_values($field);
     foreach ($items as $delta => $item) {
       foreach ($process as $processed) {
@@ -130,7 +129,7 @@ function library_date_field_field_validate($entity_type, $entity, $field, $insta
           if (strlen($value) > 10) {
             $errors[$field['field_name']][$langcode][$delta][] = array(
               'error' => $processed,
-              'message' => t("Please enter a data in right format: Format: $date"),
+              'message' => t("Please enter a data in right format."),
             );
           }
           else {
@@ -163,12 +162,30 @@ function library_date_field_field_validate($entity_type, $entity, $field, $insta
                 if (!checkdate($month, $day, $year)) {
                   $errors[$field['field_name']][$langcode][$delta][] = array(
                     'error' => $processed,
-                    'message' => t("Please enter a data in right format: Format: $date"),
+                    'message' => t("Please enter a data in right format."),
+                  );
+                }
+              }
+              if ($processed == 'value2') {
+                if (empty($item['value']) && !empty($item['value2'])) {
+                  $errors[$field['field_name']][$langcode][$delta][] = array(
+                    'error' => $processed,
+                    'message' => t("Please enter a start date."),
                   );
                 }
               }
             }
           }
+        }
+      }
+      if (isset($item['value2']) && !empty($item['value2'])) {
+        $end_date = _library_date_return_timestamp($item, 'value2');
+        $start_date = _library_date_return_timestamp($item, 'value');
+        if ($end_date < $start_date) {
+          $errors[$field['field_name']][$langcode][$delta][] = array(
+            'error' => $item['value2'],
+            'message' => t("End date must not be less than the start date."),
+          );
         }
       }
     }

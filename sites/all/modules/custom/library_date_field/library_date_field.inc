@@ -84,8 +84,7 @@ function library_date_field_return_date($item, $processed) {
     return;
   }
   else {
-    $rounding = ($processed == 'value') ? 'rounding' : 'rounding2' ;
-    $month = ($processed == 'value') ? '01' : '12';
+    $rounding = ($processed == 'value') ? 'rounding' : 'rounding2';
     if ($item[$rounding] == LIBRARY_DATA_FIELD_ROUNDING_FOR_MONTH) {
       $output = date("m/Y", strtotime($item[$processed]));
     }
@@ -112,4 +111,29 @@ function library_date_field_process_values($field) {
  */
 function _library_date_field_process_states($field_name, $langcode, $delta, $item_name) {
   return ':input[name="' . $field_name . '[' . $langcode . '][' . $delta . '][' . $item_name . ']"], ';
+}
+
+/**
+ * Helper function for validate.
+ */
+function _library_date_return_timestamp($item, $processed) {
+  if (!empty($item) && !empty($processed)) {
+    $output = '';
+    $items = explode('/', $item[$processed]);
+    switch (sizeof($items)) {
+      case LIBRARY_DATA_FIELD_NO_ROUNDING:
+        $output = strtotime("$items[1]/$items[0]/$items[2]");
+        break;
+      case LIBRARY_DATA_FIELD_ROUNDING_FOR_MONTH:
+        $day = ($processed == 'value') ? '01' : (string) cal_days_in_month(CAL_GREGORIAN, $items[0], $items[1]);
+        $output = strtotime("$items[0]/$day/$items[1]");
+        break;
+      case LIBRARY_DATA_FIELD_ROUNDING_FOR_YEARS:
+        $day = ($processed == 'value') ? '01' : '31';
+        $mounth = ($processed == 'value') ? '01' : '12';
+        $output = strtotime("$mounth/$day/$item[$processed]");
+        break;
+    }
+    return $output;
+  }
 }

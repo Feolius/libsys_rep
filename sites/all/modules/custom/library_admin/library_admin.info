@@ -1,0 +1,4 @@
+name = Library admin module
+description = Module for admin settings
+package = Library
+core = 7.x
