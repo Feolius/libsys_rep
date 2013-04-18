@@ -52,9 +52,9 @@
             <div id="main">
               <?php print $content['content']; ?>
             </div>
-            <!-- EOF: #content -->
           </div>
         </div>
+        <!-- EOF: #content -->
       <?php endif; ?>
 
       <?php if (!empty($content['footer'])

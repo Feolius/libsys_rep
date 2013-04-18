@@ -9,9 +9,10 @@ $plugin = array(
   'category' => t('Library'),
   'icon' => 'page_node.png',
   'theme' => 'page_node',
+  'admin css' => 'page_node.css',
   'regions' => array(
     'breadcrumb' => t('Breadcrumb'),
     'content' => t('Content'),
-    'sidebar' => t('Sidebar'),
+    'sidebar_right' => t('Sidebar right'),
   ),
 );

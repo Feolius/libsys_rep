@@ -11,15 +11,24 @@
  *   panel of the layout. This layout supports the following sections:
  *   $content['middle']: The only panel in the layout.
  */
+//kpr($content);die;
 ?>
 <div class="panel-panel panel-node">
-  <?php if ($content['breadcrumb']): ?>
-    <?php print $content['breadcrumb']; ?>
+  <?php if (!empty($content['breadcrumb']) || !empty($content['content'])) : ?>
+    <div id="main">
+      <?php if (!empty($content['breadcrumb'])): ?>
+        <?php print $content['breadcrumb']; ?>
+      <?php endif; ?>
+      <?php if (!empty($content['content'])): ?>
+        <div class="main_inside">
+          <?php print $content['content']; ?>
+        </div>
+      <?php endif; ?>
+    </div>
   <?php endif; ?>
-  <?php if ($content['content']): ?>
-    <?php print $content['content']; ?>
-  <?php endif; ?>
-  <?php if ($content['sidebar']): ?>
-    <?php print $content['sidebar']; ?>
+  <?php if (!empty($content['sidebar_right'])): ?>
+    <div id="sidebar">
+      <?php print $content['sidebar_right']; ?>
+    </div>
   <?php endif; ?>
 </div>

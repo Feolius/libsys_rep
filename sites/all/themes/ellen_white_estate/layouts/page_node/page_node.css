@@ -1,0 +1,15 @@
+#main {
+  float: left;
+  width: 690px;
+  margin: 0;
+}
+
+#sidebar {
+  float: right;
+  width: 250px;
+  padding: 0;
+}
+
+#edit-buttons {
+  clear: both;
+}
