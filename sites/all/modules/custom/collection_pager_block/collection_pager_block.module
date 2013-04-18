@@ -18,6 +18,7 @@ function collection_pager_block_block_view($delta) {
     $block['subject'] = t('Collection Pager');
     $block['content'] = drupal_get_form('collection_pager_block_form');
     drupal_add_css(drupal_get_path('module', 'collection_pager_block') . '/css/collection-pager-block-buttons.css');
+    drupal_add_js(drupal_get_path('module', 'collection_pager_block') . '/js/collection-pager-block.js');
     return $block;
   }
 }
@@ -50,7 +51,7 @@ function collection_pager_block_form($form, &$form_state) {
     ),
     'result_number' => array(
       '#type' => 'textfield',
-      '#description' => t('Enter page number'),
+      '#description' => t('Enter Results Number'),
       '#size' => 10,
     ),
     'go_to_the_page_button' => array(
