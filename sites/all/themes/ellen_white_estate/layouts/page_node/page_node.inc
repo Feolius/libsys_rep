@@ -13,6 +13,6 @@ $plugin = array(
   'regions' => array(
     'breadcrumb' => t('Breadcrumb'),
     'content' => t('Content'),
-    'sidebar_right' => t('Sidebar right'),
+    'right_sidebar' => t('Right sidebar'),
   ),
 );

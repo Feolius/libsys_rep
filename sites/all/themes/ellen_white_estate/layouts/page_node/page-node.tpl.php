@@ -11,7 +11,6 @@
  *   panel of the layout. This layout supports the following sections:
  *   $content['middle']: The only panel in the layout.
  */
-//kpr($content);die;
 ?>
 <div class="panel-panel panel-node">
   <?php if (!empty($content['breadcrumb']) || !empty($content['content'])) : ?>
@@ -26,9 +25,9 @@
       <?php endif; ?>
     </div>
   <?php endif; ?>
-  <?php if (!empty($content['sidebar_right'])): ?>
+  <?php if (!empty($content['right_sidebar'])): ?>
     <div id="sidebar">
-      <?php print $content['sidebar_right']; ?>
+      <?php print $content['right_sidebar']; ?>
     </div>
   <?php endif; ?>
 </div>

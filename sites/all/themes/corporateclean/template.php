@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Return a themed breadcrumb trail.
  *
@@ -158,5 +159,3 @@ if (theme_get_setting('slideshow_js','corporateclean')):
 	);
 
 endif;
-
-?>

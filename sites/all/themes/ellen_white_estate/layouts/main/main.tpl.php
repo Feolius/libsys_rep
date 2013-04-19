@@ -49,9 +49,7 @@
         <!-- Content. -->
         <div id="content">
           <div id="content-inside" class="inside">
-            <div id="main">
-              <?php print $content['content']; ?>
-            </div>
+            <?php print $content['content']; ?>
           </div>
         </div>
         <!-- EOF: #content -->
