@@ -25,10 +25,10 @@ function library_admin_language_block_ctools_content_types() {
 function library_admin_language_block_content_types_render($subtype, $conf, $panel_args, $context) {
   $output = '';
   $results = array();
-  if($flags = variable_get('library_admin_language')) {
+  if ($flags = variable_get('library_admin_language')) {
     $items = explode(',', $flags);
     if (is_array($items)) {
-      foreach ($items as $item) {var_dump($item);
+      foreach ($items as $item) {
         if (!empty($item) && $item !== ' ') {
           $results[] = l(
             t(''),
@@ -43,7 +43,7 @@ function library_admin_language_block_content_types_render($subtype, $conf, $pan
         }
       }
     }
-    $output = theme('language_block', array('results' => $results));
+    $output .= theme('language_block', array('results' => $results));
   }
 
   $block = new stdClass();

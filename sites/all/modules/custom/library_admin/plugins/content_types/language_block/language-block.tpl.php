@@ -4,6 +4,7 @@
  * Library admin languages block content type template.
  */
 ?>
+
 <?php if (!empty($results)): ?>
   <div class="languages">
     <?php foreach($results as $result): ?>
