@@ -1,0 +1,6 @@
+name = Geonames Geocoder Plugin
+description = "Provides a geonames plugin for geocoder module"
+package = Geonames
+core = 7.x
+dependencies[] = geonames
+dependencies[] = geocoder

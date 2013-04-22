@@ -356,7 +356,15 @@ function multistep_adl_field_group_pre_render(&$element, $group, &$form) {
       '#prefix' => $prefix,
       '#suffix' => '</div>',
       '#weight' => $group->weight,
-      '#access' => $access,
+      //'#access' => $access,
+    );
+  } else {
+    $element += array(
+      '#type' => 'hidden',
+      '#prefix' => $prefix,
+      '#suffix' => '</div>',
+      '#weight' => $group->weight,
+      //'#access' => $access,
     );
   }
 }
@@ -390,6 +398,7 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
   if (!($entity_type == 'node') || !is_multistep_adl($entity)) {
     return;
   }
+  //dpm($form_state);
   /* Disable immediate redirection through "destination" parameter, but preserve the destination value.
    * @todo Change this to pass all Request variables in an array
   if (isset($_REQUEST['destination'])) {
@@ -408,10 +417,6 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
   if (module_exists('content_profile') && is_content_profile($type)) {
     unset($form['#redirect']);
   }*/
-  $bundle = $entity->type;
-  $steps_settings = drupal_json_decode(variable_get('multistep_adl_steps_settings', '{}'));
-  $form_field_value = isset($form_state['build_info']['args'][0]->{$steps_settings[$bundle]['determining_field']}['und'][0]['value']) ? $form_state['build_info']['args'][0]->{$steps_settings[$bundle]['determining_field']}['und'][0]['value'] : NULL;
-  $primary_media_step = isset($steps_settings[$bundle]['values'][$form_field_value]) ? $steps_settings[$bundle]['values'][$form_field_value] : FALSE;
 
   $step = multistep_adl_get_step($entity);
   $form['#multistep_adl'] = array(
@@ -419,6 +424,17 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
     'current' => $step,
     'next' => multistep_adl_get_next($entity, $step),
   );
+  $bundle = $entity->type;
+  $primary_media_step = '';
+
+  if ($step != multistep_adl_get_first($entity)) {
+    $steps_settings = drupal_json_decode(variable_get('multistep_adl_steps_settings', '{}'));
+    if (isset($steps_settings[$bundle]['determining_field'])) {
+      $form_field_value = isset($form_state['build_info']['args'][0]->{$steps_settings[$bundle]['determining_field']}['und'][0]['value']) ? $form_state['build_info']['args'][0]->{$steps_settings[$bundle]['determining_field']}['und'][0]['value'] : NULL;
+      $primary_media_step = isset($steps_settings[$bundle]['values'][$form_field_value]) ? $steps_settings[$bundle]['values'][$form_field_value] : FALSE;
+    }
+  }
+
   // This adds different submitting buttons (Previous, Save, Next, Done).
   if ($step != multistep_adl_get_first($entity)
     && (!isset($steps_settings[$bundle]['determining_field'])
@@ -489,8 +505,8 @@ function multistep_adl_node_validate($node, $form, &$form_state) {
  * Submit the form and redirect to the next appropriate step.
  */
 function multistep_adl_submit($form, &$form_state) {
-
-
+//  var_dump($form_state['values']);
+//  exit();
   $current_step = $form['#multistep_adl']['current'];
   //$status = module_invoke_all('multistep_adl_update_status', $form_state, 'submitted', $current_step);
 
@@ -506,8 +522,8 @@ function multistep_adl_submit($form, &$form_state) {
       $current_step_fields += $group->children;
     }
   }
-  $exclude_form_state_fields = array_diff(array_keys(field_info_instances('node', $bundle)), $current_step_fields);
 
+  $exclude_form_state_fields = array_diff(array_keys(field_info_instances('node', $bundle)), $current_step_fields);
 
   if (isset($exclude_form_state_fields['title'])) {
     unset($exclude_form_state_fields['title']);
@@ -537,16 +553,19 @@ function multistep_adl_submit($form, &$form_state) {
         break;
     }
   }
-  if (!isset($form_state['values'][$steps_settings[$bundle]['determining_field']]['und'][0]['value'])) {
-    $node = node_load($nid);
-    $determining_field_name = $steps_settings[$bundle]['determining_field'];
-    if (isset($node->$determining_field_name)) {
-      $determining_item = $node->$determining_field_name;
-      $determining_field_value = $determining_item ['und'][0]['value'];
+
+  if (isset($steps_settings[$bundle]['determining_field'])) {
+    if (!isset($form_state['values'][$steps_settings[$bundle]['determining_field']]['und'][0]['value'])) {
+      $node = node_load($nid);
+      $determining_field_name = $steps_settings[$bundle]['determining_field'];
+      if (isset($node->$determining_field_name)) {
+        $determining_item = $node->$determining_field_name;
+        $determining_field_value = $determining_item ['und'][0]['value'];
+      }
     }
-  }
-  else {
-    $determining_field_value = $form_state['values'][$steps_settings[$bundle]['determining_field']]['und'][0]['value'];
+    else {
+      $determining_field_value = $form_state['values'][$steps_settings[$bundle]['determining_field']]['und'][0]['value'];
+    }
   }
 
   //Get the next step for current value of determining field from steps settings
@@ -582,6 +601,7 @@ function multistep_adl_submit($form, &$form_state) {
       $query['query'] += $destination;
     }
     $form_state['redirect'] = array('node/' . $nid . '/edit', $query);
+    //$form_state['redirect'] = array('node/add/files', $query);
   }
 }
 

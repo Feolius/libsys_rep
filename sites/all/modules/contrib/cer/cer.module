@@ -53,10 +53,18 @@ function cer_permission() {
 }
 
 /**
- * Formats a label.
+ * Implements hook_theme().
  */
-function cer_format_label($key) {
-  $key = explode(' ', $key);
+function cer_theme() {
+  return array(
+    'cer_label' => array(
+      'variables' => array('key' => ''),
+    ),
+  );
+}
+
+function theme_cer_label($variables) {
+  $key = explode(' ', $variables['key']);
   return t('Field instance:"!field1" on Entity type:"!entity1" - Bundle type:"!bundle1" <b>Corresponds with</b> Field instance:"!field2" on Entity type:"!entity2" Bundle type:"!bundle2"',
     array('!entity1' => $key[0], '!bundle1' => $key[1], '!field1' => $key[2], '!entity2' => $key[3], '!bundle2' => $key[4], '!field2' => $key[5]));
 }
@@ -139,7 +147,9 @@ function cer_processing_entity($op, $entity, $type, $process_unchanged = FALSE) 
           $args = array($entity, $keys, $process_unchanged);
           $function = 'cer_' . $op;
           call_user_func_array($function, $args);
-          if ($key[0] != $key[2]) {
+          // Only continue on to check the reverse direction of this preset if
+          // the home & away bundles & entity types are the same.
+          if ($key[0] != $key[3] || $key[1] != $key[4]) {
             break;
           }
 

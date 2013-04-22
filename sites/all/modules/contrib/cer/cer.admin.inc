@@ -55,7 +55,6 @@ function cer_settings_form() {
       $count = 0;
 
       foreach ($corr_entityrefs as $key => $corr_entityref) {
-        $formatted_label = cer_format_label($key);
         $formatted_key = str_replace(' ', '*', $key);
 
         $mapping[] = $formatted_key;
@@ -65,7 +64,7 @@ function cer_settings_form() {
         $form['values'][$count]['enabled_' . $count] = array(
           '#type' => 'checkbox',
           '#default_value' => cer_preset_enabled($formatted_key),
-          '#title' => $formatted_label,
+          '#title' => theme('cer_label', array('key' => $key)),
         );
         $count++;
       }

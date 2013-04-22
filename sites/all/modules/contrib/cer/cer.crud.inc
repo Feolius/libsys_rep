@@ -286,8 +286,11 @@ function cer_delete($home_entity, $keys, $process_unchanged = FALSE) {
  * @param $node the referenced node to be updated.
  */
 function _cer_update($entity_type, $entity) {
+  $entity->original = isset($entity->original) ? $entity->original : NULL;
   field_attach_presave($entity_type, $entity);
   field_attach_update($entity_type, $entity);
+  list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+  entity_get_controller($entity_type)->resetCache(array($id));
 }
 
 
