@@ -6,10 +6,40 @@
  */
 
 /**
- * Implements hook_install().
+ * Implements hook_update().
  */
-function library_admin_site_update_7001() {
+function library_admin_update_7003() {
   db_delete('field_config_instance')
     ->condition('field_id', '81')
+    ->execute();
+}
+
+/**
+ * Implements hook_update().
+ */
+function library_admin_update_7004() {
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_people_home_date')
+    ->execute();
+  db_delete('field_config')
+    ->condition('field_name', 'field_people_home_date')
+    ->execute();
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_people_visit_date')
+    ->execute();
+  db_delete('field_config')
+    ->condition('field_name', 'field_people_visit_date')
+    ->execute();
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_people_marriage_date')
+    ->execute();
+  db_delete('field_config')
+    ->condition('field_name', 'field_people_marriage_date')
+    ->execute();
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_people_birthday')
+    ->execute();
+  db_delete('field_config')
+    ->condition('field_name', 'field_people_birthday')
     ->execute();
 }

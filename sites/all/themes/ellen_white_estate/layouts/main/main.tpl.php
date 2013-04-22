@@ -60,7 +60,6 @@
         || !empty($content['footer_right'])): ?>
         <!-- Footer. -->
         <div id="footer-bottom">
-        <?php if (!empty($content['footer'])): ?>
           <div id="footer-bottom-inside">
             <?php print $content['footer']; ?>
             <?php if (!empty($content['footer_left'])): ?>
@@ -74,7 +73,6 @@
               </div>
             <?php endif; ?>
           </div>
-          <?php endif; ?>
         </div>
         <!-- EOF: #footer-bottom -->
       <?php endif; ?>
