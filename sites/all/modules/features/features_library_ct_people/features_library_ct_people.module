@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the Features CT People feature.
- */
-
-include_once 'features_library_ct_people.features.inc';

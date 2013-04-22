@@ -1,9 +1,7 @@
 <?php
-
 /**
- * implementation of hook_panels_layouts()
+ * Implementation of hook_panels_layouts()
  */
-// Plugin definition
 $plugin = array(
   'title' => t('Page node'),
   'category' => t('Library'),

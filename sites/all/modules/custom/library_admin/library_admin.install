@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for the library admin site module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function library_admin_site_update_7001() {
+  db_delete('field_config_instance')
+    ->condition('field_id', '81')
+    ->execute();
+}

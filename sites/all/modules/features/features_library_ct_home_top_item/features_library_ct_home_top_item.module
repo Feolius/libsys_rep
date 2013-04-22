@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the Features CT Home top item feature.
- */
-
-include_once 'features_library_ct_home_top_item.features.inc';

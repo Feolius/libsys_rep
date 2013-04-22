@@ -581,7 +581,6 @@ function field_sql_storage_field_storage_query(EntityFieldQuery $query) {
       $select_query->orderBy("$entity_base_table." . $order['specifier'], $order['direction']);
     }
   }
-
   return $query->finishQuery($select_query, $id_key);
 }
 

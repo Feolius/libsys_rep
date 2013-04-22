@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the Features CT Location feature.
- */
-
-include_once 'features_library_ct_location.features.inc';
