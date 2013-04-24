@@ -40,7 +40,7 @@ function library_date_field_field_info() {
  */
 function library_date_field_field_is_empty($item, $field) {
   if ($field['type'] == 'library_date_field') {
-    if (empty($item['value']) || empty($item['value2'])) {
+    if (empty($item['value'])) {
       return TRUE;
     }
     return FALSE;
@@ -83,12 +83,12 @@ function library_date_field_field_presave($entity_type, $entity, $field, $instan
   $settings = $field['settings'];
   $process = library_date_field_process_values($field);
   foreach ($items as $delta => $item) {
+    if (empty($item['value2'])) {
+      $item['value2'] = $item['value'];
+    }
     foreach ($process as $processed) {
       $timezone = isset($item['timezone']) ? $item['timezone'] : '';
       if (is_array($item)) {
-        if (empty($item['value2'])) {
-          $item['value2'] = $item['value'];
-        }
         $date = library_date_field_set_date($item[$processed], $processed);
         $items[$delta][$processed] = ($date) ? $date['date'] : '';
         $items[$delta]['timezone'] = date_get_timezone($settings['tz_handling'], $timezone);
@@ -272,7 +272,7 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
   $date_middle = date('m/Y');
   $date_short = date('Y');
   $process[] = 'value2';
-  $default = ($item[$delta]['value'] == $item[$delta]['value2']) ? FALSE : TRUE;
+  $default = (empty($item) || $item['value'] == $item['value2']) ? FALSE : TRUE;
   $element['show_end_date'] = array(
     '#type' => 'checkbox',
     '#title' => t('Show end date'),
