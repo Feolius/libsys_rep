@@ -1,0 +1,16 @@
+name = Library features content type news_article
+description = library_features_content_type_news_article
+core = 7.x
+package = Library
+php = 5.2.4
+version = 7.x-1.0
+project = library_features_content_type_news_article
+dependencies[] = features
+dependencies[] = field_sql_storage
+dependencies[] = image
+dependencies[] = node
+dependencies[] = text
+features[features_api][] = api:1
+features[field][] = node-news_article-body
+features[field][] = node-news_article-field_news_image
+features[node][] = news_article

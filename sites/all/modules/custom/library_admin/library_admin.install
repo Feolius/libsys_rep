@@ -43,3 +43,123 @@ function library_admin_update_7004() {
     ->condition('field_name', 'field_people_birthday')
     ->execute();
 }
+
+/**
+ * Implements hook_update().
+ */
+function library_admin_update_7005() {
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_files_creation_date')
+    ->execute();
+  db_delete('field_config')
+    ->condition('field_name', 'field_files_creation_date')
+    ->execute();
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_files_year')
+    ->execute();
+  db_delete('field_config')
+    ->condition('field_name', 'field_files_year')
+    ->execute();
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_files_date')
+    ->execute();
+  db_delete('field_config')
+    ->condition('field_name', 'field_files_date')
+    ->execute();
+}
+
+/**
+ * Implements hook_update().
+ */
+function library_admin_update_7006() {
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_events_time')
+    ->execute();
+  db_delete('field_config')
+    ->condition('field_name', 'field_events_time')
+    ->execute();
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_events_visit_date')
+    ->execute();
+  db_delete('field_config')
+    ->condition('field_name', 'field_events_visit_date')
+    ->execute();
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_events_home_date')
+    ->execute();
+  db_delete('field_config')
+    ->condition('field_name', 'field_events_home_date')
+    ->execute();
+}
+
+/**
+ * Implements hook_update().
+ */
+function library_admin_update_7009() {
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_location_home_date')
+    ->execute();
+  db_delete('field_config')
+    ->condition('field_name', 'field_location_home_date')
+    ->execute();
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_location_visit_date')
+    ->execute();
+  db_delete('field_config')
+    ->condition('field_name', 'field_location_visit_date')
+    ->execute();
+}
+
+/**
+ * Implements hook_update().
+ */
+function library_admin_update_7011() {
+  if (db_table_exists('field_data_field_files_creation_date')) {
+    db_drop_table('field_data_field_files_creation_date');
+  }
+  if (db_table_exists('field_revision_field_files_creation_date')) {
+    db_drop_table('field_revision_field_files_creation_date');
+  }
+  if (db_table_exists('field_data_field_location_home_date')) {
+    db_drop_table('field_data_field_location_home_date');
+  }
+  if (db_table_exists('field_data_field_location_visit_date')) {
+    db_drop_table('field_data_field_location_visit_date');
+  }
+  if (db_table_exists('field_revision_field_location_home_date')) {
+    db_drop_table('field_revision_field_location_home_date');
+  }
+  if (db_table_exists('field_revision_field_location_visit_date')) {
+    db_drop_table('field_revision_field_location_visit_date');
+  }
+}
+
+/**
+ * Implements hook_update().
+ */
+function library_admin_update_7012() {
+  if (db_table_exists('field_data_field_people_home_date')) {
+    db_drop_table('field_data_field_people_home_date');
+  }
+  if (db_table_exists('field_revision_field_people_home_date')) {
+    db_drop_table('field_revision_field_people_home_date');
+  }
+  if (db_table_exists('field_data_field_people_visit_date')) {
+    db_drop_table('field_data_field_people_visit_date');
+  }
+  if (db_table_exists('field_revision_field_people_visit_date')) {
+    db_drop_table('field_revision_field_people_visit_date');
+  }
+  if (db_table_exists('field_data_field_people_marriage_date')) {
+    db_drop_table('field_data_field_people_marriage_date');
+  }
+  if (db_table_exists('field_revision_field_people_marriage_date')) {
+    db_drop_table('field_revision_field_people_marriage_date');
+  }
+  if (db_table_exists('field_data_field_people_marriage_date')) {
+    db_drop_table('field_data_field_people_marriage_date');
+  }
+  if (db_table_exists('field_revision_field_people_birthday')) {
+    db_drop_table('field_revision_field_people_birthday');
+  }
+}

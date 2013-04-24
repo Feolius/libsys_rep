@@ -103,7 +103,7 @@ function library_date_field_return_date($item, $processed) {
  * field that need to be processed.
  */
 function library_date_field_process_values($field) {
-  return $field['settings']['type'] == 'period' ? array('value', 'value2') : array('value');
+  return array('value', 'value2');
 }
 
 /**

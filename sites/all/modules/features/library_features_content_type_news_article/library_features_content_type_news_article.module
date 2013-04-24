@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Library features content type news_article feature.
+ */
+
+include_once 'library_features_content_type_news_article.features.inc';

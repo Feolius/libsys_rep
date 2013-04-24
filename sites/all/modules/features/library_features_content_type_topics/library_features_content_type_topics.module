@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Library features content type topics feature.
+ */
+
+include_once 'library_features_content_type_topics.features.inc';

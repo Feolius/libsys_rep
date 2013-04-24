@@ -15,7 +15,6 @@ function library_date_field_field_info() {
     'granularity' => drupal_map_assoc(array('year', 'month', 'day')),
     'tz_handling' => 'site',
     'timezone_db' => 'UTC',
-    'type' => 'single',
   );
   $instance_settings = array(
     'default_value' => '',
@@ -41,10 +40,7 @@ function library_date_field_field_info() {
  */
 function library_date_field_field_is_empty($item, $field) {
   if ($field['type'] == 'library_date_field') {
-    if (empty($item['value'])) {
-      return TRUE;
-    }
-    elseif ($field['settings']['type'] == 'period' && empty($item['value2'])) {
+    if (empty($item['value']) || empty($item['value2'])) {
       return TRUE;
     }
     return FALSE;
@@ -57,17 +53,6 @@ function library_date_field_field_is_empty($item, $field) {
 function library_date_field_field_settings_form($field, $instance, $has_data) {
   $settings = $field['settings'];
   $tz_handling = $settings['tz_handling'];
-  $form['type'] = array(
-    '#type' => 'radios',
-    '#title' => t('Type of field'),
-    '#description' => t('Is this field represents a date period or a single date?'),
-    '#options' => array(
-      'period' => t('Date period'),
-      'single' => t('Single date'),
-    ),
-    '#default_value' => $field['settings']['type'],
-    '#disabled' => ($field['settings']['type'] === 'period'),
-  );
 
   // Force this value to hidden because we don't want to allow it to be changed
   // right now, but allow it to be a variable if needed.
@@ -101,6 +86,9 @@ function library_date_field_field_presave($entity_type, $entity, $field, $instan
     foreach ($process as $processed) {
       $timezone = isset($item['timezone']) ? $item['timezone'] : '';
       if (is_array($item)) {
+        if (empty($item['value2'])) {
+          $item['value2'] = $item['value'];
+        }
         $date = library_date_field_set_date($item[$processed], $processed);
         $items[$delta][$processed] = ($date) ? $date['date'] : '';
         $items[$delta]['timezone'] = date_get_timezone($settings['tz_handling'], $timezone);
@@ -283,14 +271,13 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
   $date_full = date('d/m/Y');
   $date_middle = date('m/Y');
   $date_short = date('Y');
-  if ($field['settings']['type'] == 'period') {
-    $process[] = 'value2';
-    $element['show_end_date'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Show end date'),
-      '#default_value' => TRUE,
-    );
-  }
+  $process[] = 'value2';
+  $default = ($item[$delta]['value'] == $item[$delta]['value2']) ? FALSE : TRUE;
+  $element['show_end_date'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show end date'),
+    '#default_value' => $default,
+  );
 
   // Add fieldset.
   $element += array(
@@ -318,7 +305,6 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
       );
     }
   }
-  if ($field['settings']['type'] == 'period') {
     $element['value2']['#title'] = t('to:');
     $element['value2']['#states'] = array(
       'visible' => array(
@@ -326,7 +312,6 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
         array('checked' => TRUE),
       ),
     );
-  }
 
   return $element;
 }
