@@ -10,6 +10,86 @@
 function library_features_content_type_files_field_default_fields() {
   $fields = array();
 
+  // Exported field: 'node-files-field_audio_year'.
+  $fields['node-files-field_audio_year'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_audio_year',
+      'foreign keys' => array(),
+      'indexes' => array(),
+      'locked' => '0',
+      'module' => 'library_date_field',
+      'settings' => array(
+        'granularity' => array(
+          'day' => 'day',
+          'month' => 'month',
+          'year' => 'year',
+        ),
+        'timezone_db' => 'UTC',
+        'tz_handling' => 'site',
+      ),
+      'translatable' => '0',
+      'type' => 'library_date_field',
+    ),
+    'field_instance' => array(
+      'bundle' => 'files',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'library_date_field',
+          'settings' => array(),
+          'type' => 'library_date_field_default',
+          'weight' => 59,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_audio_year',
+      'label' => 'Year',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'library_date_field',
+        'settings' => array(
+          'increment' => 15,
+          'input_format' => 'm/d/Y - H:i:s',
+          'input_format_custom' => '',
+          'label_position' => 'above',
+          'text_parts' => array(),
+          'year_range' => '-3:+3',
+        ),
+        'type' => 'library_date_field_text',
+        'weight' => '12',
+      ),
+    ),
+  );
+
   // Exported field: 'node-files-field_fields_photographer'.
   $fields['node-files-field_fields_photographer'] = array(
     'field_config' => array(
@@ -809,6 +889,86 @@ function library_features_content_type_files_field_default_fields() {
     ),
   );
 
+  // Exported field: 'node-files-field_files_creation_date'.
+  $fields['node-files-field_files_creation_date'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_files_creation_date',
+      'foreign keys' => array(),
+      'indexes' => array(),
+      'locked' => '0',
+      'module' => 'library_date_field',
+      'settings' => array(
+        'granularity' => array(
+          'day' => 'day',
+          'month' => 'month',
+          'year' => 'year',
+        ),
+        'timezone_db' => 'UTC',
+        'tz_handling' => 'site',
+      ),
+      'translatable' => '0',
+      'type' => 'library_date_field',
+    ),
+    'field_instance' => array(
+      'bundle' => 'files',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'library_date_field',
+          'settings' => array(),
+          'type' => 'library_date_field_default',
+          'weight' => 58,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_files_creation_date',
+      'label' => 'Creation date',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'library_date_field',
+        'settings' => array(
+          'increment' => 15,
+          'input_format' => 'm/d/Y - H:i:s',
+          'input_format_custom' => '',
+          'label_position' => 'above',
+          'text_parts' => array(),
+          'year_range' => '-3:+3',
+        ),
+        'type' => 'library_date_field_text',
+        'weight' => '30',
+      ),
+    ),
+  );
+
   // Exported field: 'node-files-field_files_description'.
   $fields['node-files-field_files_description'] = array(
     'field_config' => array(
@@ -1209,6 +1369,86 @@ function library_features_content_type_files_field_default_fields() {
         'settings' => array(),
         'type' => 'options_select',
         'weight' => '3',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-files-field_files_filed_date'.
+  $fields['node-files-field_files_filed_date'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_files_filed_date',
+      'foreign keys' => array(),
+      'indexes' => array(),
+      'locked' => '0',
+      'module' => 'library_date_field',
+      'settings' => array(
+        'granularity' => array(
+          'day' => 'day',
+          'month' => 'month',
+          'year' => 'year',
+        ),
+        'timezone_db' => 'UTC',
+        'tz_handling' => 'site',
+      ),
+      'translatable' => '0',
+      'type' => 'library_date_field',
+    ),
+    'field_instance' => array(
+      'bundle' => 'files',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'library_date_field',
+          'settings' => array(),
+          'type' => 'library_date_field_default',
+          'weight' => 63,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_files_filed_date',
+      'label' => 'Filed date',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'library_date_field',
+        'settings' => array(
+          'increment' => 15,
+          'input_format' => 'm/d/Y - H:i:s',
+          'input_format_custom' => '',
+          'label_position' => 'above',
+          'text_parts' => array(),
+          'year_range' => '-3:+3',
+        ),
+        'type' => 'library_date_field_text',
+        'weight' => '32',
       ),
     ),
   );
@@ -2712,6 +2952,86 @@ function library_features_content_type_files_field_default_fields() {
     ),
   );
 
+  // Exported field: 'node-files-field_files_received_date'.
+  $fields['node-files-field_files_received_date'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_files_received_date',
+      'foreign keys' => array(),
+      'indexes' => array(),
+      'locked' => '0',
+      'module' => 'library_date_field',
+      'settings' => array(
+        'granularity' => array(
+          'day' => 'day',
+          'month' => 'month',
+          'year' => 'year',
+        ),
+        'timezone_db' => 'UTC',
+        'tz_handling' => 'site',
+      ),
+      'translatable' => '0',
+      'type' => 'library_date_field',
+    ),
+    'field_instance' => array(
+      'bundle' => 'files',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'library_date_field',
+          'settings' => array(),
+          'type' => 'library_date_field_default',
+          'weight' => 62,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_files_received_date',
+      'label' => 'Received date',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'library_date_field',
+        'settings' => array(
+          'increment' => 15,
+          'input_format' => 'm/d/Y - H:i:s',
+          'input_format_custom' => '',
+          'label_position' => 'above',
+          'text_parts' => array(),
+          'year_range' => '-3:+3',
+        ),
+        'type' => 'library_date_field_text',
+        'weight' => '31',
+      ),
+    ),
+  );
+
   // Exported field: 'node-files-field_files_receiver'.
   $fields['node-files-field_files_receiver'] = array(
     'field_config' => array(
@@ -3642,7 +3962,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '12',
+        'weight' => '11',
       ),
     ),
   );
@@ -3834,6 +4154,166 @@ function library_features_content_type_files_field_default_fields() {
     ),
   );
 
+  // Exported field: 'node-files-field_image_date_taken'.
+  $fields['node-files-field_image_date_taken'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_image_date_taken',
+      'foreign keys' => array(),
+      'indexes' => array(),
+      'locked' => '0',
+      'module' => 'library_date_field',
+      'settings' => array(
+        'granularity' => array(
+          'day' => 'day',
+          'month' => 'month',
+          'year' => 'year',
+        ),
+        'timezone_db' => 'UTC',
+        'tz_handling' => 'site',
+      ),
+      'translatable' => '0',
+      'type' => 'library_date_field',
+    ),
+    'field_instance' => array(
+      'bundle' => 'files',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'library_date_field',
+          'settings' => array(),
+          'type' => 'library_date_field_default',
+          'weight' => 60,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_image_date_taken',
+      'label' => 'Date taken',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'library_date_field',
+        'settings' => array(
+          'increment' => 15,
+          'input_format' => 'm/d/Y - H:i:s',
+          'input_format_custom' => '',
+          'label_position' => 'above',
+          'text_parts' => array(),
+          'year_range' => '-3:+3',
+        ),
+        'type' => 'library_date_field_text',
+        'weight' => '5',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-files-field_video_date_taken'.
+  $fields['node-files-field_video_date_taken'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_video_date_taken',
+      'foreign keys' => array(),
+      'indexes' => array(),
+      'locked' => '0',
+      'module' => 'library_date_field',
+      'settings' => array(
+        'granularity' => array(
+          'day' => 'day',
+          'month' => 'month',
+          'year' => 'year',
+        ),
+        'timezone_db' => 'UTC',
+        'tz_handling' => 'site',
+      ),
+      'translatable' => '0',
+      'type' => 'library_date_field',
+    ),
+    'field_instance' => array(
+      'bundle' => 'files',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'library_date_field',
+          'settings' => array(),
+          'type' => 'library_date_field_default',
+          'weight' => 61,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_video_date_taken',
+      'label' => 'Date taken',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'library_date_field',
+        'settings' => array(
+          'increment' => 15,
+          'input_format' => 'm/d/Y - H:i:s',
+          'input_format_custom' => '',
+          'label_position' => 'above',
+          'text_parts' => array(),
+          'year_range' => '-3:+3',
+        ),
+        'type' => 'library_date_field_text',
+        'weight' => '25',
+      ),
+    ),
+  );
+
   // Translatables
   // Included for use with string extractors like potx.
   t('Album poster');
@@ -3844,9 +4324,12 @@ function library_features_content_type_files_field_default_fields() {
   t('Category');
   t('Chapter');
   t('Collection');
+  t('Creation date');
+  t('Date taken');
   t('Description');
   t('File');
   t('File Type');
+  t('Filed date');
   t('Folder');
   t('Galleries');
   t('Handwritten');
@@ -3867,6 +4350,7 @@ function library_features_content_type_files_field_default_fields() {
   t('Primary Media');
   t('Publication');
   t('Rating');
+  t('Received date');
   t('Receiver');
   t('Receiver Location');
   t('Subtitle');
@@ -3876,6 +4360,7 @@ function library_features_content_type_files_field_default_fields() {
   t('Typewritten');
   t('Video Youtube');
   t('Volume');
+  t('Year');
 
   return $fields;
 }

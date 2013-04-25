@@ -10,14 +10,14 @@
 function library_features_content_type_people_field_default_fields() {
   $fields = array();
 
-  // Exported field: 'node-people-field_people_birthday_date'.
-  $fields['node-people-field_people_birthday_date'] = array(
+  // Exported field: 'node-people-field_people_birthday'.
+  $fields['node-people-field_people_birthday'] = array(
     'field_config' => array(
       'active' => '1',
       'cardinality' => '1',
       'deleted' => '0',
       'entity_types' => array(),
-      'field_name' => 'field_people_birthday_date',
+      'field_name' => 'field_people_birthday',
       'foreign keys' => array(),
       'indexes' => array(),
       'locked' => '0',
@@ -29,7 +29,6 @@ function library_features_content_type_people_field_default_fields() {
           'year' => 'year',
         ),
         'timezone_db' => 'UTC',
-        'type' => 'single',
         'tz_handling' => 'site',
       ),
       'translatable' => '0',
@@ -58,7 +57,7 @@ function library_features_content_type_people_field_default_fields() {
           'module' => 'library_date_field',
           'settings' => array(),
           'type' => 'library_date_field_default',
-          'weight' => 27,
+          'weight' => 28,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -68,8 +67,8 @@ function library_features_content_type_people_field_default_fields() {
         ),
       ),
       'entity_type' => 'node',
-      'field_name' => 'field_people_birthday_date',
-      'label' => 'Birthday date',
+      'field_name' => 'field_people_birthday',
+      'label' => 'Birthday',
       'required' => 0,
       'settings' => array(
         'user_register_form' => FALSE,
@@ -86,7 +85,7 @@ function library_features_content_type_people_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'library_date_field_text',
-        'weight' => '50',
+        'weight' => '51',
       ),
     ),
   );
@@ -709,7 +708,6 @@ function library_features_content_type_people_field_default_fields() {
           'year' => 'year',
         ),
         'timezone_db' => 'UTC',
-        'type' => 'single',
         'tz_handling' => 'site',
       ),
       'translatable' => '0',
@@ -738,7 +736,7 @@ function library_features_content_type_people_field_default_fields() {
           'module' => 'library_date_field',
           'settings' => array(),
           'type' => 'library_date_field_default',
-          'weight' => 25,
+          'weight' => 26,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -766,7 +764,7 @@ function library_features_content_type_people_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'library_date_field_text',
-        'weight' => '48',
+        'weight' => '49',
       ),
     ),
   );
@@ -1154,7 +1152,6 @@ function library_features_content_type_people_field_default_fields() {
           'year' => 'year',
         ),
         'timezone_db' => 'UTC',
-        'type' => 'single',
         'tz_handling' => 'site',
       ),
       'translatable' => '0',
@@ -1183,7 +1180,7 @@ function library_features_content_type_people_field_default_fields() {
           'module' => 'library_date_field',
           'settings' => array(),
           'type' => 'library_date_field_default',
-          'weight' => 28,
+          'weight' => 27,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -1195,11 +1192,12 @@ function library_features_content_type_people_field_default_fields() {
       'entity_type' => 'node',
       'field_name' => 'field_people_marriage_date',
       'label' => 'Marriage date',
-      'required' => FALSE,
+      'required' => 0,
       'settings' => array(
         'user_register_form' => FALSE,
       ),
       'widget' => array(
+        'active' => 1,
         'module' => 'library_date_field',
         'settings' => array(
           'increment' => 15,
@@ -1210,7 +1208,7 @@ function library_features_content_type_people_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'library_date_field_text',
-        'weight' => '51',
+        'weight' => '50',
       ),
     ),
   );
@@ -1957,7 +1955,6 @@ function library_features_content_type_people_field_default_fields() {
           'year' => 'year',
         ),
         'timezone_db' => 'UTC',
-        'type' => 'single',
         'tz_handling' => 'site',
       ),
       'translatable' => '0',
@@ -1986,7 +1983,7 @@ function library_features_content_type_people_field_default_fields() {
           'module' => 'library_date_field',
           'settings' => array(),
           'type' => 'library_date_field_default',
-          'weight' => 26,
+          'weight' => 25,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -2014,7 +2011,7 @@ function library_features_content_type_people_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'library_date_field_text',
-        'weight' => '49',
+        'weight' => '48',
       ),
     ),
   );
@@ -2224,7 +2221,7 @@ function library_features_content_type_people_field_default_fields() {
 
   // Translatables
   // Included for use with string extractors like potx.
-  t('Birthday date');
+  t('Birthday');
   t('Created event');
   t('Degree');
   t('Description');

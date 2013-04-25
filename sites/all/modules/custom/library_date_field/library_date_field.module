@@ -351,7 +351,7 @@ function library_date_field_field_formatter_view($entity_type, $entity, $field, 
   $process = library_date_field_process_values($field);
   foreach ($items as $delta => $item) {
     $output = !empty($item['value']) ? $item['value'] : '';
-    if (sizeof($process) == 2) {
+    if (sizeof($process) == 2 && $item['value'] != $item['value2']) {
       $output .= " - {$item['value2']}";
     }
     $element[$delta] = array('#markup' => $output);

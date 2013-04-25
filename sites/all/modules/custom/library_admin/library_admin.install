@@ -163,3 +163,57 @@ function library_admin_update_7018() {
     db_drop_table('field_revision_field_people_birthday');
   }
 }
+
+/**
+ * Implements hook_update().
+ */
+function library_admin_update_7020() {
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_people_birthday')
+    ->execute();
+  db_delete('field_config')
+    ->condition('field_name', 'field_people_birthday')
+    ->execute();
+  if (db_table_exists('field_revision_field_people_birthday')) {
+      db_drop_table('field_revision_field_people_birthday');
+    }
+  if (db_table_exists('field_data_field_people_birthday')) {
+     db_drop_table('field_data_field_people_birthday');
+   }
+}
+
+/**
+ * Implements hook_update().
+ */
+function library_admin_update_7027() {
+  if (db_table_exists('field_revision_field_events_time')) {
+    db_drop_table('field_revision_field_events_time');
+  }
+  if (db_table_exists('field_data_field_events_time')) {
+    db_drop_table('field_data_field_events_time');
+  }
+  if (db_table_exists('field_revision_field_events_visit_date')) {
+    db_drop_table('field_revision_field_events_visit_date');
+  }
+  if (db_table_exists('field_data_field_events_visit_date')) {
+    db_drop_table('field_data_field_events_visit_date');
+  }
+  if (db_table_exists('field_revision_field_events_home_date')) {
+    db_drop_table('field_revision_field_events_home_date');
+  }
+  if (db_table_exists('field_data_field_events_home_date')) {
+    db_drop_table('field_data_field_events_home_date');
+  }
+}
+
+/**
+ * Implements hook_update().
+ */
+function library_admin_update_7025() {
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_events_home_date')
+    ->execute();
+  db_delete('field_config')
+    ->condition('field_name', 'field_events_home_date')
+    ->execute();
+}

@@ -28,6 +28,7 @@ function library_features_content_type_files_field_group_info() {
       2 => 'field_files_topics',
       3 => 'field_files_album_poster',
       4 => 'field_files_length',
+      5 => 'field_audio_year',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(
@@ -98,6 +99,7 @@ function library_features_content_type_files_field_group_info() {
       2 => 'field_files_image',
       3 => 'field_files_image_date',
       4 => 'field_fields_photographer',
+      5 => 'field_image_date_taken',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(
@@ -230,6 +232,7 @@ function library_features_content_type_files_field_group_info() {
     'weight' => '8',
     'children' => array(
       0 => 'field_files_youtube_media',
+      1 => 'field_video_date_taken',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(
