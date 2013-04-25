@@ -3,11 +3,6 @@
 require_once __DIR__ . '/library_date_field.inc';
 
 /**
- * @file
- * Field hooks to implement a approximate date field.
- */
-
-/**
  * Implements hook_field_info().
  */
 function library_date_field_field_info() {
@@ -272,7 +267,7 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
   $date_middle = date('m/Y');
   $date_short = date('Y');
   $process[] = 'value2';
-  $default = (empty($item) || $item['value'] == $item['value2']) ? FALSE : TRUE;
+  $default = (empty($item[$delta]) || ($item[$delta]['value'] == $item[$delta]['value2'])) ? FALSE : TRUE;
   $element['show_end_date'] = array(
     '#type' => 'checkbox',
     '#title' => t('Show end date'),
