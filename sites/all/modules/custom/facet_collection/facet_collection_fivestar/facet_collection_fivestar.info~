@@ -1,7 +1,7 @@
 name = Facet collection fivestar filters
 description = "Provides facet collection filters for fivestar rating field"
-package = Facet Collection
+package = Facet collection
 core = 7.x
 dependencies[] = facet_collection
-dependencies[] = fivestar
+
 

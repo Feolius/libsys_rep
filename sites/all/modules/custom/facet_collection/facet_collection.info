@@ -1,5 +1,5 @@
 name = Facet Collection
-description = "Provides set of filters for nodes to allow user choose content that he want to see. Filtration perform through apache solr facets."
+description = "It's a core of library page. Provides functions for getting filters for different fields and API to easily add new kind of field in filter system"
 package = Facet Collection
 core = 7.x
 dependencies[] = apachesolr

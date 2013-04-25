@@ -30,7 +30,7 @@ function facet_collection_date_facet_collection_field_facet_groups($field_info) 
         'label' => t($label),
         'description' => t('Automatically created facet for facet collection module'),
         'field' => $index_field_name,
-        'field alias' => $facet_name,
+        'field alias' => $index_field_name,
         'field api name' => $field_name,
         'field api bundles' => array(),
         'query types' => $query_types,
