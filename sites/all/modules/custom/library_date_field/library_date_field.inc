@@ -137,10 +137,3 @@ function _library_date_return_timestamp($item, $processed) {
     return $output;
   }
 }
-
-/**
- * Helper function for validate.
- */
-function _library_date_return_timestdddamp() {
-
-}
