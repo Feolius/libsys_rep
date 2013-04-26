@@ -306,7 +306,6 @@ function library_features_content_type_events_field_default_fields() {
           'year' => 'year',
         ),
         'timezone_db' => 'UTC',
-        'type' => 'single',
         'tz_handling' => 'site',
       ),
       'translatable' => '0',
@@ -1074,7 +1073,6 @@ function library_features_content_type_events_field_default_fields() {
           'year' => 'year',
         ),
         'timezone_db' => 'UTC',
-        'type' => 'period',
         'tz_handling' => 'site',
       ),
       'translatable' => '0',
@@ -1114,7 +1112,7 @@ function library_features_content_type_events_field_default_fields() {
       ),
       'entity_type' => 'node',
       'field_name' => 'field_events_time',
-      'label' => 'Events time',
+      'label' => 'Time',
       'required' => 0,
       'settings' => array(
         'user_register_form' => FALSE,
@@ -1155,7 +1153,6 @@ function library_features_content_type_events_field_default_fields() {
           'year' => 'year',
         ),
         'timezone_db' => 'UTC',
-        'type' => 'single',
         'tz_handling' => 'site',
       ),
       'translatable' => '0',
@@ -1320,7 +1317,6 @@ function library_features_content_type_events_field_default_fields() {
   // Included for use with string extractors like potx.
   t('Author');
   t('Description');
-  t('Events time');
   t('Home');
   t('Home date');
   t('Main character');
@@ -1330,6 +1326,7 @@ function library_features_content_type_events_field_default_fields() {
   t('Related topic');
   t('Route start');
   t('Route to');
+  t('Time');
   t('Visit date');
   t('Visit nodes');
 
