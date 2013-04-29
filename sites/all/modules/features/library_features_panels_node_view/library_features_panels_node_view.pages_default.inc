@@ -116,7 +116,7 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->locks = array();
     $display->content['new-3'] = $pane;
     $display->panels['content'][1] = 'new-3';
-  $display->hide_title = PANELS_TITLE_FIXED;
+  $display->hide_title = PANELS_TITLE_NONE;
   $display->title_pane = 'new-1';
   $handler->conf['display'] = $display;
   $export['node_view_panel_context'] = $handler;

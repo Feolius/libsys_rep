@@ -169,7 +169,7 @@ function library_features_panels_site_template_default_page_manager_handlers() {
     $pane->locks = array();
     $display->content['new-6'] = $pane;
     $display->panels['header_search_block'][0] = 'new-6';
-  $display->hide_title = PANELS_TITLE_FIXED;
+  $display->hide_title = PANELS_TITLE_NONE;
   $display->title_pane = 'new-4';
   $handler->conf['display'] = $display;
   $export['site_template_panel_context'] = $handler;
