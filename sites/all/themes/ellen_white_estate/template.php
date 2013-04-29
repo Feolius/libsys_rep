@@ -37,10 +37,3 @@ function ellen_white_estate_preprocess_html(&$variables) {
     unset($variables['classes_array'][$key]);
   }
 }
-
-/**
- * Preprocesses variables for node--people-full.tpl.php.
- */
-function ellen_white_estate_preprocess_node__people_full(&$variables) {
-kpr($variables);die;
-}
