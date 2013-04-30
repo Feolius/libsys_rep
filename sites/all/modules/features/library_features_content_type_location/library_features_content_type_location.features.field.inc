@@ -45,16 +45,10 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'addressfield',
-          'settings' => array(
-            'format_handlers' => array(
-              0 => 'address',
-            ),
-            'use_widget_handlers' => 1,
-          ),
-          'type' => 'addressfield_default',
-          'weight' => '3',
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '0',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -143,11 +137,10 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'text',
+          'label' => 'hidden',
           'settings' => array(),
-          'type' => 'text_default',
-          'weight' => 7,
+          'type' => 'hidden',
+          'weight' => '5',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -222,13 +215,13 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
+          'label' => 'hidden',
           'module' => 'text',
           'settings' => array(
             'trim_length' => 600,
           ),
           'type' => 'text_summary_or_trimmed',
-          'weight' => '4',
+          'weight' => '1',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -411,11 +404,10 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'library_date_field',
+          'label' => 'hidden',
           'settings' => array(),
-          'type' => 'library_date_field_default',
-          'weight' => 18,
+          'type' => 'hidden',
+          'weight' => '14',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -510,13 +502,10 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 13,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '10',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -594,11 +583,10 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'text',
+          'label' => 'hidden',
           'settings' => array(),
-          'type' => 'text_default',
-          'weight' => 8,
+          'type' => 'hidden',
+          'weight' => '6',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -689,13 +677,10 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 17,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '13',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -787,13 +772,10 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 6,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '4',
         ),
         'rendered_in_node' => array(
           'label' => 'above',
@@ -892,13 +874,10 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 10,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '8',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -990,13 +969,10 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 16,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '12',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -1088,13 +1064,10 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 15,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '11',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -1172,11 +1145,10 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'text',
+          'label' => 'hidden',
           'settings' => array(),
-          'type' => 'text_default',
-          'weight' => 9,
+          'type' => 'hidden',
+          'weight' => '7',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -1248,11 +1220,10 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'library_date_field',
+          'label' => 'hidden',
           'settings' => array(),
-          'type' => 'library_date_field_default',
-          'weight' => 19,
+          'type' => 'hidden',
+          'weight' => '15',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -1348,13 +1319,10 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 11,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '9',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -1446,13 +1414,10 @@ function library_features_content_type_location_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 5,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '3',
         ),
         'rendered_in_node' => array(
           'label' => 'above',

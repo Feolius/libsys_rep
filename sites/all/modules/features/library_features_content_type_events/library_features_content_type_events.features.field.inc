@@ -72,13 +72,13 @@ function library_features_content_type_events_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
+          'label' => 'inline',
           'module' => 'entityreference',
           'settings' => array(
             'link' => FALSE,
           ),
           'type' => 'entityreference_label',
-          'weight' => 1,
+          'weight' => '2',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -154,11 +154,11 @@ function library_features_content_type_events_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
+          'label' => 'hidden',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => 0,
+          'weight' => '1',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -184,7 +184,7 @@ function library_features_content_type_events_field_default_fields() {
           'summary_rows' => 5,
         ),
         'type' => 'text_textarea_with_summary',
-        'weight' => '1',
+        'weight' => '2',
       ),
     ),
   );
@@ -251,13 +251,10 @@ function library_features_content_type_events_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 8,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '7',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -282,7 +279,7 @@ function library_features_content_type_events_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '10',
+        'weight' => '8',
       ),
     ),
   );
@@ -330,11 +327,10 @@ function library_features_content_type_events_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'library_date_field',
+          'label' => 'inline',
           'settings' => array(),
-          'type' => 'library_date_field_default',
-          'weight' => 16,
+          'type' => 'hidden',
+          'weight' => '14',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -362,7 +358,99 @@ function library_features_content_type_events_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'library_date_field_text',
-        'weight' => '18',
+        'weight' => '15',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-events-field_events_image'.
+  $fields['node-events-field_events_image'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_events_image',
+      'foreign keys' => array(
+        'fid' => array(
+          'columns' => array(
+            'fid' => 'fid',
+          ),
+          'table' => 'file_managed',
+        ),
+      ),
+      'indexes' => array(
+        'fid' => array(
+          0 => 'fid',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'image',
+      'settings' => array(
+        'default_image' => 0,
+        'uri_scheme' => 'public',
+      ),
+      'translatable' => '0',
+      'type' => 'image',
+    ),
+    'field_instance' => array(
+      'bundle' => 'events',
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'hidden',
+          'module' => 'image',
+          'settings' => array(
+            'image_link' => '',
+            'image_style' => 'events-image-full',
+          ),
+          'type' => 'image',
+          'weight' => '0',
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_events_image',
+      'label' => 'Image',
+      'required' => 0,
+      'settings' => array(
+        'alt_field' => 0,
+        'default_image' => 0,
+        'file_directory' => '',
+        'file_extensions' => 'png gif jpg jpeg',
+        'max_filesize' => '',
+        'max_resolution' => '',
+        'min_resolution' => '',
+        'title_field' => 0,
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'image',
+        'settings' => array(
+          'preview_image_style' => 'thumbnail',
+          'progress_indicator' => 'throbber',
+        ),
+        'type' => 'image_image',
+        'weight' => '1',
       ),
     ),
   );
@@ -429,13 +517,10 @@ function library_features_content_type_events_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 7,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '6',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -460,7 +545,7 @@ function library_features_content_type_events_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '9',
+        'weight' => '7',
       ),
     ),
   );
@@ -527,13 +612,14 @@ function library_features_content_type_events_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
+          'label' => 'hidden',
           'module' => 'entityreference',
           'settings' => array(
-            'link' => FALSE,
+            'links' => TRUE,
+            'view_mode' => '',
           ),
-          'type' => 'entityreference_label',
-          'weight' => 12,
+          'type' => 'entityreference_entity_view',
+          'weight' => '10',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -558,7 +644,7 @@ function library_features_content_type_events_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '14',
+        'weight' => '11',
       ),
     ),
   );
@@ -626,13 +712,10 @@ function library_features_content_type_events_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 4,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '4',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -657,7 +740,7 @@ function library_features_content_type_events_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '6',
+        'weight' => '5',
       ),
     ),
   );
@@ -724,13 +807,10 @@ function library_features_content_type_events_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 2,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '3',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -822,13 +902,10 @@ function library_features_content_type_events_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 13,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '11',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -853,7 +930,7 @@ function library_features_content_type_events_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '15',
+        'weight' => '12',
       ),
     ),
   );
@@ -920,13 +997,10 @@ function library_features_content_type_events_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 11,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '9',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -951,7 +1025,7 @@ function library_features_content_type_events_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '13',
+        'weight' => '10',
       ),
     ),
   );
@@ -1018,13 +1092,10 @@ function library_features_content_type_events_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 10,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '8',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -1049,7 +1120,7 @@ function library_features_content_type_events_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '12',
+        'weight' => '9',
       ),
     ),
   );
@@ -1097,11 +1168,11 @@ function library_features_content_type_events_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
+          'label' => 'inline',
           'module' => 'library_date_field',
           'settings' => array(),
           'type' => 'library_date_field_default',
-          'weight' => 14,
+          'weight' => '12',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -1129,7 +1200,7 @@ function library_features_content_type_events_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'library_date_field_text',
-        'weight' => '16',
+        'weight' => '13',
       ),
     ),
   );
@@ -1177,11 +1248,10 @@ function library_features_content_type_events_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'library_date_field',
+          'label' => 'hidden',
           'settings' => array(),
-          'type' => 'library_date_field_default',
-          'weight' => 15,
+          'type' => 'hidden',
+          'weight' => '13',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -1209,7 +1279,7 @@ function library_features_content_type_events_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'library_date_field_text',
-        'weight' => '17',
+        'weight' => '14',
       ),
     ),
   );
@@ -1277,13 +1347,10 @@ function library_features_content_type_events_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 5,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '5',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -1308,7 +1375,7 @@ function library_features_content_type_events_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '7',
+        'weight' => '6',
       ),
     ),
   );
@@ -1319,6 +1386,7 @@ function library_features_content_type_events_field_default_fields() {
   t('Description');
   t('Home');
   t('Home date');
+  t('Image');
   t('Main character');
   t('Original place');
   t('Place nodes');

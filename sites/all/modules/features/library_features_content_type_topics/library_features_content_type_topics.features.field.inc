@@ -10,6 +10,83 @@
 function library_features_content_type_topics_field_default_fields() {
   $fields = array();
 
+  // Exported field: 'node-topics-field_rating'.
+  $fields['node-topics-field_rating'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_rating',
+      'foreign keys' => array(),
+      'indexes' => array(),
+      'locked' => '0',
+      'module' => 'fivestar',
+      'settings' => array(
+        'axis' => 'vote',
+      ),
+      'translatable' => '0',
+      'type' => 'fivestar',
+    ),
+    'field_instance' => array(
+      'bundle' => 'topics',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'hidden',
+          'module' => 'fivestar',
+          'settings' => array(
+            'expose' => 1,
+            'style' => 'average',
+            'text' => 'none',
+            'widget' => array(
+              'fivestar_widget' => 'default',
+            ),
+          ),
+          'type' => 'fivestar_formatter_default',
+          'weight' => '0',
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_rating',
+      'label' => 'Rating',
+      'required' => 0,
+      'settings' => array(
+        'allow_clear' => 0,
+        'stars' => '5',
+        'target' => 'none',
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'fivestar',
+        'settings' => array(),
+        'type' => 'exposed',
+        'weight' => '5',
+      ),
+    ),
+  );
+
   // Exported field: 'node-topics-field_topics_body'.
   $fields['node-topics-field_topics_body'] = array(
     'field_config' => array(
@@ -56,11 +133,11 @@ function library_features_content_type_topics_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
+          'label' => 'hidden',
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => 0,
+          'weight' => '2',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -86,7 +163,99 @@ function library_features_content_type_topics_field_default_fields() {
           'summary_rows' => 5,
         ),
         'type' => 'text_textarea_with_summary',
-        'weight' => '31',
+        'weight' => '2',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-topics-field_topics_image'.
+  $fields['node-topics-field_topics_image'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_topics_image',
+      'foreign keys' => array(
+        'fid' => array(
+          'columns' => array(
+            'fid' => 'fid',
+          ),
+          'table' => 'file_managed',
+        ),
+      ),
+      'indexes' => array(
+        'fid' => array(
+          0 => 'fid',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'image',
+      'settings' => array(
+        'default_image' => 0,
+        'uri_scheme' => 'public',
+      ),
+      'translatable' => '0',
+      'type' => 'image',
+    ),
+    'field_instance' => array(
+      'bundle' => 'topics',
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'hidden',
+          'module' => 'image',
+          'settings' => array(
+            'image_link' => '',
+            'image_style' => 'topics-image-full',
+          ),
+          'type' => 'image',
+          'weight' => '1',
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_topics_image',
+      'label' => 'Image',
+      'required' => 0,
+      'settings' => array(
+        'alt_field' => 0,
+        'default_image' => 0,
+        'file_directory' => '',
+        'file_extensions' => 'png gif jpg jpeg',
+        'max_filesize' => '',
+        'max_resolution' => '',
+        'min_resolution' => '',
+        'title_field' => 0,
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'image',
+        'settings' => array(
+          'preview_image_style' => 'thumbnail',
+          'progress_indicator' => 'throbber',
+        ),
+        'type' => 'image_image',
+        'weight' => '1',
       ),
     ),
   );
@@ -145,11 +314,10 @@ function library_features_content_type_topics_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'taxonomy',
+          'label' => 'hidden',
           'settings' => array(),
-          'type' => 'taxonomy_term_reference_link',
-          'weight' => 1,
+          'type' => 'hidden',
+          'weight' => '3',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -170,7 +338,7 @@ function library_features_content_type_topics_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '32',
+        'weight' => '3',
       ),
     ),
   );
@@ -237,13 +405,10 @@ function library_features_content_type_topics_field_default_fields() {
           'weight' => 0,
         ),
         'default' => array(
-          'label' => 'above',
-          'module' => 'entityreference',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-          'type' => 'entityreference_label',
-          'weight' => 2,
+          'label' => 'hidden',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => '4',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -268,7 +433,7 @@ function library_features_content_type_topics_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '33',
+        'weight' => '4',
       ),
     ),
   );
@@ -276,7 +441,9 @@ function library_features_content_type_topics_field_default_fields() {
   // Translatables
   // Included for use with string extractors like potx.
   t('Body');
+  t('Image');
   t('Kind');
+  t('Rating');
   t('Related event');
 
   return $fields;

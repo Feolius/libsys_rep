@@ -5,9 +5,13 @@ core = 7.x
 
 base theme = corporateclean
 
+; Custom css
 stylesheets[all][] = style.css
 stylesheets[all][] = style_templates.css 
 stylesheets[all][] = color/colors.css
+
+; Custom js
+scripts[] = js/library.js
 
 settings[breadcrumb_display]= 1
 
@@ -20,5 +24,3 @@ version = "7.x-1.5"
 core = "7.x"
 project = "corporateclean"
 datestamp = "1337952655"
-
-

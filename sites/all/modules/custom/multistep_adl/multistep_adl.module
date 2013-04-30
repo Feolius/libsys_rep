@@ -356,17 +356,18 @@ function multistep_adl_field_group_pre_render(&$element, $group, &$form) {
       '#prefix' => $prefix,
       '#suffix' => '</div>',
       '#weight' => $group->weight,
-      //'#access' => $access,
+      '#access' => $access,
     );
-  } else {
-    $element += array(
-      '#type' => 'hidden',
-      '#prefix' => $prefix,
-      '#suffix' => '</div>',
-      '#weight' => $group->weight,
-      //'#access' => $access,
-    );
-  }
+ }
+//  else {
+//    $element += array(
+//      '#type' => 'hidden',
+//      '#prefix' => $prefix,
+//      '#suffix' => '</div>',
+//      '#weight' => $group->weight,
+//      //'#access' => $access,
+//    );
+//  }
 }
 
 /**
@@ -532,6 +533,10 @@ function multistep_adl_submit($form, &$form_state) {
   foreach ($exclude_form_state_fields as $exclude_field) {
     unset($form_state['values'][$exclude_field]);
   }
+
+
+
+
   node_form_submit($form, $form_state);
 
   $nid = $form_state['nid'];
