@@ -1,0 +1,16 @@
+name = Library features image styles
+description = library_features_image_styles
+core = 7.x
+package = Library
+php = 5.2.4
+version = 7.x-1.2
+project = library_features_image_styles
+dependencies[] = image
+features[features_api][] = api:1
+features[image][] = album_poster
+features[image][] = collection_thumbnail
+features[image][] = events-image-full
+features[image][] = home_news_image
+features[image][] = home_top_image_size
+features[image][] = people-image-full
+features[image][] = topics-image-full
