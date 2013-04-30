@@ -21,7 +21,7 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Audio',
-    'weight' => '5',
+    'weight' => '3',
     'children' => array(
       0 => 'field_files_audio',
       1 => 'field_files_artist',
@@ -92,7 +92,7 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Image',
-    'weight' => '3',
+    'weight' => '2',
     'children' => array(
       0 => 'field_files_exif',
       1 => 'field_files_galleries',
@@ -100,6 +100,9 @@ function library_features_content_type_files_field_group_info() {
       3 => 'field_files_image_date',
       4 => 'field_fields_photographer',
       5 => 'field_image_date_taken',
+      6 => 'field_files_image_event',
+      7 => 'field_files_image_location',
+      8 => 'field_files_image_people',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(
@@ -120,11 +123,10 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Misc',
-    'weight' => '9',
+    'weight' => '6',
     'children' => array(
       0 => 'field_files_file_type',
       1 => 'field_files_images',
-      2 => 'field_files_rating',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(
@@ -181,7 +183,11 @@ function library_features_content_type_files_field_group_info() {
     'children' => array(
       0 => 'field_files_description',
       1 => 'field_files_primary_media',
-      2 => 'title',
+      2 => 'field_files_rating',
+      3 => 'field_files_creation_date',
+      4 => 'field_files_received_date',
+      5 => 'field_files_filed_date',
+      6 => 'title',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(
@@ -229,10 +235,13 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Video',
-    'weight' => '8',
+    'weight' => '4',
     'children' => array(
       0 => 'field_files_youtube_media',
       1 => 'field_video_date_taken',
+      2 => 'field_files_video_people',
+      3 => 'field_files_video_location',
+      4 => 'field_files_video_event',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(
