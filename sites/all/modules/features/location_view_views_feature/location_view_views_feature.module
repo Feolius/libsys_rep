@@ -1,7 +1,0 @@
-<?php
-/**
- * @file
- * Code for the Location View Views Feature feature.
- */
-
-include_once 'location_view_views_feature.features.inc';
