@@ -68,9 +68,38 @@ function collection_page_theme() {
  * @return string
  */
 function theme_facet_collection_search_results__alter($variables) {
+  $content_tabs = array(
+    '#standard-default' => array(
+      '#id' => 'standard-default-view',
+      '#title' => 'Standard View (Default)',
+      '#class' => 'standart',
+    ),
+    '#standard-thumbnail' => array(
+      '#id' => 'standard-thumbnail-view',
+      '#title' => 'Standard View (Thumbnail)',
+      '#class' => 'thumbnail',
+    ),
+    '#timeline' => array(
+      '#id' => 'timeline-view',
+      '#title' => t('Timeline View'),
+      '#class' => 'timeline',
+    ),
+    '#location' => array(
+      '#id' => 'location-view',
+      '#title' => t('Location View'),
+      '#class' => 'location',
+    ),
+  );
+  $disabled_tabs = array();
+
   $results = $variables['results'];
+  $content_tabs['#standard-default']['#content'] = array(theme('collection_standard_default_view', array('results' => $results)));
+  $content_tabs['#standard-thumbnail']['#content'] = array(theme('collection_standard_thumbnail_view', array('results' => $results)));
+
+
   //Put apache_solr request results into SESSION for process those in timeline data callback
   $_SESSION['collection_page_apache_solr_results'] = $results;
+
   //Define for what bundle current apache_solr request was executed
   $bundle = '';
   if (isset($_GET['f'])) {
@@ -81,46 +110,35 @@ function theme_facet_collection_search_results__alter($variables) {
       }
     }
   }
+
   //Set page title
   drupal_set_title('Library');
 
-  if (isset($_GET['view']) && $_GET['view'] == 'thumb') {
-    $rendered_results = theme('collection_standard_thumbnail_view', array('results' => $results));
-    $standard_view_type_label = 'Thumbnail';
-  }
-  else {
-    $rendered_results = theme('collection_standard_default_view', array('results' => $variables['results']));
-    $standard_view_type_label = 'Default';
-  }
-  $options = array(
-    'query' => array_diff_key($_GET, array('q' => 1, 'view' => 1)),
-  );
-
-  $standard_view_content = array(
-    '#id' => 'standard-view',
-    '#title' => 'Standard View (<span class="standard-view-type-title" id="standard-view-tab-button-type-title">' . $standard_view_type_label . '</span>)',
-    '#content' => array(
-      '#view' => $rendered_results,
-    ),
-  );
-  $timeline_view_content = array(
-    '#id' => 'timeline-view',
-    '#title' => t('Timeline View'),
-    '#content' => array(
+  $timeline_library = libraries_get_path('timeline');
+  $bundle_date_fields = _collection_page_get_date_fields_from_bundle($bundle);
+  if (!empty($timeline_library) && !empty($bundle_date_fields)) {
+    $content_tabs['#timeline']['#content'] = array(
       '#view' => theme('timeline_iframe'),
       '#pager' => theme('pager', array('tags' => NULL)),
-    ),
-  );
+    );
+  }
+  else {
+    $disabled_tabs[] = '#timeline';
+  }
 
   $node_ids = '';
   foreach ($results as $result) {
-    $node = node_load($result['node']->entity_id);
-    if ($node->type == 'files') {
+    if ($result['bundle'] == 'location') {
+      //Collect NIDs of nodes for bundle Location
+      $node_ids = implode(',', array($node_ids, $result['node']->entity_id));
+    }
+    else {
+      $node = node_load($result['node']->entity_id);
       //Collect NIDs of referenced location nodes for bunlde Files
       $instances = field_info_instances('node', $node->type);
       foreach ($instances as $field_name => $instance) {
         $field_info = field_info_field($field_name);
-        if ($field_info['type'] == 'entityreference') {
+        if ($field_info['type'] == 'entityreference' && in_array('location', $field_info['settings']['handler_settings']['target_bundles'])) {
           $items = field_get_items('node', $node, $field_info['field_name']);
           if (!empty($items)) {
             $node_ids = implode(',', array($node_ids, $items[0]['target_id']));
@@ -128,77 +146,59 @@ function theme_facet_collection_search_results__alter($variables) {
         }
       }
     }
-    elseif ($node->type == 'location') {
-      //Collect NIDs of nodes for bundle Location
-      $node_ids = implode(',', array($node_ids, $result['node']->entity_id));
-    }
+
   }
   $node_ids = substr($node_ids, 1);
-  //Build location view using special view with openlayers map
-  $location_view_content = array(
-    '#id' => 'location-view',
-    '#title' => t('Location View'),
-    '#content' => array(
-      '#view' => views_embed_view('location_view', 'map', $node_ids),
+  $location_view_openlayer_map = NULL;
+  if (!empty($node_ids)) {
+    $location_view_openlayer_map = views_embed_view('location_view', 'map', $node_ids);
+  }
+  if (!empty($location_view_openlayer_map)) {
+    $content_tabs['#location']['#content'] = array(
+      '#view' => $location_view_openlayer_map,
       '#pager' => theme('pager', array('tags' => NULL)),
-    ),
-  );
-  //Define the views.
-  $content = array(
-    '#standard' => $standard_view_content,
-    '#timeline' => $timeline_view_content,
-    '#location' => $location_view_content,
-  );
-  //Include on page supports files for building tabs and inserting into them needed views
-  //like timeline, default or location views
+    );
+  }
+  else {
+    $disabled_tabs[] = '#location';
+  }
+
+  $tabs = array_keys($content_tabs);
+//Define default and disabled tabs on collection page
+  switch ($bundle) {
+    case 'people':
+    case 'events':
+      $default_tab = array_search('#timeline', $tabs);
+      break;
+    case 'location':
+      $default_tab = array_search('#location', $tabs);
+      break;
+    default:
+      $default_tab = array_search('#standard_default', $tabs);
+      break;
+  }
+
+  foreach ($disabled_tabs as $disabled_tab) {
+    $disabled_tabs_for_js[] = array_search($disabled_tab, $tabs);
+  }
+
+//Include on page supports files for building tabs and inserting into them needed views
+//like timeline, default or location views
   drupal_add_library('system', 'ui.tabs');
   drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_style.css');
   drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_tabs.js');
   drupal_add_js(drupal_get_path('module', 'collection_page') . '/js/collection_page_thumbnails.js');
   drupal_add_js(libraries_get_path('jquery_cookie') . '/jquery.cookie.js');
 
-  $views = array_keys($content);
-  //Define default and disabled tabs on collection page
-  switch ($bundle) {
-    case 'people':
-      $default_tab = array_search('#timeline', $views);
-      $disabled_tab = array_search('#location', $views);
-      break;
-    case 'location':
-      $default_tab = array_search('#location', $views);
-      $disabled_tab = array_search('#timeline', $views);
-      break;
-    default:
-      $default_tab = array_search('#standard', $views);
-      ;
-      $disabled_tab = -1;
-      break;
-  }
 
-  //Set the number of tab which was selected by default and disabled.
+//Set the number of tab which was selected by default and disabled.
   drupal_add_js(array('collection_page' => array('default_tab' => $default_tab)), 'setting');
-  drupal_add_js(array('collection_page' => array('disabled_tab' => $disabled_tab)), 'setting');
-  //Handling exception, like if timeline library does not exist, or
-  //the bundle have not date fields, or location view does not exist in views
-  $timeline_library = libraries_get_path('timeline');
-  $bundle_date_fields = _collection_page_get_date_fields_from_bundle($bundle);
-  if (isset($content['#timeline']) && empty($timeline_library) && !empty($bundle_date_fields)) {
-    unset($content['#timeline']);
+  if (!empty($disabled_tabs_for_js)) {
+    drupal_add_js(array('collection_page' => array('disabled_tabs' => $disabled_tabs_for_js)), 'setting');
   }
-  $location_view = views_embed_view('location_view', 'map');
-  if (isset($content['#location']) && empty($location_view)) {
-    unset($content['#location']);
-  }
-
-  //Set the urls for thumbnail and default standard view types buttons
-  $default_standard_view_url = url(arg(0), $options);
-  $options['query']['view'] = 'thumb';
-  $thumbnail_standard_view_url = url(arg(0), $options);
 
   return theme('collection_page', array(
-    'content' => $content,
-    'default_url' => $default_standard_view_url,
-    'thumbnail_url' => $thumbnail_standard_view_url
+    'content' => $content_tabs,
   ));
 }
 
