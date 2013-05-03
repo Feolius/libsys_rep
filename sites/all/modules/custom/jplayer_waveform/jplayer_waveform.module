@@ -446,7 +446,8 @@ function jplayer_waveform_create_waveform_image($waveform_data, $audio_file_fid,
 
   }
   else {
-    watchdog('jplayer_waveform', t("The jplayer_waveform module cannot generate the waveform image from waveform data. The site administrator will need to verify the public directory permissions and image creation php functions."), array(), WATCHDOG_ERROR);
+    watchdog('jplayer_waveform', t("The jplayer_waveform module cannot generate the waveform image from waveform data.
+    The site administrator will need to verify the public directory permissions and image creation php functions."), array(), WATCHDOG_ERROR);
     return FALSE;
   }
 }
@@ -471,7 +472,8 @@ function jplayer_waveform_generate_waveform_data($audio_file_fid) {
       return $waveform_data;
     }
     else {
-      watchdog('jplayer_waveform', t("The jplayer_waveform module cannot generate the waveform data from audio file. The site administrator will need to verify the audio file permissions or temp directory settings."), array(), WATCHDOG_ERROR);
+      watchdog('jplayer_waveform', t("The jplayer_waveform module cannot generate the waveform data from audio file. The
+      site administrator will need to verify the audio file permissions or temp directory settings and also availability of the lame coder in PATH"), array(), WATCHDOG_ERROR);
       return FALSE;
     }
   }
