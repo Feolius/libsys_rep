@@ -525,6 +525,9 @@ function multistep_adl_submit($form, &$form_state) {
     unset($form_state['values'][$exclude_field]);
   }
 
+//  var_dump($form_state['values']);
+//  exit();
+
   node_form_submit($form, $form_state);
 
   $nid = $form_state['nid'];

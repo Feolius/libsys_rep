@@ -92,45 +92,46 @@ function jplayer_waveform_prepare_audio($raw_file = array()) {
     if (!isset($item['ext'])) {
       $fileinfo = pathinfo($item['url']);
       $item['ext'] = $fileinfo['extension'];
-    }
 
-    // Add file into correct group
-    if (!isset($item['type'])) {
-      if (in_array($item['ext'], $audio_extensions)) {
-        $item['type'] = 'audio';
+
+      // Add file into correct group
+      if (!isset($item['type'])) {
+        if (in_array($item['ext'], $audio_extensions)) {
+          $item['type'] = 'audio';
+        }
       }
-    }
-    if (isset($item) && $item['type'] == 'audio') {
-      $file_id3_info = getid3_analyze(drupal_realpath($item['uri']));
-      if (isset($file_id3_info['tags'])) {
-        $id3_data = array();
-        foreach ($file_id3_info['tags'] as $tag) {
-          foreach ($tag as $key_name => $key_data) {
-            if ($key_name == 'title') {
-              $id3_data['title'] = implode(',', $key_data);
+      if (isset($item) && $item['type'] == 'audio') {
+        $file_id3_info = getid3_analyze(drupal_realpath($item['uri']));
+        if (isset($file_id3_info['tags'])) {
+          $id3_data = array();
+          foreach ($file_id3_info['tags'] as $tag) {
+            foreach ($tag as $key_name => $key_data) {
+              if ($key_name == 'title') {
+                $id3_data['title'] = implode(',', $key_data);
+              }
+              if ($key_name == 'artist') {
+                $id3_data['artist'] = implode(',', $key_data);
+              }
             }
-            if ($key_name == 'artist') {
-              $id3_data['artist'] = implode(',', $key_data);
-            }
+            //The first tag will be taken.
+            break;
           }
-          //The first tag will be taken.
-          break;
+          if (!empty($id3_data)) {
+            $file_id3_info = implode(' - ', $id3_data);
+          }
+          else {
+            $file_id3_info = 'No name';
+          }
         }
-        if (!empty($id3_data)) {
-          $file_id3_info = implode(' - ', $id3_data);
-        }
-        else {
-          $file_id3_info = 'No name';
-        }
+        $file[$item['ext']] = $item['url'];
+        $extensions[] = $item['ext'];
       }
-      $file[$item['ext']] = $item['url'];
-      $extensions[] = $item['ext'];
     }
   }
   return array(
     'fid' => $fid,
     'file' => $file,
-    '$file_id3_info' => $file_id3_info,
+    'file_id3_info' => $file_id3_info,
     'extensions' => implode(',', $extensions)
   );
 }
@@ -168,4 +169,3 @@ function _jplayer_waveform_check_id($id) {
 
   return $id;
 }
-
