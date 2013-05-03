@@ -37,7 +37,7 @@ function template_preprocess_jplayer_waveform(&$vars) {
   }
 
   $vars['waveform_image'] = file_create_url("public://jplayer_waveform_images/" . $player['fid'] . '.png');
-  $vars['media_info'] = $player['$file_id3_info'];
+  $vars['media_info'] = $player['file_id3_info'];
   // Add player settings
   $player = array(
     'jplayerInstances' => array(
