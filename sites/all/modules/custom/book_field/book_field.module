@@ -6,22 +6,22 @@
 function book_field_element_info() {
   $file_path = drupal_get_path('module', 'file');
   $types['managed_book'] = array(
-      '#input' => TRUE,
-      '#process' => array('book_field_managed_book_process'),
-      '#value_callback' => 'book_field_managed_book_value',
-      '#pre_render' => array('book_field_managed_book_pre_render'),
-      '#theme' => 'file_managed_file',
-      '#theme_wrappers' => array('form_element'),
-      '#progress_indicator' => 'bar',
-      '#progress_message' => NULL,
-      '#upload_validators' => array(),
-      '#upload_location' => NULL,
-      '#size' => 22,
-      '#extended' => FALSE,
-      '#attached' => array(
-          'css' => array($file_path . '/file.css'),
-          'js' => array($file_path . '/file.js'),
-      ),
+    '#input' => TRUE,
+    '#process' => array('book_field_managed_book_process'),
+    '#value_callback' => 'book_field_managed_book_value',
+    '#pre_render' => array('book_field_managed_book_pre_render'),
+    '#theme' => 'file_managed_file',
+    '#theme_wrappers' => array('form_element'),
+    '#progress_indicator' => 'bar',
+    '#progress_message' => NULL,
+    '#upload_validators' => array(),
+    '#upload_location' => NULL,
+    '#size' => 22,
+    '#extended' => FALSE,
+    '#attached' => array(
+      'css' => array($file_path . '/file.css'),
+      'js' => array($file_path . '/file.js'),
+    ),
   );
   return $types;
 }
@@ -32,10 +32,10 @@ function book_field_element_info() {
 function book_field_menu() {
   $items = array();
   $items['book_field/progress'] = array(
-      'page callback' => 'book_field_ajax_progress',
-      'access arguments' => array('access content'),
-      'theme callback' => 'ajax_base_page_theme',
-      'type' => MENU_CALLBACK,
+    'page callback' => 'book_field_ajax_progress',
+    'access arguments' => array('access content'),
+    'theme callback' => 'ajax_base_page_theme',
+    'type' => MENU_CALLBACK,
   );
 
   return $items;
@@ -52,40 +52,49 @@ function book_field_ajax_progress($key) {
   $upload_key = $key[0];
   $progress_key = $key[1];
   $result = db_query('SELECT progress FROM {progress} WHERE pid = :pid', array(
-      ':pid' => $progress_key
-          ));
+    ':pid' => $progress_key
+  ));
   $a = $result->fetchAll();
   //If record exist conversion in process else uploading proceeding
   if ($a == NULL) {
     //Check if we can show upload progress
     if ($upload_key != 0) {
       $progress = array(
-          'message' => t('Starting upload...'),
-          'percentage' => -1,
+        'message' => t('Starting upload...'),
+        'percentage' => -1,
       );
       $status = uploadprogress_get_info($upload_key);
       if (isset($status['bytes_uploaded']) && !empty($status['bytes_total'])) {
-        $progress['message'] = t('Uploading... (@current of @total)', array('@current' => format_size($status['bytes_uploaded']), '@total' => format_size($status['bytes_total'])));
+        $progress['message'] = t('Uploading... (@current of @total)', array(
+          '@current' => format_size($status['bytes_uploaded']),
+          '@total' => format_size($status['bytes_total'])
+        ));
         $progress['percentage'] = round(100 * $status['bytes_uploaded'] / $status['bytes_total']);
       }
-    } else {
+    }
+    else {
       $progress = array(
-          'message' => t('Uploading...'),
-          'percentage' => -1,
+        'message' => t('Uploading...'),
+        'percentage' => -1,
       );
     }
-  } else {
+  }
+  else {
     if ($a[0]->progress == -1) {
       $progress = array(
-          'message' => t('Preparing conversion...'),
-          'percentage' => 0,
+        'message' => t('Preparing conversion...'),
+        'percentage' => 0,
       );
-    } else {
+    }
+    else {
       $status = ($a[0]->progress);
       $status = explode('/', $status);
       $current_page = $status[0];
       $last_page = $status[1];
-      $progress['message'] = t('Converting... (@current of @total)', array('@current' => $current_page, '@total' => $last_page));
+      $progress['message'] = t('Converting... (@current of @total)', array(
+        '@current' => $current_page,
+        '@total' => $last_page
+      ));
       $progress['percentage'] = round(100 * $current_page / $last_page);
     }
   }
@@ -125,7 +134,6 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
   $fid_thumb = 0;
   $conversion_done = 0;
   $folder_name = '';
-  global $user;
   // Find the current value of this field from the form state.
   $form_state_fid = $form_state['values'];
   foreach ($element['#parents'] as $parent) {
@@ -134,7 +142,8 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
 
   if ($element['#extended'] && isset($form_state_fid['fid'])) {
     $fid = $form_state_fid['fid'];
-  } elseif (is_numeric($form_state_fid)) {
+  }
+  elseif (is_numeric($form_state_fid)) {
     $fid = $form_state_fid;
   }
 
@@ -143,35 +152,35 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
     // Uploads take priority over all other values.
     if ($file = file_managed_file_save_upload($element)) {
       $fid = $file->fid;
-
-      //Try to use filename as folder name
-      $folder_name = get_real_file_name($file);
-
-      //Create directory in temp folder where files will be contained.
-      $swf_folder_path = file_directory_temp() . '/' . $folder_name;
-
-      //If directory already exist we should remove it nd create new one.
-      if (file_prepare_directory($swf_folder_path)) {
-        file_unmanaged_delete_recursive($swf_folder_path);
+      $file = file_load($fid);
+      $arr = explode('.', $file->filename);
+      $extension = $arr[count($arr) - 1];
+      if ($extension == 'pdf') {
       }
-      file_prepare_directory($swf_folder_path, FILE_CREATE_DIRECTORY);
-
+      //Use filename as folder name
+      $folder_name = get_real_file_name($file);
       //We should create a thumbnail for PDF file and make swf files for flexpaper viewer.
       if ($file->filemime == 'application/pdf') {
+        //Create directory in temp folder where files will be contained.
+        $swf_folder_path = file_directory_temp() . '/' . $folder_name;
+        //If directory already exist we should remove it nd create new one.
+        if (file_prepare_directory($swf_folder_path)) {
+          file_unmanaged_delete_recursive($swf_folder_path);
+        }
+        file_prepare_directory($swf_folder_path, FILE_CREATE_DIRECTORY);
         $thumb_file = _book_field_managed_book_create_thumbnail($file);
         $fid_thumb = $thumb_file->fid;
         $file_name = $file->filename;
-
-
-
         // Create swf file from pdf.
         if (_book_field_managed_book_create_swf($file, $folder_name, $input['CONVERSION_IDENTIFIER'])) {
           $conversion_done = 1;
-        } else {
+        }
+        else {
           drupal_set_message(t("Can't create folder for swf files in temporary directory. Please, check temporary directory permissions"), 'error');
         }
       }
-    } else {
+    }
+    else {
       // Load file if the FID has changed to confirm it exists.
       if (isset($input['fid']) && $file = file_load($input['fid'])) {
         $fid = $file->fid;
@@ -186,7 +195,8 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
         $folder_name = $input['folder_name'];
       }
     }
-  } else {
+  }
+  else {
     $default_fid = isset($element['#default_value']) ? $element['#default_value']['fid'] : 0;
     $conversion_done = isset($element['#default_value']) ? $element['#default_value']['conversion_done'] : 0;
     $default_fid_thumb = isset($element['#default_value']) ? $element['#default_value']['fid_thumb'] : 0;
@@ -251,8 +261,8 @@ function _book_field_managed_book_create_swf($file, $folder_name, $conversion_pi
 
   //Remove record from progress table
   $delete = db_delete('progress')
-          ->condition('pid', $conversion_pid)
-          ->execute();
+    ->condition('pid', $conversion_pid)
+    ->execute();
   return TRUE;
 }
 
@@ -264,8 +274,8 @@ function _book_field_managed_book_create_thumbnail($file) {
   //If file with the same name already exists in temporary directory, we will remove it.
   if (file_exists($image_uri)) {
     db_delete('file_managed', 'fm')
-            ->condition('uri', $image_uri, '=')
-            ->execute();
+      ->condition('uri', $image_uri, '=')
+      ->execute();
     unlink($image_uri);
   }
   $file_name = $file->filename;
@@ -318,25 +328,25 @@ function book_field_managed_book_process($element, &$form_state, $form) {
   $element['#file'] = $fid ? file_load($fid) : FALSE;
   $element['#tree'] = TRUE;
   $ajax_settings = array(
-      'path' => 'file/ajax/' . implode('/', $element['#array_parents']) . '/' . $form['form_build_id']['#value'],
-      'wrapper' => $element['#id'] . '-ajax-wrapper',
-      'effect' => 'fade',
-      'progress' => array(
-          'type' => $element['#progress_indicator'],
-          'message' => $element['#progress_message'],
-      ),
+    'path' => 'file/ajax/' . implode('/', $element['#array_parents']) . '/' . $form['form_build_id']['#value'],
+    'wrapper' => $element['#id'] . '-ajax-wrapper',
+    'effect' => 'fade',
+    'progress' => array(
+      'type' => $element['#progress_indicator'],
+      'message' => $element['#progress_message'],
+    ),
   );
 
   // Set up the buttons first since we need to check if they were clicked.
   $element['upload_button'] = array(
-      '#name' => implode('_', $element['#parents']) . '_upload_button',
-      '#type' => 'submit',
-      '#value' => t('Upload'),
-      '#validate' => array(),
-      '#submit' => array('book_field_managed_book_submit'),
-      '#limit_validation_errors' => array($element['#parents']),
-      '#ajax' => $ajax_settings,
-      '#weight' => -5,
+    '#name' => implode('_', $element['#parents']) . '_upload_button',
+    '#type' => 'submit',
+    '#value' => t('Upload'),
+    '#validate' => array(),
+    '#submit' => array('book_field_managed_book_submit'),
+    '#limit_validation_errors' => array($element['#parents']),
+    '#ajax' => $ajax_settings,
+    '#weight' => -5,
   );
 
   // Force the progress indicator for the remove button to be 'throbber'.
@@ -344,31 +354,31 @@ function book_field_managed_book_process($element, &$form_state, $form) {
   $ajax_settings['progress']['message'] = NULL;
   $ajax_settings['effect'] = 'none';
   $element['remove_button'] = array(
-      '#name' => implode('_', $element['#parents']) . '_remove_button',
-      '#type' => 'submit',
-      '#value' => t('Remove'),
-      '#validate' => array(),
-      '#submit' => array('book_field_managed_book_submit'),
-      '#limit_validation_errors' => array($element['#parents']),
-      '#ajax' => $ajax_settings,
-      '#weight' => -5,
+    '#name' => implode('_', $element['#parents']) . '_remove_button',
+    '#type' => 'submit',
+    '#value' => t('Remove'),
+    '#validate' => array(),
+    '#submit' => array('book_field_managed_book_submit'),
+    '#limit_validation_errors' => array($element['#parents']),
+    '#ajax' => $ajax_settings,
+    '#weight' => -5,
   );
 
   $element['fid'] = array(
-      '#type' => 'hidden',
-      '#value' => $fid,
+    '#type' => 'hidden',
+    '#value' => $fid,
   );
   $element['fid_thumb'] = array(
-      '#type' => 'hidden',
-      '#value' => $fid_thumb,
+    '#type' => 'hidden',
+    '#value' => $fid_thumb,
   );
   $element['conversion_done'] = array(
-      '#type' => 'hidden',
-      '#value' => $conversion_done,
+    '#type' => 'hidden',
+    '#value' => $conversion_done,
   );
   $element['folder_name'] = array(
-      '#type' => 'hidden',
-      '#value' => $folder_name,
+    '#type' => 'hidden',
+    '#value' => $folder_name,
   );
 
   //Get upload progress key and conversion progress key
@@ -377,49 +387,50 @@ function book_field_managed_book_process($element, &$form_state, $form) {
   //Check if upload progress extension is available
   if (extension_loaded('uploadprogress')) {
     $upload_progress_key = mt_rand();
-  } else {
+  }
+  else {
     $upload_progress_key = 0;
   }
   $element['UPLOAD_IDENTIFIER'] = array(
-      '#type' => 'hidden',
-      '#value' => $upload_progress_key,
-      '#attributes' => array('class' => array('file-progress')),
-      // Uploadprogress extension requires this field to be at the top of the
-      // form.
-      '#weight' => -20,
+    '#type' => 'hidden',
+    '#value' => $upload_progress_key,
+    '#attributes' => array('class' => array('file-progress')),
+    // Uploadprogress extension requires this field to be at the top of the
+    // form.
+    '#weight' => -20,
   );
   $element['CONVERSION_IDENTIFIER'] = array(
-      '#type' => 'hidden',
-      '#value' => $conversion_progress_key,
+    '#type' => 'hidden',
+    '#value' => $conversion_progress_key,
   );
   $element['upload_button']['#ajax']['progress']['path'] = 'book_field/progress/' . $upload_progress_key . '_' . $conversion_progress_key;
 
   // The file upload field itself.
   $element['upload'] = array(
-      '#name' => 'files[' . implode('_', $element['#parents']) . ']',
-      '#type' => 'file',
-      '#title' => t('Choose a file'),
-      '#title_display' => 'invisible',
-      '#size' => $element['#size'],
-      '#theme_wrappers' => array(),
-      '#weight' => -10,
+    '#name' => 'files[' . implode('_', $element['#parents']) . ']',
+    '#type' => 'file',
+    '#title' => t('Choose a file'),
+    '#title_display' => 'invisible',
+    '#size' => $element['#size'],
+    '#theme_wrappers' => array(),
+    '#weight' => -10,
   );
 
   if ($element['#file']) {
     $element['filename'] = array(
-        '#type' => 'markup',
-        '#markup' => theme('file_link', array('file' => $element['#file'])) . ' ',
-        '#weight' => -10,
+      '#type' => 'markup',
+      '#markup' => theme('file_link', array('file' => $element['#file'])) . ' ',
+      '#weight' => -10,
     );
   }
   // Add the extension list to the page as JavaScript settings.
   if (isset($element['#upload_validators']['file_validate_extensions'][0])) {
     $extension_list = implode(',', array_filter(explode(' ', $element['#upload_validators']['file_validate_extensions'][0])));
     $element['upload']['#attached']['js'] = array(
-        array(
-            'type' => 'setting',
-            'data' => array('file' => array('elements' => array('#' . $element['#id'] . '-upload' => $extension_list)))
-        )
+      array(
+        'type' => 'setting',
+        'data' => array('file' => array('elements' => array('#' . $element['#id'] . '-upload' => $extension_list)))
+      )
     );
   }
 
@@ -496,15 +507,15 @@ function book_field_managed_book_pre_render($element) {
  */
 function book_field_field_info() {
   return array(
-      'book_field' => array(
-          'label' => t('Book'),
-          'description' => t('Prosvides an field for uploading books.'),
-          'default_widget' => 'book_field_widget',
-          'default_formatter' => 'book_field_formatter',
-          'instance_settings' => array(
-              'file_extensions' => 'pdf',
-          ),
+    'book_field' => array(
+      'label' => t('Book'),
+      'description' => t('Prosvides an field for uploading books.'),
+      'default_widget' => 'book_field_widget',
+      'default_formatter' => 'book_field_formatter',
+      'instance_settings' => array(
+        'file_extensions' => 'pdf',
       ),
+    ),
   );
 }
 
@@ -513,10 +524,10 @@ function book_field_field_info() {
  */
 function book_field_field_widget_info() {
   return array(
-      'book_field_widget' => array(
-          'label' => t('Custom widget'),
-          'field types' => array('book_field'),
-      ),
+    'book_field_widget' => array(
+      'label' => t('Custom widget'),
+      'field types' => array('book_field'),
+    ),
   );
 }
 
@@ -525,10 +536,10 @@ function book_field_field_widget_info() {
  */
 function book_field_field_formatter_info() {
   return array(
-      'book_field_formatter' => array(
-          'label' => t('Book formatter'),
-          'field types' => array('book_field'),
-      ),
+    'book_field_formatter' => array(
+      'label' => t('Book formatter'),
+      'field types' => array('book_field'),
+    ),
   );
 }
 
@@ -537,41 +548,41 @@ function book_field_field_formatter_info() {
  */
 function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   $defaults = array(
-      'fid' => 0,
-      'conversion_done' => 0,
-      'fid_thumb' => 0,
-      'folder_name' => ''
+    'fid' => 0,
+    'conversion_done' => 0,
+    'fid_thumb' => 0,
+    'folder_name' => ''
   );
   $allowed_extensions = $instance['settings']['file_extensions'];
   $widget = $instance['widget'];
   switch ($widget['type']) {
     case 'book_field_widget':
       $element['fids'] = array(
-          '#title' => t('Upload book'),
-          '#description' => 'Book uploading',
-          '#type' => 'managed_book',
-          //'#value_callback' => 'book_field_widget_value',
-          '#upload_validators' => array(
-              'file_validate_extensions' => array($allowed_extensions),
-              'book_field_validate_filename' => array(),
-          ),
-          '#default_value' => !empty($items) ? $items[0] : $defaults,
+        '#title' => t('Upload book'),
+        '#description' => 'Book uploading',
+        '#type' => 'managed_book',
+        //'#value_callback' => 'book_field_widget_value',
+        '#upload_validators' => array(
+          'file_validate_extensions' => array($allowed_extensions),
+          'book_field_validate_filename' => array(),
+        ),
+        '#default_value' => !empty($items) ? $items[0] : $defaults,
       );
       $element['fid'] = array(
-          '#type' => 'hidden',
-          '#value_callback' => 'book_field_widget_fid_value',
+        '#type' => 'hidden',
+        '#value_callback' => 'book_field_widget_fid_value',
       );
       $element['fid_thumb'] = array(
-          '#type' => 'hidden',
-          '#value_callback' => 'book_field_widget_fid_thumb_value',
+        '#type' => 'hidden',
+        '#value_callback' => 'book_field_widget_fid_thumb_value',
       );
       $element['conversion_done'] = array(
-          '#type' => 'hidden',
-          '#value_callback' => 'book_field_widget_conversion_done_value',
+        '#type' => 'hidden',
+        '#value_callback' => 'book_field_widget_conversion_done_value',
       );
       $element['folder_name'] = array(
-          '#type' => 'hidden',
-          '#value_callback' => 'book_field_widget_folder_name_value',
+        '#type' => 'hidden',
+        '#value_callback' => 'book_field_widget_folder_name_value',
       );
       return $element;
   }
@@ -582,7 +593,7 @@ function book_field_widget_value($element, $input = FALSE, $form_state) {
   $return = book_field_managed_book_value($element, $input, $form_state);
   // Ensure that all the required properties are returned even if empty.
   $return += array(
-      'fid' => 0,
+    'fid' => 0,
   );
   return $return;
 }
@@ -630,13 +641,13 @@ function book_field_field_instance_settings_form($field, $instance) {
   $settings = $instance['settings'];
   $extensions = str_replace(' ', ', ', $settings['file_extensions']);
   $form['file_extensions'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Allowed file extensions'),
-      '#default_value' => $extensions,
-      '#description' => t('Separate extensions with a space or comma and do not include the leading dot.'),
-      '#element_validate' => array('_file_generic_settings_extensions'),
-      '#weight' => 1,
-      '#required' => TRUE,
+    '#type' => 'textfield',
+    '#title' => t('Allowed file extensions'),
+    '#default_value' => $extensions,
+    '#description' => t('Separate extensions with a space or comma and do not include the leading dot.'),
+    '#element_validate' => array('_file_generic_settings_extensions'),
+    '#weight' => 1,
+    '#required' => TRUE,
   );
   return $form;
 }
@@ -663,15 +674,16 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
         $files = scandir($path);
         if (isset($item['fid_thumb'])) {
           $num_of_swfs = count($files) - 4;
-        } else {
+        }
+        else {
           $num_of_swfs = count($files) - 3;
         }
 
         $swf_path = '{' . $base_url . $relative_path . '/' . $file_name . '[*,0].swf,' . $num_of_swfs . '}';
 
         $settings = array(
-            'paths' => array($swf_path),
-            'FlexPaperViewerPath' => $FlexPaperViewerPath,
+          'paths' => array($swf_path),
+          'FlexPaperViewerPath' => $FlexPaperViewerPath,
         );
 
         //Determine if we need highlighting
@@ -693,53 +705,55 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
             $main_query = substr($main_query, 1);
             $main_query = substr($main_query, 0, -1);
             $settings['search'] = $main_query;
-          } else {
+          }
+          else {
             //We should divide string and make button for each word
             $terms = explode(' ', $main_query);
             if (count($terms) > 1) {
               foreach ($terms as $term) {
                 $buttons[$term . '_button'] = array(
-                    '#type' => 'button',
-                    '#value' => $term,
-                    '#attributes' => array(
-                        'class' => array('flexpaper-highlight-button')
-                    )
+                  '#type' => 'button',
+                  '#value' => $term,
+                  '#attributes' => array(
+                    'class' => array('flexpaper-highlight-button')
+                  )
                 );
               }
             }
           }
           $buttons['search_string_button'] = array(
-              '#type' => 'button',
-              '#value' => $main_query,
-              '#attributes' => array(
-                  'class' => array('flexpaper-highlight-button')
-              )
+            '#type' => 'button',
+            '#value' => $main_query,
+            '#attributes' => array(
+              'class' => array('flexpaper-highlight-button')
+            )
           );
           $settings['search'] = $main_query;
         }
         $element[$delta] = array(
-            'flexpaper' => array(
-                '#attached' => array(
-                    'css' => array($module_path . '/book_field.css'),
-                    'js' => array($module_path . '/flexpaper_flash.js', $module_path . '/book_field.js'),
-                ),
-                '#theme' => 'book_field_flexpaper_view',
-                '#file' => $file,
-            )
+          'flexpaper' => array(
+            '#attached' => array(
+              'css' => array($module_path . '/book_field.css'),
+              'js' => array($module_path . '/flexpaper_flash.js', $module_path . '/book_field.js'),
+            ),
+            '#theme' => 'book_field_flexpaper_view',
+            '#file' => $file,
+          )
         );
         if (module_exists('book_thumbnail') && ($file_thumb = file_load($item['fid_thumb']))) {
           $element[$delta]['flexpaper']['#file_thumb'] = $file_thumb;
         }
         $element[$delta] = array_merge($buttons, $element[$delta]);
         drupal_add_js(array('book_field' => $settings), 'setting');
-      } elseif ($item['fid'] != 0) {
+      }
+      elseif ($item['fid'] != 0) {
         $file = file_load($item['fid']);
         if (module_exists('book_thumbnail') && ($file_thumb = file_load($item['fid_thumb']))) {
           $element[$delta]['#file_thumb'] = $file_thumb;
         }
         $element[$delta] = array(
-            '#theme' => 'book_field_google_doc_view',
-            '#file' => $file,
+          '#theme' => 'book_field_google_doc_view',
+          '#file' => $file,
         );
       }
     }
@@ -767,27 +781,31 @@ function book_field_field_presave($entity_type, $entity, $field, $instance, $lan
       $file = file_load($item['fid']);
       if (!$file->status) {
         $folder_name = $item['folder_name'];
-        $source_folder = file_directory_temp() . '/' . $folder_name;
         $destination_folder = file_default_scheme() . '://books/' . $folder_name;
-        $i = 0;
+        $source_folder = file_directory_temp() . '/' . $folder_name;
 
         //If directory already exist we should try to create another directory
-        while (is_dir($destination_folder)) {
+        if(is_dir($destination_folder)){
+          $i = 0;
+          while (is_dir($destination_folder . '_' . $i)) {
+            $i++;
+          }
           $folder_name = $folder_name . '_' . $i;
           $destination_folder = file_default_scheme() . '://books/' . $folder_name;
-          $i++;
         }
+
 
         //Copy folder with swf files from temporary directory to files directory
         mkdir($destination_folder);
-        $directory = dir($source_folder);
-        while (FALSE !== ( $readdirectory = $directory->read() )) {
-          $PathDir = $source_folder . '/' . $readdirectory;
-          if (is_dir($PathDir)) {
-            continue;
+        if ($item['conversion_done'] == 1) {
+          $directory = dir($source_folder);
+          while (FALSE !== ($readdirectory = $directory->read())) {
+            $PathDir = $source_folder . '/' . $readdirectory;
+            if (is_dir($PathDir)) {
+              continue;
+            }
+            copy($PathDir, $destination_folder . '/' . $readdirectory);
           }
-          var_dump($PathDir);
-          copy($PathDir, $destination_folder . '/' . $readdirectory);
         }
         $items[$index]['folder_name'] = $folder_name;
         $file = _book_field_file_move($file, $folder_name);
@@ -876,12 +894,12 @@ function _book_field_file_move($file, $folder) {
  */
 function book_field_theme() {
   return array(
-      'book_field_flexpaper_view' => array(
-          'variables' => array('file' => NULL, 'file_swf' => NULL, 'file_thumb' => NULL, 'icon_directory' => NULL),
-      ),
-      'book_field_google_doc_view' => array(
-          'variables' => array('file' => NULL, 'file_thumb' => NULL, 'icon_directory' => NULL),
-      ),
+    'book_field_flexpaper_view' => array(
+      'variables' => array('file' => NULL, 'file_swf' => NULL, 'file_thumb' => NULL, 'icon_directory' => NULL),
+    ),
+    'book_field_google_doc_view' => array(
+      'variables' => array('file' => NULL, 'file_thumb' => NULL, 'icon_directory' => NULL),
+    ),
   );
 }
 
@@ -899,7 +917,8 @@ function theme_book_field_google_doc_view($variables) {
     $text = '<img src="' . image_style_url($style, $uri_thumb) . '">';
     $options['html'] = TRUE;
     $out = $out . '<h1>' . $file->filename . '</h1>' . l($text, file_create_url($uri), $options);
-  } else {
+  }
+  else {
     $out = $out . theme_file_link($variables);
   }
   return $out;
@@ -919,7 +938,8 @@ function theme_book_field_flexpaper_view($variables) {
     $text = '<img src="' . image_style_url($style, $uri_thumb) . '">';
     $options['html'] = TRUE;
     $out = $out . '<h1>' . $file->filename . '</h1>' . l($text, file_create_url($uri), $options);
-  } else {
+  }
+  else {
     $out = $out . theme_file_link($variables);
   }
   return $out;
@@ -938,7 +958,8 @@ function get_real_file_name($file) {
     //Exclude name of file extension
     unset($arr[$arr_length - 1]);
     $real_file_name = implode('.', $arr);
-  } else {
+  }
+  else {
     $real_file_name = $arr[0];
   }
   return $real_file_name;
