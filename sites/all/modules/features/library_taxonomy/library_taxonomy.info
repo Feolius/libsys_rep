@@ -13,6 +13,7 @@ features[field][] = taxonomy_term-file_folder-field_files_folder_collection_id
 features[field][] = taxonomy_term-file_folder-field_files_folder_comments
 features[field][] = taxonomy_term-file_folder-field_files_folder_file_no
 features[field][] = taxonomy_term-file_folder-field_files_folder_other_source
+features[taxonomy][] = audio_albums
 features[taxonomy][] = exif
 features[taxonomy][] = file_collection
 features[taxonomy][] = file_folder

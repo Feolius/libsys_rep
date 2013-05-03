@@ -12,3 +12,4 @@ features[ctools][] = openlayers:openlayers_maps:1
 features[ctools][] = views:views_default:3.0
 features[features_api][] = api:1
 features[openlayers_maps][] = location_view_map
+features[views_view][] = location_view
