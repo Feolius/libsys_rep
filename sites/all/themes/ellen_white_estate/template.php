@@ -76,7 +76,15 @@ function ellen_white_estate_preprocess_node__files_full(&$vars) {
       break;
 
     case 'image':
-      $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_image($vars);;
+      $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_image($vars);
+      break;
+
+    case 'audio':
+      $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_audio($vars);
+      break;
+
+    case 'document':
+      $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_document($vars);
       break;
   }
 }
@@ -113,6 +121,19 @@ function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
 function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
   $output = array();
   if ($vars['content']['field_files_image']) {
+    // Button for download full image.
+    $output['button'] = array(
+      '#type' => 'button',
+      '#value' => t('Download'),
+      '#attributes' => array(
+      'id' => array('download')
+      ),
+      '#ajax' => array(
+        'callback' => 'ellen_white_estate_download_image',
+        'method' => 'replace',
+        'effect' => 'fade',
+      ),
+    );
     $output['image'] = $vars['content']['field_files_image'];
   }
   if ($vars['content']['field_files_description']) {
@@ -130,5 +151,36 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
   if ($vars['content']['field_image_date_taken']) {
     $output['date_taken'] = $vars['content']['field_image_date_taken'];
   }
+  return $output;
+}
+
+/**
+ * Preprocesses variables for files with primary media audio.
+ */
+function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
+  $output = array();
+  if ($vars['content']['field_files_audio']) {
+    $output['audio'] = $vars['content']['field_files_audio'];
+  }
+  if ($vars['content']['field_files_album_poster']) {
+    $output['poster'] = $vars['content']['field_files_album_poster'];
+  }
+  if ($vars['content']['field_files_artist']) {
+    $output['artist'] = $vars['content']['field_files_artist'];
+  }
+  if ($vars['content']['field_files_topics']) {
+    $output['topics'] = $vars['content']['field_files_topics'];
+  }
+  if ($vars['content']['field_audio_year']) {
+    $output['year'] = $vars['content']['field_audio_year'];
+  }
+  return $output;
+}
+
+/**
+ * Preprocesses variables for files with primary media audio.
+ */
+function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
+  $output = array();
   return $output;
 }

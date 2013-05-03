@@ -7,7 +7,7 @@ function library_admin_menu() {
   $items = array();
   $items['admin/library_settings'] = array(
     'title' => t('Site configuration page'),
-    'dascription' => 'This page is contain all settings for site',
+    'dascription' => t('This page is contain all settings for site'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('library_admin_settings_form'),
     'access callback' => TRUE,

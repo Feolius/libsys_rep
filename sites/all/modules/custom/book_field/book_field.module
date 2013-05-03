@@ -156,7 +156,7 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
       }
       file_prepare_directory($swf_folder_path, FILE_CREATE_DIRECTORY);
 
-      //We should create a thumbnail for PDF file and make swf files for flexpaper viewer
+      //We should create a thumbnail for PDF file and make swf files for flexpaper viewer.
       if ($file->filemime == 'application/pdf') {
         $thumb_file = _book_field_managed_book_create_thumbnail($file);
         $fid_thumb = $thumb_file->fid;
@@ -164,15 +164,11 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
 
 
 
-        //Check if checkbox "create swf" checked and we have pdf file
-        if (isset($form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['create_swf']) &&
-                $form_state['input'][$element['#parents'][0]][$element['#parents'][1]][$element['#parents'][2]]['create_swf'] == '1') {
-
-          if (_book_field_managed_book_create_swf($file, $folder_name, $input['CONVERSION_IDENTIFIER'])) {
-            $conversion_done = 1;
-          } else {
-            drupal_set_message(t("Can't create folder for swf files in temporary directory. Please, check temporary directory permissions"), 'error');
-          }
+        // Create swf file from pdf.
+        if (_book_field_managed_book_create_swf($file, $folder_name, $input['CONVERSION_IDENTIFIER'])) {
+          $conversion_done = 1;
+        } else {
+          drupal_set_message(t("Can't create folder for swf files in temporary directory. Please, check temporary directory permissions"), 'error');
         }
       }
     } else {
@@ -560,11 +556,6 @@ function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $
               'book_field_validate_filename' => array(),
           ),
           '#default_value' => !empty($items) ? $items[0] : $defaults,
-      );
-      $element['create_swf'] = array(
-          '#title' => t('Convert to SWF'),
-          '#type' => 'checkbox',
-          '#default_value' => 0,
       );
       $element['fid'] = array(
           '#type' => 'hidden',
