@@ -101,10 +101,11 @@ function jplayer_waveform_prepare_audio($raw_file = array()) {
         }
       }
       if (isset($item) && $item['type'] == 'audio') {
-        $file_id3_info = getid3_analyze(drupal_realpath($item['uri']));
-        if (isset($file_id3_info['tags'])) {
+        $id3_info = getid3_analyze(drupal_realpath($item['uri']));
+        $file_id3_info = 'No name';
+        if (isset($id3_info['tags'])) {
           $id3_data = array();
-          foreach ($file_id3_info['tags'] as $tag) {
+          foreach ($id3_info['tags'] as $tag) {
             foreach ($tag as $key_name => $key_data) {
               if ($key_name == 'title') {
                 $id3_data['title'] = implode(',', $key_data);
@@ -114,13 +115,12 @@ function jplayer_waveform_prepare_audio($raw_file = array()) {
               }
             }
             //The first tag will be taken.
-            break;
+            if (isset($id3_data['title']) && isset($id3_data['artist'])) {
+              break;
+            }
           }
           if (!empty($id3_data)) {
             $file_id3_info = implode(' - ', $id3_data);
-          }
-          else {
-            $file_id3_info = 'No name';
           }
         }
         $file[$item['ext']] = $item['url'];

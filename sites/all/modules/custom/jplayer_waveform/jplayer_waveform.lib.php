@@ -219,11 +219,25 @@ class Waveform {
      * We don't necessarily need high quality audio to produce a waveform, doing this process reduces the WAV
      * to it's simplest form and makes processing significantly faster
      */
+    $lame_application_path = variable_get('jplayer_waveform_lame_application_path', 'lame');
 
-    exec("lame {$temp_file_name}_o.mp3 -f -m m -b 16 --resample 8 {$temp_file_name}.mp3 && lame --decode {$temp_file_name}.mp3 {$temp_file_name}.wav", $output, $return);
+    exec("{$lame_application_path} {$temp_file_name}_o.mp3 -f -m m -b 16 --resample 8 {$temp_file_name}.mp3 && {$lame_application_path} --decode {$temp_file_name}.mp3 {$temp_file_name}.wav", $output, $return);
+
     // delete temporary files
-    unlink("{$temp_file_name}_o.mp3");
-    unlink("{$temp_file_name}.mp3");
+    if (file_exists("{$temp_file_name}_o.mp3")) {
+      unlink("{$temp_file_name}_o.mp3");
+    }
+    else {
+      return FALSE;
+    }
+
+    if (file_exists("{$temp_file_name}.mp3")) {
+      unlink("{$temp_file_name}.mp3");
+    }
+    else {
+      return FALSE;
+    }
+
 
     $filename = "{$temp_file_name}.wav";
 
@@ -232,7 +246,12 @@ class Waveform {
      * http://forums.devshed.com/php-development-5/reading-16-bit-wav-file-318740.html
      * as nadjiVrijednosti() defined above
      */
-    $handle = fopen($filename, "r");
+    if (file_exists($filename)) {
+      $handle = fopen($filename, "r");
+    }
+    else {
+      return FALSE;
+    }
 
     if ($handle == FALSE) {
       return FALSE;
