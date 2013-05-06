@@ -478,12 +478,3 @@ function jplayer_waveform_generate_waveform_data($audio_file_fid) {
     }
   }
 }
-
-
-//function jplayer_waveform_views_post_render(&$view, &$output, &$cache) {
-//  jplayer_waveform_add_core_js();
-//  $path = variable_get('jplayer_waveform_directory', 'sites/all/libraries/jplayer');
-//  drupal_add_js($path . '/jquery.jplayer.min.js');
-//  drupal_add_js(drupal_get_path('module', 'jplayer_waveform') . '/theme/jplayer_waveform.js');
-//  drupal_add_css(drupal_get_path('module', 'jplayer_waveform') . '/theme/jplayer_waveform.css');
-//}
