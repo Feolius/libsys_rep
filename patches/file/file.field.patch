@@ -1,0 +1,12 @@
+diff --git a/modules/file/file.field.inc b/modules/file/file.field.inc
+index 319cd58..5cb9e22 100644
+--- a/modules/file/file.field.inc
++++ b/modules/file/file.field.inc
+@@ -584,7 +584,7 @@ function file_field_widget_value($element, $input = FALSE, $form_state) {
+     // If the display field is present make sure its unchecked value is saved.
+     $field = field_widget_field($element, $form_state);
+     if (empty($input['display'])) {
+-      $input['display'] = $field['settings']['display_field'] ? 0 : 1;
++      $input['display'] = isset($field['settings']['display_field']) ? 0 : 1;
+     }
+   }

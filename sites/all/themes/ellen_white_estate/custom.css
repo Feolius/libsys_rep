@@ -1,0 +1,50 @@
+.field-name-field-files-album-poster {
+  float: left;
+}
+
+.field-name-field-files-album-poster + .field-name-field-files-audio .jp-interface {
+  margin-left: 150px;
+  width: 488px;
+}
+
+.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single div.jp-interface {
+  height: 121px;
+}
+
+.field-name-field-files-album-poster + .field-name-field-files-audio {
+  display: inline;
+  clear: both;
+}
+
+.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single div.jp-progress {
+  width: 280px;
+  top: 40px;
+  height: 40px;
+}
+
+.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single div.jp-duration {
+  width: 280px;
+  top: 100px;
+}
+
+.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single div.jp-current-time {
+  top: 100px;
+}
+
+.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single div.jp-volume-bar {
+  top: 58px;
+  left: 415px;
+}
+
+.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-mute, div.jp-audio div.jp-type-single a.jp-unmute {
+  left: 385px;
+  top: 53px;
+}
+
+.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-play, div.jp-audio div.jp-type-single a.jp-pause {
+  top: 40px;
+}
+
+.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-stop {
+  top: 47px;
+}

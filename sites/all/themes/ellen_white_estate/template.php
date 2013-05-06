@@ -69,7 +69,8 @@ function ellen_white_estate_preprocess_node__people_full(&$vars) {
  */
 function ellen_white_estate_preprocess_node__files_full(&$vars) {
   $node = $vars['node'];
-  $primary_media = $node->field_files_primary_media[LANGUAGE_NONE][0]['value'];
+  $field_language = field_language('node', $node, 'field_files_primary_media');
+  $primary_media = $node->field_files_primary_media[$field_language][0]['value'];
   switch ($primary_media) {
     case 'video':
       $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_video($vars);
@@ -158,21 +159,47 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
  * Preprocesses variables for files with primary media audio.
  */
 function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
+  $node = $vars['node'];kpr($node);
   $output = array();
-  if ($vars['content']['field_files_audio']) {
-    $output['audio'] = $vars['content']['field_files_audio'];
-  }
   if ($vars['content']['field_files_album_poster']) {
     $output['poster'] = $vars['content']['field_files_album_poster'];
   }
+  if ($vars['content']['field_files_audio']) {
+    $output['audio'] = $vars['content']['field_files_audio'];
+  }
+  if ($vars['content']['field_files_description']) {
+    $output['description'] = $vars['content']['field_files_description'];
+  }
+  // Download button.
+
   if ($vars['content']['field_files_artist']) {
     $output['artist'] = $vars['content']['field_files_artist'];
   }
-  if ($vars['content']['field_files_topics']) {
-    $output['topics'] = $vars['content']['field_files_topics'];
-  }
   if ($vars['content']['field_audio_year']) {
     $output['year'] = $vars['content']['field_audio_year'];
+  }
+  if ($vars['content']['field_files_length']) {
+    $output['length'] = $vars['content']['field_files_length'];
+  }
+
+  // Topics.
+  if (!empty($node->field_files_topics)) {
+    foreach ($node->field_files_topics[field_language('node', $node, 'field_files_topics')] as $topic) {
+      $topics[] = l(
+        t($topic['entity']->title),
+        "node/{$topic['entity']->nid}"
+      );
+    }
+
+    $markup = implode(',', $topics);
+    $output['topics'] = array(
+      '#access' => TRUE,
+      '#title' => t('Topics'),
+      '#label_display' => 'inline',
+      '#prefix' => '<div class="field field-name-field-files-topics"><div class="field-label">:&nbsp;</div>',
+      '#markup' => $markup,
+      '#suffix' => '</div>',
+    );
   }
   return $output;
 }
@@ -180,7 +207,69 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
 /**
  * Preprocesses variables for files with primary media audio.
  */
-function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
+function _ellen_white_estate_preprocess_node__files_primary_document($vars) {kpr($vars);
   $output = array();
+  $vars['tabs'] = FALSE;
+  if ($vars['content']['field_files_subtitle']) {
+    $output['subtitle'] = $vars['content']['field_files_subtitle'];
+  }
+  if ($vars['content']['field_files_description']) {
+    $output['description'] = $vars['content']['field_files_description'];
+  }
+  if ($vars['content']['field_files_key_points']) {
+    $output['key_points'] = $vars['content']['field_files_key_points'];
+  }
+
+  // Tabs.
+  if ($vars['content']['field_files_file']) {
+    $output['file'] = $vars['content']['field_files_file'];
+  }
+  if ($vars['content']['field_files_text']) {
+    $output['text'] = $vars['content']['field_files_text'];
+  }
+  if ($vars['content']['field_files_file'] && $vars['content']['field_files_text']) {
+    $vars['tabs'] = TRUE;
+  }
+
+  if ($vars['content']['field_files_author']) {
+    $output['author'] = $vars['content']['field_files_author'];
+  } elseif($vars['content']['field_files_author_location']) {
+    $output['author'] = $vars['content']['field_files_author_location'];
+  }
+  if ($vars['content']['field_files_receiver']) {
+    $output['receiver'] = $vars['content']['field_files_receiver'];
+  } elseif($vars['content']['field_files_receiver_location']) {
+    $output['receiver'] = $vars['content']['field_files_receiver_location'];
+  }
+  if ($vars['content']['field_files_creation_date']) {
+    $output['creation_date'] = $vars['content']['field_files_creation_date'];
+  }
+  if ($vars['content']['field_files_published_date']) {
+    $output['received_date'] = $vars['content']['field_files_published_date'];
+  }
+  if ($vars['content']['field_files_received_date']) {
+    $output['received_date'] = $vars['content']['field_files_received_date'];
+  }
+  if ($vars['content']['field_files_filed_date']) {
+    $output['filed_date'] = $vars['content']['field_files_filed_date'];
+  }
+
+  // Additional information.
+  if ($vars['content']['field_files_folder']
+    || $vars['content']['field_files_original_title']
+    || $vars['content']['field_files_publication']
+    || $vars['content']['field_files_source_title']
+    || $vars['content']['field_files_source_volume']
+    || $vars['content']['field_files_source_number']
+    || $vars['content']['field_files_source_chapter']
+    || $vars['content']['field_files_source_page']) {
+    $output['button'] = array(
+      '#type' => 'button',
+      '#value' => t('Show extended information'),
+      '#attributes' => array(
+        'id' => array('download')
+      ),
+    );
+  }
   return $output;
 }

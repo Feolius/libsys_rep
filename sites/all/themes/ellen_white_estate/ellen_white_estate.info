@@ -9,6 +9,7 @@ base theme = corporateclean
 stylesheets[all][] = style.css
 stylesheets[all][] = style_templates.css 
 stylesheets[all][] = color/colors.css
+stylesheets[all][] = custom.css
 
 ; Custom js
 ; scripts[] = js/library.js
