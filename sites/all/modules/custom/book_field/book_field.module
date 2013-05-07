@@ -5,7 +5,7 @@
  */
 function book_field_element_info() {
   $file_path = drupal_get_path('module', 'file');
-  $types['managed_book'] = array(
+  $types['managed_book'] = array( 
     '#input' => TRUE,
     '#process' => array('book_field_managed_book_process'),
     '#value_callback' => 'book_field_managed_book_value',
@@ -15,7 +15,7 @@ function book_field_element_info() {
     '#progress_indicator' => 'bar',
     '#progress_message' => NULL,
     '#upload_validators' => array(),
-    '#upload_location' => NULL,
+    '#upload_location' => NULL,     
     '#size' => 22,
     '#extended' => FALSE,
     '#attached' => array(
@@ -30,7 +30,7 @@ function book_field_element_info() {
  * Implements hook_menu().
  */
 function book_field_menu() {
-  $items = array();
+  $items = array();  
   $items['book_field/progress'] = array(
     'page callback' => 'book_field_ajax_progress',
     'access arguments' => array('access content'),
