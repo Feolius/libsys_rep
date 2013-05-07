@@ -181,7 +181,8 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
       array(
         'html' => TRUE,
         'attributes' => array(
-          'class' => array('download')
+          'class' => array('download'),
+          'target' => '_blank'
         )
       )
     );
