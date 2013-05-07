@@ -48,3 +48,9 @@
 .field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-stop {
   top: 47px;
 }
+
+.field-type-fivestar div.fivestar-widget,
+.field-type-fivestar div.fivestar-widget-static {
+  float: right;
+  padding-bottom: 10px;
+}
