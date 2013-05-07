@@ -12,7 +12,7 @@ stylesheets[all][] = color/colors.css
 stylesheets[all][] = custom.css
 
 ; Custom js
-; scripts[] = js/library.js
+scripts[] = js/library.js
 
 settings[breadcrumb_display]= 1
 

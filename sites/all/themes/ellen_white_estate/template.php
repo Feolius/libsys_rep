@@ -159,7 +159,7 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
  * Preprocesses variables for files with primary media audio.
  */
 function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
-  $node = $vars['node'];kpr($node);
+  $node = $vars['node'];
   $output = array();
   if ($vars['content']['field_files_album_poster']) {
     $output['poster'] = $vars['content']['field_files_album_poster'];
@@ -170,11 +170,45 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
   if ($vars['content']['field_files_description']) {
     $output['description'] = $vars['content']['field_files_description'];
   }
-  // Download button.
 
-  if ($vars['content']['field_files_artist']) {
-    $output['artist'] = $vars['content']['field_files_artist'];
+  // Download's link.
+  if ($vars['content']['field_files_audio']) {
+    $field_language = field_language('node', $node, 'field_files_audio');
+
+    $link = l(
+      t('Download'),
+      file_create_url($node->field_files_audio[$field_language][0]['uri']),
+      array(
+        'html' => TRUE,
+        'attributes' => array(
+          'class' => array('download')
+        )
+      )
+    );
+    $output['download'] = array(
+      '#access' => TRUE,
+      '#markup' => $link,
+    );
   }
+
+  // Artist.
+  if (!empty($node->field_files_artist)) {
+    $items = field_get_items('node', $node, 'field_files_artist');
+    foreach ($items as $item) {
+      $artists[] = l(
+        t($item['entity']->title),
+        "node/{$item['entity']->nid}"
+      );
+    }
+    $info = field_info_instance('node', 'field_files_artist', $node->type);
+    $output['artist'] = array(
+      '#access' => TRUE,
+      '#prefix' => "<div class='field field-name-field-files-topics'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+      '#markup' => implode(', ', $artists),
+      '#suffix' => '</div>',
+    );
+  }
+
   if ($vars['content']['field_audio_year']) {
     $output['year'] = $vars['content']['field_audio_year'];
   }
@@ -184,20 +218,19 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
 
   // Topics.
   if (!empty($node->field_files_topics)) {
-    foreach ($node->field_files_topics[field_language('node', $node, 'field_files_topics')] as $topic) {
+    $items = field_get_items('node', $node, 'field_files_topics');
+    foreach ($items as $item) {
       $topics[] = l(
-        t($topic['entity']->title),
-        "node/{$topic['entity']->nid}"
+        t($item['entity']->title),
+        "node/{$item['entity']->nid}"
       );
     }
-
-    $markup = implode(',', $topics);
+    $info = field_info_instance('node', 'field_files_topics', $node->type);
     $output['topics'] = array(
       '#access' => TRUE,
-      '#title' => t('Topics'),
       '#label_display' => 'inline',
-      '#prefix' => '<div class="field field-name-field-files-topics"><div class="field-label">:&nbsp;</div>',
-      '#markup' => $markup,
+      '#prefix' => "<div class='field field-name-field-files-topics'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+      '#markup' => implode(', ', $topics),
       '#suffix' => '</div>',
     );
   }

@@ -8,7 +8,6 @@
 /**
  * Settings form for library admin settings.
  */
-
 function library_admin_settings_form() {
 
   $form['footer'] = array(
