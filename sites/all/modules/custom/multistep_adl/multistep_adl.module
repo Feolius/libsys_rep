@@ -323,7 +323,7 @@ function multistep_adl_field_group_pre_render(&$element, $group, &$form) {
     $access = user_access('toggle multistep adl');
   }
   if ($group->group_name == $step) {
-  $prefix = '<div id="multistep-adl-' . $group->group_name . '">';
+    $prefix = '<div id="multistep-adl-' . $group->group_name . '">';
   }
   else {
     $prefix = '<div id="multistep-adl-' . $group->group_name . '" style="display:none">';
@@ -335,7 +335,7 @@ function multistep_adl_field_group_pre_render(&$element, $group, &$form) {
       '#prefix' => $prefix,
       '#suffix' => '</div>',
       '#weight' => $group->weight,
-   //   '#access' => $access,
+      //   '#access' => $access,
     );
   }
 }
@@ -414,7 +414,7 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
     $form['actions']['previous'] = array(
       '#type' => 'submit',
       '#value' => variable_get('multistep_adl_button_prev', t('< Previous')),
-      '#submit' => array('node_form_submit','multistep_adl_submit'),
+      '#submit' => array('node_form_submit', 'multistep_adl_submit'),
       '#weight' => -999,
       '#access' => variable_get('multistep_adl_button_prev', TRUE),
     );
@@ -422,7 +422,7 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
   $form['actions']['save'] = array(
     '#type' => 'submit',
     '#value' => variable_get('multistep_adl_button_save', t('Save')),
-    '#submit' => array('node_form_submit','multistep_adl_submit'),
+    '#submit' => array('node_form_submit', 'multistep_adl_submit'),
     '#weight' => 0,
     '#access' => variable_get('multistep_adl_button_save', TRUE),
   );
@@ -432,7 +432,7 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
     $form['actions']['next'] = array(
       '#type' => 'submit',
       '#value' => variable_get('multistep_adl_button_next', t('Next >')),
-      '#submit' => array('node_form_submit','multistep_adl_submit'),
+      '#submit' => array('node_form_submit', 'multistep_adl_submit'),
       '#weight' => 999,
     );
   }
