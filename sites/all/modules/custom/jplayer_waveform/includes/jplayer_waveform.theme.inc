@@ -37,7 +37,6 @@ function template_preprocess_jplayer_waveform(&$vars) {
   }
 
   $vars['waveform_image'] = file_create_url("public://jplayer_waveform_images/" . $player['fid'] . '.png');
-  $vars['media_info'] = $player['file_id3_info'];
   // Add player settings
   $player = array(
     'jplayerInstances' => array(
@@ -78,21 +77,17 @@ function jplayer_waveform_prepare_audio($raw_file = array()) {
   $extensions = array();
   $fid = 0;
 
-
   // Look through all the files provided and see what we have
   foreach ($raw_file as $delta => $item) {
     // Get file URL
     if (!isset($item['url'])) {
       $item['url'] = file_create_url($item['uri']);
     }
-
     $fid = $item['fid'];
-
     // Get file extension
     if (!isset($item['ext'])) {
       $fileinfo = pathinfo($item['url']);
       $item['ext'] = $fileinfo['extension'];
-
 
       // Add file into correct group
       if (!isset($item['type'])) {
@@ -101,28 +96,6 @@ function jplayer_waveform_prepare_audio($raw_file = array()) {
         }
       }
       if (isset($item) && $item['type'] == 'audio') {
-        $file_id3_info = getid3_analyze(drupal_realpath($item['uri']));
-        if (isset($file_id3_info['tags'])) {
-          $id3_data = array();
-          foreach ($file_id3_info['tags'] as $tag) {
-            foreach ($tag as $key_name => $key_data) {
-              if ($key_name == 'title') {
-                $id3_data['title'] = implode(',', $key_data);
-              }
-              if ($key_name == 'artist') {
-                $id3_data['artist'] = implode(',', $key_data);
-              }
-            }
-            //The first tag will be taken.
-            break;
-          }
-          if (!empty($id3_data)) {
-            $file_id3_info = implode(' - ', $id3_data);
-          }
-          else {
-            $file_id3_info = 'No name';
-          }
-        }
         $file[$item['ext']] = $item['url'];
         $extensions[] = $item['ext'];
       }
@@ -131,7 +104,6 @@ function jplayer_waveform_prepare_audio($raw_file = array()) {
   return array(
     'fid' => $fid,
     'file' => $file,
-    'file_id3_info' => $file_id3_info,
     'extensions' => implode(',', $extensions)
   );
 }

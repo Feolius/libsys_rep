@@ -40,7 +40,7 @@ div.jp-interface {
 }
 
 div.jp-audio div.jp-type-single div.jp-interface {
-    height: 100px;
+    height: 80px;
 }
 
 div.jp-interface ul.jp-controls {
@@ -69,7 +69,7 @@ a.jp-pause {
 
 div.jp-audio div.jp-type-single a.jp-play,
 div.jp-audio div.jp-type-single a.jp-pause {
-    top: 36px;
+    top: 16px;
     left: 14px;
 }
 
@@ -91,7 +91,7 @@ a.jp-pause:hover {
 }
 
 div.jp-audio div.jp-type-single a.jp-stop {
-    top: 43px;
+    top: 23px;
     left: 60px;
 }
 
@@ -113,7 +113,7 @@ div.jp-progress {
 }
 
 div.jp-audio div.jp-type-single div.jp-progress {
-    top: 30px;
+    top: 10px;
     left: 100px;
     width: 400px;
     height: 50px;
@@ -163,7 +163,7 @@ a.jp-unmute {
 
 div.jp-audio div.jp-type-single a.jp-mute,
 div.jp-audio div.jp-type-single a.jp-unmute {
-    top: 50px;
+    top: 30px;
     left: 515px;
 }
 
@@ -194,7 +194,7 @@ div.jp-volume-bar {
 }
 
 div.jp-audio div.jp-type-single div.jp-volume-bar {
-    top: 55px;
+    top: 35px;
     left: 540px;
 }
 
@@ -217,7 +217,7 @@ div.jp-duration {
 
 div.jp-audio div.jp-type-single div.jp-current-time,
 div.jp-audio div.jp-type-single div.jp-duration {
-    top: 80px;
+    top: 60px;
     left: 100px;
     width: 400px;
 }
@@ -234,10 +234,4 @@ div.jp-jplayer {
 
 div.jp-jplayer {
     background-color: #000000;
-}
-
-div.jp-media-info {
-    margin_top: 5px;
-    margin-left: 15px;
-    text-align: left;
 }

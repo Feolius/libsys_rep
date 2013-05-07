@@ -575,7 +575,7 @@ function file_field_widget_uri($field, $instance, $data = array()) {
   return $field['settings']['uri_scheme'] . '://' . $destination;
 }
 
-/**
+/**ss
  * The #value_callback for the file_generic field element.
  */
 function file_field_widget_value($element, $input = FALSE, $form_state) {
@@ -584,7 +584,7 @@ function file_field_widget_value($element, $input = FALSE, $form_state) {
     // If the display field is present make sure its unchecked value is saved.
     $field = field_widget_field($element, $form_state);
     if (empty($input['display'])) {
-      $input['display'] = $field['settings']['display_field'] ? 0 : 1;
+      $input['display'] = isset($field['settings']['display_field']) ? 0 : 1;
     }
   }
 

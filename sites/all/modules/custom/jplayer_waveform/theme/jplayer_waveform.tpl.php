@@ -32,9 +32,7 @@
 
             <div class="jp-current-time"></div>
             <div class="jp-duration"></div>
-            <div class="jp-media-info"><?php print $media_info;?> </div>
         </div>
     </div>
 </div>
 <?php print drupal_render($dynamic); ?>
-
