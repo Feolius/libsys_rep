@@ -79,6 +79,58 @@ function library_features_image_styles_image_default_styles() {
     ),
   );
 
+  // Exported image style: files-image-album-poster.
+  $styles['files-image-album-poster'] = array(
+    'name' => 'files-image-album-poster',
+    'effects' => array(
+      9 => array(
+        'label' => 'Scale',
+        'help' => 'Scaling will maintain the aspect-ratio of the original image. If only a single dimension is specified, the other dimension will be calculated.',
+        'effect callback' => 'image_scale_effect',
+        'dimensions callback' => 'image_scale_dimensions',
+        'form callback' => 'image_scale_form',
+        'summary theme' => 'image_scale_summary',
+        'module' => 'image',
+        'name' => 'image_scale',
+        'data' => array(
+          'width' => '120',
+          'height' => '121',
+          'upscale' => 0,
+        ),
+        'weight' => '1',
+      ),
+      11 => array(
+        'label' => 'Define canvas',
+        'help' => 'Define the size of the working canvas and background color, this controls the dimensions of the output image.',
+        'effect callback' => 'canvasactions_definecanvas_effect',
+        'dimensions callback' => 'canvasactions_definecanvas_dimensions',
+        'form callback' => 'canvasactions_definecanvas_form',
+        'summary theme' => 'canvasactions_definecanvas_summary',
+        'module' => 'imagecache_canvasactions',
+        'name' => 'canvasactions_definecanvas',
+        'data' => array(
+          'RGB' => array(
+            'HEX' => '#FFFFFF',
+          ),
+          'under' => 1,
+          'exact' => array(
+            'width' => '120',
+            'height' => '121',
+            'xpos' => 'center',
+            'ypos' => 'center',
+          ),
+          'relative' => array(
+            'leftdiff' => '',
+            'rightdiff' => '',
+            'topdiff' => '',
+            'bottomdiff' => '',
+          ),
+        ),
+        'weight' => '3',
+      ),
+    ),
+  );
+
   // Exported image style: home_news_image.
   $styles['home_news_image'] = array(
     'name' => 'home_news_image',
