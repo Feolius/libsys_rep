@@ -13,9 +13,12 @@ function theme_multistep_adl_navigation($variables = array()) {
   foreach ($variables['links']['#children'] as $key => $group) {
     extract($group);
     if (isset($url) || $next_unsubmitted_step) {
+      $query = array('step' => $step);
+      $destination = drupal_get_destination();
+      $query += $destination;
       $content = l($label, $url, array(
         'attributes' => array('id' => $id, 'class' => $class),
-        'query' => array('step' => $step)
+        'query' => $query,
       ));
     }
     else {
