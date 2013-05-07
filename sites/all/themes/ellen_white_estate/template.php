@@ -93,7 +93,7 @@ function ellen_white_estate_preprocess_node__files_full(&$vars) {
 /**
  * Preprocesses variables for files with primary media video.
  */
-function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
+function _ellen_white_estate_preprocess_node__files_primary_video($vars) {kpr($vars);
   $output = array();
   if ($vars['content']['field_files_youtube_media']) {
     $output['video'] = $vars['content']['field_files_youtube_media'];

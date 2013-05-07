@@ -359,6 +359,15 @@ function multistep_adl_field_group_pre_render(&$element, $group, &$form) {
       '#access' => $access,
     );
  }
+//  else {
+//    $element += array(
+//      '#type' => 'hidden',
+//      '#prefix' => $prefix,
+//      '#suffix' => '</div>',
+//      '#weight' => $group->weight,
+//      //'#access' => $access,
+//    );
+//  }
 }
 
 /**
@@ -525,8 +534,8 @@ function multistep_adl_submit($form, &$form_state) {
     unset($form_state['values'][$exclude_field]);
   }
 
-//  var_dump($form_state['values']);
-//  exit();
+
+
 
   node_form_submit($form, $form_state);
 
