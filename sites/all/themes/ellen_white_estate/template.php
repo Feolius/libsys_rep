@@ -93,7 +93,7 @@ function ellen_white_estate_preprocess_node__files_full(&$vars) {
 /**
  * Preprocesses variables for files with primary media video.
  */
-function _ellen_white_estate_preprocess_node__files_primary_video($vars) {kpr($vars);
+function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
   $output = array();
   if ($vars['content']['field_files_youtube_media']) {
     $output['video'] = $vars['content']['field_files_youtube_media'];
@@ -179,6 +179,7 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
       t('Download'),
       file_create_url($node->field_files_audio[$field_language][0]['uri']),
       array(
+        'html' => TRUE,
         'attributes' => array(
           'class' => array('download'),
           'target' => '_blank'
