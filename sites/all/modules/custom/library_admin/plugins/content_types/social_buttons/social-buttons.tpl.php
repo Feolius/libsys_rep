@@ -7,10 +7,10 @@
 <!-- AddThis Button BEGIN -->
   <div class="addthis_toolbox" style="">
     <div class="social">
-      <a class="addthis_button_preferred_1 icon facebook"></a>
-      <a class="addthis_button_preferred_2 icon twitter"></a>
-      <a class="addthis_button_preferred_3 icon gplus"></a>
-      <a class="addthis_button_preferred_4 icon email"></a>
+      <a class="addthis_button_facebook icon facebook"></a>
+      <a class="addthis_button_twitter icon twitter"></a>
+      <a class="addthis_button_google_plusone icon gplus"></a>
+      <a class="addthis_button_email icon email"></a>
       <a class="addthis_button_compact icon addthis"></a>
      </div>
   </div>
