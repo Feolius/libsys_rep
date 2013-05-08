@@ -85,7 +85,7 @@ function library_features_content_type_files_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'library_date_field_text',
-        'weight' => '12',
+        'weight' => '26',
       ),
     ),
   );
@@ -183,7 +183,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '4',
+        'weight' => '16',
       ),
     ),
   );
@@ -278,7 +278,7 @@ function library_features_content_type_files_field_default_fields() {
           'progress_indicator' => 'throbber',
         ),
         'type' => 'id3_image_widget',
-        'weight' => '8',
+        'weight' => '25',
       ),
     ),
   );
@@ -376,7 +376,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '9',
+        'weight' => '27',
       ),
     ),
   );
@@ -469,7 +469,7 @@ function library_features_content_type_files_field_default_fields() {
           'progress_indicator' => 'throbber',
         ),
         'type' => 'file_generic',
-        'weight' => '7',
+        'weight' => '24',
       ),
     ),
   );
@@ -582,7 +582,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '0',
+        'weight' => '3',
       ),
     ),
   );
@@ -692,7 +692,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '25',
+        'weight' => '45',
       ),
     ),
   );
@@ -788,7 +788,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '21',
+        'weight' => '40',
       ),
     ),
   );
@@ -884,7 +884,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '22',
+        'weight' => '41',
       ),
     ),
   );
@@ -964,7 +964,7 @@ function library_features_content_type_files_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'library_date_field_text',
-        'weight' => '-1',
+        'weight' => '54',
       ),
     ),
   );
@@ -1062,7 +1062,7 @@ function library_features_content_type_files_field_default_fields() {
           'summary_rows' => 5,
         ),
         'type' => 'text_textarea_with_summary',
-        'weight' => '-2',
+        'weight' => '3',
       ),
     ),
   );
@@ -1162,7 +1162,7 @@ function library_features_content_type_files_field_default_fields() {
           'image_field' => 'field_files_image',
         ),
         'type' => 'exif_readonly',
-        'weight' => '2',
+        'weight' => '13',
       ),
     ),
   );
@@ -1273,7 +1273,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'book_field',
         'settings' => array(),
         'type' => 'book_field_widget',
-        'weight' => '1',
+        'weight' => '7',
       ),
     ),
   );
@@ -1368,7 +1368,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '3',
+        'weight' => '15',
       ),
     ),
   );
@@ -1448,7 +1448,7 @@ function library_features_content_type_files_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'library_date_field_text',
-        'weight' => '1',
+        'weight' => '6',
       ),
     ),
   );
@@ -1544,7 +1544,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '20',
+        'weight' => '39',
       ),
     ),
   );
@@ -1640,7 +1640,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '1',
+        'weight' => '8',
       ),
     ),
   );
@@ -1733,7 +1733,7 @@ function library_features_content_type_files_field_default_fields() {
           'display_label' => 1,
         ),
         'type' => 'options_onoff',
-        'weight' => '15',
+        'weight' => '33',
       ),
     ),
   );
@@ -1850,7 +1850,7 @@ function library_features_content_type_files_field_default_fields() {
           'progress_indicator' => 'throbber',
         ),
         'type' => 'image_image',
-        'weight' => '0',
+        'weight' => '4',
       ),
     ),
   );
@@ -1950,7 +1950,7 @@ function library_features_content_type_files_field_default_fields() {
           'image_field' => 'field_files_image',
         ),
         'type' => 'exif_readonly',
-        'weight' => '3',
+        'weight' => '6',
       ),
     ),
   );
@@ -2048,7 +2048,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete_tags',
-        'weight' => '6',
+        'weight' => '18',
       ),
     ),
   );
@@ -2146,7 +2146,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete_tags',
-        'weight' => '7',
+        'weight' => '20',
       ),
     ),
   );
@@ -2244,7 +2244,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete_tags',
-        'weight' => '8',
+        'weight' => '7',
       ),
     ),
   );
@@ -2340,7 +2340,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '2',
+        'weight' => '5',
       ),
     ),
   );
@@ -2431,7 +2431,7 @@ function library_features_content_type_files_field_default_fields() {
           'rows' => '5',
         ),
         'type' => 'text_textarea',
-        'weight' => '28',
+        'weight' => '50',
       ),
     ),
   );
@@ -2527,7 +2527,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '29',
+        'weight' => '52',
       ),
     ),
   );
@@ -2611,7 +2611,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'id3_text_widget',
-        'weight' => '10',
+        'weight' => '28',
       ),
     ),
   );
@@ -2704,7 +2704,7 @@ function library_features_content_type_files_field_default_fields() {
           'display_label' => 1,
         ),
         'type' => 'options_onoff',
-        'weight' => '17',
+        'weight' => '36',
       ),
     ),
   );
@@ -2795,7 +2795,7 @@ function library_features_content_type_files_field_default_fields() {
           'rows' => '5',
         ),
         'type' => 'text_textarea',
-        'weight' => '18',
+        'weight' => '37',
       ),
     ),
   );
@@ -2881,7 +2881,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'number',
         'settings' => array(),
         'type' => 'number',
-        'weight' => '19',
+        'weight' => '38',
       ),
     ),
   );
@@ -2974,7 +2974,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'text_textfield',
-        'weight' => '12',
+        'weight' => '26',
       ),
     ),
   );
@@ -3068,7 +3068,90 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '-4',
+        'weight' => '1',
+      ),
+    ),
+  );
+
+  // Exported field: 'node-files-field_files_provenance'.
+  $fields['node-files-field_files_provenance'] = array(
+    'field_config' => array(
+      'active' => '1',
+      'cardinality' => '1',
+      'deleted' => '0',
+      'entity_types' => array(),
+      'field_name' => 'field_files_provenance',
+      'foreign keys' => array(
+        'tid' => array(
+          'columns' => array(
+            'tid' => 'tid',
+          ),
+          'table' => 'taxonomy_term_data',
+        ),
+      ),
+      'indexes' => array(
+        'tid' => array(
+          0 => 'tid',
+        ),
+      ),
+      'locked' => '0',
+      'module' => 'taxonomy',
+      'settings' => array(
+        'allowed_values' => array(
+          0 => array(
+            'vocabulary' => 'source',
+            'parent' => '0',
+          ),
+        ),
+      ),
+      'translatable' => '0',
+      'type' => 'taxonomy_term_reference',
+    ),
+    'field_instance' => array(
+      'bundle' => 'files',
+      'default_value' => NULL,
+      'deleted' => '0',
+      'description' => '',
+      'display' => array(
+        'collection_teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'collection_thumbnail' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'default' => array(
+          'label' => 'above',
+          'module' => 'taxonomy',
+          'settings' => array(),
+          'type' => 'taxonomy_term_reference_link',
+          'weight' => 71,
+        ),
+        'teaser' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'node',
+      'field_name' => 'field_files_provenance',
+      'label' => 'Provenance',
+      'required' => 0,
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'options',
+        'settings' => array(),
+        'type' => 'options_select',
+        'weight' => '53',
       ),
     ),
   );
@@ -3164,7 +3247,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'options',
         'settings' => array(),
         'type' => 'options_select',
-        'weight' => '27',
+        'weight' => '49',
       ),
     ),
   );
@@ -3244,7 +3327,7 @@ function library_features_content_type_files_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'library_date_field_text',
-        'weight' => '2',
+        'weight' => '10',
       ),
     ),
   );
@@ -3321,7 +3404,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'fivestar',
         'settings' => array(),
         'type' => 'exposed',
-        'weight' => '2',
+        'weight' => '55',
       ),
     ),
   );
@@ -3401,7 +3484,7 @@ function library_features_content_type_files_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'library_date_field_text',
-        'weight' => '0',
+        'weight' => '5',
       ),
     ),
   );
@@ -3511,7 +3594,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '23',
+        'weight' => '42',
       ),
     ),
   );
@@ -3621,7 +3704,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '26',
+        'weight' => '46',
       ),
     ),
   );
@@ -3707,7 +3790,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'number',
         'settings' => array(),
         'type' => 'number',
-        'weight' => '15',
+        'weight' => '32',
       ),
     ),
   );
@@ -3793,7 +3876,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'number',
         'settings' => array(),
         'type' => 'number',
-        'weight' => '14',
+        'weight' => '31',
       ),
     ),
   );
@@ -3886,7 +3969,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'text_textfield',
-        'weight' => '16',
+        'weight' => '34',
       ),
     ),
   );
@@ -3980,7 +4063,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'text_textfield',
-        'weight' => '12',
+        'weight' => '28',
       ),
     ),
   );
@@ -4066,7 +4149,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'number',
         'settings' => array(),
         'type' => 'number',
-        'weight' => '13',
+        'weight' => '29',
       ),
     ),
   );
@@ -4159,7 +4242,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'text_textfield',
-        'weight' => '13',
+        'weight' => '30',
       ),
     ),
   );
@@ -4238,7 +4321,7 @@ function library_features_content_type_files_field_default_fields() {
           'rows' => '5',
         ),
         'type' => 'text_textarea',
-        'weight' => '2',
+        'weight' => '12',
       ),
     ),
   );
@@ -4336,7 +4419,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete',
-        'weight' => '11',
+        'weight' => '25',
       ),
     ),
   );
@@ -4429,7 +4512,7 @@ function library_features_content_type_files_field_default_fields() {
           'display_label' => 1,
         ),
         'type' => 'options_onoff',
-        'weight' => '16',
+        'weight' => '35',
       ),
     ),
   );
@@ -4527,7 +4610,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete_tags',
-        'weight' => '28',
+        'weight' => '51',
       ),
     ),
   );
@@ -4625,7 +4708,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete_tags',
-        'weight' => '27',
+        'weight' => '53',
       ),
     ),
   );
@@ -4723,7 +4806,7 @@ function library_features_content_type_files_field_default_fields() {
           'size' => '60',
         ),
         'type' => 'entityreference_autocomplete_tags',
-        'weight' => '26',
+        'weight' => '52',
       ),
     ),
   );
@@ -4817,7 +4900,7 @@ function library_features_content_type_files_field_default_fields() {
         'module' => 'youtube',
         'settings' => array(),
         'type' => 'youtube',
-        'weight' => '24',
+        'weight' => '54',
       ),
     ),
   );
@@ -4897,7 +4980,7 @@ function library_features_content_type_files_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'library_date_field_text',
-        'weight' => '5',
+        'weight' => '17',
       ),
     ),
   );
@@ -4977,7 +5060,7 @@ function library_features_content_type_files_field_default_fields() {
           'year_range' => '-3:+3',
         ),
         'type' => 'library_date_field_text',
-        'weight' => '25',
+        'weight' => '55',
       ),
     ),
   );
@@ -5019,6 +5102,7 @@ function library_features_content_type_files_field_default_fields() {
   t('People');
   t('Photographer');
   t('Primary Media');
+  t('Provenance');
   t('Publication');
   t('Published date');
   t('Rating');
