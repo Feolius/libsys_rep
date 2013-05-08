@@ -71,9 +71,14 @@ function library_features_content_type_files_field_group_info() {
     'children' => array(
       0 => 'field_files_file',
     ),
-    'format_type' => 'multistep_adl',
+    'format_type' => 'fieldset',
     'format_settings' => array(
-      'formatter' => '',
+      'formatter' => 'collapsible',
+      'instance_settings' => array(
+        'description' => '',
+        'classes' => '',
+        'required_fields' => 1,
+      ),
     ),
   );
   $export['group_files_document|node|files|form'] = $field_group;
@@ -145,9 +150,14 @@ function library_features_content_type_files_field_group_info() {
       2 => 'field_files_images',
       3 => 'field_files_image_people',
     ),
-    'format_type' => 'multistep_adl',
+    'format_type' => 'fieldset',
     'format_settings' => array(
-      'formatter' => '',
+      'formatter' => 'collapsible',
+      'instance_settings' => array(
+        'description' => '',
+        'classes' => '',
+        'required_fields' => 1,
+      ),
     ),
   );
   $export['group_files_image|node|files|form'] = $field_group;

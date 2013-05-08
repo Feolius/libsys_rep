@@ -93,26 +93,37 @@ function ellen_white_estate_preprocess_node__files_full(&$vars) {
 /**
  * Preprocesses variables for files with primary media video.
  */
-function _ellen_white_estate_preprocess_node__files_primary_video($vars) {kpr($vars);
+function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
   $output = array();
-  if ($vars['content']['field_files_youtube_media']) {
+  if (isset($vars['content']['field_files_youtube_media'])) {
     $output['video'] = $vars['content']['field_files_youtube_media'];
   }
-  if ($vars['content']['field_files_description']) {
+  if (isset($vars['content']['field_files_description'])) {
     $output['description'] = $vars['content']['field_files_description'];
   }
-  if ($vars['content']['field_video_date_taken']) {
+  if (isset($vars['content']['field_video_date_taken'])) {
     $output['date_taken'] = $vars['content']['field_video_date_taken'];
   }
-  if ($vars['content']['field_files_video_people']) {
+  if (isset($vars['content']['field_files_video_people'])) {
     $output['people'] = $vars['content']['field_files_video_people'];
   }
-  if ($vars['content']['field_files_video_location']) {
+  if (isset($vars['content']['field_files_video_location'])) {
     $output['location'] = $vars['content']['field_files_video_location'];
   }
-  if ($vars['content']['field_files_video_event']) {
+  if (isset($vars['content']['field_files_video_event'])) {
     $output['event'] = $vars['content']['field_files_video_event'];
   }
+
+  // Copiright.
+  if (module_exists('library_admin') && $copiright = library_admin_return_copiright()) {
+    $output['copiright'] = array(
+      '#access' => TRUE,
+      '#prefix' => "<div class='copiright'>",
+      '#markup' => $copiright,
+      '#suffix' => '</div>',
+    );
+  }
+
   return $output;
 }
 
@@ -120,38 +131,59 @@ function _ellen_white_estate_preprocess_node__files_primary_video($vars) {kpr($v
  * Preprocesses variables for files with primary media image.
  */
 function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
+  $node = $vars['node'];
   $output = array();
-  if ($vars['content']['field_files_image']) {
-    // Button for download full image.
-    $output['button'] = array(
-      '#type' => 'button',
-      '#value' => t('Download'),
-      '#attributes' => array(
-      'id' => array('download')
-      ),
-      '#ajax' => array(
-        'callback' => 'ellen_white_estate_download_image',
-        'method' => 'replace',
-        'effect' => 'fade',
-      ),
+
+  // Download's link.
+  if (isset($vars['content']['field_files_image'])) {
+    $field_language = field_language('node', $node, 'field_files_image');
+
+    $link = l(
+      t('Download'),
+      file_create_url($node->field_files_image[$field_language][0]['uri']),
+      array(
+        'attributes' => array(
+          'class' => array('download'),
+          'target' => '_blank'
+        )
+      )
     );
+    $output['download'] = array(
+      '#access' => TRUE,
+      '#markup' => $link,
+    );
+  }
+
+  if (isset($vars['content']['field_files_image'])) {
     $output['image'] = $vars['content']['field_files_image'];
   }
-  if ($vars['content']['field_files_description']) {
+
+  if (isset($vars['content']['field_files_description'])) {
     $output['description'] = $vars['content']['field_files_description'];
   }
-  if ($vars['content']['field_files_image_people']) {
+  if (isset($vars['content']['field_files_image_people'])) {
     $output['people'] = $vars['content']['field_files_image_people'];
   }
-  if ($vars['content']['field_files_image_location']) {
+  if (isset($vars['content']['field_files_image_location'])) {
     $output['location'] = $vars['content']['field_files_image_location'];
   }
-  if ($vars['content']['field_files_image_event']) {
+  if (isset($vars['content']['field_files_image_event'])) {
     $output['event'] = $vars['content']['field_files_image_event'];
   }
-  if ($vars['content']['field_image_date_taken']) {
+  if (isset($vars['content']['field_image_date_taken'])) {
     $output['date_taken'] = $vars['content']['field_image_date_taken'];
   }
+
+  // Copiright.
+  if (module_exists('library_admin') && $copiright = library_admin_return_copiright()) {
+    $output['copiright'] = array(
+      '#access' => TRUE,
+      '#prefix' => "<div class='copiright'>",
+      '#markup' => $copiright,
+      '#suffix' => '</div>',
+    );
+  }
+
   return $output;
 }
 
@@ -161,18 +193,18 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
 function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
   $node = $vars['node'];
   $output = array();
-  if ($vars['content']['field_files_album_poster']) {
+  if (isset($vars['content']['field_files_album_poster'])) {
     $output['poster'] = $vars['content']['field_files_album_poster'];
   }
-  if ($vars['content']['field_files_audio']) {
+  if (isset($vars['content']['field_files_audio'])) {
     $output['audio'] = $vars['content']['field_files_audio'];
   }
-  if ($vars['content']['field_files_description']) {
+  if (isset($vars['content']['field_files_description'])) {
     $output['description'] = $vars['content']['field_files_description'];
   }
 
   // Download's link.
-  if ($vars['content']['field_files_audio']) {
+  if (isset($vars['content']['field_files_audio'])) {
     $field_language = field_language('node', $node, 'field_files_audio');
 
     $link = l(
@@ -209,10 +241,10 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
     );
   }
 
-  if ($vars['content']['field_audio_year']) {
+  if (isset($vars['content']['field_audio_year'])) {
     $output['year'] = $vars['content']['field_audio_year'];
   }
-  if ($vars['content']['field_files_length']) {
+  if (isset($vars['content']['field_files_length'])) {
     $output['length'] = $vars['content']['field_files_length'];
   }
 
@@ -234,68 +266,103 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
       '#suffix' => '</div>',
     );
   }
+
+  // Copiright.
+  if (module_exists('library_admin') && $copiright = library_admin_return_copiright()) {
+    $output['copiright'] = array(
+      '#access' => TRUE,
+      '#prefix' => "<div class='copiright'>",
+      '#markup' => $copiright,
+      '#suffix' => '</div>',
+    );
+  }
+
   return $output;
 }
 
 /**
  * Preprocesses variables for files with primary media audio.
  */
-function _ellen_white_estate_preprocess_node__files_primary_document($vars) {kpr($vars);
+function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
+  $node = $vars['node'];
   $output = array();
   $vars['tabs'] = FALSE;
-  if ($vars['content']['field_files_subtitle']) {
+  if (isset($vars['content']['field_files_subtitle'])) {
     $output['subtitle'] = $vars['content']['field_files_subtitle'];
   }
-  if ($vars['content']['field_files_description']) {
+  if (isset($vars['content']['field_files_description'])) {
     $output['description'] = $vars['content']['field_files_description'];
   }
-  if ($vars['content']['field_files_key_points']) {
+  if (isset($vars['content']['field_files_key_points'])) {
     $output['key_points'] = $vars['content']['field_files_key_points'];
   }
 
   // Tabs.
-  if ($vars['content']['field_files_file']) {
+
+  if (isset($vars['content']['field_files_file'])) {
     $output['file'] = $vars['content']['field_files_file'];
   }
-  if ($vars['content']['field_files_text']) {
+  if (isset($vars['content']['field_files_text'])) {
     $output['text'] = $vars['content']['field_files_text'];
   }
-  if ($vars['content']['field_files_file'] && $vars['content']['field_files_text']) {
+  if (isset($vars['content']['field_files_file']) && isset($vars['content']['field_files_text'])) {
     $vars['tabs'] = TRUE;
   }
 
-  if ($vars['content']['field_files_author']) {
+  // Download's link.
+  if (isset($vars['content']['field_files_file'])) {
+    $field_language = field_language('node', $node, 'field_files_file');
+    $file = file_load($node->field_files_file[$field_language][0]['fid']);
+    $link = l(
+      t('Download'),
+      file_create_url($file->uri),
+      array(
+        'attributes' => array(
+          'class' => array('download'),
+          'target' => '_blank'
+        )
+      )
+    );
+    $output['download'] = array(
+      '#access' => TRUE,
+      '#markup' => $link,
+    );
+  }
+
+  if (isset($vars['content']['field_files_author'])) {
     $output['author'] = $vars['content']['field_files_author'];
-  } elseif($vars['content']['field_files_author_location']) {
+  }
+  elseif (isset($vars['content']['field_files_author_location'])) {
     $output['author'] = $vars['content']['field_files_author_location'];
   }
-  if ($vars['content']['field_files_receiver']) {
+  if (isset($vars['content']['field_files_receiver'])) {
     $output['receiver'] = $vars['content']['field_files_receiver'];
-  } elseif($vars['content']['field_files_receiver_location']) {
+  }
+  elseif (isset($vars['content']['field_files_receiver_location'])) {
     $output['receiver'] = $vars['content']['field_files_receiver_location'];
   }
-  if ($vars['content']['field_files_creation_date']) {
+  if (isset($vars['content']['field_files_creation_date'])) {
     $output['creation_date'] = $vars['content']['field_files_creation_date'];
   }
-  if ($vars['content']['field_files_published_date']) {
+  if (isset($vars['content']['field_files_published_date'])) {
     $output['received_date'] = $vars['content']['field_files_published_date'];
   }
-  if ($vars['content']['field_files_received_date']) {
+  if (isset($vars['content']['field_files_received_date'])) {
     $output['received_date'] = $vars['content']['field_files_received_date'];
   }
-  if ($vars['content']['field_files_filed_date']) {
+  if (isset($vars['content']['field_files_filed_date'])) {
     $output['filed_date'] = $vars['content']['field_files_filed_date'];
   }
 
   // Additional information.
-  if ($vars['content']['field_files_folder']
-    || $vars['content']['field_files_original_title']
-    || $vars['content']['field_files_publication']
-    || $vars['content']['field_files_source_title']
-    || $vars['content']['field_files_source_volume']
-    || $vars['content']['field_files_source_number']
-    || $vars['content']['field_files_source_chapter']
-    || $vars['content']['field_files_source_page']) {
+  if (isset($vars['content']['field_files_folder'])
+    || isset($vars['content']['field_files_original_title'])
+    || isset($vars['content']['field_files_publication'])
+    || isset($vars['content']['field_files_source_title'])
+    || isset($vars['content']['field_files_source_volume'])
+    || isset($vars['content']['field_files_source_number'])
+    || isset($vars['content']['field_files_source_chapter'])
+    || isset($vars['content']['field_files_source_page'])) {
     $output['button'] = array(
       '#type' => 'button',
       '#value' => t('Show extended information'),

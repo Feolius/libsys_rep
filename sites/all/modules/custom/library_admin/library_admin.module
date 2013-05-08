@@ -1,5 +1,8 @@
 <?php
 
+define('LIBRARY_ADMIN_TEXT_TO_COPIRIGHT', variable_get('library_admin_text_to_copyright'));
+define('LIBRARY_ADMIN_PATH_TO_COPIRIGHT', variable_get('library_admin_path_to_copyright'));
+
 /**
  * Implements hook_menu().
  */
@@ -23,5 +26,18 @@ function library_admin_menu() {
 function library_admin_ctools_plugin_directory($module, $plugin) {
   if (in_array($module, array('ctools', 'panels'))) {
     return "plugins/$plugin";
+  }
+}
+
+/**
+ * Help function for copiright.
+ */
+function library_admin_return_copiright() {
+  if ($text = LIBRARY_ADMIN_TEXT_TO_COPIRIGHT && $path = LIBRARY_ADMIN_PATH_TO_COPIRIGHT) {
+    $copiright = l(
+      t(LIBRARY_ADMIN_TEXT_TO_COPIRIGHT),
+      check_url(LIBRARY_ADMIN_PATH_TO_COPIRIGHT)
+    );
+   return $copiright;
   }
 }

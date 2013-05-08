@@ -3130,7 +3130,7 @@ function library_features_content_type_files_field_default_fields() {
           'module' => 'taxonomy',
           'settings' => array(),
           'type' => 'taxonomy_term_reference_link',
-          'weight' => 71,
+          'weight' => '71',
         ),
         'teaser' => array(
           'label' => 'above',
