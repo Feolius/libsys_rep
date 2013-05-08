@@ -12,7 +12,7 @@ function library_admin_copyright_block_ctools_content_types() {
     'title' => t('Copyright'),
     'description' => t('Copyright text to display in the footer'),
     'category' => t('Library'),
-    'icon' => 'copyright_block.png',
+    'icon' => 'social_buttons.png',
     'single' => TRUE,
     'hook theme' => 'library_admin_copyright_block_content_type_theme',
     'render callback' => 'library_admin_copyright_block_content_type_render',
