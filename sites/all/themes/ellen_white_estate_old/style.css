@@ -432,7 +432,7 @@ body .ui-datepicker table .ui-state-active { background: #E68050; box-shadow: in
 
 .contact-form label, .comment-form label { font-weight: bold; }
 
-input[type="text"], input[type="password"], textarea, select { background: #edeaea; border: 1px solid #cfcdc9; height: 16px; padding: 9px; font: 13px Arial, Helvetica, sans-serif; }
+/*input[type="text"], input[type="password"], textarea, select { background: #edeaea; border: 1px solid #cfcdc9; height: 16px; padding: 9px; font: 13px Arial, Helvetica, sans-serif; }*/
 
 input[type="text"]:focus, input[type="password"]:focus, textarea:focus, select:focus { background: #ffffff; border-color: #c3c1bd; }
 
