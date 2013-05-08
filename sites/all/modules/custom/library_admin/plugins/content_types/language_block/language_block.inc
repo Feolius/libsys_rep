@@ -31,7 +31,7 @@ function library_admin_language_block_content_types_render($subtype, $conf, $pan
       foreach ($items as $item) {
         if (!empty($item) && $item !== ' ') {
           $results[] = l(
-            t(''),
+            '',
             '#',
             array(
               'external' => TRUE,
