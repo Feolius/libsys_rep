@@ -448,7 +448,6 @@ kpr($vars['content']);
 function _ellen_white_estate_preprocess_node__tabs_files($vars) {
   $output = array();
   $value = array();
-  kpr($vars['content']);
   if (isset($vars['content']['field_files_file'])) {
     $value['file'] = $vars['content']['field_files_file'];
   }
