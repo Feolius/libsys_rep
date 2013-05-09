@@ -381,7 +381,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
   if (isset($vars['content']['field_files_filed_date'])) {
     $output['filed_date'] = $vars['content']['field_files_filed_date'];
   }
-kpr($vars['content']);
+
   // Additional information.
   if (isset($vars['content']['field_files_folder'])
     || isset($vars['content']['field_files_original_title'])
