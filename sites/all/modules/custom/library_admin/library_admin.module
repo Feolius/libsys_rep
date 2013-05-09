@@ -30,7 +30,7 @@ function library_admin_ctools_plugin_directory($module, $plugin) {
 }
 
 /**
- * Help function for copiright.
+ * Help function for copiright link.
  */
 function library_admin_return_copiright() {
   if ($text = LIBRARY_ADMIN_TEXT_TO_COPIRIGHT && $path = LIBRARY_ADMIN_PATH_TO_COPIRIGHT) {
