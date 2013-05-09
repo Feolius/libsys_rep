@@ -69,24 +69,31 @@ function ellen_white_estate_preprocess_node__people_full(&$vars) {
  */
 function ellen_white_estate_preprocess_node__files_full(&$vars) {
   $node = $vars['node'];
+  $multiple_media = _ellen_white_estate_preprocess_node__tabs_files($vars);
+
   $field_language = field_language('node', $node, 'field_files_primary_media');
   $primary_media = $node->field_files_primary_media[$field_language][0]['value'];
-  switch ($primary_media) {
-    case 'video':
-      $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_video($vars);
-      break;
+  if (!$multiple_media) {
+    switch ($primary_media) {
+      case 'video':
+        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_video($vars);
+        break;
 
-    case 'image':
-      $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_image($vars);
-      break;
+      case 'image':
+        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_image($vars);
+        break;
 
-    case 'audio':
-      $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_audio($vars);
-      break;
+      case 'audio':
+        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_audio($vars);
+        break;
 
-    case 'document':
-      $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_document($vars);
-      break;
+      case 'document':
+        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_document($vars);
+        break;
+    }
+  }
+  else {
+    $vars['output'] = $multiple_media;
   }
 }
 
@@ -297,7 +304,27 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
   }
 
   // Tabs.
-
+  if (isset($vars['content']['field_files_file']) && isset($vars['content']['field_files_text'])) {
+    $first_tab = l(
+      t('Flexipaper'),
+      '#file-tabs-1',
+        array(
+          'external' => TRUE
+        )
+    );
+    $second_tab = l(
+      t('Text'),
+      '#file-tabs-2',
+      array(
+        'external' => TRUE
+      )
+    );
+    $output['tabs_start'] = array(
+      '#access' => TRUE,
+      '#prefix' => "<div id='file-tabs'>",
+      '#markup' => "<ul><li>{$first_tab}</li><li>{$second_tab}</li></ul>",
+    );
+  }
   if (isset($vars['content']['field_files_file'])) {
     $output['file'] = $vars['content']['field_files_file'];
   }
@@ -305,9 +332,12 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
     $output['text'] = $vars['content']['field_files_text'];
   }
   if (isset($vars['content']['field_files_file']) && isset($vars['content']['field_files_text'])) {
-    $vars['tabs'] = TRUE;
+    $output['file']['#prefix'] = "<div id='file-tabs-1'>";
+    $output['file']['#suffix'] = "</div>";
+    $output['text']['#prefix'] = "<div id='file-tabs-2'>";
+    $output['text']['#suffix'] = "</div>";
+    $output['tabs_end']['#suffix'] = "</div>";
   }
-
   // Download's link.
   if (isset($vars['content']['field_files_file'])) {
     $field_language = field_language('node', $node, 'field_files_file');
@@ -362,7 +392,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
     || isset($vars['content']['field_files_source_number'])
     || isset($vars['content']['field_files_source_chapter'])
     || isset($vars['content']['field_files_source_page'])) {
-    $output['information'] = l(
+    $information = l(
       t('Show extended information'),
       '',
       array(
@@ -370,6 +400,44 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
           'class' => array('information')
         ),
       )
+    );
+    $output['information'] = array(
+      '#access' => TRUE,
+      '#prefix' => '<div class="extended">',
+      '#markup' => $information,
+      '#suffix' => '</div>'
+    );
+    $output['suffix'] = array(
+      '#access' => TRUE,
+      '#markup' => '<div class="information hide-me">'
+    );
+    if (isset($vars['content']['field_files_folder'])) {
+      $output['folder'] = $vars['content']['field_files_folder'];
+    }
+    if (isset($vars['content']['field_files_original_title'])) {
+      $output['original_title'] = $vars['content']['field_files_original_title'];
+    }
+    if (isset($vars['content']['field_files_publication'])) {
+      $output['publication'] = $vars['content']['field_files_publication'];
+    }
+    if (isset($vars['content']['field_files_source_title'])) {
+      $output['source_title'] = $vars['content']['field_files_source_title'];
+    }
+    if (isset($vars['content']['field_files_source_volume'])) {
+      $output['source_volume'] = $vars['content']['field_files_source_volume'];
+    }
+    if (isset($vars['content']['field_files_source_number'])) {
+      $output['source_number'] = $vars['content']['field_files_source_number'];
+    }
+    if (isset($vars['content']['field_files_source_chapter'])) {
+      $output['source_chapter'] = $vars['content']['field_files_source_chapter'];
+    }
+    if (isset($vars['content']['field_files_source_page'])) {
+      $output['source_page'] = $vars['content']['field_files_source_page'];
+    }
+    $output['preffix'] = array(
+      '#access' => TRUE,
+      '#markup' => '</div>'
     );
   }
   return $output;
@@ -380,5 +448,21 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
  */
 function _ellen_white_estate_preprocess_node__tabs_files($vars) {
   $output = array();
+  $value = array();
+  if (isset($vars['content']['field_files_file'])) {
+    $value['file'] = $vars['content']['field_files_file'];
+  }
+  if (isset($vars['content']['field_files_audio'])) {
+    $value['audio'] = $vars['content']['field_files_audio'];
+  }
+  if (isset($vars['content']['field_files_video'])) {
+    $value['video'] = $vars['content']['field_files_video'];
+  }
+  if (isset($vars['content']['field_files_image'])) {
+    $value['image'] = $vars['content']['field_files_image'];
+  }
+  if (sizeof($value) > 1) {
+    $output = $value;
+  }
   return $output;
 }

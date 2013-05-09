@@ -60,3 +60,34 @@
 .addthis_toolbox span.at300bs {
   background: none;
 }
+
+.hide-me {
+  display: none;
+}
+
+.ui-tabs .ui-tabs-panel {
+  padding: 2px;
+  border: 1px solid #aaa;
+}
+
+.ui-tabs .ui-tabs-nav {
+  padding: 0;
+}
+
+.ui-widget-header {
+  border: 0;
+  background: none;
+}
+
+.ui-tabs {
+  padding: 0;
+}
+
+.ui-widget-content {
+  border: none;
+  background: none;
+}
+
+.viewerPlaceHolder {
+    width: 634px;
+}
