@@ -70,7 +70,7 @@ function ellen_white_estate_preprocess_node__people_full(&$vars) {
 function ellen_white_estate_preprocess_node__files_full(&$vars) {
   $node = $vars['node'];
   $multiple_media = _ellen_white_estate_preprocess_node__tabs_files($vars);
-kpr($multiple_media);
+
   $field_language = field_language('node', $node, 'field_files_primary_media');
   $primary_media = $node->field_files_primary_media[$field_language][0]['value'];
   if (!$multiple_media) {
