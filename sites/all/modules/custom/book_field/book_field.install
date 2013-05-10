@@ -18,11 +18,6 @@ function book_field_field_schema($field) {
               'not null' => FALSE,
               'unsigned' => TRUE,
           ),
-          'conversion_done' => array(
-              'description' => 'Show if conversion was done for file',
-              'type' => 'int',
-              'unsigned' => TRUE,
-          ),
           'folder_name' => array(
               'description' => 'Name of the folder where files will be contained',
               'type' => 'varchar',
@@ -32,7 +27,6 @@ function book_field_field_schema($field) {
       'indexes' => array(
           'fid' => array('fid'),
           'fid_thumb' => array('fid_thumb'),
-          'conversion_done' => array('conversion_done'),
           'folder_name' => array('folder_name')
       ),
       'foreign keys' => array(
