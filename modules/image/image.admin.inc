@@ -774,10 +774,7 @@ function theme_image_style_preview($variables) {
   // Set up preview file information.
   $preview_file = image_style_path($style['name'], $original_path);
   if (!file_exists($preview_file)) {
-    if (!image_style_create_derivative($style, $original_path, $preview_file)) {
-      $preview_file = "misc/message-24-error.png";
-      drupal_set_message('Unable to generate preview', 'error');
-    }
+    image_style_create_derivative($style, $original_path, $preview_file);
   }
   $preview_image = image_get_info($preview_file);
   if ($preview_image['width'] > $preview_image['height']) {
