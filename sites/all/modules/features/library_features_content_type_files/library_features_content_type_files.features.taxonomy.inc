@@ -9,14 +9,6 @@
  */
 function library_features_content_type_files_taxonomy_default_vocabularies() {
   return array(
-    'audio_albums' => array(
-      'name' => 'Audio Albums',
-      'machine_name' => 'audio_albums',
-      'description' => 'Albums from audio files',
-      'hierarchy' => '0',
-      'module' => 'taxonomy',
-      'weight' => '0',
-    ),
     'file_category' => array(
       'name' => 'File category',
       'machine_name' => 'file_category',
@@ -24,6 +16,21 @@ function library_features_content_type_files_taxonomy_default_vocabularies() {
       'hierarchy' => '0',
       'module' => 'taxonomy',
       'weight' => '0',
+      'rdf_mapping' => array(
+        'rdftype' => array(
+          0 => 'skos:ConceptScheme',
+        ),
+        'name' => array(
+          'predicates' => array(
+            0 => 'dc:title',
+          ),
+        ),
+        'description' => array(
+          'predicates' => array(
+            0 => 'rdfs:comment',
+          ),
+        ),
+      ),
     ),
     'source' => array(
       'name' => 'Provenance',
@@ -32,6 +39,21 @@ function library_features_content_type_files_taxonomy_default_vocabularies() {
       'hierarchy' => '0',
       'module' => 'taxonomy',
       'weight' => '0',
+      'rdf_mapping' => array(
+        'rdftype' => array(
+          0 => 'skos:ConceptScheme',
+        ),
+        'name' => array(
+          'predicates' => array(
+            0 => 'dc:title',
+          ),
+        ),
+        'description' => array(
+          'predicates' => array(
+            0 => 'rdfs:comment',
+          ),
+        ),
+      ),
     ),
   );
 }
