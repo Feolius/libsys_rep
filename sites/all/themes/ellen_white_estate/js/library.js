@@ -74,9 +74,17 @@
     }
   }
 
-  Drupal.behaviors.libraryContentTabs = {
+  Drupal.behaviors.libraryContentTabsFile = {
     attach: function(context, settings) {
       $('#file-tabs').once(function() {
+        $(this).tabs();
+      })
+    }
+  }
+
+  Drupal.behaviors.libraryContentTabs = {
+    attach: function(context, settings) {
+      $('#ui-tabs').once(function() {
         $(this).tabs();
       })
     }

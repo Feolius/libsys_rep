@@ -331,7 +331,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
     $output['text'] = $vars['content']['field_files_text'];
   }
   if (isset($vars['content']['field_files_file']) && isset($vars['content']['field_files_text'])) {
-    $output['file']['#prefix'] = "<div id='file-tabs-1'>";
+
     $output['file']['#suffix'] = "</div>";
     $output['text']['#prefix'] = "<div id='file-tabs-2'>";
     $output['text']['#suffix'] = "</div>";
@@ -447,21 +447,84 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
  */
 function _ellen_white_estate_preprocess_node__tabs_files($vars) {
   $output = array();
-  $value = array();
+  $links = array();
   if (isset($vars['content']['field_files_file'])) {
-    $value['file'] = $vars['content']['field_files_file'];
+    $links['file'] = '<li>' . l(
+      t('File'),
+      '#ui-tabs-1',
+        array(
+          'external' => TRUE
+        )
+    ) . '</li>';
   }
   if (isset($vars['content']['field_files_audio'])) {
-    $value['audio'] = $vars['content']['field_files_audio'];
+    $links['audio'] = '<li>' . l(
+      t('Audio'),
+      '#ui-tabs-2',
+        array(
+          'external' => TRUE
+        )
+    ) . '</li>';
   }
   if (isset($vars['content']['field_files_video'])) {
-    $value['video'] = $vars['content']['field_files_video'];
+    $links['video'] = '<li>' . l(
+      t('Video'),
+      '#ui-tabs-3',
+        array(
+          'external' => TRUE
+        )
+    ) . '</li>';
   }
   if (isset($vars['content']['field_files_image'])) {
-    $value['image'] = $vars['content']['field_files_image'];
+    $links['image'] = '<li>' . l(
+      t('Image'),
+      '#ui-tabs-4',
+        array(
+          'external' => TRUE
+        )
+    ) . '</li>';
   }
-  if (sizeof($value) > 1) {
-    $output = $value;
+  if (sizeof($links) > 1) {
+    $output['container'] = array(
+      '#prefix' => '<div id="ui-tabs"><ul>',
+      '#markup' => $links[file] . $links['audio'] . $links['video'] . $links['image'],
+      '#suffix' => '</ul>'
+    );
+
+    if (isset($links['file'])) {
+      $output['file'] = array(
+        '#prefix' => '<div id="ui-tabs-1">',
+        '#markup' => drupal_render(_ellen_white_estate_preprocess_node__files_primary_document($vars)),
+        '#suffix' => '</div>'
+      );
+    }
+
+    if (isset($links['audio'])) {
+      $output['audio'] = array(
+        '#prefix' => '<div id="ui-tabs-2">',
+        '#markup' => drupal_render(_ellen_white_estate_preprocess_node__files_primary_audio($vars)),
+        '#suffix' => '</div>'
+      );
+    }
+
+    if (isset($links['video'])) {
+      $output['video'] = array(
+        '#prefix' => '<div id="ui-tabs-3">',
+        '#markup' => drupal_render(_ellen_white_estate_preprocess_node__files_primary_video($vars)),
+        '#suffix' => '</div>'
+      );
+    }
+
+    if (isset($links['image'])) {
+      $output['image'] = array(
+        '#prefix' => '<div id="ui-tabs-4">',
+        '#markup' => drupal_render(_ellen_white_estate_preprocess_node__files_primary_image($vars)),
+        '#suffix' => '</div>'
+      );
+    }
+    $output['container2'] = array(
+      '#markup' => "</div>"
+    );
   }
   return $output;
 }
