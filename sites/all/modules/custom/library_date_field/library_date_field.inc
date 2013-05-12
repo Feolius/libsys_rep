@@ -12,7 +12,7 @@ function library_date_field_set_date($item, $processed) {
     return;
   }
   else {
-    $values = explode('/', $item);
+    $values = explode('/', trim($item, ' '));
     $rounding = sizeof($values);
 
     if ($processed == 'value') {
@@ -54,7 +54,7 @@ function library_date_field_set_date($item, $processed) {
 }
 
 /**
- * Function for set date.
+ * Function for get date.
  */
 function library_date_field_get_date($item, $processed) {
   if (empty($item)) {
@@ -62,17 +62,28 @@ function library_date_field_get_date($item, $processed) {
   }
   else {
     $rounding = ($processed == 'value') ? 'rounding' : 'rounding2' ;
-    $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $item[$processed]);
     if ($item[$rounding] == LIBRARY_DATA_FIELD_ROUNDING_FOR_MONTH) {
-      $output = $datetime->format('F Y');
+      $output = $item[$processed]->format('F Y');
     }
     elseif ($item[$rounding] == LIBRARY_DATA_FIELD_ROUNDING_FOR_YEARS) {
-      $output = $datetime->format('Y');
+      $output = $item[$processed]->format('Y');
     }
     elseif($item[$rounding] == LIBRARY_DATA_FIELD_NO_ROUNDING) {
-      $output = $datetime->format('d F Y');
+      $output = $item[$processed]->format('d F Y');
     }
     return $output;
+  }
+}
+
+/**
+ * Function for load date.
+ */
+function library_date_field_load_date($item, $processed) {
+  if (empty($item)) {
+    return;
+    }
+  else {
+    return DateTime::createFromFormat('Y-m-d H:i:s', $item[$processed]);
   }
 }
 
@@ -86,13 +97,13 @@ function library_date_field_return_date($item, $processed) {
   else {
     $rounding = ($processed == 'value') ? 'rounding' : 'rounding2';
     if ($item[$rounding] == LIBRARY_DATA_FIELD_ROUNDING_FOR_MONTH) {
-      $output = date("m/Y", strtotime($item[$processed]));
+      $output = $item[$processed]->format('m/Y');
     }
     elseif($item[$rounding] == LIBRARY_DATA_FIELD_ROUNDING_FOR_YEARS) {
-      $output = $item[$processed];
+      $output = $item[$processed]->format('Y');
     }
     else {
-      $output = date("d/m/Y", strtotime($item[$processed]));
+      $output = $item[$processed]->format('d/m/Y');
     }
     return $output;
   }

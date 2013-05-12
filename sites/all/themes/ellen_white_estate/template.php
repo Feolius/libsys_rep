@@ -447,7 +447,12 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
  */
 function _ellen_white_estate_preprocess_node__tabs_files($vars) {
   $output = array();
-  $links = array();
+  $links = array(
+   'file' => '',
+   'audio' => '',
+   'video' => '',
+   'image' => ''
+  );
   if (isset($vars['content']['field_files_file'])) {
     $links['file'] = '<li>' . l(
       t('File'),
@@ -487,11 +492,11 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
   if (sizeof($links) > 1) {
     $output['container'] = array(
       '#prefix' => '<div id="ui-tabs"><ul>',
-      '#markup' => $links[file] . $links['audio'] . $links['video'] . $links['image'],
+      '#markup' => $links['file'] . $links['audio'] . $links['video'] . $links['image'],
       '#suffix' => '</ul>'
     );
 
-    if (isset($links['file'])) {
+    if (!empty($links['file'])) {
       $output['file'] = array(
         '#prefix' => '<div id="ui-tabs-1">',
         '#markup' => drupal_render(_ellen_white_estate_preprocess_node__files_primary_document($vars)),
@@ -499,7 +504,7 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
       );
     }
 
-    if (isset($links['audio'])) {
+    if (!empty($links['audio'])) {
       $output['audio'] = array(
         '#prefix' => '<div id="ui-tabs-2">',
         '#markup' => drupal_render(_ellen_white_estate_preprocess_node__files_primary_audio($vars)),
@@ -507,7 +512,7 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
       );
     }
 
-    if (isset($links['video'])) {
+    if (!empty($links['video'])) {
       $output['video'] = array(
         '#prefix' => '<div id="ui-tabs-3">',
         '#markup' => drupal_render(_ellen_white_estate_preprocess_node__files_primary_video($vars)),
@@ -515,7 +520,7 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
       );
     }
 
-    if (isset($links['image'])) {
+    if (!empty($links['image'])) {
       $output['image'] = array(
         '#prefix' => '<div id="ui-tabs-4">',
         '#markup' => drupal_render(_ellen_white_estate_preprocess_node__files_primary_image($vars)),
