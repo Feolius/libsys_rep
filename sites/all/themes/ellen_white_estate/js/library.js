@@ -77,6 +77,7 @@
   Drupal.behaviors.libraryContentTabsFile = {
     attach: function(context, settings) {
       $('#file-tabs').once(function() {
+        console.log($(this));
         $(this).tabs();
       })
     }

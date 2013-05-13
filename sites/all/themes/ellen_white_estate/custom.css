@@ -41,7 +41,13 @@
   top: 53px;
 }
 
-.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-play, div.jp-audio div.jp-type-single a.jp-pause {
+.field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-play
+.field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-pause {
+  top: 16px;
+}
+
+.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-pause,
+.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-play {
   top: 40px;
 }
 
@@ -89,5 +95,5 @@
 }
 
 .viewerPlaceHolder {
-    width: 634px;
+  width: 634px;
 }
