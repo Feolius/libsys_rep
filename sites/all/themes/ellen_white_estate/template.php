@@ -497,33 +497,37 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
     );
 
     if (!empty($links['file'])) {
+      $file = _ellen_white_estate_preprocess_node__files_primary_document($vars);
       $output['file'] = array(
         '#prefix' => '<div id="ui-tabs-1">',
-        '#markup' => drupal_render(_ellen_white_estate_preprocess_node__files_primary_document($vars)),
+        '#markup' => drupal_render($file),
         '#suffix' => '</div>'
       );
     }
 
     if (!empty($links['audio'])) {
+      $audio = _ellen_white_estate_preprocess_node__files_primary_audio($vars);
       $output['audio'] = array(
         '#prefix' => '<div id="ui-tabs-2">',
-        '#markup' => drupal_render(_ellen_white_estate_preprocess_node__files_primary_audio($vars)),
+        '#markup' => drupal_render($audio),
         '#suffix' => '</div>'
       );
     }
 
     if (!empty($links['video'])) {
+      $video = _ellen_white_estate_preprocess_node__files_primary_video($vars);
       $output['video'] = array(
         '#prefix' => '<div id="ui-tabs-3">',
-        '#markup' => drupal_render(_ellen_white_estate_preprocess_node__files_primary_video($vars)),
+        '#markup' => drupal_render($video),
         '#suffix' => '</div>'
       );
     }
 
     if (!empty($links['image'])) {
+      $image = _ellen_white_estate_preprocess_node__files_primary_image($vars);
       $output['image'] = array(
         '#prefix' => '<div id="ui-tabs-4">',
-        '#markup' => drupal_render(_ellen_white_estate_preprocess_node__files_primary_image($vars)),
+        '#markup' => drupal_render($image),
         '#suffix' => '</div>'
       );
     }
