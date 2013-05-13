@@ -330,7 +330,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
     $output['text'] = $vars['content']['field_files_text'];
   }
   if (isset($vars['content']['field_files_file']) && isset($vars['content']['field_files_text'])) {
-
+    $output['file']['#prefix'] = "<div id='file-tabs-1'>";
     $output['file']['#suffix'] = "</div>";
     $output['text']['#prefix'] = "<div id='file-tabs-2'>";
     $output['text']['#suffix'] = "</div>";
@@ -488,7 +488,8 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
         )
     ) . '</li>';
   }
-  if (sizeof($links) > 1) {
+  $sum = array_sum(array_map(function($b) {return empty($b) ? 0 : 1;}, $links));
+  if ($sum > 1) {
     $output['container'] = array(
       '#prefix' => '<div id="ui-tabs"><ul>',
       '#markup' => $links['file'] . $links['audio'] . $links['video'] . $links['image'],
