@@ -107,7 +107,7 @@ function library_date_field_field_validate($entity_type, $entity, $field, $insta
     $process = library_date_field_process_values($field);
     foreach ($items as $delta => $item) {
       foreach ($process as $processed) {
-        $value = !empty($item[$processed]) ? $item[$processed] : NULL;
+        $value = trim(!empty($item[$processed]) ? $item[$processed] : NULL, ' ');
         if (!empty($value)) {
           if (strlen($value) > 10) {
             $errors[$field['field_name']][$langcode][$delta][] = array(
@@ -218,7 +218,7 @@ function library_date_field_field_load($entity_type, $entities, $field, $instanc
           $timezone = isset($item['timezone']) ? $item['timezone'] : '';
           $item['timezone'] = date_get_timezone($field['settings']['tz_handling'], $timezone);
           $item['timezone_db'] = $timezone_db;
-          $date = library_date_field_get_date($item, $processed);
+          $date = library_date_field_load_date($item, $processed);
           $item[$processed] = $date;
         }
       }
@@ -266,7 +266,6 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
   $date_full = date('d/m/Y');
   $date_middle = date('m/Y');
   $date_short = date('Y');
-  $process[] = 'value2';
   $default = (empty($item[$delta]) || ($item[$delta]['value'] == $item[$delta]['value2'])) ? FALSE : TRUE;
   $element['show_end_date'] = array(
     '#type' => 'checkbox',
@@ -282,11 +281,12 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
 
   foreach ($process as $processed) {
 
-    if ($item && $item[$delta][$processed]) {
+    if ($item && !empty($item[$delta][$processed])) {
       $defaul_value = library_date_field_return_date($item[$delta], $processed);
-    }elseif(!empty($instance['default_value'])){
+    }
+    elseif (!empty($instance['default_value'])){
       $defaul_value = $instance['default_value'][$delta][$processed];
-    }else{
+    } else {
       $defaul_value = NULL;
     }
 
@@ -350,9 +350,12 @@ function library_date_field_field_formatter_view($entity_type, $entity, $field, 
   $element = array();
   $process = library_date_field_process_values($field);
   foreach ($items as $delta => $item) {
-    $output = !empty($item['value']) ? $item['value'] : '';
-    if (sizeof($process) == 2 && $item['value'] != $item['value2']) {
-      $output .= " - {$item['value2']}";
+    foreach ($process as $processed) {
+      $date[$processed] = library_date_field_get_date($item, $processed);
+    }
+    $output = !empty($date['value']) ? $date['value'] : '' ;
+    if (sizeof($process) == 2 && !empty($date['value2']) && $date['value'] != $date['value2']) {
+      $output .= " - {$date['value2']}";
     }
     $element[$delta] = array('#markup' => $output);
   }
