@@ -62,14 +62,15 @@ function library_date_field_get_date($item, $processed) {
   }
   else {
     $rounding = ($processed == 'value') ? 'rounding' : 'rounding2' ;
+    $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $item[$processed]);
     if ($item[$rounding] == LIBRARY_DATA_FIELD_ROUNDING_FOR_MONTH) {
-      $output = $item[$processed]->format('F Y');
+      $output = $datetime->format('F Y');
     }
     elseif ($item[$rounding] == LIBRARY_DATA_FIELD_ROUNDING_FOR_YEARS) {
-      $output = $item[$processed]->format('Y');
+      $output = $datetime->format('Y');
     }
     elseif($item[$rounding] == LIBRARY_DATA_FIELD_NO_ROUNDING) {
-      $output = $item[$processed]->format('d F Y');
+      $output = $datetime->format('d F Y');
     }
     return $output;
   }
@@ -83,7 +84,8 @@ function library_date_field_load_date($item, $processed) {
     return;
     }
   else {
-    return DateTime::createFromFormat('Y-m-d H:i:s', $item[$processed]);
+    $date = DateTime::createFromFormat('Y-m-d H:i:s', $item[$processed]);
+    return $date->format('Y-m-d H:i:s');
   }
 }
 
@@ -96,14 +98,15 @@ function library_date_field_return_date($item, $processed) {
   }
   else {
     $rounding = ($processed == 'value') ? 'rounding' : 'rounding2';
+    $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $item[$processed]);
     if ($item[$rounding] == LIBRARY_DATA_FIELD_ROUNDING_FOR_MONTH) {
-      $output = $item[$processed]->format('m/Y');
+      $output = $datetime->format('m/Y');
     }
     elseif($item[$rounding] == LIBRARY_DATA_FIELD_ROUNDING_FOR_YEARS) {
-      $output = $item[$processed]->format('Y');
+      $output = $datetime->format('Y');
     }
     else {
-      $output = $item[$processed]->format('d/m/Y');
+      $output = $datetime->format('d/m/Y');
     }
     return $output;
   }
