@@ -471,7 +471,7 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
         )
     ) . '</li>';
   }
-  if (isset($vars['content']['field_files_video'])) {
+  if (isset($vars['content']['field_files_youtube_media'])) {
     $links['video'] = '<li>' . l(
       t('Video'),
       '#ui-tabs-3',
@@ -531,7 +531,7 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
         '#suffix' => '</div>'
       );
     }
-    $output['container2'] = array(
+    $output['footer'] = array(
       '#markup' => "</div>"
     );
   }
