@@ -195,7 +195,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'weight' => 0,
       ),
       'default' => array(
-        'label' => 'above',
+        'label' => 'hidden',
         'module' => 'image',
         'settings' => array(
           'image_link' => '',
@@ -314,7 +314,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'weight' => 0,
       ),
       'default' => array(
-        'label' => 'above',
+        'label' => 'hidden',
         'module' => 'jplayer_waveform',
         'settings' => array(
           'autoplay' => 0,
@@ -845,7 +845,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'weight' => 0,
       ),
       'default' => array(
-        'label' => 'above',
+        'label' => 'hidden',
         'module' => 'book_field',
         'settings' => array(),
         'type' => 'book_field_formatter',
