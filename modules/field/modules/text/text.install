@@ -52,7 +52,6 @@ function text_field_schema($field) {
       'not null' => FALSE,
     ),
   );
-  watchdog('text', 'dr');
   return array(
     'columns' => $columns,
     'indexes' => array(
