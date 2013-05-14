@@ -318,25 +318,23 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
         'external' => TRUE
       )
     );
-    $output['tabs_start'] = array(
-      '#access' => TRUE,
-      '#prefix' => "<div id='file-tabs'>",
-      '#markup' => "<ul><li>{$first_tab}</li><li>{$second_tab}</li></ul>",
-    );
+    $output['tabs_start'] = "<div id='file-tabs'><ul><li>{$first_tab}</li><li>{$second_tab}</li></ul>";
   }
   if (isset($vars['content']['field_files_file'])) {
-    $output['file'] = $vars['content']['field_files_file'];
+    $file = $vars['content']['field_files_file'];
   }
   if (isset($vars['content']['field_files_text'])) {
-    $output['text'] = $vars['content']['field_files_text'];
+    $text = $vars['content']['field_files_text'];
   }
   if (isset($vars['content']['field_files_file']) && isset($vars['content']['field_files_text'])) {
-    $output['file']['#prefix'] = "<div id='file-tabs-1'>";
-    $output['file']['#suffix'] = "</div>";
-    $output['text']['#prefix'] = "<div id='file-tabs-2'>";
-    $output['text']['#suffix'] = "</div>";
-    $output['tabs_end']['#suffix'] = "</div>";
+    $output['file'] = '<div id="file-tabs-1">' . drupal_render($file) . '</div>';
+    $output['text'] = '<div id="file-tabs-2">' . drupal_render($text) . '</div></div>';
+    $output['tabs'] = array(
+      '#access' => TRUE,
+      '#markup' => $output['tabs_start'] . $output['file'] . $output['text']
+    );
   }
+
   // Download's link.
   if (isset($vars['content']['field_files_file'])) {
     $field_language = field_language('node', $node, 'field_files_file');
@@ -489,7 +487,7 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
         )
     ) . '</li>';
   }
-  $sum = array_sum(array_map(function($b) {return empty($b) ? 0 : 1;}, $links));
+  $sum = array_sum(array_map(function($link) {return empty($link) ? 0 : 1;}, $links));
   if ($sum > 1) {
     $output['container'] = array(
       '#prefix' => '<div id="ui-tabs"><ul>',
