@@ -56,7 +56,7 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = 'group_files_text';
   $field_group->data = array(
     'label' => 'Additional info',
-    'weight' => '56',
+    'weight' => '17',
     'children' => array(
       0 => 'field_files_author_location',
       1 => 'field_files_category',
@@ -94,7 +94,7 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = 'group_files_additional_info';
   $field_group->data = array(
     'label' => 'Administrative',
-    'weight' => '33',
+    'weight' => '35',
     'children' => array(
       0 => 'field_files_handwritten',
       1 => 'field_files_keywords',
@@ -127,13 +127,16 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Audio',
-    'weight' => '58',
+    'weight' => '3',
     'children' => array(
       0 => 'field_audio_year',
       1 => 'field_files_album_poster',
       2 => 'field_files_artist',
       3 => 'field_files_audio',
       4 => 'field_files_length',
+      5 => 'field_files_topics',
+      6 => 'field_files_video_location',
+      7 => 'field_files_album',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(
@@ -153,10 +156,11 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = 'group_files_text';
   $field_group->data = array(
     'label' => 'Dates',
-    'weight' => '55',
+    'weight' => '16',
     'children' => array(
-      0 => 'field_files_received_date',
-      1 => 'field_files_filed_date',
+      0 => 'field_files_filed_date',
+      1 => 'field_files_received_date',
+      2 => 'field_files_published_date',
     ),
     'format_type' => 'fieldset',
     'format_settings' => array(
@@ -204,10 +208,10 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = 'group_files_start';
   $field_group->data = array(
     'label' => 'Additional Information',
-    'weight' => '-1',
+    'weight' => '5',
     'children' => array(
-      0 => 'field_files_rating',
-      1 => 'field_files_creation_date',
+      0 => 'field_files_creation_date',
+      1 => 'field_files_rating',
       2 => 'field_files_provenance',
     ),
     'format_type' => 'fieldset',
@@ -234,7 +238,7 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = 'group_files_start';
   $field_group->data = array(
     'label' => 'General Tagging',
-    'weight' => '0',
+    'weight' => '6',
     'children' => array(),
     'format_type' => 'fieldset',
     'format_settings' => array(
@@ -262,12 +266,16 @@ function library_features_content_type_files_field_group_info() {
     'label' => 'Image',
     'weight' => '2',
     'children' => array(
-      0 => 'field_files_galleries',
-      1 => 'field_files_image',
-      2 => 'field_fields_photographer',
-      3 => 'field_image_date_taken',
-      4 => 'field_files_image_event',
-      5 => 'field_files_image_location',
+      0 => 'field_fields_photographer',
+      1 => 'field_files_exif',
+      2 => 'field_files_galleries',
+      3 => 'field_files_image',
+      4 => 'field_files_image_date',
+      5 => 'field_files_images',
+      6 => 'field_image_date_taken',
+      7 => 'field_files_image_event',
+      8 => 'field_files_image_location',
+      9 => 'field_files_image_people',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(
@@ -288,7 +296,7 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = 'group_files_additional_info';
   $field_group->data = array(
     'label' => 'Source',
-    'weight' => '32',
+    'weight' => '34',
     'children' => array(
       0 => 'field_files_source_chapter',
       1 => 'field_files_source_number',
@@ -325,8 +333,9 @@ function library_features_content_type_files_field_group_info() {
       0 => 'field_files_description',
       1 => 'field_files_primary_media',
       2 => 'title',
-      3 => 'group_files_general_additional',
-      4 => 'group_files_general_tagging',
+      3 => 'path',
+      4 => 'group_files_general_additional',
+      5 => 'group_files_general_tagging',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(
@@ -350,8 +359,8 @@ function library_features_content_type_files_field_group_info() {
     'children' => array(
       0 => 'field_files_author',
       1 => 'field_files_collection',
-      2 => 'field_files_file',
-      3 => 'field_files_text',
+      2 => 'field_files_text',
+      3 => 'field_files_file',
       4 => 'group_files_additional_info',
       5 => 'group_files_dates',
     ),
@@ -373,13 +382,13 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Video',
-    'weight' => '8',
+    'weight' => '4',
     'children' => array(
       0 => 'field_files_file_type',
       1 => 'field_files_youtube_media',
       2 => 'field_video_date_taken',
-      3 => 'field_files_video_people',
-      4 => 'field_files_video_event',
+      3 => 'field_files_video_event',
+      4 => 'field_files_video_people',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(
