@@ -192,5 +192,4 @@ function contact_forms_mail($key, &$message, $params) {
       $message['body'][] = t('Message: !message',array('!message' => $params['message']));
       break;
   }
-  dpm($message);
 }
