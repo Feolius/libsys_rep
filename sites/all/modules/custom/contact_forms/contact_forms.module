@@ -74,7 +74,7 @@ function contact_forms_form($form, &$form_state, $form_type) {
     '#default_value' => $user->uid ? format_username($user) : '',
     '#required' => TRUE,
   );
-  $form['email'] = array(
+  $form['mail'] = array(
     '#type' => 'textfield',
     '#title' => t('Your e-mail address'),
     '#maxlength' => 255,
@@ -113,8 +113,8 @@ function contact_forms_form($form, &$form_state, $form_type) {
 }
 
 function contact_forms_form_validate($form, &$form_state) {
-  if (!valid_email_address($form_state['values']['email'])) {
-    form_set_error('email', t('You must enter a valid e-mail address.'));
+  if (!valid_email_address($form_state['values']['mail'])) {
+    form_set_error('mail', t('You must enter a valid e-mail address.'));
   }
 }
 
@@ -125,11 +125,11 @@ function contact_forms_form_submit($form, &$form_state) {
 
   $values['sender'] = $user;
   $values['sender']->name = $values['name'];
-  $values['sender']->mail = $values['email'];
+  $values['sender']->mail = $values['mail'];
 
   // Save the anonymous user information to a cookie for reuse.
   if (!$user->uid) {
-    user_cookie_save(array_intersect_key($values, array_flip(array('name', 'email'))));
+    user_cookie_save(array_intersect_key($values, array_flip(array('name', 'mail'))));
   }
 
   // Get the to and from e-mail addresses.
@@ -164,4 +164,33 @@ function contact_forms_form_submit($form, &$form_state) {
     drupal_set_message(t('Your message has been sent.'));
     $form_state['redirect'] = '';
   }
+}
+
+
+/**
+ * Implements hook_mail().
+ */
+function contact_forms_mail($key, &$message, $params) {
+  $language = $message['language'];
+
+  $variables = array(
+    '!site-name' => variable_get('site_name', 'Adventists Digital Library'),
+    '!subject' => $params['subject'],
+    '!category' => $params['form_type'],
+    '!form-url' => url($_GET['q'], array('absolute' => TRUE, 'language' => $language)),
+    '!sender-name' => format_username($params['sender']),
+    '!sender-url' => $params['sender']->uid ? url('user/' . $params['sender']->uid, array('absolute' => TRUE, 'language' => $language)) : $params['sender']->mail,
+  );
+
+  switch ($key) {
+    case 'page_mail':
+    case 'page_copy':
+      $message['subject'] .= t('[!category] !subject', $variables, array('langcode' => $language->language));
+      $message['body'][] = t("!sender-name (!sender-url) sent a message using the contact form at !form-url.", $variables, array('langcode' => $language->language));
+      $message['body'][] = t('Title: !title',array('!title' => $params['title'])) ;
+      $message['body'][] = t('Introduction: !introductory-text',array('!introductory-text' => $params['introductory_text']));
+      $message['body'][] = t('Message: !message',array('!message' => $params['message']));
+      break;
+  }
+  dpm($message);
 }
