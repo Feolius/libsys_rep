@@ -162,7 +162,6 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
   if (isset($vars['content']['field_files_image'])) {
     $output['image'] = $vars['content']['field_files_image'];
   }
-
   if (isset($vars['content']['field_files_description'])) {
     $output['description'] = $vars['content']['field_files_description'];
   }
