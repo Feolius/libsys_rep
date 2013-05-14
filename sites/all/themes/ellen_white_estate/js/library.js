@@ -56,7 +56,6 @@
     }
   }
 
-
   Drupal.behaviors.libraryMoreInfoButton = {
     attach: function(context, settings) {
       $('a.information').once(function() {
@@ -76,17 +75,9 @@
 
   Drupal.behaviors.libraryContentTabsFile = {
     attach: function(context, settings) {
-      $('#file-tabs').once(function() {
-        console.log($(this));
-        $(this).tabs();
-      })
-    }
-  }
-
-  Drupal.behaviors.libraryContentTabs = {
-    attach: function(context, settings) {
-      $('#ui-tabs').once(function() {
-        $(this).tabs();
+      $('.node-files').once(function() {
+        $('#ui-tabs').tabs();
+        $('#file-tabs').tabs();
       })
     }
   }
