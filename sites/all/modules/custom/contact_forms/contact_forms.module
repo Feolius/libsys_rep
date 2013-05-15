@@ -1,0 +1,195 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function contact_forms_menu() {
+  $items = array();
+  $items['contact/technical'] = array(
+    'title' => 'Technical',
+    'access arguments' => array('access basic contact forms'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('contact_forms_form', 'technical'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['contact/spiritual'] = array(
+    'title' => 'Spiritual',
+    'access arguments' => array('access basic contact forms'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('contact_forms_form', 'spiritual'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['contact/other'] = array(
+    'title' => 'Other',
+    'access arguments' => array('access basic contact forms'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('contact_forms_form', 'other'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/config/system/contact_forms'] = array(
+    'title' => 'Basic Contact form',
+    'description' => 'Manage the recepient email for each of three basic forms',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('contact_forms_settings_form'),
+    'access arguments' => array('administer basic contact forms'),
+    'file' => 'contact_forms.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function contact_forms_permission() {
+  return array(
+    'administer basic contact forms' => array(
+      'title' => t('Administer three basic contact forms and their settings'),
+    ),
+    'access basic contact forms' => array(
+      'title' => t('Use basic contact form'),
+    ),
+  );
+}
+
+
+function contact_forms_form($form, &$form_state, $form_type) {
+  global $user;
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#maxlength' => 255,
+    '#required' => TRUE,
+  );
+  $form['introductory_text'] = array(
+    '#type' => 'textfield',
+    '#maxlength' => 255,
+    '#title' => t('Introductory text'),
+    '#required' => TRUE,
+  );
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Your name'),
+    '#maxlength' => 255,
+    '#default_value' => $user->uid ? format_username($user) : '',
+    '#required' => TRUE,
+  );
+  $form['mail'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Your e-mail address'),
+    '#maxlength' => 255,
+    '#default_value' => $user->uid ? $user->mail : '',
+    '#required' => TRUE,
+  );
+  $form['subject'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Subject'),
+    '#maxlength' => 255,
+    '#required' => TRUE,
+  );
+
+  $form['message'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Message'),
+    '#required' => TRUE,
+  );
+
+  $form['copy'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Send yourself a copy.'),
+    '#access' => $user->uid,
+  );
+  $form['form_type'] = array(
+    '#type' => 'hidden',
+    '#value' => $form_type,
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Send message'),
+  );
+  return $form;
+}
+
+function contact_forms_form_validate($form, &$form_state) {
+  if (!valid_email_address($form_state['values']['mail'])) {
+    form_set_error('mail', t('You must enter a valid e-mail address.'));
+  }
+}
+
+function contact_forms_form_submit($form, &$form_state) {
+  global $user, $language;
+
+  $values = $form_state['values'];
+
+  $values['sender'] = $user;
+  $values['sender']->name = $values['name'];
+  $values['sender']->mail = $values['mail'];
+
+  // Save the anonymous user information to a cookie for reuse.
+  if (!$user->uid) {
+    user_cookie_save(array_intersect_key($values, array_flip(array('name', 'mail'))));
+  }
+
+  // Get the to and from e-mail addresses.
+  switch ($values['form_type']) {
+    case 'technical':
+      $to = variable_get('contact_forms_technical_email', 'technical@library.ellenwhite.org');
+      break;
+    case 'spiritual':
+      $to = variable_get('contact_forms_spiritual_email', 'spiritual@library.ellenwhite.org');
+      break;
+    case 'other':
+      $to = variable_get('contact_forms_other_email', 'other@library.ellenwhite.org');
+      break;
+  }
+
+  $from = $values['sender']->mail;
+
+  // Send the e-mail to the recipients using the site default language.
+  $result = drupal_mail('contact_forms', 'page_mail', $to, language_default(), $values, $from);
+
+  // If the user requests it, send a copy using the current language.
+  if ($values['copy']) {
+    drupal_mail('contact_forms', 'page_copy', $from, $language, $values, $from);
+  }
+
+  if ($result) {
+    watchdog('contact_forms', '%sender-name (@sender-from) sent an e-mail regarding %form-type.', array(
+      '%sender-name' => $values['name'],
+      '@sender-from' => $from,
+      '%form-type' => $values['form_type']
+    ));
+    drupal_set_message(t('Your message has been sent.'));
+    $form_state['redirect'] = '';
+  }
+}
+
+
+/**
+ * Implements hook_mail().
+ */
+function contact_forms_mail($key, &$message, $params) {
+  $language = $message['language'];
+
+  $variables = array(
+    '!site-name' => variable_get('site_name', 'Adventists Digital Library'),
+    '!subject' => $params['subject'],
+    '!category' => $params['form_type'],
+    '!form-url' => url($_GET['q'], array('absolute' => TRUE, 'language' => $language)),
+    '!sender-name' => format_username($params['sender']),
+    '!sender-url' => $params['sender']->uid ? url('user/' . $params['sender']->uid, array('absolute' => TRUE, 'language' => $language)) : $params['sender']->mail,
+  );
+
+  switch ($key) {
+    case 'page_mail':
+    case 'page_copy':
+      $message['subject'] .= t('[!category] !subject', $variables, array('langcode' => $language->language));
+      $message['body'][] = t("!sender-name (!sender-url) sent a message using the contact form at !form-url.", $variables, array('langcode' => $language->language));
+      $message['body'][] = t('Title: !title',array('!title' => $params['title'])) ;
+      $message['body'][] = t('Introduction: !introductory-text',array('!introductory-text' => $params['introductory_text']));
+      $message['body'][] = t('Message: !message',array('!message' => $params['message']));
+      break;
+  }
+}
