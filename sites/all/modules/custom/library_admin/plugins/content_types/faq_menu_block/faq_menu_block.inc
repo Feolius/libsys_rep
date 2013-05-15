@@ -26,7 +26,6 @@ function library_admin_faq_menu_block_content_type_render($subtype, $conf, $pane
   $output = '';
   $items = array();
   $menu_name = $conf['menu'];
-  kpr($conf);
   if ($items['menu'] = menu_tree($menu_name)) {
     $items['title'] = t('Browse');
     $output .= theme('faq_menu_block', array('items' => $items));

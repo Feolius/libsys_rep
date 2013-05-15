@@ -13,6 +13,7 @@ stylesheets[all][] = custom.css
 
 ; Custom js
 scripts[] = js/addthis.js
+scripts[] = js/faq.js
 scripts[] = js/library.js
 
 settings[breadcrumb_display]= 1
