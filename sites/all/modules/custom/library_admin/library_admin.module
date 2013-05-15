@@ -15,7 +15,7 @@ function library_admin_menu() {
     'page arguments' => array('library_admin_settings_form'),
     'access callback' => TRUE,
     'file' => 'library_admin.settings.inc',
-    'type' => MENU_NORMAL_ITEM,
+    'type' => MENU_NORMAL_ITEM
   );
   return $items;
 }
@@ -40,4 +40,39 @@ function library_admin_return_copiright() {
     );
    return $copiright;
   }
+}
+
+/**
+ * Form for search by faq page.
+ */
+function library_admin_faq_form($form, $form_state) {
+  $form['main_title'] = array(
+    '#prefix' => '<h2>',
+    '#markup' => t('Answers'),
+    '#suffix' => '</h2>',
+  );
+
+  $form['description'] = array(
+    '#markup' => t('Find answers to the most commonly asked questions by browsing through our list of topics, or via our search functionality:'),
+  );
+
+  $form['title'] = array(
+    '#prefix' => '<h3>',
+    '#markup' => t('Search'),
+    '#suffix' => '</h3>',
+  );
+
+  $form['text'] = array(
+    '#type' => 'textfield'
+  );
+
+  $form['button'] = array(
+    '#type' => 'submit',
+    '#value' => t('Search'),
+    '#attributes' => array(
+      'class' => array('search-faq')
+    )
+  );
+
+  return $form;
 }
