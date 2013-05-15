@@ -25,8 +25,7 @@ function library_admin_faq_menu_block_ctools_content_types() {
 function library_admin_faq_menu_block_content_type_render($subtype, $conf, $panel_args, $context) {
   $output = '';
   $items = array();
-  $menu_name = $conf['menu'];
-  if ($items['menu'] = menu_tree($menu_name)) {
+  if ($items['menu'] = menu_tree($conf['menu'])) {
     $items['title'] = t('Browse');
     $output .= theme('faq_menu_block', array('items' => $items));
   }
