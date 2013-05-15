@@ -1,0 +1,10 @@
+name = Contact Forms
+description = Provide a three basic contact forms
+package = Other
+core = 7.x
+configure = admin/config/system/contact_forms
+
+files[] = contact_forms.module
+files[] = contact_forms.admin.inc
+
+
