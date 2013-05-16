@@ -97,7 +97,6 @@ abstract class LibraryMigration extends DynamicMigration {
         $result = $query->execute();
         $i = 0;
         $record = $result->fetchAssoc();
-        dpm($record);
         if (isset($record['start_year'])) {
           $start_year = $record['start_year'];
           $rounding = 1;
@@ -344,23 +343,24 @@ class FilesMigration extends LibraryMigration {
 
   public function prepareRow($row) {
     //Check if this file from collection with id 1,2 or 3
-    /* if (!(is_null($row->cid))) {
+    if (!(is_null($row->cid))) {
       $cid = $row->cid;
-      } elseif (!(is_null($row->cid2))) {
+    }
+    elseif (!(is_null($row->cid2))) {
       $cid = $row->cid2;
-      } else {
+    }
+    else {
       return FALSE;
-      }
-      switch ($cid) {
+    }
+    switch ($cid) {
       case 1:
       case 2:
       case 3:
-      break;
+        break;
       default:
-      return FALSE;
-      } */
+        return FALSE;
+    }
     //Add author field to the row
-    dpm($row);
     $data = $this->getRelatedSids($row->ID, 'file', array('adv_people'), 1);
     $row->author = $data['adv_people'];
     //Add author field to the row
