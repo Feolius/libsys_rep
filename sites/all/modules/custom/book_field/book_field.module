@@ -359,7 +359,7 @@ function _book_field_managed_book_create_json($file, $folder_name){
  */
 function _book_field_managed_book_create_thumbnail($folder_name){
   global $user;
-  $thumb_uri = 'temporary://' . $folder_name . '/' . $folder_name . "1.png";
+  $thumb_uri = 'temporary://' . $folder_name . '/' . $folder_name . "_1.png";
   $thumb_path = drupal_realpath($thumb_uri);
   $thumb_file = new stdClass();
   $thumb_file->uid = $user->uid;
@@ -729,7 +729,7 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
           $relative_path = str_replace($drupal_folder, "", $path);
           $file_name = get_real_file_name($file);
           $swf_path = url($relative_path . '/{' . $file_name . '[*,0].swf,' . $num_pages . '}', array('absolute' => TRUE));
-          $png_path = url($relative_path . '/' . $file_name . '{page}.png', array('absolute' => TRUE));
+          $png_path = url($relative_path . '/' . $file_name . '_{page}.png', array('absolute' => TRUE));
           $json_path = url($relative_path . '/' . $file_name . '.js', array('absolute' => TRUE));
           $pdf_path = url($relative_path . '/' . $file_name . '.pdf', array('absolute' => TRUE));
           $module_path = drupal_get_path('module', 'book_field');
