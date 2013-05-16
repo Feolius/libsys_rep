@@ -26,17 +26,10 @@ function library_admin_menu() {
  * Implements hook_init().
  */
 function library_admin_init() {
-    $items = array();
-    $items['admin/library_settings'] = array(
-        'title' => t('Site configuration page'),
-        'dascription' => t('This page is contain all settings for site'),
-        'page callback' => 'drupal_get_form',
-        'page arguments' => array('library_admin_settings_form'),
-        'access callback' => TRUE,
-        'file' => 'library_admin.settings.inc',
-        'type' => MENU_NORMAL_ITEM
-    );
-    return $items;
+  $settings = array(
+    'faq' => library_admin_faq_nodes(),
+  );
+  drupal_add_js(array('Library' => $settings),'setting');
 }
 
 /**
@@ -82,7 +75,10 @@ function library_admin_faq_form($form, $form_state) {
   );
 
   $form['text'] = array(
-    '#type' => 'textfield'
+    '#type' => 'textfield',
+    '#attributes' => array(
+      'class' => array('search-faq-text')
+    )
   );
 
   $form['button'] = array(
@@ -91,6 +87,10 @@ function library_admin_faq_form($form, $form_state) {
     '#attributes' => array(
       'class' => array('search-faq')
     )
+  );
+
+  $form['results'] = array(
+    '#markup' => '<div id="faq-results"></div>',
   );
 
   return $form;
@@ -112,7 +112,7 @@ function library_admin_faq_nodes() {
       }
     }
     if (isset($vid)) {
-      $tree = taxonomy_get_tree($vid);kpr($tree);
+      $tree = taxonomy_get_tree($vid);
       foreach ($tree as $item) {
         if ($item->name == LIBRARY_ADMIN_TAXONOMY_FAQ_TERM) {
           $tid = $item->tid;
@@ -151,7 +151,7 @@ function library_admin_faq_nodes() {
         $output[] = array(
           'nid' => $key,
           'title' => $node->title,
-          'aliases' => (!empty($aliases) && ('node/' . $key) == $aliases['source']) ? $aliases['alias'] : '',
+          'alias' => (!empty($aliases) && ('node/' . $key) == $aliases['source']) ? $aliases['alias'] : '',
           'keywords' => (!empty($keywords) && isset($keywords[$key]->field_files_key_points_value))
             ? $keywords[$key]->field_files_key_points_value
             : ''
