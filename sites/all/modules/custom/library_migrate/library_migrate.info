@@ -3,5 +3,6 @@ description = "Module for database import"
 package = Library Import
 core = 7.x
 dependecies[] = migrate
+dependecies[] = nodehierarchy
 files[] = library_migrate.inc
 
