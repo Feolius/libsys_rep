@@ -12,6 +12,10 @@ function library_date_field_set_date($item, $processed) {
     return;
   }
   else {
+    $datetime = DateTime::createFromFormat('Y-m-d H:i:s', $item);
+    if (is_object($datetime)) {
+      $item = $datetime->format('d/m/Y');
+    }
     $values = explode('/', trim($item, ' '));
     $rounding = sizeof($values);
 
