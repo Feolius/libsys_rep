@@ -729,7 +729,16 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
           $relative_path = str_replace($drupal_folder, "", $path);
           $file_name = get_real_file_name($file);
           $swf_path = url($relative_path . '/{' . $file_name . '[*,0].swf,' . $num_pages . '}', array('absolute' => TRUE));
-          $png_path = url($relative_path . '/' . $file_name . '{page}.png', array('absolute' => TRUE));
+
+          //@TODO Remove this code block when issue with symbol '_' in import will be resolved
+          $file_thumbnail = file_load($item['fid_thumb']);
+          $file_thumbnail_name = get_real_file_name($file_thumbnail);
+          $thumbnail_suffix = str_replace($file_name, '', $file_thumbnail_name);
+          if(!strpos($thumbnail_suffix, '_')){
+            $png_path = url($relative_path . '/' . $file_name . '{page}.png', array('absolute' => TRUE));
+          }else{
+            $png_path = url($relative_path . '/' . $file_name . '_{page}.png', array('absolute' => TRUE));
+          }
           $json_path = url($relative_path . '/' . $file_name . '.js', array('absolute' => TRUE));
           $pdf_path = url($relative_path . '/' . $file_name . '.pdf', array('absolute' => TRUE));
           $module_path = drupal_get_path('module', 'book_field');
