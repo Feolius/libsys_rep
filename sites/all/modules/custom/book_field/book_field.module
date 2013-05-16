@@ -327,7 +327,7 @@ function _book_field_managed_book_create_png($file, $folder_name, $pid){
   //Get number of swf. It is more reliable than get number of pages in the pdf
   $swf_number = count(scandir($folder_path)) - 2;
   for ($i = 1; $i <= $swf_number; $i++){
-    $command = "swfrender '" . $folder_path . "/" . $folder_name . $i . ".swf' -o '" . $folder_path . "/" . $folder_name . $i . ".png' -X 1024 -s keepaspectratio";
+    $command = "swfrender '" . $folder_path . "/" . $folder_name . $i . ".swf' -o '" . $folder_path . "/" . $folder_name . '_' . $i . ".png' -X 1024 -s keepaspectratio";
     exec($command);
     //Write record to progress table for each 5 conversions
     if($i % 5 == 0){
