@@ -104,6 +104,9 @@ function library_admin_get_faq_nodes() {
   if ($cache = cache_get('faq')) {
     $output = $cache->data;
   } else {
+    $output = array();
+    $tid = '';
+
     // Get nids and titles nodes.
     $vocabularies = taxonomy_get_vocabularies();
     foreach ($vocabularies as $vocabulary) {
