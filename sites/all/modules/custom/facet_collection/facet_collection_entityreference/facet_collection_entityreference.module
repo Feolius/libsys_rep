@@ -20,7 +20,12 @@ function facet_collection_entityreference_facet_collection_field_facet_groups($f
   }
   $field_name = $field_info['field_name'];
   $query_types = array('term');
-  $default_widget = 'facetapi_links';
+  if(module_exists('facetapi_library_term_widget')){
+    $default_widget = 'facetapi_library_term_widget';
+  }else{
+    $default_widget = 'facetapi_links';
+  }
+
 
   foreach ($field_info['settings']['handler_settings']['target_bundles'] as $content_type) {
     $instances = field_info_instances('node', $content_type);

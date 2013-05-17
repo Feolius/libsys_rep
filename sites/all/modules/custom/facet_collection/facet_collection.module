@@ -236,33 +236,6 @@ function facet_collection_get_default_params() {
 }
 
 /**
- * Implements hook_block_info()
- */
-function facet_collection_block_info() {
-  $blocks['content_types_selection'] = array(
-    'info' => t('Filters for nodes')
-  );
-  return $blocks;
-}
-
-/*
- * Implements hook_block_view()
- */
-
-function facet_collection_block_view($delta) {
-  $search_content = facet_collection_get_search_filters();
-  $facet_content = facet_collection_get_facet_filters();
-  //@TODO if field could be facetable and searchable it will be incorrect
-  $content = array_merge($facet_content, $search_content);
-  $content = facet_collection_sort_content($content);
-  $content = array_reverse($content);
-  return array(
-    'subject' => t('Filters'),
-    'content' => $content,
-  );
-}
-
-/**
  * Get renderable array that present search forms for fields
  */
 function facet_collection_get_search_filters() {
@@ -333,7 +306,7 @@ function facet_collection_get_facet_filters() {
   //We need searcher for further actions.
   $searcher_info = facetapi_get_searcher_info();
   $searchers = array_keys($searcher_info);
-  $searcher = array_shift($searchers);
+  $searcher = $searchers[0];
 
 //Get adapter and build block realm to grab all build information
   $adapter = facetapi_adapter_load($searcher);
@@ -342,12 +315,8 @@ function facet_collection_get_facet_filters() {
   if (!cache_get('facet_collection:visibility')) {
     facet_collection_set_facets_visibility($adapter, $realm_name, $searcher);
   }
-
-//Get filter settings
-  $filter_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
-
 //Get all facets that can be shown because we need only facets that satisfy all chosen content types.
-  $available_facets = facet_collection_get_available_facets($filter_settings);
+  $available_facets = facet_collection_get_available_facets();
 
 //Build content using facetapi block presentation for each facet
   $enabled_facets = $adapter->getEnabledFacets();
@@ -383,8 +352,10 @@ function facet_collection_set_facets_visibility($adapter, $realm_name, $searcher
 /**
  * Filter facet list to show only facets that satisfy all chosen content types
  */
-function facet_collection_get_available_facets($filter_settings) {
+function facet_collection_get_available_facets() {
   $available_facets = array();
+  //Get filter settings
+  $filter_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
   $field_type_list = variable_get('facet_collection:field_type_facet_list');
   $facet_collection = variable_get('facet_collection:facet_collection');
 //Get all facets for collection from cache
