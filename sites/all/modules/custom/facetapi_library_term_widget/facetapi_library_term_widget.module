@@ -34,6 +34,7 @@ function facetapi_library_term_widget_forms($form_id, $args) {
 }
 
 function facetapi_library_term_widget_filter_form($form, &$form_state, $args) {
+  dpm(debug_backtrace());
   $options = $args['options'];
   $facet_name = $args['facet name'];
   $field_alias = $args['field alias'];
@@ -54,9 +55,11 @@ function facetapi_library_term_widget_filter_form($form, &$form_state, $args) {
   if ($seen_id == 1) {
     $select_id = 'facetapi-select-term-' . $facet_name;
     $container_id = 'facetapi-term-item-container-' . $facet_name;
+    $marker_class = 'facetapi-term-marker-' . $facet_name;
   }else{
     $select_id = 'facetapi-select-term-' . $facet_name . '-' . $seen_id;
     $container_id = 'facetapi-term-item-container-' . $facet_name . '-' . $seen_id;
+    $marker_class = 'facetapi-term-marker-' . $facet_name  . '-' . $seen_id;
   }
   $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
   $default_value = array();
@@ -78,7 +81,8 @@ function facetapi_library_term_widget_filter_form($form, &$form_state, $args) {
       $form_id => array(
         'selectId' => $select_id,
         'itemContainerId' => $container_id,
-        'defaultItems' => $default_items
+        'defaultItems' => $default_items,
+        'markerClass' => $marker_class
       ),
     ),
   );
@@ -96,6 +100,7 @@ function facetapi_library_term_widget_filter_form($form, &$form_state, $args) {
     'select' => array(
       '#type' => 'select',
       '#options' => $options,
+      '#validated' => TRUE,
       '#attributes' => array(
         'id' => $select_id,
       )
