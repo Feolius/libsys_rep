@@ -54,7 +54,7 @@ function book_field_menu() {
 /**
  * Menu callback for flexpaper desktop toolbar. Return desktop version of html toolbar.
  */
-function book_field_desktop_toolbar($viewer_id){
+function book_field_desktop_toolbar($viewer_id) {
   global $base_url;
   $lib_path = libraries_get_path('flexpaper');
   $image_path = url($lib_path . '/images/');
@@ -66,7 +66,7 @@ function book_field_desktop_toolbar($viewer_id){
 /**
  * Menu callback for flexpaper mobile toolbar. Return desktop version of html toolbar.
  */
-function book_field_mobile_toolbar($viewer_id){
+function book_field_mobile_toolbar($viewer_id) {
   global $base_url;
   $lib_path = libraries_get_path('flexpaper');
   $image_path = url($lib_path . '/images/');
@@ -93,7 +93,7 @@ function book_field_ajax_progress($key) {
 /**
  * Get information about current state of progress in upload and conversion
  */
-function _book_field_progress_get_info($upload_key, $swf_progress_key, $png_progress_key){
+function _book_field_progress_get_info($upload_key, $swf_progress_key, $png_progress_key) {
   $progress['message'] = '';
   $progress['percentage'] = -1;
   $swf_result = db_query('SELECT progress FROM {progress} WHERE pid = :pid', array(
@@ -104,7 +104,7 @@ function _book_field_progress_get_info($upload_key, $swf_progress_key, $png_prog
   ));
   $swf_info = $swf_result->fetchAll();
   $png_info = $png_result->fetchAll();
-  if ($swf_info == NULL && $png_info == NULL){
+  if ($swf_info == NULL && $png_info == NULL) {
     if ($upload_key != 0) {
       $progress = array(
         'message' => t('Starting upload...'),
@@ -118,13 +118,15 @@ function _book_field_progress_get_info($upload_key, $swf_progress_key, $png_prog
         ));
         $progress['percentage'] = round(100 * $status['bytes_uploaded'] / $status['bytes_total']);
       }
-    }else{
+    }
+    else {
       $progress = array(
         'message' => t('Uploading...'),
         'percentage' => -1,
       );
     }
-  }elseif($swf_info != NULL && $png_info == NULL){
+  }
+  elseif ($swf_info != NULL && $png_info == NULL) {
     if ($swf_info[0]->progress == -1) {
       $progress = array(
         'message' => t('Preparing conversion to swf...'),
@@ -142,7 +144,8 @@ function _book_field_progress_get_info($upload_key, $swf_progress_key, $png_prog
       ));
       $progress['percentage'] = round(100 * $current_page / $last_page);
     }
-  }else{
+  }
+  else {
     if ($png_info[0]->progress == -1) {
       $progress = array(
         'message' => t('Preparing conversion to png...'),
@@ -319,18 +322,18 @@ function _book_field_managed_book_create_swf($file, $folder_name, $conversion_pi
 /**
  * Create png files for each swf files in temporary folder
  */
-function _book_field_managed_book_create_png($file, $folder_name, $pid){
+function _book_field_managed_book_create_png($file, $folder_name, $pid) {
   $path = drupal_realpath($file->uri);
   $folder_path = file_directory_temp() . '/' . $folder_name;
   $record = array('pid' => $pid, 'progress' => '-1');
   drupal_write_record('progress', $record);
   //Get number of swf. It is more reliable than get number of pages in the pdf
   $swf_number = count(scandir($folder_path)) - 2;
-  for ($i = 1; $i <= $swf_number; $i++){
+  for ($i = 1; $i <= $swf_number; $i++) {
     $command = "swfrender '" . $folder_path . "/" . $folder_name . $i . ".swf' -o '" . $folder_path . "/" . $folder_name . $i . ".png' -X 1024 -s keepaspectratio";
     exec($command);
     //Write record to progress table for each 5 conversions
-    if($i % 5 == 0){
+    if ($i % 5 == 0) {
       $record = array('pid' => $pid, 'progress' => $i . '/' . $swf_number);
       drupal_write_record('progress', $record, 'pid');
     }
@@ -347,7 +350,7 @@ function _book_field_managed_book_create_png($file, $folder_name, $pid){
 /**
  * Create json file from given pdf
  */
-function _book_field_managed_book_create_json($file, $folder_name){
+function _book_field_managed_book_create_json($file, $folder_name) {
   $path = drupal_realpath($file->uri);
   $folder_path = file_directory_temp() . '/' . $folder_name;
   $command = "/usr/local/bin/pdf2json '" . $path . "' -enc UTF-8 -compress -hidden '" . $folder_path . "/" . $folder_name . ".js'";
@@ -357,7 +360,7 @@ function _book_field_managed_book_create_json($file, $folder_name){
 /**
  * Save first png file as thumbnail in Drupal file system
  */
-function _book_field_managed_book_create_thumbnail($folder_name){
+function _book_field_managed_book_create_thumbnail($folder_name) {
   global $user;
   $thumb_uri = 'temporary://' . $folder_name . '/' . $folder_name . "1.png";
   $thumb_path = drupal_realpath($thumb_uri);
@@ -720,7 +723,7 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
           $lib_js_path = $lib_path . '/js/';
           $lib_css_path = $lib_path . '/css/';
           $lib_locale_path = $lib_path . '/locale/';
-            $file = file_load($item['fid']);
+          $file = file_load($item['fid']);
           $file_path = drupal_realpath($file->uri);
           $num_pages = getNumPagesPdf($file_path);
           $swf_directory = file_default_scheme() . '://books/' . $item['folder_name'];
@@ -729,16 +732,27 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
           $relative_path = str_replace($drupal_folder, "", $path);
           $file_name = get_real_file_name($file);
           $swf_path = url($relative_path . '/{' . $file_name . '[*,0].swf,' . $num_pages . '}', array('absolute' => TRUE));
-          $png_path = url($relative_path . '/' . $file_name . '{page}.png', array('absolute' => TRUE));
+
+          //@TODO Remove this code block when issue with symbol '_' in import will be resolved
+          $file_thumbnail = file_load($item['fid_thumb']);
+          $file_thumbnail_name = get_real_file_name($file_thumbnail);
+          $thumbnail_suffix = str_replace($file_name, '', $file_thumbnail_name);
+          if (!strpos($thumbnail_suffix, '_')) {
+            $png_path = url($relative_path . '/' . $file_name . '{page}.png', array('absolute' => TRUE));
+          }
+          else {
+            $png_path = url($relative_path . '/' . $file_name . '_{page}.png', array('absolute' => TRUE));
+          }
           $json_path = url($relative_path . '/' . $file_name . '.js', array('absolute' => TRUE));
           $pdf_path = url($relative_path . '/' . $file_name . '.pdf', array('absolute' => TRUE));
           $module_path = drupal_get_path('module', 'book_field');
-          if(isset($_GET['view_mode'])){
+          if (isset($_GET['view_mode'])) {
             $view_mode = $_GET['view_mode'];
-          }else{
+          }
+          else {
             $view_mode = 'default';
           }
-          switch ($view_mode){
+          switch ($view_mode) {
             case 'html5':
               $rendering_order = 'html5,html';
               break;
@@ -769,7 +783,12 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
             'flexpaper' => array(
               '#attached' => array(
                 'css' => array($module_path . '/css/book_field.css', $lib_css_path . 'flexpaper.css'),
-                'js' => array($lib_js_path . "jquery.extensions.min.js", $lib_js_path . 'flexpaper.js', $lib_js_path . 'flexpaper_handlers.js', $module_path . '/js/book_field.js'),
+                'js' => array(
+                  $lib_js_path . "jquery.extensions.min.js",
+                  $lib_js_path . 'flexpaper.js',
+                  $lib_js_path . 'flexpaper_handlers.js',
+                  $module_path . '/js/book_field.js'
+                ),
               ),
               '#theme' => 'book_field_flexpaper_view',
               '#file' => $file,
@@ -825,7 +844,8 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
             $element[$delta] = array_merge($buttons, $element[$delta]);
             $element[$delta] = array_merge(array('label' => array('#markup' => '<h3>Search document</h3>',)), $element[$delta]);
           }
-        }else{
+        }
+        else {
           $element[$delta] = array(
             '#theme' => 'book_field_google_doc_view',
             '#file' => $file,
@@ -908,6 +928,24 @@ function _book_field_remove_special_chars($string) {
  */
 function book_field_field_delete($entity_type, $entity, $field, $instance, $langcode, &$items) {
   // Delete all files and directory where this files contain.
+  //We shouldn't perform it when import is processing
+  $batch_info = & batch_get();
+  if (!empty($batch_info)) {
+    foreach ($batch_info['sets'] as $batch_instance) {
+      if($batch_instance['finished'] == 'migrate_ui_batch_finish'){
+        //If it is an import process, we should just delete record from file_managed table about pdf and thumb files.
+        foreach ($items as $item) {
+          if (isset($item['fid_thumb']) && ($file = file_load($item['fid_thumb']))) {
+            db_delete('file_managed')->condition('fid', $file->fid)->execute();
+          }
+          if (isset($item['fid']) && ($file = file_load($item['fid']))) {
+            db_delete('file_managed')->condition('fid', $file->fid)->execute();
+          }
+        }
+        return;
+      }
+    }
+  }
   foreach ($items as $item) {
     if (isset($item['fid_thumb']) && ($file = file_load($item['fid_thumb']))) {
       file_delete($file);
@@ -993,7 +1031,11 @@ function theme_book_field_flexpaper_view($variables) {
   $link_html5 = url($_GET['q'], array('query' => array_merge($query, array('view_mode' => 'html5'))));
   $link_html = url($_GET['q'], array('query' => array_merge($query, array('view_mode' => 'html'))));
   $link_flash = url($_GET['q'], array('query' => array_merge($query, array('view_mode' => 'flash'))));
-  $out = $out . theme('flexpaper_mode_switcher', array('link_html5' => $link_html5, 'link_flash' => $link_flash, 'link_html' => $link_html));
+  $out = $out . theme('flexpaper_mode_switcher', array(
+    'link_html5' => $link_html5,
+    'link_flash' => $link_flash,
+    'link_html' => $link_html
+  ));
   $out = $out . theme('flexpaper_container');
   //@TODO Maybe we could add thumbnail here
   return $out;

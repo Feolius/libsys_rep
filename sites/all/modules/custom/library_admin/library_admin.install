@@ -217,3 +217,14 @@ function library_admin_update_7025() {
     ->condition('field_name', 'field_events_home_date')
     ->execute();
 }
+
+/**
+ * Implements hook_update().
+ */
+function library_admin_update_7030() {
+  db_update('system')
+    ->condition('name', 'library_admin')
+    ->condition('type', 'module')
+    ->fields(array('weight' => 20))
+    ->execute();
+}

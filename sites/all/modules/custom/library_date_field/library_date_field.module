@@ -89,9 +89,9 @@ function library_date_field_field_presave($entity_type, $entity, $field, $instan
         $items[$delta]['timezone'] = date_get_timezone($settings['tz_handling'], $timezone);
         $items[$delta]['timezone_db'] = date_get_timezone_db($settings['tz_handling']);
         if ($processed == 'value2') {
-          $items[$delta]['rounding2'] = ($date) ? $date['rounding'] : '';
+          $items[$delta]['rounding2'] = (!empty($items[$delta]['rounding2'])) ? $items[$delta]['rounding2'] : $date['rounding'];
         } else {
-          $items[$delta]['rounding'] = ($date) ? $date['rounding'] : '';
+          $items[$delta]['rounding'] = (!empty($items[$delta]['rounding'])) ? $items[$delta]['rounding'] : $date['rounding'];
         }
       }
     }

@@ -2,6 +2,8 @@
 
 define('LIBRARY_ADMIN_TEXT_TO_COPIRIGHT', variable_get('library_admin_text_to_copyright'));
 define('LIBRARY_ADMIN_PATH_TO_COPIRIGHT', variable_get('library_admin_path_to_copyright'));
+define('LIBRARY_ADMIN_TAXONOMY_FAQ_COLLECTION', 'tags');
+define('LIBRARY_ADMIN_TAXONOMY_FAQ_TERM', 'FAQ');
 
 /**
  * Implements hook_menu().
@@ -18,6 +20,16 @@ function library_admin_menu() {
     'type' => MENU_NORMAL_ITEM
   );
   return $items;
+}
+
+/**
+ * Implements hook_init().
+ */
+function library_admin_init() {
+  $settings = array(
+    'faq' => library_admin_get_faq_nodes(),
+  );
+  drupal_add_js(array('Library' => $settings),'setting');
 }
 
 /**
@@ -63,7 +75,10 @@ function library_admin_faq_form($form, $form_state) {
   );
 
   $form['text'] = array(
-    '#type' => 'textfield'
+    '#type' => 'textfield',
+    '#attributes' => array(
+      'class' => array('search-faq-text')
+    )
   );
 
   $form['button'] = array(
@@ -74,5 +89,84 @@ function library_admin_faq_form($form, $form_state) {
     )
   );
 
+  $form['results'] = array(
+    '#markup' => '<div id="faq-results"></div>',
+  );
+
   return $form;
+}
+
+/**
+ * Return array with nodes from collection FAQ.
+ */
+function library_admin_get_faq_nodes() {
+
+  if ($cache = cache_get('faq')) {
+    $output = $cache->data;
+  } else {
+    // Get nids and titles nodes.
+    $vocabularies = taxonomy_get_vocabularies();
+    foreach ($vocabularies as $vocabulary) {
+      if ($vocabulary->machine_name == LIBRARY_ADMIN_TAXONOMY_FAQ_COLLECTION) {
+        $vid = $vocabulary->vid;
+      }
+    }
+    if (isset($vid)) {
+      $tree = taxonomy_get_tree($vid);
+      foreach ($tree as $item) {
+        if ($item->name == LIBRARY_ADMIN_TAXONOMY_FAQ_TERM) {
+          $tid = $item->tid;
+        }
+      }
+    }
+    $query['nodes'] = db_query('
+      SELECT n.nid, n.title from {node} n
+      LEFT OUTER JOIN {field_data_field_tags} t ON t.entity_id = n.nid
+      WHERE n.type = :type AND t.field_tags_tid = :tid',
+      array(
+        ':type' => 'files',
+        ':tid' => $tid
+      )
+    );
+
+    $nodes = $query['nodes']->fetchAllAssoc('nid');
+    if (!empty($nodes)) {
+      $nids = implode(', ', array_map(function($node) {return $node->nid ;}, $nodes));
+      $source = array_map(function($node) {return '\'' . 'node/' . $node->nid . '\'' ;}, $nodes);
+
+      // Get aliases nodes.
+      if (db_table_exists('url_alias')) {
+        $source = implode(', ', $source);
+        $query['aliases'] = db_query("
+          SELECT u.alias, u.source from {url_alias} u
+          WHERE u.source IN ($source)");
+        $aliases = $query['aliases']->fetchAllAssoc('source');
+      }
+
+      // Get keywords nodes.
+      if (db_table_exists('field_data_field_files_key_points')) {
+        $query['keywords'] = db_query("
+          SELECT k.entity_id, k.field_files_key_points_value from {field_data_field_files_key_points} k
+          WHERE k.entity_id IN ($nids)");
+        $keywords = $query['keywords']->fetchAllAssoc('entity_id');
+      }
+
+      foreach ($nodes as $key => $node) {
+        $source = 'node/' . $key;
+        $output[] = array(
+          'nid' => $key,
+          'title' => $node->title,
+          'alias' => (!empty($aliases) && ($source == $aliases[$source]->source))
+            ? $aliases['node/' . $key]->alias
+            : '',
+          'keywords' => (!empty($keywords) && isset($keywords[$key]->field_files_key_points_value))
+            ? $keywords[$key]->field_files_key_points_value
+            : ''
+        );
+      }
+    }
+
+  cache_set('faq', $output);
+}
+  return $output;
 }
