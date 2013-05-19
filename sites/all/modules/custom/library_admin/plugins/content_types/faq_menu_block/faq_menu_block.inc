@@ -78,6 +78,6 @@ function library_admin_faq_menu_block_content_type_edit_form_submit($form, &$for
 function library_admin_faq_menu_block_content_type_admin_info($subtype, $conf) {
   $block = new stdClass();
   $menus = menu_get_menus();
-  $block->title = $menus[$conf['menu']];
+  $block->title = (!empty($conf['menu'])) ? $menus[$conf['menu']] : '';
   return $block;
 }
