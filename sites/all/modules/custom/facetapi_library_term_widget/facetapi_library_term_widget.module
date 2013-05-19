@@ -34,7 +34,6 @@ function facetapi_library_term_widget_forms($form_id, $args) {
 }
 
 function facetapi_library_term_widget_filter_form($form, &$form_state, $args) {
-  dpm(debug_backtrace());
   $options = $args['options'];
   $facet_name = $args['facet name'];
   $field_alias = $args['field alias'];
