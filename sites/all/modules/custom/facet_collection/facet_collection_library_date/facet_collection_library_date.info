@@ -1,0 +1,7 @@
+name = Facet collection library date filters
+description = "Provides facet collection filters for library date fields"
+package = Facet Collection
+core = 7.x
+dependencies[] = facet_collection
+dependencies[] = date
+dependencies[] = facet_collection_date
