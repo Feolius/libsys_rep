@@ -179,7 +179,10 @@ function seven_for_ellen_white_estate_form_element($variables) {
   }
 
   //--------------------Overrided Code----------------------------
-  if (arg(0) == 'node' && (arg(2) == 'edit' || arg(1) == 'add') && $element['#type'] != 'checkbox') {
+  if (arg(0) == 'node' && (arg(2) == 'edit' || arg(1) == 'add') && $element['#type'] != 'checkbox'
+    && !in_array('form-item-field-files-text-und-0-format', $attributes['class'])
+    && !in_array('form-item-field-files-description-und-0-format', $attributes['class'])
+  ) {
     $attributes['class'][] = 'area';
   }
   //--------------------------------------------------------------
@@ -254,7 +257,7 @@ function seven_for_ellen_white_estate_form_element_label($variables) {
   }
 
   //--------------------Overrided Code----------------------------
-  if (arg(0) == 'node' && (arg(2) == 'edit' || arg(1) == 'add') && $element['#title_display'] != 'after') {
+  if (arg(0) == 'node' && (arg(2) == 'edit' || arg(1) == 'add') && $element['#title_display'] != 'after' && $attributes['for'] != 'edit-field-files-text-und-0-format--2') {
     $attributes['class'][] = 'area_header';
   }
   //--------------------------------------------------------------
