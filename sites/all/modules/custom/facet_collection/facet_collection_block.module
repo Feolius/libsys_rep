@@ -292,7 +292,7 @@ function facet_collection_block_form_submit($form, &$form_state) {
   }
   $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
   $form_state['redirect'] = array(
-    $search_path,
+    $current_link,
     array('query' => $get_params),
     302
   );
