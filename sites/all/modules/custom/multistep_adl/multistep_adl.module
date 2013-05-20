@@ -103,13 +103,13 @@ function multistep_adl_menu() {
             $path_elements = explode('/', $path);
             if (!in_array('comment', $path_elements)) {
               $items["$path/steps"] = array(
-                'title' => t('Manage steps'),
-                'page callback' => 'drupal_get_form',
-                'page arguments' => array('multistep_adl_manage_steps_form', $entity_type, $bundle_arg),
-                'type' => MENU_LOCAL_TASK,
-                'weight' => 2,
-                'file' => 'multistep_adl.admin.inc',
-              ) + $access;
+                  'title' => t('Manage steps'),
+                  'page callback' => 'drupal_get_form',
+                  'page arguments' => array('multistep_adl_manage_steps_form', $entity_type, $bundle_arg),
+                  'type' => MENU_LOCAL_TASK,
+                  'weight' => 2,
+                  'file' => 'multistep_adl.admin.inc',
+                ) + $access;
             }
           }
         }
@@ -253,13 +253,12 @@ function multistep_adl_block_view($type = '') {
         'id' => 'multistep-adl-' . $type . '-' . $group->group_name,
         'class' => array(
           is_null($status) || $status == '' ? '' : 'multistep-adl-' . $status,
-          $current_step == $group->group_name ? 'active' : '',
         ),
         'url' => $nid && ($workflow_mode == 'free' || ($workflow_mode == 'direct' && ($status == 'submitted' || multistep_adl_get_next($type, $last_submitted_step) == $group->group_name))) ? $_GET['q'] : NULL,
         'step' => $group->group_name,
         'label' => $group->label,
-        'next_unsubmitted_step' => FALSE,
         'required' => $required,
+        'active' => $current_step == $group->group_name,
       );
       if ($workflow_mode == 'direct') {
         if ($status == 'unsubmitted' && multistep_adl_get_next($type, $last_submitted_step) == $group->group_name) {
@@ -427,7 +426,7 @@ function multistep_adl_field_attach_form($entity_type, $entity, &$form, &$form_s
     '#access' => variable_get('multistep_adl_button_save', TRUE),
   );
   if ($step != multistep_adl_get_last($entity) && (!isset($steps_settings[$bundle]['determining_field'])
-    || multistep_adl_get_step($entity) == multistep_adl_get_first($entity))
+      || multistep_adl_get_step($entity) == multistep_adl_get_first($entity))
   ) {
     $form['actions']['next'] = array(
       '#type' => 'submit',
