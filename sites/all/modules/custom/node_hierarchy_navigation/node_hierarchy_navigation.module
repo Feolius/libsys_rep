@@ -112,7 +112,7 @@ function node_hierarchy_navigation_block_view($delta = '') {
  *   HTML for the links to the child pages of the current page.
  */
 function node_hierarchy_navigation_children($node_link) {
-  $flat = node_hierarchy_navigation_get_flat_menu($node_link);
+  $flat = node_hierarchy_navigation_get_flat_menu_with_menu_item_children($node_link);
   $children = array();
   if ($node_link['has_children']) {
     // Walk through the array until we find the current page.
@@ -171,10 +171,7 @@ function node_hierarchy_navigation_next($node_link) {
  *   $node_link.
  */
 function node_hierarchy_navigation_prev($node_link) {
-  // If the parent is zero, we are at the start of a book.
-//  if ($node_link['plid'] == 0) {
-//    return NULL;
-//  }
+
   $flat = node_hierarchy_navigation_get_flat_menu($node_link);
   // Assigning the array to $flat resets the array pointer for use with each().
   $curr = NULL;
@@ -183,24 +180,34 @@ function node_hierarchy_navigation_prev($node_link) {
     list($key, $curr) = each($flat);
   } while ($key && $key != $node_link['mlid']);
 
-  if ($key == $node_link['mlid']) {
-    // The previous page in the book may be a child of the previous visible link.
-    if ($prev['depth'] == $node_link['depth'] && $prev['has_children']) {
-      // The subtree will have only one link at the top level - get its data.
-      $tree = node_hierarchy_navigation_menu_subtree_data($prev);
-      $data = array_shift($tree);
-      // The link of interest is the last child - iterate to find the deepest one.
-      while ($data['below']) {
-        $data = end($data['below']);
-      }
+  return $prev;
+}
 
-      return $data['link'];
+/**
+ * Recursively search the tree level with needed node and return him in the result array
+ *
+ * @param $tree
+ *   A tree of menu links in an array.
+ * @param $flat
+ *   A flat array of the menu links from $tree, passed by reference.
+ */
+function _node_hierarchy_navigation_tree_level_menu($tree, &$flat, $node_link_mlid) {
+  foreach ($tree as $data) {
+    if ($data['link']['mlid'] == $node_link_mlid) {
+      //When we recursively found the tree level with needed menu item
+      // we store him in the result array.
+      foreach ($tree as $tree_item) {
+        $flat[$tree_item['link']['mlid']] = $tree_item['link'];
+      }
+      //Of course other recursion step have already useless and we need to stop recursion.
+      break;
     }
-    else {
-      return $prev;
+    if (!$data['link']['hidden'] && $data['below']) {
+      _node_hierarchy_navigation_tree_level_menu($data['below'], $flat, $node_link_mlid);
     }
   }
 }
+
 
 /**
  * Recursively converts a tree of menu links to a flat array.
@@ -209,15 +216,13 @@ function node_hierarchy_navigation_prev($node_link) {
  *   A tree of menu links in an array.
  * @param $flat
  *   A flat array of the menu links from $tree, passed by reference.
- *
- * @see book_get_flat_menu().
  */
-function _node_hierarchy_navigation_flatten_menu($tree, &$flat) {
+function _node_hierarchy_navigation_flatten_menu_with_menu_item_children($tree, &$flat) {
   foreach ($tree as $data) {
     if (!$data['link']['hidden']) {
       $flat[$data['link']['mlid']] = $data['link'];
       if ($data['below']) {
-        _node_hierarchy_navigation_flatten_menu($data['below'], $flat);
+        _node_hierarchy_navigation_flatten_menu_with_menu_item_children($data['below'], $flat);
       }
     }
   }
@@ -238,13 +243,37 @@ function _node_hierarchy_navigation_flatten_menu($tree, &$flat) {
  */
 function node_hierarchy_navigation_get_flat_menu($node_link) {
   $flat = & drupal_static(__FUNCTION__, array());
+  if (!isset($flat[$node_link['mlid']])) {
+    // Call menu_tree_all_data() to take advantage of the menu system's caching.
+    $tree = menu_tree_all_data($node_link['menu_name'], $node_link, $node_link['depth'] + 1);
+    $flat[$node_link['mlid']] = array();
+    _node_hierarchy_navigation_tree_level_menu($tree, $flat[$node_link['mlid']], $node_link['mlid']);
+  }
+
+  return $flat[$node_link['mlid']];
+}
+
+/**
+ * Gets the book menu tree for a page and returns it as a linear array.
+ *
+ * @param $node_link
+ *   A fully loaded menu link that is part of the node hierarchy.
+ *
+ * @return
+ *   A linear array of menu links in the order that the links are shown in the
+ *   menu, so the previous and next pages are the elements before and after the
+ *   element corresponding to the current node. The children of the current node
+ *   (if any) will come immediately after it in the array, and links will only
+ *   be fetched as deep as one level deeper than $node_link.
+ */
+function node_hierarchy_navigation_get_flat_menu_with_menu_item_children($node_link) {
+  $flat = & drupal_static(__FUNCTION__, array());
 
   if (!isset($flat[$node_link['mlid']])) {
     // Call menu_tree_all_data() to take advantage of the menu system's caching.
     $tree = menu_tree_all_data($node_link['menu_name'], $node_link, $node_link['depth'] + 1);
-
     $flat[$node_link['mlid']] = array();
-    _node_hierarchy_navigation_flatten_menu($tree, $flat[$node_link['mlid']]);
+    _node_hierarchy_navigation_flatten_menu_with_menu_item_children($tree, $flat[$node_link['mlid']]);
   }
 
   return $flat[$node_link['mlid']];

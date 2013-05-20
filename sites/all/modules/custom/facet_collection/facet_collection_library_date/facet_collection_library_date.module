@@ -1,0 +1,88 @@
+<?php
+
+/**
+ * Implements hook_facet_collection_field_type_info()
+ */
+function facet_collection_library_date_facet_collection_field_type_info() {
+  return array(
+    'facet' => array('library_date_field'),
+  );
+}
+
+/**
+ * Implements hook_facet_collection_field_facet_groups()
+ */
+function facet_collection_library_date_facet_collection_field_facet_groups($field_info) {
+  return module_invoke('facet_collection_date', 'facet_collection_field_facet_groups', $field_info);
+}
+
+/**
+ * Implements hook_facet_collection_index_field()
+ */
+function facet_collection_library_date_facet_collection_index_field($filedocument, $node, $field_info) {
+  $field_name = $field_info['field_name'];
+  $fields = facet_collection_library_date_indexing_callback($node, 'dm_facet_collection_' . $field_name, $field_info);
+  foreach ($fields as $field) {
+    $filedocument->setMultiValue($field['key'], $field['value']);
+  }
+  return $filedocument;
+}
+
+/**
+ * Index callback for date fields
+ */
+function facet_collection_library_date_indexing_callback($node, $index_key, $field_info) {
+  $field_name = $field_info['field_name'];
+//If we have date with certain precision we should add additional dates in document to perform filtration
+  $fields = array();
+  $field = $node->$field_name;
+  list($lang, $values) = each($field);
+  if (!empty($values)) {
+    foreach ($values as $value) {
+      $date_start = new DateObject($value['value']);
+      //Comparison between start and end dates
+      $date_end = new DateObject($value['value2']);
+      $difference = $date_start->difference($date_end, 'days');
+      $date_array = $date_start->toArray();
+      $year = $date_array['year'];
+      if($difference == 0){
+        //Just add the date to field
+        $date = date_create($value['value']);
+        $index_value = $date->format('Y-m-d\TH:i:s\Z');
+        $fields[] = array(
+          'key' => $index_key,
+          'value' => $index_value,
+        );
+      }else{
+        //We should add few dates in solr index, one date value per one day for difference
+        $current_date_obj = clone $date_start;
+        for($i = 0; $i <= $difference; $i++){
+          $date_array = $current_date_obj->toArray(TRUE);
+          $date_ISO = $current_date_obj->toISO($date_array);
+          $date = date_create($date_ISO);
+          $index_value = $date->format('Y-m-d\TH:i:s\Z');
+          $fields[] = array(
+            'key' => $index_key,
+            'value' => $index_value,
+          );
+          $current_date_obj->modify('+1 day');
+        }
+      }
+    }
+  }
+  return $fields;
+}
+
+/**
+ * Implements hook_facet_collection_facet_content_types()
+ */
+function facet_collection_library_date_facet_collection_facet_content_types($filter_settings, $facet_group, $facet_name, $searcher) {
+  $facet = facetapi_facet_load($facet_name, $searcher);
+  $field_name = $facet['field api name'];
+  $facet_content_types_array = array();
+  if (isset($filter_settings['library_date_field'][$field_name])) {
+    $facet_content_types_array = array_merge($facet_content_types_array, array($filter_settings['library_date_field'][$field_name]));
+  }
+
+  return $facet_content_types_array;
+}
