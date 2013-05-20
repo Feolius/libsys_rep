@@ -266,13 +266,13 @@ function facet_collection_block_form_submit($form, &$form_state) {
   $searcher_info = facetapi_get_searcher_info();
   $searchers = array_keys($searcher_info);
   $searcher = $searchers[0];
-  $search_path = arg(0) . '/' . arg(1);
+  $current_link = arg(0) . '/' . arg(1);
   $callbacks = $form_state['build_info']['args'][0]['callbacks'];
   $facet_fields = $form_state['build_info']['args'][0]['facet_fields'];
   foreach ($callbacks as $field_name => $submit_callbacks) {
     $facet_name = $facet_fields[$field_name];
     $facet = facetapi_facet_load($facet_name, $searcher);
-    $fake_form_state['build_info']['args'][0]['search path'] = $search_path;
+    $fake_form_state['build_info']['args'][0]['search path'] = $current_link;
     $fake_form_state['build_info']['args'][0]['field alias'] = $facet['field alias'];
     $fake_form_state['build_info']['args'][0]['facet name'] = $facet_name;
     $fake_form_state['input'] = $facets_input[$field_name];
@@ -287,8 +287,8 @@ function facet_collection_block_form_submit($form, &$form_state) {
     $fake_form_state['build_info']['args'][0]['index_field_name'] = $search_filter_info['index_field_name'];
     $fake_form_state['input'] = $facets_input[$field_name];
     facet_collection_block_field_search_form_submit($form, $fake_form_state);
-    $query_part = $fake_form_state['redirect'][1]['query'];
-    facet_collection_block_fix_get_params($query_part, $facet['field alias']);
+    $link_part = $fake_form_state['redirect'][0];
+    $current_link = facet_collection_block_fix_link($link_part, $current_link, $search_filter_info['index_field_name']);
   }
   $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
   $form_state['redirect'] = array(
@@ -296,6 +296,44 @@ function facet_collection_block_form_submit($form, &$form_state) {
     array('query' => $get_params),
     302
   );
+}
+
+/**
+ * Merge all links to form proper search query according to given index field name and new part link
+ */
+function facet_collection_block_fix_link($link_part, $current_link, $index_field_name){
+  //If new link part contain part satisfied this pattern 'index field name:value" we should leave it or add corresponding
+  //part in current link
+  $options = drupal_parse_url($link_part);
+  dpm($options);
+  $search_term = '';
+  $link_part_arr = explode(' AND ', $link_part);
+  foreach ($link_part_arr as $link_part_element){
+    $link_part_element_arr = explode(':', $link_part_element);
+    if($link_part_element_arr[0] == $index_field_name){
+      $search_term = $link_part_element_arr[1];
+      break;
+    }
+  }
+  if($current_link == '*:*'){
+    if(!empty($search_term)){
+      $current_link = $index_field_name . ':' . $search_term;
+    }
+  }else{
+    $current_link_arr = explode(' AND ', $current_link);
+    foreach($current_link_arr as $key => $current_link_element){
+      $current_link_element_arr = explode(':', $current_link_element);
+      if($current_link_element_arr[0] == $index_field_name){
+        unset($current_link_arr[$key]);
+        break;
+      }
+    }
+    if(!empty($search_term)){
+      $current_link_arr[] = $index_field_name . ':' . $search_term;
+    }
+    $current_link = implode(' AND ', $current_link_arr);
+  }
+  return $current_link;
 }
 
 /**
