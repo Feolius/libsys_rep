@@ -15,12 +15,31 @@
 <?php drupal_add_css(drupal_get_path('theme', 'corporateclean') . '/tweet_button.css')?>
   <div class="page">
     <div class="panel-panel panel-main">
+      <div id="home-top">
+        <?php if (!empty($content['left'])): ?>
+          <!-- Left. -->
+            <div id="home-left">
+              <?php print $content['left']; ?>
+            </div>
+          <!-- EOF: #left -->
+         <?php endif; ?>
 
-      <?php if (!empty($content['top'])): ?>
-        <!-- Top. -->
-          <?php print $content['top']; ?>
-        <!-- EOF: #top -->
-       <?php endif; ?>
+        <?php if (!empty($content['middle'])): ?>
+          <!-- Middle. -->
+          <div id="home-middle">
+            <?php print $content['middle']; ?>
+          </div>
+          <!-- EOF: #middle -->
+        <?php endif; ?>
+
+        <?php if (!empty($content['right'])): ?>
+          <!-- Right. -->
+          <div id="home-right">
+            <?php print $content['right']; ?>
+          </div>
+          <!-- EOF: #right -->
+        <?php endif; ?>
+      </div>
 
       <?php if ($content['bottom']): ?>
         <!-- Bottom. -->

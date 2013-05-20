@@ -2,7 +2,7 @@
 
 define('LIBRARY_ADMIN_TEXT_TO_COPIRIGHT', variable_get('library_admin_text_to_copyright'));
 define('LIBRARY_ADMIN_PATH_TO_COPIRIGHT', variable_get('library_admin_path_to_copyright'));
-define('LIBRARY_ADMIN_TAXONOMY_FAQ_COLLECTION', 'tags');
+define('LIBRARY_ADMIN_TAXONOMY_TAGS_COLLECTION', 'tags');
 define('LIBRARY_ADMIN_TAXONOMY_FAQ_TERM', 'FAQ');
 
 /**
@@ -110,7 +110,7 @@ function library_admin_get_faq_nodes() {
     // Get nids and titles nodes.
     $vocabularies = taxonomy_get_vocabularies();
     foreach ($vocabularies as $vocabulary) {
-      if ($vocabulary->machine_name == LIBRARY_ADMIN_TAXONOMY_FAQ_COLLECTION) {
+      if ($vocabulary->machine_name == LIBRARY_ADMIN_TAXONOMY_TAGS_COLLECTION) {
         $vid = $vocabulary->vid;
       }
     }

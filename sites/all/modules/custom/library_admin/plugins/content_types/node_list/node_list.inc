@@ -23,7 +23,7 @@ function library_admin_node_list_ctools_content_types() {
  * Implements hook_content_type_render().
  */
 function library_admin_node_list_content_type_render($subtype, $conf, $panel_args, $context) {
-  $output = '';
+  $output = array();
 
   if ($output = node_page_default()) {
     $output .= theme('node_list', array('nodes' => $output));
