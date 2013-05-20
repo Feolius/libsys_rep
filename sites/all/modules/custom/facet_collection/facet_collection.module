@@ -96,7 +96,6 @@ function facet_collection_get_search_filters_info() {
     else {
       $textfield_names = cache_get('facet_collection:field_search_forms:field_search_field_names')->data;
     }
-
     $field_names = $textfield_names[$filtered_content_type];
     foreach ($field_names as $field_name) {
       //Define whether we show filter for field or not
