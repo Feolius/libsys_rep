@@ -219,7 +219,7 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
       $fid = $file->fid;
       $file = file_load($fid);
       //Use filename as folder name
-      $folder_name = get_real_file_name($file);
+      $folder_name = _book_field_get_real_file_name($file);
       //We should create a thumbnail for PDF file and make swf files for flexpaper viewer.
       if ($file->filemime == 'application/pdf') {
         //Create directory in temp folder where files will be contained.
@@ -730,12 +730,12 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
           $path = drupal_realpath($swf_directory);
           $drupal_folder = realpath('.');
           $relative_path = str_replace($drupal_folder, "", $path);
-          $file_name = get_real_file_name($file);
+          $file_name = _book_field_get_real_file_name($file);
           $swf_path = url($relative_path . '/{' . $file_name . '[*,0].swf,' . $num_pages . '}', array('absolute' => TRUE));
 
           //@TODO Remove this code block when issue with symbol '_' in import will be resolved
           $file_thumbnail = file_load($item['fid_thumb']);
-          $file_thumbnail_name = get_real_file_name($file_thumbnail);
+          $file_thumbnail_name = _book_field_get_real_file_name($file_thumbnail);
           $thumbnail_suffix = str_replace($file_name, '', $file_thumbnail_name);
           if (!strpos($thumbnail_suffix, '_')) {
             $png_path = url($relative_path . '/' . $file_name . '{page}.png', array('absolute' => TRUE));
@@ -744,7 +744,8 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
             $png_path = url($relative_path . '/' . $file_name . '_{page}.png', array('absolute' => TRUE));
           }
           $json_path = url($relative_path . '/' . $file_name . '.js', array('absolute' => TRUE));
-          $pdf_path = url($relative_path . '/' . $file_name . '.pdf', array('absolute' => TRUE));
+          $extension = _book_field_get_file_extension($file);
+          $pdf_path = url($relative_path . '/' . $file_name . '.' . $extension, array('absolute' => TRUE));
           $module_path = drupal_get_path('module', 'book_field');
           if (isset($_GET['view_mode'])) {
             $view_mode = $_GET['view_mode'];
@@ -1042,20 +1043,19 @@ function theme_book_field_flexpaper_view($variables) {
 }
 
 /**
- * Get real file name without suffix
+ * Get real file name without extension
  */
-function get_real_file_name($file) {
-  $uri = $file->uri;
-  $real_file_name = drupal_basename($uri);
-  $arr = explode('.', $real_file_name);
-  $arr_length = count($arr);
-  if ($arr_length > 1) {
-    //Exclude name of file extension
-    unset($arr[$arr_length - 1]);
-    $real_file_name = implode('.', $arr);
-  }
-  else {
-    $real_file_name = $arr[0];
-  }
-  return $real_file_name;
+function _book_field_get_real_file_name($file) {
+  $url_info = parse_url($file->uri);
+  $pathinfo = pathinfo($url_info['path']);
+  return $pathinfo['filename'];
+}
+
+/**
+ * Get real file extension
+ */
+function _book_field_get_file_extension($file){
+  $url_info = parse_url($file->uri);
+  $pathinfo = pathinfo($url_info['path']);
+  return $pathinfo['extension'];
 }
