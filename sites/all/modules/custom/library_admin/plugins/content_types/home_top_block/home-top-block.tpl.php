@@ -5,5 +5,5 @@
  */
 ?>
 <?php if (!empty($results)): ?>
-  <?php print render($results); ?>
+  <?php print $results; ?>
 <?php endif;?>

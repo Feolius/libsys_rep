@@ -24,9 +24,14 @@ function library_admin_home_top_block_ctools_content_types() {
  */
 function library_admin_home_top_block_content_type_render($subtype, $conf, $panel_args, $context) {
   $output = '';
-
+  if ($conf['tags']) {
+    if ($terms = library_admin_get_terms_tags()) {
+      if ($terms[$conf['tags']] == LIBRARY_ADMIN_TAXONOMY_TAGS_HOME_LEFT_TERM) {
+        $output['left'] = '';
+      }
+    }
+  }
   $output .= theme('home_top_block', array('results' => $output));
-
   $block = new stdClass();
   $block->content = $output;
   return $block;
@@ -47,16 +52,7 @@ function library_admin_home_top_block_content_type_theme(&$theme, $plugin) {
  */
 function library_admin_home_top_block_content_type_edit_form($form, &$form_state) {
   $conf = $form_state['conf'];
-  $options = array();
-  $vocabularies = taxonomy_get_vocabularies();
-  foreach ($vocabularies as $vocabulary) {
-    if ($vocabulary->machine_name == LIBRARY_ADMIN_TAXONOMY_TAGS_COLLECTION) {
-      $vid = $vocabulary->vid;
-    }
-  }
-  if (isset($vid)) {
-    $options = taxonomy_get_tree($vid);
-  }
+  $options = library_admin_get_terms_tags();
   $form['tags'] = array(
     '#title' => t('Select menu'),
     '#type' => 'select',
@@ -82,7 +78,7 @@ function library_admin_home_top_block_content_type_edit_form_submit($form, &$for
  */
 function library_admin_home_top_block_content_type_admin_info($subtype, $conf) {
   $block = new stdClass();
-  $menus = menu_get_menus();
-  $block->title = (!empty($conf['tags'])) ? $menus[$conf['tags']] : '';
+  $terms = library_admin_get_terms_tags();
+  $block->title = (!empty($conf['tags'])) ? $terms[$conf['tags']] : '';
   return $block;
 }

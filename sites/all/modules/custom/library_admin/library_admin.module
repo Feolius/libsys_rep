@@ -4,6 +4,9 @@ define('LIBRARY_ADMIN_TEXT_TO_COPIRIGHT', variable_get('library_admin_text_to_co
 define('LIBRARY_ADMIN_PATH_TO_COPIRIGHT', variable_get('library_admin_path_to_copyright'));
 define('LIBRARY_ADMIN_TAXONOMY_TAGS_COLLECTION', 'tags');
 define('LIBRARY_ADMIN_TAXONOMY_FAQ_TERM', 'FAQ');
+define('LIBRARY_ADMIN_TAXONOMY_TAGS_HOME_LEFT_TERM', variable_get('taxonomy_faq_home_left_term'));
+define('LIBRARY_ADMIN_TAXONOMY_TAGS_HOME_RIGHT_TERM', variable_get('taxonomy_faq_home_right_term'));
+define('LIBRARY_ADMIN_TAXONOMY_TAGS_HOME_MIDDLE_TERM', variable_get('taxonomy_faq_home_middle_term'));
 
 /**
  * Implements hook_menu().
@@ -171,5 +174,23 @@ function library_admin_get_faq_nodes() {
 
   cache_set('faq', $output);
 }
+  return $output;
+}
+
+/**
+ * Return array terms of taxonomy.
+ */
+function library_admin_get_terms_tags() {
+  $output = array();
+  if ($term_home_left = taxonomy_term_load(LIBRARY_ADMIN_TAXONOMY_TAGS_HOME_LEFT_TERM)) {
+    $output[$term_home_left->tid] = $term_home_left->name;
+  }
+  if ($term_home_right = taxonomy_term_load(LIBRARY_ADMIN_TAXONOMY_TAGS_HOME_RIGHT_TERM)) {
+    $output[$term_home_right->tid] = $term_home_right->name;
+  }
+  if ($term_home_middle = taxonomy_term_load(LIBRARY_ADMIN_TAXONOMY_TAGS_HOME_MIDDLE_TERM)) {
+    $output[$term_home_middle->tid] = $term_home_middle->name;
+  }
+
   return $output;
 }

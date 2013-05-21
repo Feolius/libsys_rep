@@ -26,7 +26,7 @@ function library_admin_node_list_content_type_render($subtype, $conf, $panel_arg
   $output = array();
 
   if ($output = node_page_default()) {
-    $output .= theme('node_list', array('nodes' => $output));
+    $output .= theme('node_list', array('nodes' => render($output)));
   }
 
   $block = new stdClass();
