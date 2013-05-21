@@ -1,11 +1,65 @@
-.multistep-adl-unsubmitted {
-    font-style: italic;
-}
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,700);
 
-.multistep-adl-required-steps-header {
+.multistep-adl-unsubmitted { font-style: italic;}
 
-}
+#page h2{font:bold 24px/1.2 "Open Sans"; margin:25px 0 15px;}
 
-.multistep-adl-optional-steps-header {
+#page .area{ background:#f6f6f6; padding:0 25px 25px; font-family:"Open Sans"; margin:20px 0;}
 
-}
+#page .area.form-type-textarea{ margin-bottom:0;}
+
+.area .area_header{ display:block; height:50px; line-height:50px; background:#c5c5c5; color:#000; font-size:16px; font-weight:normal; margin:0 -25px 25px; padding:0 25px;}
+
+.area .area_left{ width:75%; float:left;}
+
+.area .area_right{ width:25%; float:right; position:relative;}
+
+.content .area .steps{ height:50px; list-style:none; margin:0; }
+
+.content .area .steps li{ float:left; height:50px; line-height:50px; padding:0 20px 0 40px; background:#e6e1da; color:#c5c5c5; font-size:18px; position:relative; list-style:none; margin:0; }
+
+.area .steps li:first-child{ padding-left:20px;}
+
+.area .steps li.active{ background:#268eb8; color:#fff;}
+
+.area .steps li:after{ content:""; position:absolute; right:-20px; top:0; width: 0px; height: 0px; border-style: solid; border-width: 25px 0 25px 20px; border-color: transparent transparent transparent #e6e1da; z-index:100; }
+
+.area .steps li.active:after{border-color: transparent transparent transparent #268eb8;}
+
+.area .steps .number{ font-size:40px; vertical-align:middle; position:relative; top:-2px;}
+
+.content ul.file_types{list-style:none; margin:0; }
+
+.content ul.file_types li{ background:#268eb8; color:#cfe1eb; margin-bottom:2px; list-style:none; margin:0; line-height:30px; padding:0 15px; margin-bottom:2px; }
+
+.content ul.file_types li.active{ background:#54b7de; color:#fff;}
+
+.area .form-item, .area fieldset .fieldset-wrapper{ margin:0; padding:0;}
+
+/* form elements */
+
+.area input[type="text"], .area input[type="password"], .area select.form-select, .area textarea.form-textarea{ background:#fff; border:2px solid #c5c5c5; padding:6px; outline:none; color:#adadad;}
+
+.area input.form-file{background:#fff; border:2px solid #c5c5c5;}
+
+.area select.form-select{ padding:5px;}
+
+.area input[type="text"]:focus, .area input[type="password"]:focus, .area select.form-select:focus, .area textarea.form-textarea:focus{ border-color:#268eb8; color:#333;}
+
+#page input.form-submit, #page a.button{font: bold 12px Arial, Helvetica, sans-serif; color: #9FBBD5; padding: 6px 14px; border: 1px solid #0C7091; cursor: pointer; background: #0C7091; text-align: center; border-radius:0; -webkit-border-radius:0; margin:0 5px;}
+
+#page input.form-submit:hover, #page a.button:hover{text-decoration: none; background: #1BA8D8; border-color: #1BA8D8; color: #FFF;}
+
+.area fieldset, .area fieldset .fieldset-legend{ border:none; padding:0; margin:0; position:relative; text-transform:none;}
+
+.content table.area, .content table.area tr{ border:none;}
+
+.content table.area th{ padding:0 25px; border:none; background: #C5C5C5; line-height:50px;}
+
+.content table.area th label{ color: #000; font-size: 16px; font-weight: normal; text-transform:none;}
+
+.content table.area td{ border:none; background:#f6f6f6; padding:25px 0 25px 25px;}
+
+html.js .area input.form-autocomplete{ background-position:99% 8px;}
+
+html.js .area input.throbbing { background-position: 99% -13px; }

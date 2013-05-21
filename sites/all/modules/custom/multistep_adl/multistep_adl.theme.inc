@@ -4,50 +4,63 @@
  * Display a navigation block.
  * Use this theme function to override the output / display of this block.
  */
-function theme_multistep_adl_navigation($variables = array()) {
+function theme_multistep_adl_navigation($variables) {
   if (count($variables['links']['#children']) < 1) {
     return '';
   }
   $required_content = array();
   $optional_content = array();
+  $attributes = array();
   foreach ($variables['links']['#children'] as $key => $group) {
     extract($group);
-    if (isset($url) || $next_unsubmitted_step) {
+    if (isset($url)) {
       $query = array('step' => $step);
       $destination = drupal_get_destination();
       $query += $destination;
       $content = l($label, $url, array(
         'attributes' => array('id' => $id, 'class' => $class),
         'query' => $query,
+        'html' => TRUE,
       ));
     }
     else {
       $content = '<span id="' . $id . '" class="' . implode(' ', $class) . '">' . $label . '</span>';
     }
-    if ($required) {
-      $required_content[$key] = $content;
+
+    if ($active) {
+      $attributes['class'] = 'active';
     }
     else {
-      $optional_content[$key] = $content;
+      $attributes = array();
+    }
+    if ($required) {
+      if (empty($required_content)) {
+        $required_content[] = '<li ' . drupal_attributes($attributes) . '><span class="number">1.</span>' . $content . '</li>';
+      }
+      else {
+        $required_content[] = '<li ' . drupal_attributes($attributes) . '><span class="number">2.</span>' . $content . '</li>';
+      }
+    }
+    else {
+      $optional_content[] = '<li ' . drupal_attributes($attributes) . '>' . $content . '</li>';
     }
   }
-  $required_header = '<span id="multistep-adl-required-steps-header">Required Steps</span><br>';
-  $optional_header = '<span id="multistep-adl-optional-steps-header">Optional Steps</span><br>';
-  $required_html = theme('item_list', array(
-    'items' => $required_content,
-    'type' => variable_get('multistep_adl_show_step_numbers') ? 'ol' : 'ul'
-  ));
-  $optional_html = theme('item_list', array(
-    'items' => $optional_content,
-    'type' => variable_get('multistep_adl_show_step_numbers') ? 'ol' : 'ul'
-  ));
 
-  $result = $required_header . $required_html;
-  if (!empty($optional_content)) {
-    $result .= '<br>' . $optional_header . $optional_html;
+  if (count($required_content) == 1) {
+    $required_content[] = '<li ><span><span class="number">2.</span>Please complete Step1</span></li>';
   }
 
-  return $result;
+
+  $required_html = '<ul class="steps">' . implode('', $required_content) . '</ul>';
+  $optional_html = '<ul class="file_types">' . implode('', $optional_content) . '</ul>';
+
+  $required_header = '<span class="area_header">Required Steps</span><br>';
+  $optional_header = '<span class="area_header">Optional Steps</span><br>';
+
+  $result = '<div class="area_left">' . $required_header . $required_html . '</div>';
+  $result .= '<div class="area_right">' . $optional_header . $optional_html . '</div>';
+
+  return '<div class="area clearfix">' . $result . '</div>';
 }
 
 /**
