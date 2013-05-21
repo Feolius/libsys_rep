@@ -14,8 +14,6 @@ function ellen_white_estate_old_preprocess_node(&$vars) {
  */
 function ellen_white_estate_old_js_alter(&$javascript) {
   $jquery_path = drupal_get_path('theme', 'ellen_white_estate_old') . '/js/jquery-1.8.3.min.js';
-  $javascript[$jquery_path]['version'] = '1.8.3';
-  $javascript[$jquery_path]['data'] = $jquery_path;
   if (module_exists('jquery_update')) {
     foreach ($javascript as $key => $js_info) {
       $key_arr = explode('/', $key);
@@ -35,4 +33,6 @@ function ellen_white_estate_old_js_alter(&$javascript) {
     $javascript[$jquery_path] = $javascript['misc/jquery.js'];
     unset($javascript['misc/jquery.js']);
   }
+  $javascript[$jquery_path]['version'] = '1.8.3';
+  $javascript[$jquery_path]['data'] = $jquery_path;
 }
