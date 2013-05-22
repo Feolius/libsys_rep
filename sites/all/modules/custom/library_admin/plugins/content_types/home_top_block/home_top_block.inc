@@ -23,12 +23,12 @@ function library_admin_home_top_block_ctools_content_types() {
  * Implements hook_content_type_render().
  */
 function library_admin_home_top_block_content_type_render($subtype, $conf, $panel_args, $context) {
-  $output = '';
-  if ($conf['tags']) {
-    if ($terms = library_admin_get_terms_tags()) {
-      if ($terms[$conf['tags']] == LIBRARY_ADMIN_TAXONOMY_TAGS_HOME_LEFT_TERM) {
-        $output['left'] = '';
-      }
+  $output = array();
+
+  if (!empty($conf['tags'])) {
+  $node = library_admin_home_get_node($conf);
+    if (!empty($node)) {
+      $output = $node;
     }
   }
   $output .= theme('home_top_block', array('results' => $output));

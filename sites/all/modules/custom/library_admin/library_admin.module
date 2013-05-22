@@ -194,3 +194,29 @@ function library_admin_get_terms_tags() {
 
   return $output;
 }
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function library_admin_entity_info_alter(&$entity_info) {
+  $entity_info['node']['view modes']['home'] = array(
+    'label' => t('Home'),
+    'custom settings' => TRUE,
+  );
+}
+
+/**
+ * Home top get node.
+ */
+function library_admin_home_get_node($conf) {
+  $cache = &drupal_static(__FUNCTION__);
+  if ($type = $conf['tags']) {
+    $hash = md5(serialize(array($conf['tags'])));
+    if (!isset($cache[$hash])) {
+      $cache[$hash] = '';
+      $results = views_embed_view('home_top', 'home_page', $type);
+      $cache[$hash] = $results;
+    }
+  }
+    return $cache[$hash];
+}

@@ -5,5 +5,5 @@
  */
 ?>
 <?php if (!empty($results)): ?>
-  <?php print $results; ?>
+  <?php //print drupal_render($results); ?>
 <?php endif;?>
