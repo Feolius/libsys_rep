@@ -744,7 +744,8 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
             $png_path = url($relative_path . '/' . $file_name . '_{page}.png', array('absolute' => TRUE));
           }
           $json_path = url($relative_path . '/' . $file_name . '.js', array('absolute' => TRUE));
-          $pdf_path = url($relative_path . '/' . $file_name . '.pdf', array('absolute' => TRUE));
+          $extension = _book_field_get_file_extension($file);
+          $pdf_path = url($relative_path . '/' . $file_name . '.' . $extension, array('absolute' => TRUE));
           $module_path = drupal_get_path('module', 'book_field');
           if (isset($_GET['view_mode'])) {
             $view_mode = $_GET['view_mode'];
@@ -1042,7 +1043,7 @@ function theme_book_field_flexpaper_view($variables) {
 }
 
 /**
- * Get real file name without suffix
+ * Get real file name without extension
  */
 function get_real_file_name($file) {
   $uri = $file->uri;
@@ -1058,4 +1059,13 @@ function get_real_file_name($file) {
     $real_file_name = $arr[0];
   }
   return $real_file_name;
+}
+
+/**
+ * Get real file extension
+ */
+function _book_field_get_file_extension($file){
+  $url_info = parse_url($file->uri);
+  $pathinfo = pathinfo($url_info['path']);
+  return $pathinfo['extension'];
 }

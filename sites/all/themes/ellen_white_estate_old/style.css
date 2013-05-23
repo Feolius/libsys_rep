@@ -811,5 +811,4 @@ input.form-submit { margin: 0 10px 0 0; }
 
 .twtr-widget .twtr-tweet { border-bottom: 1px solid #353535 !important; padding: 0 0 5px 0; margin: 0 0 5px 0; }
 
-#main .home_left.one_third,
-#main .home_middle.one_third { margin-top: 150px;}
+#content-inside { padding-top: 150px;}
