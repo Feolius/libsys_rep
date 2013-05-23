@@ -562,3 +562,15 @@ function ellen_white_estate_js_alter(&$javascript) {
     unset($javascript['misc/jquery.js']);
   }
 }
+
+/**
+ * Preprocesses variables for html.tpl.php.
+ */
+function ellen_white_estate_preprocess_node__home(&$vars) {
+  $vars['content']['allow'] = array(
+    '#prefix' => '<span class="arrow-link">',
+    '#markup' => l("&nbsp;", "node/{$vars['node']->nid}", array('html' => TRUE)),
+    '#suffix' => '</span>',
+    '#weight' => 3
+  );
+}
