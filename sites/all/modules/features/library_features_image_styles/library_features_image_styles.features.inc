@@ -131,6 +131,28 @@ function library_features_image_styles_image_default_styles() {
     ),
   );
 
+  // Exported image style: home-image-full.
+  $styles['home-image-full'] = array(
+    'name' => 'home-image-full',
+    'effects' => array(
+      12 => array(
+        'label' => 'Scale and crop',
+        'help' => 'Scale and crop will maintain the aspect-ratio of the original image, then crop the larger dimension. This is most useful for creating perfectly square thumbnails without stretching the image.',
+        'effect callback' => 'image_scale_and_crop_effect',
+        'dimensions callback' => 'image_resize_dimensions',
+        'form callback' => 'image_resize_form',
+        'summary theme' => 'image_resize_summary',
+        'module' => 'image',
+        'name' => 'image_scale_and_crop',
+        'data' => array(
+          'width' => 308,
+          'height' => 204,
+        ),
+        'weight' => 1,
+      ),
+    ),
+  );
+
   // Exported image style: home_news_image.
   $styles['home_news_image'] = array(
     'name' => 'home_news_image',
