@@ -111,6 +111,7 @@
   margin: 0 0 0 18px;
   padding: 0;
   position: relative;
+  margin-bottom: 50px;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
   -webkit-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
 }
@@ -121,6 +122,9 @@
 
 .pane-node-list {
   clear: both;
+  margin-top: 30px;
+  border-top: 4px solid #757575;
+  padding-top: 30px;
 }
 
 #home-top div.field-name-title-field a {

@@ -12,7 +12,6 @@
  *   $content['middle']: The only panel in the layout.
  */
 ?>
-<?php drupal_add_css(drupal_get_path('theme', 'corporateclean') . '/tweet_button.css')?>
   <div class="page">
     <div class="panel-panel panel-main">
       <div id="home-top">
@@ -46,6 +45,5 @@
           <?php print $content['bottom']; ?>
         <!-- EOF: #bottom -->
       <?php endif; ?>
-
-    </div>
   </div>
+</div>
