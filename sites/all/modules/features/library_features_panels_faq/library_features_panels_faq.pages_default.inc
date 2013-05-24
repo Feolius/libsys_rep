@@ -33,7 +33,7 @@ function library_features_panels_faq_default_page_manager_pages() {
   );
   $page->arguments = array();
   $page->conf = array(
-    'admin_paths' => FALSE,
+    'admin_paths' => TRUE,
   );
   $page->default_handlers = array();
   $handler = new stdClass();
@@ -81,6 +81,24 @@ function library_features_panels_faq_default_page_manager_pages() {
   $display->panels = array();
     $pane = new stdClass();
     $pane->pid = 'new-1';
+    $pane->panel = 'breadcrumb';
+    $pane->type = 'page_breadcrumb';
+    $pane->subtype = 'page_breadcrumb';
+    $pane->shown = TRUE;
+    $pane->access = array();
+    $pane->configuration = array();
+    $pane->cache = array();
+    $pane->style = array(
+      'settings' => NULL,
+    );
+    $pane->css = array();
+    $pane->extras = array();
+    $pane->position = 0;
+    $pane->locks = array();
+    $display->content['new-1'] = $pane;
+    $display->panels['breadcrumb'][0] = 'new-1';
+    $pane = new stdClass();
+    $pane->pid = 'new-2';
     $pane->panel = 'content';
     $pane->type = 'faq_search_block';
     $pane->subtype = 'faq_search_block';
@@ -95,16 +113,20 @@ function library_features_panels_faq_default_page_manager_pages() {
     $pane->extras = array();
     $pane->position = 0;
     $pane->locks = array();
-    $display->content['new-1'] = $pane;
-    $display->panels['content'][0] = 'new-1';
+    $display->content['new-2'] = $pane;
+    $display->panels['content'][0] = 'new-2';
     $pane = new stdClass();
-    $pane->pid = 'new-2';
+    $pane->pid = 'new-3';
     $pane->panel = 'content';
     $pane->type = 'faq_menu_block';
     $pane->subtype = 'faq_menu_block';
     $pane->shown = TRUE;
     $pane->access = array();
-    $pane->configuration = array();
+    $pane->configuration = array(
+      'override_title' => 0,
+      'override_title_text' => '',
+      'menu' => 'menu-faq',
+    );
     $pane->cache = array();
     $pane->style = array(
       'settings' => NULL,
@@ -113,8 +135,8 @@ function library_features_panels_faq_default_page_manager_pages() {
     $pane->extras = array();
     $pane->position = 1;
     $pane->locks = array();
-    $display->content['new-2'] = $pane;
-    $display->panels['content'][1] = 'new-2';
+    $display->content['new-3'] = $pane;
+    $display->panels['content'][1] = 'new-3';
   $display->hide_title = PANELS_TITLE_NONE;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;

@@ -52,5 +52,30 @@ function library_admin_settings_form() {
     '#default_value' => variable_get('library_admin_path_to_copyright'),
   );
 
+  $form['clear_temp_folder'] = array(
+    '#type' => 'submit',
+    '#value' => t('Remove files in temp folder'),
+    '#submit' => array('library_admin_clear_temp_folder')
+  );
+
   return system_settings_form($form);
+}
+
+function library_admin_clear_temp_folder(){
+  $result = db_query('SELECT fid FROM {file_managed} WHERE status <> :permanent', array(
+    ':permanent' => FILE_STATUS_PERMANENT,
+  ));
+  foreach ($result as $row) {
+    if ($file = file_load($row->fid)) {
+      $references = file_usage_list($file);
+      if (empty($references)) {
+        if (!file_delete($file)) {
+          watchdog('file system', 'Could not delete temporary file "%path" during garbage collection', array('%path' => $file->uri), WATCHDOG_ERROR);
+        }
+      }
+      else {
+        watchdog('file system', 'Did not delete temporary file "%path" during garbage collection, because it is in use by the following modules: %modules.', array('%path' => $file->uri, '%modules' => implode(', ', array_keys($references))), WATCHDOG_INFO);
+      }
+    }
+  }
 }

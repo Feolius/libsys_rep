@@ -175,7 +175,7 @@ box-shadow: inset 0 0 18px 0 rgba(0, 0, 0, 0.15);
 
 #header-menu-inside .account_controls a:hover{ background:#2083AC; color:#fff;}
 
-#logo { float:left; width:336px; display:block; overflow:hidden; padding:0; margin:0; }
+#logo { float:left; display:block; overflow:hidden; padding:0; margin:0; }
 
 #logo a{ padding:0; margin:0; display:block; overflow:hidden; }
 

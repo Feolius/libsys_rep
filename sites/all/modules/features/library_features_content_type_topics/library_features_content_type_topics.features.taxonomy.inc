@@ -13,9 +13,9 @@ function library_features_content_type_topics_taxonomy_default_vocabularies() {
       'name' => 'Topic kinds',
       'machine_name' => 'topic_kinds',
       'description' => '',
-      'hierarchy' => '0',
+      'hierarchy' => 0,
       'module' => 'taxonomy',
-      'weight' => '0',
+      'weight' => 0,
     ),
   );
 }

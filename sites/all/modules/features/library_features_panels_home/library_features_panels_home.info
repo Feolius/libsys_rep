@@ -2,6 +2,7 @@ name = Library features panels home
 description = library_features_panels_home
 core = 7.x
 package = Library
+php = 5.2.4
 version = 7.x-1.0
 project = library_features_panels_home
 dependencies[] = ctools

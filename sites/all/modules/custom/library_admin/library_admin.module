@@ -2,8 +2,11 @@
 
 define('LIBRARY_ADMIN_TEXT_TO_COPIRIGHT', variable_get('library_admin_text_to_copyright'));
 define('LIBRARY_ADMIN_PATH_TO_COPIRIGHT', variable_get('library_admin_path_to_copyright'));
-define('LIBRARY_ADMIN_TAXONOMY_FAQ_COLLECTION', 'tags');
+define('LIBRARY_ADMIN_TAXONOMY_TAGS_COLLECTION', 'tags');
 define('LIBRARY_ADMIN_TAXONOMY_FAQ_TERM', 'FAQ');
+define('LIBRARY_ADMIN_TAXONOMY_TAGS_HOME_LEFT_TERM', variable_get('taxonomy_faq_home_left_term'));
+define('LIBRARY_ADMIN_TAXONOMY_TAGS_HOME_RIGHT_TERM', variable_get('taxonomy_faq_home_right_term'));
+define('LIBRARY_ADMIN_TAXONOMY_TAGS_HOME_MIDDLE_TERM', variable_get('taxonomy_faq_home_middle_term'));
 
 /**
  * Implements hook_menu().
@@ -110,7 +113,7 @@ function library_admin_get_faq_nodes() {
     // Get nids and titles nodes.
     $vocabularies = taxonomy_get_vocabularies();
     foreach ($vocabularies as $vocabulary) {
-      if ($vocabulary->machine_name == LIBRARY_ADMIN_TAXONOMY_FAQ_COLLECTION) {
+      if ($vocabulary->machine_name == LIBRARY_ADMIN_TAXONOMY_TAGS_COLLECTION) {
         $vid = $vocabulary->vid;
       }
     }
@@ -172,4 +175,50 @@ function library_admin_get_faq_nodes() {
   cache_set('faq', $output);
 }
   return $output;
+}
+
+/**
+ * Return array terms of taxonomy.
+ */
+function library_admin_get_terms_tags() {
+  $output = array();
+  if ($term_home_left = taxonomy_term_load(LIBRARY_ADMIN_TAXONOMY_TAGS_HOME_LEFT_TERM)) {
+    $output[$term_home_left->tid] = $term_home_left->name;
+  }
+  if ($term_home_right = taxonomy_term_load(LIBRARY_ADMIN_TAXONOMY_TAGS_HOME_RIGHT_TERM)) {
+    $output[$term_home_right->tid] = $term_home_right->name;
+  }
+  if ($term_home_middle = taxonomy_term_load(LIBRARY_ADMIN_TAXONOMY_TAGS_HOME_MIDDLE_TERM)) {
+    $output[$term_home_middle->tid] = $term_home_middle->name;
+  }
+
+  return $output;
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function library_admin_entity_info_alter(&$entity_info) {
+  $entity_info['node']['view modes']['home'] = array(
+    'label' => t('Home'),
+    'custom settings' => TRUE,
+  );
+}
+
+/**
+ * Home top get node.
+ */
+function library_admin_home_get_node($conf) {
+  $cache = &drupal_static(__FUNCTION__);
+
+  if ($type = $conf['tags']) {
+    $hash = md5(serialize(array($conf['tags'])));
+    if (!isset($cache[$hash])) {
+      $cache[$hash] = '';
+      $results = views_embed_view('home_top', 'home_page', $type);
+      $cache[$hash] = $results;
+    }
+  }
+
+  return $cache[$hash];
 }
