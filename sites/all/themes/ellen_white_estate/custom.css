@@ -179,7 +179,7 @@
   height: 36px;
   padding: 6px 18px;
   float: right;
-  margin: 0 0 0 10px;
+  margin: 0;
 }
 
 #header-inside-right .form-item input[type="text"] {
