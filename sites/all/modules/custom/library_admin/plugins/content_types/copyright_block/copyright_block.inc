@@ -8,7 +8,7 @@
  * Implements hook_ctools_content_types().
  */
 function library_admin_copyright_block_ctools_content_types() {
-    return array(
+  return array(
     'title' => t('Copyright'),
     'description' => t('Copyright text to display in the footer'),
     'category' => t('Library'),
