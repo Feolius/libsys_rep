@@ -10,6 +10,7 @@ $plugin = array(
   'theme' => 'home',
   'admin css' => 'home.css',
   'regions' => array(
+    'top' => t('Top'),
     'left' => t('Left'),
     'middle' => t('Middle'),
     'right' => t('Right'),

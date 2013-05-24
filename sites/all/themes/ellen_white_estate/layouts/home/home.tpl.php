@@ -14,6 +14,15 @@
 ?>
   <div class="page">
     <div class="panel-panel panel-main">
+
+      <?php if (!empty($content['top'])): ?>
+        <!-- Top. -->
+          <div id="welcome-block">
+            <?php print $content['top']; ?>
+          </div>
+        <!-- EOF: #top -->
+      <?php endif; ?>
+
       <div id="home-top">
         <?php if (!empty($content['left'])): ?>
           <!-- Left. -->

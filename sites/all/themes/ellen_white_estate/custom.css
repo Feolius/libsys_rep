@@ -190,3 +190,19 @@
 #header-inside-left {
   padding: 0;
 }
+
+#welcome-block {
+  padding-top: 150px;
+  width: 308px;
+  margin: 0;
+}
+
+.front .panel-main {
+  width: auto;
+  padding: 0;
+  color: #f2f2f2;
+}
+
+#welcome-block + #home-top {
+  padding-top: 50px;
+}
