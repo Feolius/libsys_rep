@@ -9,3 +9,7 @@
   clear: right;
   height: auto;
 }
+
+#panel-region-bottom {
+  clear: both;
+}
