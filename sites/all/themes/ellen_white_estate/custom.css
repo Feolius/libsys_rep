@@ -169,3 +169,24 @@
 .social {
   top: 310px;
 }
+
+#header-inside-right #facet-collection-search-block-form div.form-item {
+  margin: 0 0 0 1px;
+  float: left;
+}
+
+#header-inside-right .form-submit {
+  height: 36px;
+  padding: 6px 18px;
+  float: right;
+  margin: 0 0 0 10px;
+}
+
+#header-inside-right .form-item input[type="text"] {
+  width: 194px;
+  padding: 9px;
+}
+
+#header-inside-left {
+  padding: 0;
+}
