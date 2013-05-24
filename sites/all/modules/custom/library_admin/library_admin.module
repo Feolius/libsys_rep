@@ -219,6 +219,5 @@ function library_admin_home_get_node($conf) {
       $cache[$hash] = $results;
     }
   }
-
   return $cache[$hash];
 }
