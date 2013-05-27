@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Ctools content type page title.
+ * Ctools content type welcome block.
  */
 
 /**

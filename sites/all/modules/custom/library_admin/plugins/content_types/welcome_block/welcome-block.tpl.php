@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Library admin copyright block content type template.
+ * Library admin welcome block content type template.
  */
 ?>
 <?php if (!empty($copyright)): ?>
