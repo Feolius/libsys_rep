@@ -211,7 +211,7 @@
   float: right;
 }
 
-#header-menu .pane-system-user-menu ul.menu li a {
+#header-menu .pane-user-menu ul.menu li a {
   background: #197499;
   display: inline-block;
   height: 38px;
@@ -228,7 +228,7 @@
 }
 
 
-#header-menu .pane-system-user-menu ul.menu li a:hover {
+#header-menu .pane-user-menu ul.menu li a:hover {
   color:#fff;
   background:#268EB8;
 }
