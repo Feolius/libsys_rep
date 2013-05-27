@@ -171,14 +171,11 @@ function library_features_panels_site_template_default_page_manager_handlers() {
     $pane = new stdClass();
     $pane->pid = 'new-7';
     $pane->panel = 'header_menu';
-    $pane->type = 'block';
-    $pane->subtype = 'system-user-menu';
+    $pane->type = 'user_menu_block';
+    $pane->subtype = 'user_menu_block';
     $pane->shown = TRUE;
     $pane->access = array();
-    $pane->configuration = array(
-      'override_title' => 1,
-      'override_title_text' => '',
-    );
+    $pane->configuration = array();
     $pane->cache = array();
     $pane->style = array(
       'settings' => NULL,
