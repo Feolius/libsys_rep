@@ -236,3 +236,24 @@
 .contextual-links-region.pane-system-main-menu {
   float: left;
 }
+
+#library-admin-faq-form .form-item-text input {
+  float: left;
+  padding: 9px;
+}
+
+#library-admin-faq-form input.search-faq {
+  margin-bottom: 1em;
+  height: 36px;
+  padding: 6px 18px;
+}
+
+.pane-faq-menu-block .pane-content > ul.menu {
+  padding-left: 10px;
+}
+
+.pane-faq-menu-block ul.menu li ul {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin: 0 0 0 1.5em;
+}
