@@ -206,3 +206,21 @@
 #welcome-block + #home-top {
   padding-top: 50px;
 }
+
+.pane-system-user-menu {
+  float: right;
+}
+
+.pane-system-user-menu ul.menu li {
+  background: #197499;
+  display: inline-block;
+  height: 38px;
+  line-height: 38px;
+  margin-left: 1px;
+  padding: 0 26px;
+  color: #00A9E2;
+  font-size: 14px;
+  border: 1px solid #106A8F;
+  box-shadow: inset 0 0 18px 0 rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: inset 0 0 18px 0 rgba(0, 0, 0, 0.15);
+}
