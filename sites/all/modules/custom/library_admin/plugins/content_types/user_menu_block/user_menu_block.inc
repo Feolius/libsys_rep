@@ -28,16 +28,16 @@ function library_admin_user_menu_block_content_type_render($subtype, $conf, $pan
   if (user_is_logged_in()) {
     $menu[0] = l(
       t('My account'),
-      '/user'
+      'user'
     );
     $menu[1] = l(
       t('Log out'),
-      '/user/logout'
+      'user/logout'
     );
   } else {
     $menu[0] = l(
       t('Log in'),
-      '/user/login'
+      'user/login'
     );
   }
   if (!empty($menu)) {
