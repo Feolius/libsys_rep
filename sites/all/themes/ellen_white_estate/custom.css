@@ -211,7 +211,7 @@
   float: right;
 }
 
-.pane-system-user-menu ul.menu li a {
+#header-menu .pane-system-user-menu ul.menu li a {
   background: #197499;
   display: inline-block;
   height: 38px;
