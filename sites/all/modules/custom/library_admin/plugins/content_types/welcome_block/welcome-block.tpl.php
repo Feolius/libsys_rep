@@ -4,8 +4,8 @@
  * Library admin welcome block content type template.
  */
 ?>
-<?php if (!empty($copyright)): ?>
+<?php if (!empty($text)): ?>
   <div id="welcome-text">
-    <?php print $copyright; ?>
+    <?php print $text; ?>
   </div>
 <?php endif;?>
