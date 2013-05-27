@@ -39,6 +39,6 @@ function library_admin_welcome_block_content_type_render($subtype, $conf, $panel
 function library_admin_welcome_block_content_type_theme(&$theme, $plugin) {
   $theme['welcome_block'] = array(
     'path' => $plugin['path'],
-    'template' => 'welcome-block.tpl.php',
+    'template' => 'welcome-block',
   );
 }
