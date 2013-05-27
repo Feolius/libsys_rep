@@ -25,7 +25,7 @@ function library_admin_welcome_block_ctools_content_types() {
 function library_admin_welcome_block_content_type_render($subtype, $conf, $panel_args, $context) {
   $output = '';
   if ($text = variable_get('library_admin_welcome_text')) {
-    $output .= theme('copyright_block', array('copyright' => $text));
+    $output .= theme('welcome_block', array('text' => $text));
   }
 
   $block = new stdClass();
@@ -37,8 +37,8 @@ function library_admin_welcome_block_content_type_render($subtype, $conf, $panel
  * Implements hook_content_type_theme().
  */
 function library_admin_welcome_block_content_type_theme(&$theme, $plugin) {
-  $theme['copyright_block'] = array(
+  $theme['welcome_block'] = array(
     'path' => $plugin['path'],
-    'template' => 'copyright-block',
+    'template' => 'welcome-block.tpl.php',
   );
 }
