@@ -26,6 +26,13 @@ function library_admin_menu() {
 }
 
 /**
+ * Implements hook_menu_alter().
+ */
+function library_admin_menu_alter(&$items) {
+//kpr($items);die;
+}
+
+/**
  * Implements hook_init().
  */
 function library_admin_init() {
