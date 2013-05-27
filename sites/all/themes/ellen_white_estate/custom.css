@@ -232,3 +232,7 @@
   color:#fff;
   background:#268EB8;
 }
+
+.contextual-links-region.pane-system-main-menu {
+  float: left;
+}

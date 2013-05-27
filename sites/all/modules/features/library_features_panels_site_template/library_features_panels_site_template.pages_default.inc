@@ -170,24 +170,6 @@ function library_features_panels_site_template_default_page_manager_handlers() {
     $display->panels['header_menu'][0] = 'new-6';
     $pane = new stdClass();
     $pane->pid = 'new-7';
-    $pane->panel = 'header_menu';
-    $pane->type = 'user_menu_block';
-    $pane->subtype = 'user_menu_block';
-    $pane->shown = TRUE;
-    $pane->access = array();
-    $pane->configuration = array();
-    $pane->cache = array();
-    $pane->style = array(
-      'settings' => NULL,
-    );
-    $pane->css = array();
-    $pane->extras = array();
-    $pane->position = 1;
-    $pane->locks = array();
-    $display->content['new-7'] = $pane;
-    $display->panels['header_menu'][1] = 'new-7';
-    $pane = new stdClass();
-    $pane->pid = 'new-8';
     $pane->panel = 'header_search_block';
     $pane->type = 'block';
     $pane->subtype = 'facet_collection_search_block-facet_collection_search_block';
@@ -205,8 +187,8 @@ function library_features_panels_site_template_default_page_manager_handlers() {
     $pane->extras = array();
     $pane->position = 0;
     $pane->locks = array();
-    $display->content['new-8'] = $pane;
-    $display->panels['header_search_block'][0] = 'new-8';
+    $display->content['new-7'] = $pane;
+    $display->panels['header_search_block'][0] = 'new-7';
   $display->hide_title = PANELS_TITLE_NONE;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
