@@ -12,40 +12,41 @@
  *   $content['middle']: The only panel in the layout.
  */
 ?>
-  <div class="page">
-    <div class="panel-panel panel-main">
+<div class="page">
+  <div class="panel-panel panel-main">
 
-      <?php if (!empty($content['top'])): ?>
-        <!-- Top. -->
-          <div id="home-top">
-            <?php print $content['top']; ?>
-          </div>
-        <!-- EOF: #top -->
-      <?php endif; ?>
+    <?php if (!empty($content['top'])): ?>
+      <!-- Top. -->
+        <div id="home-top">
+          <?php print $content['top']; ?>
+        </div>
+      <!-- EOF: #top -->
+    <?php endif; ?>
 
-      <?php if (!empty($content['left'])): ?>
-        <!-- Left. -->
-          <div id="home-left">
-            <?php print $content['left']; ?>
-          </div>
-        <!-- EOF: #left -->
-      <?php endif; ?>
+    <?php if (!empty($content['left'])): ?>
+      <!-- Left. -->
+        <div id="home-left">
+          <?php print $content['left']; ?>
+        </div>
+      <!-- EOF: #left -->
+    <?php endif; ?>
 
-      <?php if (!empty($content['middle'])): ?>
-        <!-- Middle. -->
-          <div id="home-middle">
-            <?php print $content['middle']; ?>
-          </div>
-        <!-- EOF: #middle -->
-      <?php endif; ?>
+    <?php if (!empty($content['middle'])): ?>
+      <!-- Middle. -->
+        <div id="home-middle">
+          <?php print $content['middle']; ?>
+        </div>
+      <!-- EOF: #middle -->
+    <?php endif; ?>
 
-      <?php if (!empty($content['right'])): ?>
-        <!-- Right. -->
-          <div id="home-right">
-            <?php print $content['right']; ?>
-          </div>
-        <!-- EOF: #right -->
-      <?php endif; ?>
-      </div>
+    <?php if (!empty($content['right'])): ?>
+      <!-- Right. -->
+        <div id="home-right">
+          <?php print $content['right']; ?>
+        </div>
+      <!-- EOF: #right -->
+    <?php endif; ?>
+    <div class="panel-separator"></div>
+    </div>
   </div>
 </div>

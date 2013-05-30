@@ -13,3 +13,7 @@
 #panel-region-bottom {
   clear: both;
 }
+
+.panel-separator {
+  clear: both;
+}
