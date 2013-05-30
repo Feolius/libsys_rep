@@ -157,7 +157,7 @@ function library_features_panels_home_default_page_manager_pages() {
       'override_title' => 0,
       'override_title_text' => '',
       'menu' => 'devel',
-      'tags' => '4',
+      'tags' => '5789',
     );
     $pane->cache = array();
     $pane->style = array(
