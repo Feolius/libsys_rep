@@ -191,7 +191,7 @@ function facet_collection_block_form($form, &$form_state) {
         $widget_plugin->init();
         if (method_exists($widget_plugin, 'getForm')) {
           $widget_form = $widget_plugin->getForm($forms);
-          if(!empty($widget_form)){
+          if (!empty($widget_form)) {
             $callbacks[$field_name] = facet_collection_block_remove_submits($widget_form);
             if (!isset($deltas[$widget_name])) {
               $form[$field_name] = $widget_form;
@@ -217,15 +217,16 @@ function facet_collection_block_form($form, &$form_state) {
   $search_filters_info = facet_collection_get_search_filters_info();
   $search_deltas = array();
   $last_delta = 1;
-  foreach($search_filters_info as $field_name => $search_filter_info){
+  foreach ($search_filters_info as $field_name => $search_filter_info) {
     $form_id = 'facet_collection_' . $field_name . '_form';
     $fake_form_state['build_info']['form_id'] = $form_id;
     $search_form = facet_collection_block_field_search_form(array(), $fake_form_state, $search_filter_info);
     facet_collection_block_remove_submits($search_form);
-    if($last_delta != 1){
+    if ($last_delta != 1) {
       facet_collection_block_set_form_delta($search_form, $last_delta);
       $search_deltas[$field_name] = $last_delta;
-    }else{
+    }
+    else {
       $search_deltas[$field_name] = 1;
     }
     $last_delta++;
@@ -283,7 +284,7 @@ function facet_collection_block_form_submit($form, &$form_state) {
     }
   }
   $search_filters_info = facet_collection_get_search_filters_info();
-  foreach ($search_filters_info as $field_name => $search_filter_info){
+  foreach ($search_filters_info as $field_name => $search_filter_info) {
     $fake_form_state['build_info']['args'][0]['index_field_name'] = $search_filter_info['index_field_name'];
     $fake_form_state['input'] = $facets_input[$field_name];
     facet_collection_block_field_search_form_submit($form, $fake_form_state);
@@ -301,20 +302,20 @@ function facet_collection_block_form_submit($form, &$form_state) {
 /**
  * Merge all links to form proper search query according to given index field name and new part link
  */
-function facet_collection_block_fix_link($next_link, $current_link, $index_field_name){
+function facet_collection_block_fix_link($next_link, $current_link, $index_field_name) {
   //If next link contains part satisfied this pattern 'index field name:value" we should leave it if it exists in the
   //current link or add corresponding part in the current link
   //Use drupal_parse_url to avoid problems with clean urls
-  $next_link= urldecode($next_link);
+  $next_link = urldecode($next_link);
   $next_link_options = drupal_parse_url($next_link);
   $next_path = $next_link_options['path'];
   $next_path_arr = explode('/', $next_path);
-  $next_filter = $next_path_arr[count($next_path_arr)-1];
+  $next_filter = $next_path_arr[count($next_path_arr) - 1];
   $search_term = '';
   $next_filter_arr = explode(' AND ', $next_filter);
-  foreach ($next_filter_arr as $next_filter_element){
+  foreach ($next_filter_arr as $next_filter_element) {
     $next_filter_element_arr = explode(':', $next_filter_element);
-    if($next_filter_element_arr[0] == $index_field_name){
+    if ($next_filter_element_arr[0] == $index_field_name) {
       $search_term = $next_filter_element_arr[1];
       break;
     }
@@ -323,23 +324,25 @@ function facet_collection_block_fix_link($next_link, $current_link, $index_field
   $current_link_options = drupal_parse_url($current_link);
   $current_path = $current_link_options['path'];
   $current_path_arr = explode('/', $current_path);
-  $current_filter = $current_path_arr[count($current_path_arr)-1];
-  if($current_filter == '*:*'){
-    if(!empty($search_term)){
+  $current_filter = $current_path_arr[count($current_path_arr) - 1];
+  if ($current_filter == '*:*') {
+    if (!empty($search_term)) {
       $current_filter = $index_field_name . ':' . $search_term;
     }
-  }else{
+  }
+  else {
     $current_filter_arr = explode(' AND ', $current_filter);
-    foreach($current_filter_arr as $key => $current_filter_element){
+    foreach ($current_filter_arr as $key => $current_filter_element) {
       $current_filter_element_arr = explode(':', $current_filter_element);
-      if($current_filter_element_arr[0] == $index_field_name){
+      if ($current_filter_element_arr[0] == $index_field_name) {
         unset($current_filter_arr[$key]);
         break;
       }
     }
-    if(!empty($search_term)){
+    if (!empty($search_term)) {
       $current_filter_arr[] = $index_field_name . ':' . $search_term;
-    }elseif(empty($current_filter_arr)){
+    }
+    elseif (empty($current_filter_arr)) {
       $current_filter_arr[] = '*:*';
     }
     $current_filter = implode(' AND ', $current_filter_arr);
@@ -357,7 +360,7 @@ function facet_collection_block_fix_get_params($query_part, $facet_field_alias) 
   foreach ($new_filters as $field_alias => $values) {
     $filters[$field_alias] = $new_filters[$field_alias];
   }
-  if(!isset($new_filters[$facet_field_alias])){
+  if (!isset($new_filters[$facet_field_alias])) {
     unset($filters[$facet_field_alias]);
   }
   _facet_collection_block_array_to_filters($filters);
@@ -388,7 +391,9 @@ function _facet_collection_block_filters_to_array($f) {
   $filters_arr = array();
   foreach ($f as $filter_query) {
     $arr = explode(':', $filter_query);
-    $filters_arr[$arr[0]][] = $arr[1];
+    $key = $arr[0];
+    unset($arr[0]);
+    $filters_arr[$key][] = implode(':', $arr);
   }
   return $filters_arr;
 
@@ -408,7 +413,7 @@ function facet_collection_block_prepare_input($form_state) {
   }
   //Prepare input for search forms
   $search_deltas = $form_state['build_info']['args'][0]['search_deltas'];
-  foreach($search_deltas as $field_name => $delta){
+  foreach ($search_deltas as $field_name => $delta) {
     $input[$field_name] = facet_collection_block_get_facet_input($complete_form[$field_name], $delta);
   }
   return $input;

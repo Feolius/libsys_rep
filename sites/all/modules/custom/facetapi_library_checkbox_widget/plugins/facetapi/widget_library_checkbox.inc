@@ -38,7 +38,7 @@ class FacetapiWidgetLibraryCheckbox extends FacetapiWidget {
    */
   protected function getArgs($element, $facet){
     //Get search path.
-    foreach ($element as $key => $val) {
+    foreach ($element as $val) {
       $search_path = $val['#path'];
       break;
     }

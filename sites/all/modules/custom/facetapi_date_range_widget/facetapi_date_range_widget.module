@@ -61,8 +61,6 @@ function facetapi_date_range_widget_filter_submit($form, &$form_state) {
     $min_date_full = $min_date;
   }
   $date_min_obj = new DateObject($min_date_full, NULL, 'Y/m/d');
-  $min_date_array = $date_min_obj->toArray();
-  $min_date_ISO = $date_min_obj->toISO($min_date_array);
   $max_date = $form_state['input']['max_date'];
   $max_date_parts = explode('/', $max_date);
   $parts_number = count($max_date_parts);
@@ -81,6 +79,10 @@ function facetapi_date_range_widget_filter_submit($form, &$form_state) {
     $max_date_full = $max_date;
   }
   $date_max_obj = new DateObject($max_date_full, NULL, 'Y/m/d');
+
+  //Get difference between current min and max dates and absolute. If both limits are matching, we don't need any filter
+  $min_date_array = $date_min_obj->toArray();
+  $min_date_ISO = $date_min_obj->toISO($min_date_array);
   $max_date_array = $date_max_obj->toArray();
   $max_date_ISO = $date_max_obj->toISO($max_date_array);
 
@@ -110,40 +112,6 @@ function facetapi_date_range_widget_filter_submit($form, &$form_state) {
       'max_' . $facet_name => $max_date,
     ),
   );
-  $form_state['redirect'] = array(
-    $basic_path,
-    $options,
-    302
-  );
-}
-
-/**
- * Reset callback for date filter form
- */
-function facetapi_date_range_widget_reset_submit($form, &$form_state) {
-
-  //Find and unset filter query from GET request
-  $options = array();
-  $basic_path = $form_state['build_info']['args'][0]['search path'];
-  $field_alias = $form_state['build_info']['args'][0]['field alias'];
-  if (isset($_GET['f'])) {
-    $f = $_GET['f'];
-    foreach ($f as $key => $row) {
-      if (strstr($row, $field_alias)) {
-        unset($f[$key]);
-        $merge = FALSE;
-        continue;
-      }
-    }
-
-    if (!empty($f)) {
-      $options = array(
-        'query' => array(
-          'f' => $f,
-        ),
-      );
-    }
-  }
   $form_state['redirect'] = array(
     $basic_path,
     $options,
@@ -276,13 +244,7 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
       '#value' => t('Filter'),
       '#weight' => 14,
       '#submit' => array('facetapi_date_range_widget_filter_submit'),
-    ),
-    'reset_button' => array(
-      '#type' => 'submit',
-      '#value' => t('Reset'),
-      '#weight' => 15,
-      '#submit' => array('facetapi_date_range_widget_reset_submit'),
-    ),
+    )
   );
   return $form;
 }
