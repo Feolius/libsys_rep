@@ -1,0 +1,11 @@
+name = Library features view our events
+description = library_features_view_our_events
+core = 7.x
+package = Library
+version = 7.x-1.0
+project = library_features_view_our_events
+dependencies[] = views
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:1
+features[views_view][] = our_events
+features_exclude[dependencies][ctools] = ctools

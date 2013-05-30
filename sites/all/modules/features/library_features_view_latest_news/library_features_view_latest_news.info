@@ -1,0 +1,12 @@
+name = Library features view latest news
+description = library_features_view_latest_news
+core = 7.x
+package = Library
+php = 5.2.4
+version = 7.x-1.0
+project = library_features_view_latest_news
+dependencies[] = views
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:1
+features[views_view][] = latest_news
+features_exclude[dependencies][ctools] = ctools
