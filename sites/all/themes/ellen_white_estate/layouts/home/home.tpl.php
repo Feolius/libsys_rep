@@ -47,13 +47,5 @@
         <!-- EOF: #right -->
       <?php endif; ?>
       </div>
-
-      <?php if ($content['bottom']): ?>
-        <!-- Bottom. -->
-          <div id="home-right">
-            <?php print $content['bottom']; ?>
-          </div>
-        <!-- EOF: #bottom -->
-      <?php endif; ?>
   </div>
 </div>

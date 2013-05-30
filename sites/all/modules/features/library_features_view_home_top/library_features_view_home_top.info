@@ -1,8 +1,9 @@
-name = Library features view Home top
+name = Library features view home top
 description = library_features_view_home_top
 core = 7.x
 package = Library
-version = 7.x-1.0
+php = 5.2.4
+version = 7.x-1.1
 project = library_features_view_home_top
 dependencies[] = views
 dependencies[] = views_content
