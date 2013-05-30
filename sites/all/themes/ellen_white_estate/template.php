@@ -43,6 +43,7 @@ function ellen_white_estate_preprocess_html(&$variables) {
 function ellen_white_estate_preprocess_node__people_full(&$vars) {
   $node = $vars['node'];
   $vars['full_name_people'] = '';
+  kpr($vars);
   if (!empty($node->title)) {
     $vars['full_name_people'] .= "{$node->title} ";
   }

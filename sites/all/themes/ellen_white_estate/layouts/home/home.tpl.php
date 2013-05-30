@@ -17,41 +17,42 @@
 
       <?php if (!empty($content['top'])): ?>
         <!-- Top. -->
-          <div id="welcome-block">
+          <div id="home-top">
             <?php print $content['top']; ?>
           </div>
         <!-- EOF: #top -->
       <?php endif; ?>
 
-      <div id="home-top">
-        <?php if (!empty($content['left'])): ?>
-          <!-- Left. -->
-            <div id="home-left">
-              <?php print $content['left']; ?>
-            </div>
-          <!-- EOF: #left -->
-         <?php endif; ?>
+      <?php if (!empty($content['left'])): ?>
+        <!-- Left. -->
+          <div id="home-left">
+            <?php print $content['left']; ?>
+          </div>
+        <!-- EOF: #left -->
+      <?php endif; ?>
 
-        <?php if (!empty($content['middle'])): ?>
-          <!-- Middle. -->
+      <?php if (!empty($content['middle'])): ?>
+        <!-- Middle. -->
           <div id="home-middle">
             <?php print $content['middle']; ?>
           </div>
-          <!-- EOF: #middle -->
-        <?php endif; ?>
+        <!-- EOF: #middle -->
+      <?php endif; ?>
 
-        <?php if (!empty($content['right'])): ?>
-          <!-- Right. -->
+      <?php if (!empty($content['right'])): ?>
+        <!-- Right. -->
           <div id="home-right">
             <?php print $content['right']; ?>
           </div>
-          <!-- EOF: #right -->
-        <?php endif; ?>
+        <!-- EOF: #right -->
+      <?php endif; ?>
       </div>
 
       <?php if ($content['bottom']): ?>
         <!-- Bottom. -->
-          <?php print $content['bottom']; ?>
+          <div id="home-right">
+            <?php print $content['bottom']; ?>
+          </div>
         <!-- EOF: #bottom -->
       <?php endif; ?>
   </div>
