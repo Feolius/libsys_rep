@@ -421,7 +421,9 @@ function fivestar_ajax_submit($form, $form_state) {
   $new_element = fivestar_expand($form['vote']);
   // Update the description. Since it doesn't account of our cast vote above.
   // TODO: Look into all this, I honestly don't like it and it's a bit weird.
-  $form['vote']['vote']['#description'] = $new_element['vote']['#description'];
+  if (isset($new_element['vote']['#description'])) {
+    $form['vote']['vote']['#description'] = $new_element['vote']['#description'];
+  }
 
   return array(
     '#type' => 'ajax',
