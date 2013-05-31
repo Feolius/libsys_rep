@@ -47,6 +47,14 @@
       <!-- EOF: #right -->
     <?php endif; ?>
     <div class="panel-separator"></div>
-    </div>
+
+    <?php if (!empty($content['bottom'])): ?>
+      <!-- Bottom. -->
+        <div id="home-bottom">
+          <?php print $content['bottom']; ?>
+        </div>
+      <!-- EOF: #bottom -->
+    <?php endif; ?>
+
   </div>
 </div>

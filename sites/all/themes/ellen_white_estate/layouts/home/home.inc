@@ -14,5 +14,6 @@ $plugin = array(
     'left' => t('Left'),
     'middle' => t('Middle'),
     'right' => t('Right'),
+    'bottom' => t('Bottom'),
   ),
 );
