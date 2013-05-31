@@ -79,25 +79,21 @@
 
   Drupal.behaviors.libraryMenuFaqDropDown = {
     attach: function(context, settings) {
-      $('#faq-menu').once(function() {
-        var menu = $(this);
-        var options = $('li ul.menu', menu);
-        options.hide();
-        menu.on('click', 'li', function(e) {
-          var item = $(this);
-          console.log(item);
-          console.log('===');
-          var option = $('> ul.menu', item);
-          if (options.length) {
+      $('#faq-menu li').once(function() {
+        var item = $(this);
+        var option = item.children('ul.menu');
+        option.hide();
+        item.on('click', function( e ) {
+          e.stopPropagation();
+          if (option.length !== 0) {
             e.preventDefault();
-            e.p
-          }
-          if (!item.hasClass('selected')) {
-            option.slideDown('fade');
-            item.addClass('selected');
-          } else {
-            option.slideUp('fade');
-            item.removeClass('selected');
+            if (!item.hasClass('selected')) {
+              option.slideDown('fade');
+              item.addClass('selected');
+            } else {
+              option.slideUp('fade');
+              item.removeClass('selected');
+            }
           }
         });
       })
