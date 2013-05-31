@@ -85,9 +85,12 @@
         options.hide();
         menu.on('click', 'li', function(e) {
           var item = $(this);
+          console.log(item);
+          console.log('===');
           var option = $('> ul.menu', item);
           if (options.length) {
             e.preventDefault();
+            e.p
           }
           if (!item.hasClass('selected')) {
             option.slideDown('fade');
