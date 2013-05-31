@@ -13,7 +13,7 @@ function ellen_white_estate_old_preprocess_node(&$vars) {
  * Implements hook_js_alter() to override jquery.
  */
 function ellen_white_estate_old_js_alter(&$javascript) {
-  if(arg(0) != 'library'){
+  if (arg(0) != 'library') {
     $jquery_path = drupal_get_path('theme', 'ellen_white_estate_old') . '/js/jquery-1.8.3.min.js';
     if (module_exists('jquery_update')) {
       foreach ($javascript as $key => $js_info) {
