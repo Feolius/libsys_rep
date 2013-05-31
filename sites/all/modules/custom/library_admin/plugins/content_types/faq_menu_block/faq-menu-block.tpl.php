@@ -7,5 +7,7 @@
 ?>
 <?php if (!empty($items['menu'])): ?>
   <h3><?php print $items['title']; ?></h3>
-  <?php print drupal_render($items['menu']); ?>
+  <div id="faq-menu">
+    <?php print drupal_render($items['menu']); ?>
+  </div>
 <?php endif;?>

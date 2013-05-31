@@ -25,7 +25,7 @@ function library_date_field_field_info() {
       'default_widget' => 'library_date_field_text',
       'default_formatter' => 'library_date_field_default',
       'settings' => $settings,
-      '$instance_settings' => $instance_settings,
+      'instance_settings' => $instance_settings,
     ),
   );
 }
