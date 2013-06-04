@@ -22,14 +22,6 @@ function library_admin_menu() {
     'file' => 'library_admin.settings.inc',
     'type' => MENU_NORMAL_ITEM
   );
-  return $items;
-}
-
-/**
- * Implements hook_menu_alter().
- */
-function library_admin_menu_alter(&$items) {
-//kpr($items);die;
 }
 
 /**
