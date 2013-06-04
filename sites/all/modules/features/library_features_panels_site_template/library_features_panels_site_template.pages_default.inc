@@ -17,7 +17,7 @@ function library_features_panels_site_template_default_page_manager_handlers() {
   $handler->task = 'site_template';
   $handler->subtask = '';
   $handler->handler = 'panel_context';
-  $handler->weight = -29;
+  $handler->weight = -28;
   $handler->conf = array(
     'title' => 'Default',
     'no_blocks' => 0,

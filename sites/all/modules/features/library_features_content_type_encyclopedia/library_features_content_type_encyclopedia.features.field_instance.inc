@@ -36,7 +36,19 @@ function library_features_content_type_encyclopedia_field_default_field_instance
         'type' => 'text_default',
         'weight' => 0,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -98,7 +110,19 @@ function library_features_content_type_encyclopedia_field_default_field_instance
         'type' => 'entityreference_label',
         'weight' => 1,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
