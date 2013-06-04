@@ -54,22 +54,37 @@ function facetapi_library_term_widget_filter_form($form, &$form_state, $args) {
   if ($seen_id == 1) {
     $select_id = 'facetapi-select-term-' . $facet_name;
     $container_id = 'facetapi-term-item-container-' . $facet_name;
-  }else{
+    $marker_class = 'facetapi-term-marker-' . $facet_name;
+  }
+  else {
     $select_id = 'facetapi-select-term-' . $facet_name . '-' . $seen_id;
     $container_id = 'facetapi-term-item-container-' . $facet_name . '-' . $seen_id;
+    $marker_class = 'facetapi-term-marker-' . $facet_name . '-' . $seen_id;
   }
   $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
   $default_value = array();
   $default_items = array();
   if (isset($get_params['f'])) {
     $f = $get_params['f'];
+    $rewrite_session = TRUE;
     foreach ($f as $key => $row) {
       $arr = explode(':', $row);
-      if($arr[0] == $field_alias){
+      if ($arr[0] == $field_alias) {
         $default_value[] = $arr[1];
-        $default_items[$arr[1]] = $options[$arr[1]];
-        unset($options[$arr[1]]);
+        //Trying to get correct labels from facet options
+        if(!empty($options[$arr[1]])){
+          $default_items[$arr[1]] = $options[$arr[1]];
+          unset($options[$arr[1]]);
+        }else{
+          //If facet get no variants then get it from session
+          $default_items[$arr[1]] = $_SESSION[$field_alias][$form_id][$arr[1]];
+          //If we take something from session, it means that current options is not for full for some reasons. So, we shouldn't rewrite it for now
+          $rewrite_session = FALSE;
+        }
       }
+    }
+    if($rewrite_session){
+      $_SESSION[$field_alias][$form_id] = $options;
     }
   }
   $default_value = drupal_json_encode($default_value);
@@ -78,7 +93,8 @@ function facetapi_library_term_widget_filter_form($form, &$form_state, $args) {
       $form_id => array(
         'selectId' => $select_id,
         'itemContainerId' => $container_id,
-        'defaultItems' => $default_items
+        'defaultItems' => $default_items,
+        'markerClass' => $marker_class
       ),
     ),
   );
@@ -96,6 +112,7 @@ function facetapi_library_term_widget_filter_form($form, &$form_state, $args) {
     'select' => array(
       '#type' => 'select',
       '#options' => $options,
+      '#validated' => TRUE,
       '#attributes' => array(
         'id' => $select_id,
       )
@@ -108,11 +125,11 @@ function facetapi_library_term_widget_filter_form($form, &$form_state, $args) {
       )
     ),
     'filter_button' => array(
-    '#type' => 'submit',
-    '#value' => t('Filter'),
-    '#weight' => 14,
-    '#submit' => array('facetapi_library_term_widget_filter_submit'),
-  ),
+      '#type' => 'submit',
+      '#value' => t('Filter'),
+      '#weight' => 14,
+      '#submit' => array('facetapi_library_term_widget_filter_submit'),
+    ),
 
   );
   return $form;
@@ -130,17 +147,17 @@ function facetapi_library_term_widget_filter_submit($form, &$form_state) {
     $f = $get_params['f'];
     foreach ($f as $key => $row) {
       $arr = explode(':', $row);
-      if($arr[0] == $field_alias){
+      if ($arr[0] == $field_alias) {
         unset($f[$key]);
       }
     }
   }
   $items = $form_state['input']['items'];
   $items = drupal_json_decode($items);
-  foreach($items as $item){
+  foreach ($items as $item) {
     $f[] = $field_alias . ':' . $item;
   }
-  if(!empty($f)){
+  if (!empty($f)) {
     $get_params['f'] = $f;
   }
   $options = array(
