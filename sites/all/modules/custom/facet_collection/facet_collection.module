@@ -172,16 +172,21 @@ function facet_collection_search_form_remove_filter($form, &$form_state) {
 }
 
 /**
- * Implements hook_menu()
+ * Implements hook_menu_alter()
  */
-function facet_collection_menu() {
-  $items['library'] = array(
+function facet_collection_menu_alter(&$items) {
+  /*$items['library'] = array(
     'title' => t('Library'),
-    'type' => MENU_LOCAL_TASK,
     'page callback' => 'facet_collection_page',
     'page arguments' => array(),
     'access arguments' => array('search content'),
-  );
+  );*/
+}
+
+/**
+ * Implements hook_menu()
+ */
+function facet_collection_menu() {
   //This paths are used for displaing collection teasers
   $items['collection-teaser/node'] = array(
     'type' => MENU_CALLBACK,
