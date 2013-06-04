@@ -295,3 +295,7 @@ a.download {
 #home-right {
   margin: 0 0 0 18px;
 }
+
+#header-inside-left {
+  width: auto;
+}
