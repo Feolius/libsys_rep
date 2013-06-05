@@ -567,13 +567,20 @@ function ellen_white_estate_js_alter(&$javascript) {
 }
 
 /**
- * Preprocesses variables for html.tpl.php.
+ * Help preprocesses variables for html.tpl.php.
  */
-function ellen_white_estate_preprocess_node__home(&$vars) {
-  $vars['content']['allow'] = array(
+function _ellen_white_estate_preprocess_node__home(&$vars) {
+  return array(
     '#prefix' => '<span class="arrow-link">',
     '#markup' => l("&nbsp;", "node/{$vars['node']->nid}", array('html' => TRUE)),
     '#suffix' => '</span>',
     '#weight' => 3
   );
+}
+
+/**
+ * Preprocesses variables for html.tpl.php.
+ */
+function ellen_white_estate_preprocess_node__home_left(&$vars) {
+  $vars['content']['allow'] = _ellen_white_estate_preprocess_node__home($vars);
 }

@@ -24,7 +24,7 @@ function library_admin_home_top_block_ctools_content_types() {
 function library_admin_home_top_block_content_type_render($subtype, $conf, $panel_args, $context) {
   $output = array();
 
-  if (!empty($conf['tags'])) {
+  if (!empty($conf['home_region'])) {
   $node = library_admin_home_get_node($conf);
     if (!empty($node)) {
       $output = $node;
@@ -41,11 +41,11 @@ function library_admin_home_top_block_content_type_render($subtype, $conf, $pane
  */
 function library_admin_home_top_block_content_type_edit_form($form, &$form_state) {
   $conf = $form_state['conf'];
-  $options = library_admin_get_terms_tags();
-  $form['tags'] = array(
+  $options = library_admin_get_terms_home_region();
+  $form['home_region'] = array(
     '#title' => t('Select menu'),
     '#type' => 'select',
-    '#default_value' => (!empty($conf['tags'])) ? $conf['tags'] : '',
+    '#default_value' => (!empty($conf['home_region'])) ? $conf['home_region'] : '',
     '#options' => $options,
     '#multiple' => FALSE,
   );
@@ -57,7 +57,7 @@ function library_admin_home_top_block_content_type_edit_form($form, &$form_state
  * Submit handler for settigs form.
  */
 function library_admin_home_top_block_content_type_edit_form_submit($form, &$form_state) {
-  foreach (array('override_title', 'override_title_text', 'tags') as $key) {
+  foreach (array('override_title', 'override_title_text', 'home_region') as $key) {
     $form_state['conf'][$key] = $form_state['values'][$key];
   }
 }
@@ -67,7 +67,7 @@ function library_admin_home_top_block_content_type_edit_form_submit($form, &$for
  */
 function library_admin_home_top_block_content_type_admin_info($subtype, $conf) {
   $block = new stdClass();
-  $terms = library_admin_get_terms_tags();
-  $block->title = (!empty($conf['tags'])) ? $terms[$conf['tags']] : '';
+  $terms = library_admin_get_terms_home_region();
+  $block->title = (!empty($conf['home_region'])) ? $terms[$conf['home_region']] : '';
   return $block;
 }

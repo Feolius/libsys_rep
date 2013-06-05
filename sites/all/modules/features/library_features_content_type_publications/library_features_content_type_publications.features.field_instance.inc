@@ -42,6 +42,24 @@ function library_features_content_type_publications_field_default_field_instance
         'type' => 'hidden',
         'weight' => 1,
       ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -54,6 +72,10 @@ function library_features_content_type_publications_field_default_field_instance
     'label' => 'Date',
     'required' => 0,
     'settings' => array(
+      'default_value' => '',
+      'default_value2' => '',
+      'rounding' => '',
+      'rounding2' => '',
       'user_register_form' => FALSE,
     ),
     'widget' => array(
@@ -103,6 +125,24 @@ function library_features_content_type_publications_field_default_field_instance
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 3,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -168,6 +208,24 @@ function library_features_content_type_publications_field_default_field_instance
           'image_style' => 'home-image-full',
         ),
         'type' => 'image',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
         'weight' => 0,
       ),
       'teaser' => array(
@@ -237,6 +295,24 @@ function library_features_content_type_publications_field_default_field_instance
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 2,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'teaser' => array(
         'label' => 'above',

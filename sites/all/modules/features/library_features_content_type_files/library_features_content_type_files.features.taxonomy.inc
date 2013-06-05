@@ -17,6 +17,14 @@ function library_features_content_type_files_taxonomy_default_vocabularies() {
       'module' => 'taxonomy',
       'weight' => 0,
     ),
+    'home_region' => array(
+      'name' => 'Home region',
+      'machine_name' => 'home_region',
+      'description' => '',
+      'hierarchy' => 0,
+      'module' => 'taxonomy',
+      'weight' => 0,
+    ),
     'source' => array(
       'name' => 'Provenance',
       'machine_name' => 'source',

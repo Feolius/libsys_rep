@@ -22,6 +22,7 @@
         </div>
       <!-- EOF: #top -->
     <?php endif; ?>
+    <div class="panel-separator"></div>
 
     <?php if (!empty($content['left'])): ?>
       <!-- Left. -->
