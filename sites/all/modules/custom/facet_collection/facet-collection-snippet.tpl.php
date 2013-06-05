@@ -15,8 +15,7 @@
     </div>
   <?php endif; ?>
 </div>
-<input type="hidden" class="collection-nid-contatiner" value="<?php print $nid ?>">
-<input type="button" class="show-collection-teaser-button" value="<?php print $show_preview_label ?>">
+
 
 
 

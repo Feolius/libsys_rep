@@ -97,8 +97,8 @@ function library_features_view_home_top_views_default_views() {
     'topics' => 'topics',
   );
 
-  /* Display: Block */
-  $handler = $view->new_display('panel_pane', 'Block', 'home_page');
+  /* Display: Home left */
+  $handler = $view->new_display('panel_pane', 'Home left', 'home_left');
   $handler->display->display_options['defaults']['style_plugin'] = FALSE;
   $handler->display->display_options['style_plugin'] = 'list';
   $handler->display->display_options['style_options']['row_class'] = 'item';
@@ -106,18 +106,82 @@ function library_features_view_home_top_views_default_views() {
   $handler->display->display_options['defaults']['style_options'] = FALSE;
   $handler->display->display_options['defaults']['row_plugin'] = FALSE;
   $handler->display->display_options['row_plugin'] = 'node';
-  $handler->display->display_options['row_options']['view_mode'] = 'home';
+  $handler->display->display_options['row_options']['view_mode'] = 'home_left';
   $handler->display->display_options['defaults']['row_options'] = FALSE;
   $handler->display->display_options['defaults']['arguments'] = FALSE;
-  /* Contextual filter: Content: Tags (field_tags) */
-  $handler->display->display_options['arguments']['field_tags_tid']['id'] = 'field_tags_tid';
-  $handler->display->display_options['arguments']['field_tags_tid']['table'] = 'field_data_field_tags';
-  $handler->display->display_options['arguments']['field_tags_tid']['field'] = 'field_tags_tid';
-  $handler->display->display_options['arguments']['field_tags_tid']['default_action'] = 'not found';
-  $handler->display->display_options['arguments']['field_tags_tid']['default_argument_type'] = 'fixed';
-  $handler->display->display_options['arguments']['field_tags_tid']['summary']['number_of_records'] = '0';
-  $handler->display->display_options['arguments']['field_tags_tid']['summary']['format'] = 'default_summary';
-  $handler->display->display_options['arguments']['field_tags_tid']['summary_options']['items_per_page'] = '25';
+  /* Contextual filter: Content: Home region (field_home_region) */
+  $handler->display->display_options['arguments']['field_home_region_tid']['id'] = 'field_home_region_tid';
+  $handler->display->display_options['arguments']['field_home_region_tid']['table'] = 'field_data_field_home_region';
+  $handler->display->display_options['arguments']['field_home_region_tid']['field'] = 'field_home_region_tid';
+  $handler->display->display_options['arguments']['field_home_region_tid']['default_action'] = 'not found';
+  $handler->display->display_options['arguments']['field_home_region_tid']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_home_region_tid']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_home_region_tid']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_home_region_tid']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['argument_input'] = array(
+    'field_tags_tid' => array(
+      'type' => 'panel',
+      'context' => 'entity:file.basename',
+      'context_optional' => 0,
+      'panel' => '0',
+      'fixed' => '',
+      'label' => 'Content: Tags (field_tags)',
+    ),
+  );
+
+  /* Display: Home middle */
+  $handler = $view->new_display('panel_pane', 'Home middle', 'home_middle');
+  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
+  $handler->display->display_options['style_plugin'] = 'list';
+  $handler->display->display_options['style_options']['row_class'] = 'item';
+  $handler->display->display_options['style_options']['wrapper_class'] = 'home_top_view';
+  $handler->display->display_options['defaults']['style_options'] = FALSE;
+  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
+  $handler->display->display_options['row_plugin'] = 'node';
+  $handler->display->display_options['row_options']['view_mode'] = 'home_middle';
+  $handler->display->display_options['defaults']['row_options'] = FALSE;
+  $handler->display->display_options['defaults']['arguments'] = FALSE;
+  /* Contextual filter: Content: Home region (field_home_region) */
+  $handler->display->display_options['arguments']['field_home_region_tid']['id'] = 'field_home_region_tid';
+  $handler->display->display_options['arguments']['field_home_region_tid']['table'] = 'field_data_field_home_region';
+  $handler->display->display_options['arguments']['field_home_region_tid']['field'] = 'field_home_region_tid';
+  $handler->display->display_options['arguments']['field_home_region_tid']['default_action'] = 'not found';
+  $handler->display->display_options['arguments']['field_home_region_tid']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_home_region_tid']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_home_region_tid']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_home_region_tid']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['argument_input'] = array(
+    'field_tags_tid' => array(
+      'type' => 'panel',
+      'context' => 'entity:file.basename',
+      'context_optional' => 0,
+      'panel' => '0',
+      'fixed' => '',
+      'label' => 'Content: Tags (field_tags)',
+    ),
+  );
+
+  /* Display: Home right */
+  $handler = $view->new_display('panel_pane', 'Home right', 'home_right');
+  $handler->display->display_options['defaults']['style_plugin'] = FALSE;
+  $handler->display->display_options['style_plugin'] = 'list';
+  $handler->display->display_options['style_options']['row_class'] = 'item';
+  $handler->display->display_options['style_options']['wrapper_class'] = 'home_top_view';
+  $handler->display->display_options['defaults']['style_options'] = FALSE;
+  $handler->display->display_options['defaults']['row_plugin'] = FALSE;
+  $handler->display->display_options['row_plugin'] = 'node';
+  $handler->display->display_options['row_options']['view_mode'] = 'home_right';
+  $handler->display->display_options['defaults']['row_options'] = FALSE;
+  $handler->display->display_options['defaults']['arguments'] = FALSE;
+  /* Contextual filter: Content: Home region (field_home_region) */
+  $handler->display->display_options['arguments']['field_home_region_tid']['id'] = 'field_home_region_tid';
+  $handler->display->display_options['arguments']['field_home_region_tid']['table'] = 'field_data_field_home_region';
+  $handler->display->display_options['arguments']['field_home_region_tid']['field'] = 'field_home_region_tid';
+  $handler->display->display_options['arguments']['field_home_region_tid']['default_action'] = 'not found';
+  $handler->display->display_options['arguments']['field_home_region_tid']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_home_region_tid']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_home_region_tid']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_home_region_tid']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['argument_input'] = array(
     'field_tags_tid' => array(
       'type' => 'panel',
@@ -137,9 +201,11 @@ function library_features_view_home_top_views_default_views() {
     t('Asc'),
     t('Desc'),
     t('&nbsp;'),
-    t('Block'),
+    t('Home left'),
     t('All'),
     t('View panes'),
+    t('Home middle'),
+    t('Home right'),
   );
   $export['home_top'] = $view;
 

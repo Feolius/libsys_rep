@@ -10,6 +10,76 @@
 function library_features_content_type_location_field_default_field_instances() {
   $field_instances = array();
 
+  // Exported field_instance: 'node-location-field_home_region'
+  $field_instances['node-location-field_home_region'] = array(
+    'bundle' => 'location',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'taxonomy',
+        'settings' => array(),
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 16,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_home_region',
+    'label' => 'Home region',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'taxonomy',
+      'settings' => array(
+        'autocomplete_path' => 'taxonomy/autocomplete',
+        'size' => 60,
+      ),
+      'type' => 'taxonomy_autocomplete',
+      'weight' => 48,
+    ),
+  );
+
   // Exported field_instance: 'node-location-field_location_address'
   $field_instances['node-location-field_location_address'] = array(
     'bundle' => 'location',
@@ -35,7 +105,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -104,7 +186,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 5,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -164,7 +258,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'text_summary_or_trimmed',
         'weight' => 1,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -233,7 +339,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'geofield_openlayers',
         'weight' => 2,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -320,7 +438,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 14,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -338,6 +468,10 @@ function library_features_content_type_location_field_default_field_instances() 
     'label' => 'Home date',
     'required' => 0,
     'settings' => array(
+      'default_value' => '',
+      'default_value2' => '',
+      'rounding' => '',
+      'rounding2' => '',
       'user_register_form' => FALSE,
     ),
     'widget' => array(
@@ -381,7 +515,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 10,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -439,7 +585,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 6,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -496,7 +654,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 13,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -554,7 +724,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 4,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -618,7 +800,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 8,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -676,7 +870,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 12,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -734,7 +940,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 11,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -792,7 +1010,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 7,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -849,7 +1079,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 15,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -867,6 +1109,10 @@ function library_features_content_type_location_field_default_field_instances() 
     'label' => 'Visit date',
     'required' => 0,
     'settings' => array(
+      'default_value' => '',
+      'default_value2' => '',
+      'rounding' => '',
+      'rounding2' => '',
       'user_register_form' => FALSE,
     ),
     'widget' => array(
@@ -910,7 +1156,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 9,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -968,7 +1226,19 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 3,
       ),
-      'home' => array(
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -1015,6 +1285,7 @@ function library_features_content_type_location_field_default_field_instances() 
   t('Geofield');
   t('Home date');
   t('Home event');
+  t('Home region');
   t('Link');
   t('Placed event');
   t('Received Files');
