@@ -40,14 +40,21 @@ function facet_collection_page() {
   $environment = apachesolr_default_environment();
   $solr = apachesolr_get_solr($environment);
   $params = facet_collection_get_default_params();
-  $base_path = arg(0);
-  $results = apachesolr_search_run('apachesolr', $params, '', $base_path, pager_find_page(), $solr);
+  $query = apachesolr_drupal_query('apachesolr', $params, '', arg(0), $solr);
+//  if ($query->getParam('q')) {
+//    apachesolr_search_add_spellcheck_params($query);
+//  }
+  $page = pager_find_page();
+  $query->page = $page;
+  list($final_query, $response) = apachesolr_do_query($query, $page);
+  $results = apachesolr_search_process_response($response, $final_query) ;
+  //$results = apachesolr_search_run('apachesolr', $params, '', arg(0), pager_find_page(), $solr);
   $build = theme('facet_collection_search_results__alter', array('results' => $results));
   return $build;
 }
 
 /**
- * Get all params to make solr query
+ * Get needed params to make solr query
  */
 function facet_collection_get_default_params() {
 //The logic is next: if we have 's' parameter in the page query it means that we have complicated search based on usual search,
@@ -75,17 +82,23 @@ function facet_collection_get_default_params() {
     $params['defType'] = 'lucene';
     $q = '';
     if (arg(1)) {
+      //$base_qf = _facet_collection_build_qf_parameters_raw($boosts);
+      //$q[0] = '_query_:"{!dismax ' . $base_qf . '}' . arg(1) . '"';
       $base_qf = _facet_collection_build_qf_parameter($boosts);
-      $q = $q . '_query_:"{!dismax qf=' . $base_qf . '}' . arg(1) . '"';
+      $q[0] = '_query_:"{!dismax ' . 'qf=\'' . $base_qf . '\'}' . arg(1) . '"';
     }
     $searchable_fields_info = facet_collection_get_search_filters_info();
     foreach($_GET['s'] as $search_filter){
       $search_filter_parts = explode(':', $search_filter);
-
+      $field_name = $search_filter_parts[0];
+      $index_field_name = $searchable_fields_info[$field_name]['index_field_name'];
+      $q[1] = '_query_:"{!dismax qf=' . $index_field_name . '^' . $boosts[$field_name] . '}' . $search_filter_parts[1] . '"';
     }
+    $params['q'] = implode(' AND ', $q);
   }
-
-  dpm($params);
+  $params['fq'] = 'entity_type:node';
+  $params['hl'] = 'true';
+  $params += apachesolr_search_basic_params();
   return $params;
 }
 
@@ -98,13 +111,35 @@ function _facet_collection_build_qf_parameter($boosts){
   $field_type_list = variable_get('facet_collection:field_type_search_list');
   $searchable_fields = facet_collection_get_searchable_fields(array_keys($field_type_list));
   $needed_fields = $searchable_fields[$chosen_content_type];
+  $qf = $qf . 'label^' . $boosts[$chosen_content_type . '_title'] . ' ';
   foreach($needed_fields as $field_name){
-    $qf = $qf . 'label^' . $boosts[$chosen_content_type . '_title'] . ' ';
+    $field_info = field_info_field($field_name);
+    $module = $field_type_list[$field_info['type']];
+    $index_field_name = module_invoke($module, 'facet_collection_index_field_name', $field_name);
     if(isset($boosts[$field_name])){
-      $field_info = field_info_field($field_name);
-      $module = $field_type_list[$field_info['type']];
-      $index_field_name = module_invoke($module, 'facet_collection_index_field_name', $field_name);
       $qf = $qf . $index_field_name . '^' . $boosts[$field_name] . ' ';
+    }
+  }
+  return trim($qf);
+}
+
+/**
+ * Build raw of qf parameters. Apachesolr module doesn't allow to use ' symbol. So, we can't pass such string qf='some fields here' to our query.
+ * That's why we will pass a lot of qf parameters. Only take into account base search fields.
+ */
+function _facet_collection_build_qf_parameters_raw($boosts){
+  $qf = '';
+  $chosen_content_type = facet_collection_get_filtered_content_type();
+  $field_type_list = variable_get('facet_collection:field_type_search_list');
+  $searchable_fields = facet_collection_get_searchable_fields(array_keys($field_type_list));
+  $needed_fields = $searchable_fields[$chosen_content_type];
+  $qf = 'qf=' . 'label^' . $boosts[$chosen_content_type . '_title'];
+  foreach($needed_fields as $field_name){
+    $field_info = field_info_field($field_name);
+    $module = $field_type_list[$field_info['type']];
+    $index_field_name = module_invoke($module, 'facet_collection_index_field_name', $field_name);
+    if(isset($boosts[$field_name])){
+      $qf = $qf . ' qf=' . $index_field_name . '^' . $boosts[$field_name];
     }
   }
   return $qf;
@@ -526,6 +561,7 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
  * Implements hook_apachesolr_query_alter()
  */
 function facet_collection_apachesolr_query_alter($query) {
+  dpm($query->getParams());
   if (arg(0) == 'library') {
     //First we should determine wether we need highlight or not
     //If there is query from search block we enable highlight

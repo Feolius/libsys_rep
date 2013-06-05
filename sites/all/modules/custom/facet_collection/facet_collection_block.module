@@ -20,7 +20,7 @@ function facet_collection_block_field_search_form($form, &$form_state, $args) {
   $form = array(
     'title' => array(
       '#type' => 'item',
-      '#markup' => '<h3>' . 'Search by ' . $label . '</h3>',
+      '#markup' => '<h3>' . t('Search by ' . $label) . '</h3>',
       '#weight' => -20,
     ),
     'textfield' => array(
@@ -244,24 +244,32 @@ function facet_collection_block_form_submit($form, &$form_state) {
  * Filter parameter can be 'f' or 's'. First case corresponds to facets, second case corresponds to search filters
  */
 function facet_collection_block_fix_get_params($query_part, $facet_field_alias, $filter_parameter) {
-  $new_filters = _facet_collection_block_filters_to_array($query_part[$filter_parameter]);
-  if(isset($_GET[$filter_parameter])){
-    $filters = _facet_collection_block_filters_to_array($_GET[$filter_parameter]);
-  }
-  foreach ($new_filters as $field_alias => $values) {
-    $filters[$field_alias] = $new_filters[$field_alias];
-  }
-  if (!isset($new_filters[$facet_field_alias])) {
-    unset($filters[$facet_field_alias]);
-  }
-  _facet_collection_block_array_to_filters($filters, $filter_parameter);
-  unset($query_part['f']);
-  unset($query_part['s']);
-  if (!empty($query_part)) {
-    foreach ($query_part as $key => $value) {
-      $_GET[$key] = $value;
+  if(isset($query_part[$filter_parameter])){
+    $new_filters = _facet_collection_block_filters_to_array($query_part[$filter_parameter]);
+    if(isset($_GET[$filter_parameter])){
+      $filters = _facet_collection_block_filters_to_array($_GET[$filter_parameter]);
+    }
+    foreach ($new_filters as $field_alias => $values) {
+      $filters[$field_alias] = $new_filters[$field_alias];
+    }
+    if (!isset($new_filters[$facet_field_alias])) {
+      unset($filters[$facet_field_alias]);
+    }
+    _facet_collection_block_array_to_filters($filters, $filter_parameter);
+    unset($query_part['f']);
+    unset($query_part['s']);
+    if (!empty($query_part)) {
+      foreach ($query_part as $key => $value) {
+        $_GET[$key] = $value;
+      }
+    }
+  }else{
+    if(isset($_GET[$filter_parameter])){
+      $filters = _facet_collection_block_filters_to_array($_GET[$filter_parameter]);
+      unset($filters[$facet_field_alias]);
     }
   }
+
 }
 
 /**
