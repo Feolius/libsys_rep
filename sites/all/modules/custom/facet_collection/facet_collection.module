@@ -41,13 +41,15 @@ function facet_collection_page() {
   $solr = apachesolr_get_solr($environment);
   $params = facet_collection_get_default_params();
   $query = apachesolr_drupal_query('apachesolr', $params, '', arg(0), $solr);
-//  if ($query->getParam('q')) {
-//    apachesolr_search_add_spellcheck_params($query);
-//  }
+  if ($query->getParam('q')) {
+    apachesolr_search_add_spellcheck_params($query);
+  }
   $page = pager_find_page();
   $query->page = $page;
   list($final_query, $response) = apachesolr_do_query($query, $page);
+  dpm($response);
   $results = apachesolr_search_process_response($response, $final_query) ;
+  dpm($results);
   //$results = apachesolr_search_run('apachesolr', $params, '', arg(0), pager_find_page(), $solr);
   $build = theme('facet_collection_search_results__alter', array('results' => $results));
   return $build;
@@ -64,9 +66,8 @@ function facet_collection_get_default_params() {
 //q=_query_:"{!dismax qf=... }term1" AND _query_:"{!dismax qf=... }term2". If we have only usual search it will be solr query
 //based on dismax query parser q=term&qf='list of all searchable fields with their boosts'&defType=dismax
   $params = array();
-
   $boosts = facet_collection_get_field_boosts();
-
+  $params += apachesolr_search_basic_params();
   if (!isset($_GET['s'])) {
     $params['defType'] = 'dismax';
     if (arg(1)) {
@@ -78,6 +79,7 @@ function facet_collection_get_default_params() {
       $qf = trim($qf);
       $params['qf'] = $qf;
     }
+    //Highlighting should be only in that fields which included in qf parameter
   }else{
     $params['defType'] = 'lucene';
     $q = '';
@@ -96,9 +98,10 @@ function facet_collection_get_default_params() {
     }
     $params['q'] = implode(' AND ', $q);
   }
+  unset($params['hl.fl']);
+  $params['hl.fl'] = 'label';
+  $params['hl.fl'] = 'tm_collection_book_field';
   $params['fq'] = 'entity_type:node';
-  $params['hl'] = 'true';
-  $params += apachesolr_search_basic_params();
   return $params;
 }
 
@@ -516,7 +519,9 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
   }
   else {
     if (isset($snippets['content'])) {
-      $text .= $snippets['content'];
+      foreach($snippets['content'] as $snippet){
+        $text .= $snippet;
+      }
       unset($snippets['content']);
     }
     //@TODO something wrong with this code block. Need rewiew
@@ -561,7 +566,6 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
  * Implements hook_apachesolr_query_alter()
  */
 function facet_collection_apachesolr_query_alter($query) {
-  dpm($query->getParams());
   if (arg(0) == 'library') {
     //First we should determine wether we need highlight or not
     //If there is query from search block we enable highlight

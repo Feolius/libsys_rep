@@ -19,13 +19,19 @@ function facet_collection_text_field_facet_collection_index_field($filedocument,
   $text = '';
   if (!empty($items)) {
     foreach ($items as $item) {
-      $text = $text . apachesolr_clean_text($item['value']);
-      $variables['text'] = $text;
+      $text = $text . apachesolr_clean_text($item['value']) . ' ';
+    }
+    $text = trim($text);
+    $content = $filedocument->getField('content');
+    $content_value = $content['value'];
+    $content_boost = $content['boost'];
+    $content_value = $content_value . $text;
+    $filedocument->content = $content_value;
+    if($content_boost != FALSE){
+      $filedocument->setFieldBoost('content', $content_boost);
     }
   }
   $filedocument->addField($index_field_name, $text);
-
-
   return $filedocument;
 }
 
