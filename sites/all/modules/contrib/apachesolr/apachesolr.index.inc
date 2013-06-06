@@ -195,9 +195,9 @@ function apachesolr_index_entity_to_documents($item, $env_id) {
   // Always build the content for the index as an anonynmous user to avoid
   // exposing restricted fields and such.
   // @todo Uncomment these lines when we're done debugging, since they break dpm().
-//  global $user;
-//  drupal_save_session(FALSE);
-//  $saved_user = $user;
+  global $user;
+  drupal_save_session(FALSE);
+  $saved_user = $user;
   // Should indexing take place using anon ( default )
   // or as another user
   $uid = variable_get('apachesolr_index_user', 0);
