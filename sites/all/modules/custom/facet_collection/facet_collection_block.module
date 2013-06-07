@@ -1,0 +1,374 @@
+<?php
+
+/**
+ * Form callback for search forms for searchable fields
+ */
+function facet_collection_block_field_search_form($form, &$form_state, $args) {
+  $label = $args['label'];
+  $field_name = $args['field_name'];
+  $default_value = '';
+  $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
+  if(isset($get_params['s'])){
+    foreach($get_params['s'] as $search_filter){
+      $search_filter_parts = explode(':', $search_filter);
+      if ($search_filter_parts[0] == $field_name) {
+        $default_value = $search_filter_parts[1];
+        break;
+      }
+    }
+  }
+  $form = array(
+    'title' => array(
+      '#type' => 'item',
+      '#markup' => '<h3>' . t('Search by ' . $label) . '</h3>',
+      '#weight' => -20,
+    ),
+    'textfield' => array(
+      '#type' => 'textfield',
+      '#size' => 10,
+      '#weight' => -15,
+      '#default_value' => $default_value,
+    ),
+    'submit' => array(
+      '#type' => 'submit',
+      '#submit' => array('facet_collection_block_field_search_form_submit'),
+      '#value' => t('Search')
+    )
+  );
+  return $form;
+}
+
+/**
+ * Submit callback for facet collection search form
+ */
+function facet_collection_block_field_search_form_submit($form, &$form_state) {
+  $field_name = $form_state['build_info']['args'][0]['field_name'];
+  $value = trim($form_state['input']['textfield']);
+  $redirect_path = $_GET['q'];
+  $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
+  if(isset($get_params['s'])){
+    foreach($get_params['s'] as $key => $search_filter){
+      $search_filter_parts = explode(':', $search_filter);
+      if ($search_filter_parts[0] == $field_name) {
+        unset($get_params['s'][$key]);
+        break;
+      }
+    }
+  }
+  if (!empty($value)) {
+    $get_params['s'][] = $field_name . ':' . $value;
+  }
+  $options = array(
+    'query' => $get_params,
+  );
+  $form_state['redirect'] = array(
+    $redirect_path,
+    $options,
+    302
+  );
+}
+
+/**
+ * Implements hook_block_info()
+ */
+function facet_collection_block_block_info() {
+  $blocks['library_filters'] = array(
+    'info' => t('Filters for nodes')
+  );
+  return $blocks;
+}
+
+/*
+ * Implements hook_block_view()
+ */
+function facet_collection_block_block_view($delta) {
+  $content = drupal_get_form('facet_collection_block_form');
+  return array(
+    'subject' => t('Filters'),
+    'content' => $content,
+  );
+}
+
+/**
+ * Form callback for block form
+ */
+function facet_collection_block_form($form, &$form_state) {
+  $realm_name = 'block';
+  if (!$realm = facetapi_realm_load($realm_name)) {
+    return array();
+  }
+  $available_facets = facet_collection_get_available_facets();
+  //We need searcher for further actions.
+  $searcher_info = facetapi_get_searcher_info();
+  $searchers = array_keys($searcher_info);
+  $searcher = $searchers[0];
+  $adapter = facetapi_adapter_load($searcher);
+  //We should check facets visibility.
+  if (!cache_get('facet_collection:visibility')) {
+    facet_collection_set_facets_visibility($adapter, $realm_name, $searcher);
+  }
+  //Array of submit callbacks for widget forms
+  $callbacks = array();
+  $forms = module_invoke_all('forms', 'facet_collection_block_form', array());
+  $facet_deltas = array();
+  $deltas = array();
+  //Build unsorted form array. We need keys in the form array to be names of fields to perform sort after building. But facet names
+  //are needed too in all widget forms. So, we store all field api names and corresponding facets in $facet_fields array
+  $facet_fields = array();
+  //First, facet part of form
+  foreach ($available_facets as $facet_names) {
+    foreach ($facet_names as $facet_name) {
+      $facet = facetapi_facet_load($facet_name, $searcher);
+      $field_name = $facet['field api name'];
+      $facet_fields[$field_name] = $facet_name;
+      $facet_obj = $adapter->getFacet($facet);
+      $facet_settings = $facet_obj->getSettings($realm);
+      $widget_name = $facet_settings->settings['widget'];
+      if ($class = ctools_plugin_load_class('facetapi', 'widgets', $widget_name, 'handler')) {
+        $widget_plugin = new $class($widget_name, $realm, $facet_obj, $facet_settings);
+        $widget_plugin->init();
+        if (method_exists($widget_plugin, 'getForm')) {
+          $widget_form = $widget_plugin->getForm($forms);
+          if (!empty($widget_form)) {
+            $callbacks[$field_name] = facet_collection_block_remove_submits($widget_form);
+            if (!isset($deltas[$widget_name])) {
+              $form[$field_name] = $widget_form;
+              $facet_deltas[$field_name] = 1;
+              $deltas[$widget_name] = 1;
+            }
+            else {
+              $deltas[$widget_name]++;
+              facet_collection_block_set_form_delta($widget_form, $deltas[$widget_name]);
+              $facet_deltas[$field_name] = $deltas[$widget_name];
+              $form[$field_name] = $widget_form;
+            }
+          }
+        }
+      }
+      else {
+        watchdog('facetapi', 'Widget %name not valid.', array('%name' => $widget_name), WATCHDOG_ERROR);
+        return array();
+      }
+    }
+  }
+  //Continue with search forms
+  $search_filters_info = facet_collection_get_search_filters_info();
+  $search_deltas = array();
+  $last_delta = 1;
+  foreach ($search_filters_info as $field_name => $search_filter_info) {
+    $form_id = 'facet_collection_' . $field_name . '_form';
+    $fake_form_state['build_info']['form_id'] = $form_id;
+    $search_form = facet_collection_block_field_search_form(array(), $fake_form_state, array_merge($search_filter_info, array('field_name' => $field_name)));
+    facet_collection_block_remove_submits($search_form);
+    if ($last_delta != 1) {
+      facet_collection_block_set_form_delta($search_form, $last_delta);
+      $search_deltas[$field_name] = $last_delta;
+    }
+    else {
+      $search_deltas[$field_name] = 1;
+    }
+    $last_delta++;
+    $form[$field_name] = $search_form;
+  }
+
+  if (!empty($form)) {
+    $form['filter_button'] = array(
+      '#type' => 'submit',
+      '#value' => t('Filter'),
+      '#description' => t('Format:'),
+      '#weight' => 20,
+      '#submit' => array('facet_collection_block_form_submit'),
+    );
+  }
+
+  $form_state['build_info']['args'][0]['callbacks'] = $callbacks;
+  $form_state['build_info']['args'][0]['facet_deltas'] = $facet_deltas;
+  $form_state['build_info']['args'][0]['facet_fields'] = $facet_fields;
+  $form_state['build_info']['args'][0]['search_deltas'] = $search_deltas;
+  return $form;
+}
+
+function facet_collection_block_set_form_delta(&$form, $delta) {
+  foreach (element_children($form) as $key) {
+    $element = $form[$key];
+    unset($form[$key]);
+    $form[$key . '_' . $delta] = $element;
+    facet_collection_block_set_form_delta($form[$key . '_' . $delta], $delta);
+  }
+}
+
+/**
+ * Submit callback for form block
+ */
+function facet_collection_block_form_submit($form, &$form_state) {
+  $fake_input = facet_collection_block_prepare_input($form_state);
+  $searcher_info = facetapi_get_searcher_info();
+  $searchers = array_keys($searcher_info);
+  $searcher = $searchers[0];
+  $redirect_path = $_GET['q'];
+  $current_link = url($redirect_path, array('absolute' => TRUE));
+  $callbacks = $form_state['build_info']['args'][0]['callbacks'];
+  $facet_fields = $form_state['build_info']['args'][0]['facet_fields'];
+  foreach ($callbacks as $field_name => $submit_callbacks) {
+    $facet_name = $facet_fields[$field_name];
+    $facet = facetapi_facet_load($facet_name, $searcher);
+    $fake_form_state['build_info']['args'][0]['search path'] = $current_link;
+    $fake_form_state['build_info']['args'][0]['field alias'] = $facet['field alias'];
+    $fake_form_state['build_info']['args'][0]['facet name'] = $facet_name;
+    $fake_form_state['input'] = $fake_input[$field_name];
+    foreach ($submit_callbacks as $submit_callback) {
+      $submit_callback($form, $fake_form_state);
+      $query_part = $fake_form_state['redirect'][1]['query'];
+      facet_collection_block_fix_get_params($query_part, $facet['field alias'], 'f');
+    }
+  }
+  $search_filters_info = facet_collection_get_search_filters_info();
+  foreach ($search_filters_info as $field_name => $search_filter_info) {
+    $fake_form_state['build_info']['args'][0]['field_name'] = $field_name;
+    $fake_form_state['input'] = $fake_input[$field_name];
+    facet_collection_block_field_search_form_submit($form, $fake_form_state);
+    $query_part = $fake_form_state['redirect'][1]['query'];
+    facet_collection_block_fix_get_params($query_part, $field_name, 's');
+  }
+  $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
+  $form_state['redirect'] = array(
+    $redirect_path,
+    array('query' => $get_params),
+    302
+  );
+}
+
+
+/**
+ * Remove all deprecated get params and replace it by new one according to query given by facet form submit callback.
+ * Filter parameter can be 'f' or 's'. First case corresponds to facets, second case corresponds to search filters
+ */
+function facet_collection_block_fix_get_params($query_part, $facet_field_alias, $filter_parameter) {
+  if(isset($query_part[$filter_parameter])){
+    $new_filters = _facet_collection_block_filters_to_array($query_part[$filter_parameter]);
+    if(isset($_GET[$filter_parameter])){
+      $filters = _facet_collection_block_filters_to_array($_GET[$filter_parameter]);
+    }
+    foreach ($new_filters as $field_alias => $values) {
+      $filters[$field_alias] = $new_filters[$field_alias];
+    }
+    if (!isset($new_filters[$facet_field_alias])) {
+      unset($filters[$facet_field_alias]);
+    }
+    _facet_collection_block_array_to_filters($filters, $filter_parameter);
+    unset($query_part['f']);
+    unset($query_part['s']);
+    if (!empty($query_part)) {
+      foreach ($query_part as $key => $value) {
+        $_GET[$key] = $value;
+      }
+    }
+  }else{
+    if(isset($_GET[$filter_parameter])){
+      $filters = _facet_collection_block_filters_to_array($_GET[$filter_parameter]);
+      unset($filters[$facet_field_alias]);
+    }
+  }
+
+}
+
+/**
+ * Helper function. Convert array with filters given by _facet_collection_block_filters_to_array() to corresponding $_GET['f'] array.
+ */
+function _facet_collection_block_array_to_filters($filters, $filter_parameter) {
+  $_GET[$filter_parameter] = array();
+  foreach ($filters as $field_alias => $values) {
+    foreach ($values as $value) {
+      $_GET[$filter_parameter][] = $field_alias . ':' . $value;
+    }
+  }
+}
+
+/**
+ * Helper function. Convert $_GET['f'] array to associative array, where key is a field alias and values are filter values
+ */
+function _facet_collection_block_filters_to_array($f) {
+  $filters_arr = array();
+  foreach ($f as $filter_query) {
+    $arr = explode(':', $filter_query);
+    $key = $arr[0];
+    unset($arr[0]);
+    $filters_arr[$key][] = implode(':', $arr);
+  }
+  return $filters_arr;
+
+}
+
+/**
+ * Prepare input for each facet form_state. This input will be put in fake form state to get proper submit callback response
+ * for each facet form.
+ */
+function facet_collection_block_prepare_input($form_state) {
+  $complete_form = $form_state['complete form'];
+  $input = array();
+  //Prepare input for facet forms
+  $facet_deltas = $form_state['build_info']['args'][0]['facet_deltas'];
+  foreach ($facet_deltas as $field_name => $delta) {
+    $input[$field_name] = facet_collection_block_get_facet_input($complete_form[$field_name], $delta);
+  }
+  //Prepare input for search forms
+  $search_deltas = $form_state['build_info']['args'][0]['search_deltas'];
+  foreach ($search_deltas as $field_name => $delta) {
+    $input[$field_name] = facet_collection_block_get_facet_input($complete_form[$field_name], $delta);
+  }
+  return $input;
+}
+
+/**
+ * Helper function. Get input of one facet form.
+ */
+function facet_collection_block_get_facet_input($form, $delta) {
+  $input = array();
+  if ($delta == 1) {
+    foreach (element_children($form) as $key) {
+      if (isset($form[$key]['#value'])) {
+        $input[$key] = $form[$key]['#value'];
+      }
+      else {
+        array_merge($input, facet_collection_block_get_facet_input($form[$key], $delta));
+      }
+    }
+  }
+  else {
+    foreach (element_children($form) as $key) {
+      if (isset($form[$key]['#value'])) {
+        $arr = explode('_', $key);
+        if ($arr[count($arr) - 1] == $delta) {
+          unset($arr[count($arr) - 1]);
+          $new_key = implode('_', $arr);
+          $input[$new_key] = $form[$key]['#value'];
+        }
+      }
+      else {
+        array_merge($input, facet_collection_block_get_facet_input($form[$key], $delta));
+      }
+    }
+  }
+  return $input;
+}
+
+
+/**
+ * Remove submit buttons from filter form and return submit callback
+ */
+function facet_collection_block_remove_submits(&$form) {
+  foreach ($form as $key => $form_element) {
+    if (is_array($form[$key])) {
+      if (isset($form_element['#type']) && ($form_element['#type'] == 'submit')) {
+        $submit_callbacks = $form_element['#submit'];
+        unset($form[$key]);
+        return $submit_callbacks;
+      }
+      $submit_callbacks = facet_collection_block_remove_submits($form[$key]);
+      if ($submit_callbacks) {
+        return $submit_callbacks;
+      }
+    }
+  }
+  return FALSE;
+}
