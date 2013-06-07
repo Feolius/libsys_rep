@@ -47,10 +47,7 @@ function facet_collection_page() {
   $page = pager_find_page();
   $query->page = $page;
   list($final_query, $response) = apachesolr_do_query($query, $page);
-  dpm($response);
-  $results = apachesolr_search_process_response($response, $final_query) ;
-  dpm($results);
-  //$results = apachesolr_search_run('apachesolr', $params, '', arg(0), pager_find_page(), $solr);
+  $results = apachesolr_search_process_response($response, $final_query);
   $build = theme('facet_collection_search_results__alter', array('results' => $results));
   return $build;
 }
@@ -68,6 +65,8 @@ function facet_collection_get_default_params() {
   $params = array();
   $boosts = facet_collection_get_field_boosts();
   $params += apachesolr_search_basic_params();
+  unset($params['hl.fl']);
+  $params['hl.fl'] = _facet_collection_build_hl_fl_parameter();
   if (!isset($_GET['s'])) {
     $params['defType'] = 'dismax';
     if (arg(1)) {
@@ -75,22 +74,21 @@ function facet_collection_get_default_params() {
     }
     //Build qf parameter
     $qf = _facet_collection_build_qf_parameter($boosts);
-    if(!empty($qf)){
+    if (!empty($qf)) {
       $qf = trim($qf);
       $params['qf'] = $qf;
     }
     //Highlighting should be only in that fields which included in qf parameter
-  }else{
+  }
+  else {
     $params['defType'] = 'lucene';
     $q = '';
     if (arg(1)) {
-      //$base_qf = _facet_collection_build_qf_parameters_raw($boosts);
-      //$q[0] = '_query_:"{!dismax ' . $base_qf . '}' . arg(1) . '"';
       $base_qf = _facet_collection_build_qf_parameter($boosts);
       $q[0] = '_query_:"{!dismax ' . 'qf=\'' . $base_qf . '\'}' . arg(1) . '"';
     }
     $searchable_fields_info = facet_collection_get_search_filters_info();
-    foreach($_GET['s'] as $search_filter){
+    foreach ($_GET['s'] as $search_filter) {
       $search_filter_parts = explode(':', $search_filter);
       $field_name = $search_filter_parts[0];
       $index_field_name = $searchable_fields_info[$field_name]['index_field_name'];
@@ -98,9 +96,8 @@ function facet_collection_get_default_params() {
     }
     $params['q'] = implode(' AND ', $q);
   }
-  unset($params['hl.fl']);
-  $params['hl.fl'] = 'label';
-  $params['hl.fl'] = 'tm_collection_book_field';
+  $params['hl.fl'][] = 'label';
+  $params['hl.fl'][] = 'tm_collection_book_field';
   $params['fq'] = 'entity_type:node';
   return $params;
 }
@@ -108,18 +105,18 @@ function facet_collection_get_default_params() {
 /**
  * Build 'qf' parameter for solr query for base search.
  */
-function _facet_collection_build_qf_parameter($boosts){
+function _facet_collection_build_qf_parameter($boosts) {
   $qf = '';
   $chosen_content_type = facet_collection_get_filtered_content_type();
   $field_type_list = variable_get('facet_collection:field_type_search_list');
   $searchable_fields = facet_collection_get_searchable_fields(array_keys($field_type_list));
   $needed_fields = $searchable_fields[$chosen_content_type];
   $qf = $qf . 'label^' . $boosts[$chosen_content_type . '_title'] . ' ';
-  foreach($needed_fields as $field_name){
+  foreach ($needed_fields as $field_name) {
     $field_info = field_info_field($field_name);
     $module = $field_type_list[$field_info['type']];
     $index_field_name = module_invoke($module, 'facet_collection_index_field_name', $field_name);
-    if(isset($boosts[$field_name])){
+    if (isset($boosts[$field_name])) {
       $qf = $qf . $index_field_name . '^' . $boosts[$field_name] . ' ';
     }
   }
@@ -127,25 +124,21 @@ function _facet_collection_build_qf_parameter($boosts){
 }
 
 /**
- * Build raw of qf parameters. Apachesolr module doesn't allow to use ' symbol. So, we can't pass such string qf='some fields here' to our query.
- * That's why we will pass a lot of qf parameters. Only take into account base search fields.
+ * Build 'hl.fl' parameter for solr query
  */
-function _facet_collection_build_qf_parameters_raw($boosts){
-  $qf = '';
+function _facet_collection_build_hl_fl_parameter() {
+  $hl_fl = array();
   $chosen_content_type = facet_collection_get_filtered_content_type();
   $field_type_list = variable_get('facet_collection:field_type_search_list');
   $searchable_fields = facet_collection_get_searchable_fields(array_keys($field_type_list));
   $needed_fields = $searchable_fields[$chosen_content_type];
-  $qf = 'qf=' . 'label^' . $boosts[$chosen_content_type . '_title'];
-  foreach($needed_fields as $field_name){
+  foreach ($needed_fields as $field_name) {
     $field_info = field_info_field($field_name);
     $module = $field_type_list[$field_info['type']];
     $index_field_name = module_invoke($module, 'facet_collection_index_field_name', $field_name);
-    if(isset($boosts[$field_name])){
-      $qf = $qf . ' qf=' . $index_field_name . '^' . $boosts[$field_name];
-    }
+    $hl_fl[] = $index_field_name;
   }
-  return $qf;
+  return $hl_fl;
 }
 
 /**
@@ -518,22 +511,10 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
     }
   }
   else {
-    if (isset($snippets['content'])) {
-      foreach($snippets['content'] as $snippet){
-        $text .= $snippet;
-      }
-      unset($snippets['content']);
+    foreach ($snippets as $field_snippets) {
+      $text .= (strlen($text) > 0) ? ' ... ' : '';
+      $text = $text . implode(' ... ', $field_snippets);
     }
-    //@TODO something wrong with this code block. Need rewiew
-//    if (isset($snippets['teaser'])) {
-//      $text .= (strlen($result) > 0) ? ' ... ' : '';
-//      $text .= $snippets['teaser'];
-//      unset($snippets['teaser']);
-//    }
-//    if (count($snippets)) {
-//      $text .= (strlen($result) > 0) ? ' ... ' : '';
-//      $text .= implode(' ... ', $snippets);
-//    }
   }
   $variables['text'] = $text;
   foreach ($instances as $field_name => $instance) {
@@ -559,38 +540,6 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
         break;
       }
     }
-  }
-}
-
-/**
- * Implements hook_apachesolr_query_alter()
- */
-function facet_collection_apachesolr_query_alter($query) {
-  if (arg(0) == 'library') {
-    //First we should determine wether we need highlight or not
-    //If there is query from search block we enable highlight
-    $q = $query->getParam('q');
-    $q_parts = explode('AND', $q);
-    //Flag whether the query from search block found or not
-    $query_found = FALSE;
-    foreach ($q_parts as $q_part) {
-      $q_part_arr = explode(':', $q_part);
-      if (count($q_part_arr) == 1) {
-        //It means that we have query from search block and we need highlight for this query
-        $query->addParam('hl.q', $q_part);
-        $query_found = TRUE;
-      }
-    }
-    //If we've not found the query from search block we shouldn't highlight anything
-    if ($query_found == FALSE) {
-      $query->addParam('hl', 'false');
-      $query->removeParam('hl.fl');
-    }
-
-    //We should be shure that only nodes should be shown
-    $fq = $query->getParam('fq');
-    $fq = array_merge($fq, array('entity_type:node'));
-    $query->addParam('fq', $fq);
   }
 }
 
