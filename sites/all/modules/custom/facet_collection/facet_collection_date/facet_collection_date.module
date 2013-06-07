@@ -4,178 +4,174 @@
  * Implements hook_facet_collection_field_type_info()
  */
 function facet_collection_date_facet_collection_field_type_info() {
-  return array(
-    'facet' => array('date', 'datetime', 'datestamp'),
-  );
+    return array(
+        'facet' => array('date', 'datetime', 'datestamp'),
+    );
 }
 
 /**
  * Implements hook_facet_collection_field_facet_groups()
  */
 function facet_collection_date_facet_collection_field_facet_groups($field_info) {
-  $facets = array();
-  $field_name = $field_info['field_name'];
-  $facet_name = 'collection_' . $field_name;
-  $index_field_name = 'dm_facet_collection_' . $field_name;
-  $query_types = array('date');
-  $default_widget = 'facetapi_date_range_widget';
-  $min_callback = 'apachesolr_get_min_date';
-  $max_callback = 'facet_collection_get_max_date';
-  $bundle = $field_info['bundles']['node'][0];
-  $instance = field_info_instance('node', $field_name, $bundle);
-  $label = $instance['label'];
+    $facets = array();
+    $field_name = $field_info['field_name'];
+    $facet_name = 'collection_' . $field_name;
+    $index_field_name = 'dm_facet_collection_' . $field_name;
+    $query_types = array('date');
+    $default_widget = 'facetapi_date_range_widget';
+    $min_callback = 'apachesolr_get_min_date';
+    $max_callback = 'facet_collection_get_max_date';
+    $bundle = $field_info['bundles']['node'][0];
+    $instance = field_info_instance('node', $field_name, $bundle);
+    $label = $instance['label'];
 
-  $facets[$facet_name] = array(
-    'name' => $facet_name,
-    'label' => t($label),
-    'description' => t('Automatically created facet for facet collection module'),
-    'field' => $index_field_name,
-    'field alias' => $facet_name,
-    'field api name' => $field_name,
-    'field api bundles' => array(),
-    'query types' => $query_types,
-    'default widget' => $default_widget,
-    'allowed operators' => array(FACETAPI_OPERATOR_AND => FALSE, FACETAPI_OPERATOR_OR => TRUE),
-    'facet mincount allowed' => TRUE,
-    'facet missing allowed' => TRUE,
-    'map callback' => FALSE,
-    'map options' => FALSE,
-    'min callback' => $min_callback,
-    'max callback' => $max_callback
-  );
-  $facet_groups['default'] = $facets;
-  return $facet_groups;
+    $facets[$facet_name] = array(
+        'name' => $facet_name,
+        'label' => t($label),
+        'description' => t('Automatically created facet for facet collection module'),
+        'field' => $index_field_name,
+        'field alias' => $index_field_name,
+        'field api name' => $field_name,
+        'field api bundles' => array(),
+        'query types' => $query_types,
+        'default widget' => $default_widget,
+        'allowed operators' => array(FACETAPI_OPERATOR_AND => FALSE, FACETAPI_OPERATOR_OR => TRUE),
+        'facet mincount allowed' => TRUE,
+        'facet missing allowed' => TRUE,
+        'map callback' => FALSE,
+        'map options' => FALSE,
+        'min callback' => $min_callback,
+        'max callback' => $max_callback
+    );
+    $facet_groups['default'] = $facets;
+    return $facet_groups;
 }
 
 /**
  * Implements hook_facet_collection_index_field()
  */
 function facet_collection_date_facet_collection_index_field($filedocument, $node, $field_info) {
-  $field_name = $field_info['field_name'];
-  $fields = facet_collection_date_indexing_callback($node, 'dm_facet_collection_' . $field_name, $field_info);
+    $field_name = $field_info['field_name'];
+    $fields = facet_collection_date_indexing_callback($node, 'dm_facet_collection_' . $field_name, $field_info);
+    //$fields = apachesolr_date_default_indexing_callback($node, $field_name, 'dm_facet_collection_' . $field_name, $field_info);
 
-  foreach ($fields as $field) {
-    $filedocument->setMultiValue($field['key'], $field['value']);
-  }
-  return $filedocument;
+    foreach ($fields as $field) {
+        $filedocument->setMultiValue($field['key'], $field['value']);
+    }
+    return $filedocument;
 }
 
 /**
  * Implements hook_facet_collection_facet_content_types()
  */
 function facet_collection_date_facet_collection_facet_content_types($filter_settings, $facet_group, $facet_name, $searcher) {
-  $facet = facetapi_facet_load($facet_name, $searcher);
-  $field_name = $facet['field api name'];
-  $facet_content_types_array = array();
-  if (isset($filter_settings['date'][$field_name])) {
-    $facet_content_types_array = array_merge($facet_content_types_array, array($filter_settings['date'][$field_name]));
-  }
-  if (isset($filter_settings['datetime'][$field_name])) {
-    $facet_content_types_array = array_merge($facet_content_types_array, array($filter_settings['datetime'][$field_name]));
-  }
-  if (isset($filter_settings['datestamp'][$field_name])) {
-    $facet_content_types_array = array_merge($facet_content_types_array, array($filter_settings['datestamp'][$field_name]));
-  }
+    $facet = facetapi_facet_load($facet_name, $searcher);
+    $field_name = $facet['field api name'];
+    $facet_content_types_array = array();
+    if (isset($filter_settings['date'][$field_name])) {
+        $facet_content_types_array = array_merge($facet_content_types_array, array($filter_settings['date'][$field_name]));
+    }
+    if (isset($filter_settings['datetime'][$field_name])) {
+        $facet_content_types_array = array_merge($facet_content_types_array, array($filter_settings['datetime'][$field_name]));
+    }
+    if (isset($filter_settings['datestamp'][$field_name])) {
+        $facet_content_types_array = array_merge($facet_content_types_array, array($filter_settings['datestamp'][$field_name]));
+    }
 
-  return $facet_content_types_array;
+    return $facet_content_types_array;
 }
 
 /**
  * Index callback for date fields
  */
 function facet_collection_date_indexing_callback($node, $index_key, $field_info) {
-  $field_name = $field_info['field_name'];
+    $field_name = $field_info['field_name'];
 //If we have date with certain precision we should add additional dates in document to perform filtration
-  $fields = array();
-  $field = $node->$field_name;
-  list($lang, $values) = each($field);
-  if (!empty($values)) {
+    $fields = array();
+    $field = $node->$field_name;
+    list($lang, $values) = each($field);
     foreach ($values as $value) {
-      if (isset($value['value2'])) {
-        $date_start = new DateObject($value['value']);
+        if (isset($value['value2'])) {
+            $date_start = new DateObject($value['value']);
 
 //Comparison of start and end dates
-        $date_end = new DateObject($value['value2']);
-        $difference = $date_start->difference($date_end, 'days');
-        $date_array = $date_start->toArray();
-        $year = $date_array['year'];
+            $date_end = new DateObject($value['value2']);
+            $difference = $date_start->difference($date_end, 'days');
+            $date_array = $date_start->toArray();
+            $year = $date_array['year'];
 
 //If difference is equal one year we should add 365 or 366 dates for the field to fill all year date range.
-        if ($difference == 365 || $difference == 366) {
-          for ($month = 1; $month <= 12; $month++) {
-            $days_in_month = date_days_in_month($year, $month);
-            for ($day_number = 1; $day_number <= $days_in_month; $day_number++) {
-              $date_string = $year . '/' . $month . '/' . $day_number;
-              $date_obj = new DateObject($date_string, NULL, 'Y/m/d');
-              $date_array = $date_obj->toArray(TRUE);
-              $date_ISO = $date_obj->toISO($date_array);
-              $date = date_create($date_ISO);
-              $index_value = $date->format('Y-m-d\TH:i:s\Z');
-              $fields[] = array(
-                'key' => $index_key,
-                'value' => $index_value,
-              );
-            }
-          }
-        }
-        elseif ($difference == 0) {
+            if ($difference == 365 || $difference == 366) {
+                for ($month = 1; $month <= 12; $month++) {
+                    $days_in_month = date_days_in_month($year, $month);
+                    for ($day_number = 1; $day_number <= $days_in_month; $day_number++) {
+                        $date_string = $year . '/' . $month . '/' . $day_number;
+                        $date_obj = new DateObject($date_string, NULL, 'Y/m/d');
+                        $date_array = $date_obj->toArray(TRUE);
+                        $date_ISO = $date_obj->toISO($date_array);
+                        $date = date_create($date_ISO);
+                        $index_value = $date->format('Y-m-d\TH:i:s\Z');
+                        $fields[] = array(
+                            'key' => $index_key,
+                            'value' => $index_value,
+                        );
+                    }
+                }
+            } elseif ($difference == 0) {
 
 //Just add the date to field
-          $date = date_create($value['value']);
-          $index_value = $date->format('Y-m-d\TH:i:s\Z');
-          $fields[] = array(
-            'key' => $index_key,
-            'value' => $index_value,
-          );
+                $date = date_create($value['value']);
+                $index_value = $date->format('Y-m-d\TH:i:s\Z');
+                $fields[] = array(
+                    'key' => $index_key,
+                    'value' => $index_value,
+                );
 
 //Adding dates that fill current month
-        }
-        else {
-          $month = $date_array['month'];
-          $days_in_month = date_days_in_month($year, $month);
-          for ($day_number = 1; $day_number <= $days_in_month; $day_number++) {
-            $date_string = $year . '/' . $month . '/' . $day_number;
-            $date_obj = new DateObject($date_string, NULL, 'Y/m/d');
-            $date_array = $date_obj->toArray(TRUE);
-            $date_ISO = $date_obj->toISO($date_array);
-            $date = date_create($date_ISO);
+            } else {
+                $month = $date_array['month'];
+                $days_in_month = date_days_in_month($year, $month);
+                for ($day_number = 1; $day_number <= $days_in_month; $day_number++) {
+                    $date_string = $year . '/' . $month . '/' . $day_number;
+                    $date_obj = new DateObject($date_string, NULL, 'Y/m/d');
+                    $date_array = $date_obj->toArray(TRUE);
+                    $date_ISO = $date_obj->toISO($date_array);
+                    $date = date_create($date_ISO);
+                    $index_value = $date->format('Y-m-d\TH:i:s\Z');
+                    $fields[] = array(
+                        'key' => $index_key,
+                        'value' => $index_value,
+                    );
+                }
+            }
+        } else {
+            $date = date_create($value['value']);
             $index_value = $date->format('Y-m-d\TH:i:s\Z');
             $fields[] = array(
-              'key' => $index_key,
-              'value' => $index_value,
+                'key' => $index_key,
+                'value' => $index_value,
             );
-          }
         }
-      }
-      else {
-        $date = date_create($value['value']);
-        $index_value = $date->format('Y-m-d\TH:i:s\Z');
-        $fields[] = array(
-          'key' => $index_key,
-          'value' => $index_value,
-        );
-      }
     }
-  }
-  return $fields;
+    return $fields;
 }
 
 /**
  * Max date callback for facet collection
  */
 function facet_collection_get_max_date($facet) {
-  $table = 'field_data_' . $facet['field api name'];
-  try {
-    $column = $facet['field api name'] . '_value2';
-    $query = db_select($table, 't');
-    $query->addExpression('MAX(' . $column . ')', 'max');
-    $query_max = $query->execute()->fetch()->max;
-  } catch (PDOException $e) {
-    $column = $facet['field api name'] . '_value';
-    $query = db_select($table, 't');
-    $query->addExpression('MAX(' . $column . ')', 'max');
-    $query_max = $query->execute()->fetch()->max;
-  }
-  return strtotime($query_max);
+    $table = 'field_data_' . $facet['field api name'];
+    try {
+        $column = $facet['field api name'] . '_value2';
+        $query = db_select($table, 't');
+        $query->addExpression('MAX(' . $column . ')', 'max');
+        $query_max = $query->execute()->fetch()->max;
+    } catch (PDOException $e) {
+        $column = $facet['field api name'] . '_value';
+        $query = db_select($table, 't');
+        $query->addExpression('MAX(' . $column . ')', 'max');
+        $query_max = $query->execute()->fetch()->max;
+    }
+    return strtotime($query_max);
 }
 

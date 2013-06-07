@@ -1,0 +1,5 @@
+name = Facet Collection Block
+description = "Add block with filters."
+package = Facet Collection
+core = 7.x
+dependencies[] = facet_collection
