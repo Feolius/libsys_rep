@@ -4,5 +4,6 @@ package = Facet Collection
 core = 7.x
 dependencies[] = facet_collection
 dependencies[] = book_field
+dependencies[] = apachesolr_attachments
 
 
