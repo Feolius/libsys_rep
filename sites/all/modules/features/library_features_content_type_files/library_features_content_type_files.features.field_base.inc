@@ -1701,6 +1701,40 @@ function library_features_content_type_files_field_default_field_bases() {
     'type' => 'youtube',
   );
 
+  // Exported field_base: 'field_home_region'
+  $field_bases['field_home_region'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_home_region',
+    'foreign keys' => array(
+      'tid' => array(
+        'columns' => array(
+          'tid' => 'tid',
+        ),
+        'table' => 'taxonomy_term_data',
+      ),
+    ),
+    'indexes' => array(
+      'tid' => array(
+        0 => 'tid',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'taxonomy',
+    'settings' => array(
+      'allowed_values' => array(
+        0 => array(
+          'vocabulary' => 'home_region',
+          'parent' => 0,
+        ),
+      ),
+    ),
+    'translatable' => 0,
+    'type' => 'taxonomy_term_reference',
+  );
+
   // Exported field_base: 'field_image_date_taken'
   $field_bases['field_image_date_taken'] = array(
     'active' => 1,
@@ -1782,6 +1816,35 @@ function library_features_content_type_files_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'library_date_field',
+  );
+
+  // Exported field_base: 'title_field'
+  $field_bases['title_field'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'title_field',
+    'foreign keys' => array(
+      'format' => array(
+        'columns' => array(
+          'format' => 'format',
+        ),
+        'table' => 'filter_format',
+      ),
+    ),
+    'indexes' => array(
+      'format' => array(
+        0 => 'format',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'text',
+    'settings' => array(
+      'max_length' => 255,
+    ),
+    'translatable' => 1,
+    'type' => 'text',
   );
 
   return $field_bases;

@@ -119,35 +119,6 @@ function library_features_content_type_files_field_group_info() {
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
   $field_group->api_version = 1;
-  $field_group->identifier = 'group_files_audio|node|files|form';
-  $field_group->group_name = 'group_files_audio';
-  $field_group->entity_type = 'node';
-  $field_group->bundle = 'files';
-  $field_group->mode = 'form';
-  $field_group->parent_name = '';
-  $field_group->data = array(
-    'label' => 'Audio',
-    'weight' => '3',
-    'children' => array(
-      0 => 'field_audio_year',
-      1 => 'field_files_album_poster',
-      2 => 'field_files_artist',
-      3 => 'field_files_audio',
-      4 => 'field_files_length',
-      5 => 'field_files_topics',
-      6 => 'field_files_video_location',
-      7 => 'field_files_album',
-    ),
-    'format_type' => 'multistep_adl',
-    'format_settings' => array(
-      'formatter' => '',
-    ),
-  );
-  $export['group_files_audio|node|files|form'] = $field_group;
-
-  $field_group = new stdClass();
-  $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
-  $field_group->api_version = 1;
   $field_group->identifier = 'group_files_dates|node|files|form';
   $field_group->group_name = 'group_files_dates';
   $field_group->entity_type = 'node';
@@ -178,28 +149,6 @@ function library_features_content_type_files_field_group_info() {
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
   $field_group->api_version = 1;
-  $field_group->identifier = 'group_files_document|node|files|form';
-  $field_group->group_name = 'group_files_document';
-  $field_group->entity_type = 'node';
-  $field_group->bundle = 'files';
-  $field_group->mode = 'form';
-  $field_group->parent_name = '';
-  $field_group->data = array(
-    'label' => 'Document',
-    'weight' => '58',
-    'children' => array(
-      0 => 'field_files_file',
-    ),
-    'format_type' => 'multistep_adl',
-    'format_settings' => array(
-      'formatter' => '',
-    ),
-  );
-  $export['group_files_document|node|files|form'] = $field_group;
-
-  $field_group = new stdClass();
-  $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
-  $field_group->api_version = 1;
   $field_group->identifier = 'group_files_general_additional|node|files|form';
   $field_group->group_name = 'group_files_general_additional';
   $field_group->entity_type = 'node';
@@ -208,7 +157,7 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = 'group_files_start';
   $field_group->data = array(
     'label' => 'Additional Information',
-    'weight' => '5',
+    'weight' => '-2',
     'children' => array(
       0 => 'field_files_rating',
       1 => 'field_files_creation_date',
@@ -226,32 +175,6 @@ function library_features_content_type_files_field_group_info() {
     ),
   );
   $export['group_files_general_additional|node|files|form'] = $field_group;
-
-  $field_group = new stdClass();
-  $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
-  $field_group->api_version = 1;
-  $field_group->identifier = 'group_files_general_tagging|node|files|form';
-  $field_group->group_name = 'group_files_general_tagging';
-  $field_group->entity_type = 'node';
-  $field_group->bundle = 'files';
-  $field_group->mode = 'form';
-  $field_group->parent_name = 'group_files_start';
-  $field_group->data = array(
-    'label' => 'General Tagging',
-    'weight' => '6',
-    'children' => array(),
-    'format_type' => 'fieldset',
-    'format_settings' => array(
-      'label' => 'General Tagging',
-      'instance_settings' => array(
-        'required_fields' => 1,
-        'classes' => '',
-        'description' => '',
-      ),
-      'formatter' => 'collapsed',
-    ),
-  );
-  $export['group_files_general_tagging|node|files|form'] = $field_group;
 
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
@@ -332,7 +255,7 @@ function library_features_content_type_files_field_group_info() {
     'children' => array(
       0 => 'field_files_description',
       1 => 'field_files_primary_media',
-      2 => 'title',
+      2 => 'title_field',
       3 => 'group_files_general_additional',
       4 => 'group_files_general_tagging',
     ),

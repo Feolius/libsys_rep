@@ -479,11 +479,20 @@ function collection_page_preprocess_breadcrumb(&$variables) {
     unset($library_get_options['q']);
 
     if ($_GET['query'] != '*:*') {
-      $back_to_library_html = l('Library', 'library/' . $_GET['query'], array('query' => $library_get_options));
+      $back_to_library_html = l(t('Library'), 'library/' . $_GET['query'], array('query' => $library_get_options));
     }
     else {
-      $back_to_library_html = l('Library', 'library', array('query' => $library_get_options));
+      $back_to_library_html = l(t('Library'), 'library', array('query' => $library_get_options));
     }
     $variables['breadcrumb'][1] = $back_to_library_html;
+  }
+  elseif (arg(0) == 'library') {
+    $breadcrumbs = array();
+    $breadcrumbs[] = array_shift($variables['breadcrumb']);
+    $breadcrumbs[] = t('Library');
+    if (isset($_GET['f'])) {
+      $breadcrumbs[] = array_pop($variables['breadcrumb']);
+    }
+    $variables['breadcrumb'] = $breadcrumbs;
   }
 }

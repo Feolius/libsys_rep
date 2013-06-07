@@ -166,15 +166,15 @@
 }
 
 #header-inside-right .form-submit {
-  height: 36px;
+  height: 35px;
   padding: 6px 18px;
-  float: right;
   margin: 0;
 }
 
 #header-inside-right .form-item input[type="text"] {
   width: 194px;
   padding: 9px;
+  height: auto;
 }
 
 #header-inside-left {
@@ -294,4 +294,28 @@ a.download {
 #home-middle,
 #home-right {
   margin: 0 0 0 18px;
+}
+
+#header-inside-left {
+  width: auto;
+}
+
+.form-item-facet-collection-search-block-form {
+  display: inline;
+}
+
+#sidebar .pane-content {
+  background: #f9f7f4;
+  padding: 20px;
+  overflow: hidden;
+  margin: 0 0 40px 0;
+}
+
+#sidebar .form-item input {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+#collection-pager-container {
+  clear: both;
 }

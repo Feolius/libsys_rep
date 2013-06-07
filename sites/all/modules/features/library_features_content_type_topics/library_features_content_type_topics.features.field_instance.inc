@@ -10,6 +10,76 @@
 function library_features_content_type_topics_field_default_field_instances() {
   $field_instances = array();
 
+  // Exported field_instance: 'node-topics-field_home_region'
+  $field_instances['node-topics-field_home_region'] = array(
+    'bundle' => 'topics',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'taxonomy',
+        'settings' => array(),
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 7,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_home_region',
+    'label' => 'Home region',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'taxonomy',
+      'settings' => array(
+        'autocomplete_path' => 'taxonomy/autocomplete',
+        'size' => 60,
+      ),
+      'type' => 'taxonomy_autocomplete',
+      'weight' => 6,
+    ),
+  );
+
   // Exported field_instance: 'node-topics-field_rating'
   $field_instances['node-topics-field_rating'] = array(
     'bundle' => 'topics',
@@ -48,6 +118,24 @@ function library_features_content_type_topics_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 1,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 2,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 3,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 3,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -107,6 +195,24 @@ function library_features_content_type_topics_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 4,
       ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 6,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 6,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 6,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -164,6 +270,36 @@ function library_features_content_type_topics_field_default_field_instances() {
         'weight' => 1,
       ),
       'home' => array(
+        'label' => 'hidden',
+        'module' => 'image',
+        'settings' => array(
+          'image_link' => 'content',
+          'image_style' => 'home-image-full',
+        ),
+        'type' => 'image',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'hidden',
+        'module' => 'image',
+        'settings' => array(
+          'image_link' => 'content',
+          'image_style' => 'home-image-full',
+        ),
+        'type' => 'image',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'hidden',
+        'module' => 'image',
+        'settings' => array(
+          'image_link' => 'content',
+          'image_style' => 'home-image-full',
+        ),
+        'type' => 'image',
+        'weight' => 0,
+      ),
+      'home_right' => array(
         'label' => 'hidden',
         'module' => 'image',
         'settings' => array(
@@ -238,6 +374,24 @@ function library_features_content_type_topics_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 3,
       ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 5,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 4,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 4,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -292,6 +446,24 @@ function library_features_content_type_topics_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 2,
       ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 4,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 5,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 5,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -319,13 +491,102 @@ function library_features_content_type_topics_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-topics-title_field'
+  $field_instances['node-topics-title_field'] = array(
+    'bundle' => 'topics',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 6,
+      ),
+      'home_left' => array(
+        'label' => 'hidden',
+        'module' => 'title',
+        'settings' => array(
+          'title_class' => '',
+          'title_link' => 'content',
+          'title_style' => 'h2',
+        ),
+        'type' => 'title_linked',
+        'weight' => 1,
+      ),
+      'home_middle' => array(
+        'label' => 'hidden',
+        'module' => 'title',
+        'settings' => array(
+          'title_class' => '',
+          'title_link' => 'content',
+          'title_style' => 'h2',
+        ),
+        'type' => 'title_linked',
+        'weight' => 1,
+      ),
+      'home_right' => array(
+        'label' => 'hidden',
+        'module' => 'title',
+        'settings' => array(
+          'title_class' => '',
+          'title_link' => 'content',
+          'title_style' => 'h2',
+        ),
+        'type' => 'title_linked',
+        'weight' => 1,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'title_field',
+    'label' => 'Title',
+    'required' => TRUE,
+    'settings' => array(
+      'hide_label' => array(
+        'entity' => 'entity',
+        'page' => 'page',
+      ),
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => -5,
+    ),
+  );
+
   // Translatables
   // Included for use with string extractors like potx.
   t('Body');
+  t('Home region');
   t('Image');
   t('Kind');
   t('Rating');
   t('Related event');
+  t('Title');
 
   return $field_instances;
 }
