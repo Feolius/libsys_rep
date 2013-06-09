@@ -30,7 +30,7 @@ class ApacheSolrFacetapiDate extends FacetapiQueryTypeDate implements FacetapiQu
     // Gets the data range in formats that Solr understands.
     $date_range = $this->getDateRange($query);
     if (empty($date_range)) {
-      return NULL;
+      return;
     }
     list($start, $end, $gap) = $date_range;
     $query->addParam('facet.date', $this->facet['field']);
@@ -53,23 +53,22 @@ class ApacheSolrFacetapiDate extends FacetapiQueryTypeDate implements FacetapiQu
   /**
    * Gets the range of dates we are using.
    *
-   * @param DrupalSolrQueryInterface $query
+   * @param $query
    *   A SolrBaseQuery object.
    *
-   * @return bool|array
-   *   An array containing the gap and range information or false if not present
+   * @return
+   *   An array containing the gap and range information.
    */
   function getDateRange(DrupalSolrQueryInterface $query) {
     $return = NULL;
-    $gap = NULL;
 
     // Attempts to get next gap from passed date filters.
-    foreach ($this->adapter->getActiveItems($this->facet) as $item) {
+    foreach ($this->adapter->getActiveItems($this->facet) as $value => $item) {
       if ($gap = facetapi_get_date_gap($item['start'], $item['end'])) {
         $next_gap = facetapi_get_next_date_gap($gap, FACETAPI_DATE_SECOND);
         if ($next_gap == $gap) {
           $next_gap = NULL;
-          return NULL;
+          return;
         }
         $return = array(
           "{$item['start']}/$next_gap",
@@ -92,7 +91,7 @@ class ApacheSolrFacetapiDate extends FacetapiQueryTypeDate implements FacetapiQu
       }
 
       // Gets the default gap.
-      //$gap = FACETAPI_DATE_YEAR;
+      $gap = FACETAPI_DATE_YEAR;
       if ($minimum && $maximum) {
         $gap = facetapi_get_timestamp_gap($minimum, $maximum);
         $minimum = facetapi_isodate($minimum, $gap);
@@ -151,8 +150,8 @@ class ApacheSolrFacetapiDate extends FacetapiQueryTypeDate implements FacetapiQu
     else {
       $raw_data = array();
     }
-    //$end = (!empty($raw_data['end'])) ? $raw_data['end'] : '';
-    //$start = (!empty($raw_data['start'])) ? $raw_data['start'] : '';
+    $end = (!empty($raw_data['end'])) ? $raw_data['end'] : '';
+    $start = (!empty($raw_data['start'])) ? $raw_data['start'] : '';
     $gap = (!empty($raw_data['gap'])) ? $raw_data['gap'] : '';
 
     // We cannot list anything below a minute (range of 00 seconds till 59
@@ -164,6 +163,7 @@ class ApacheSolrFacetapiDate extends FacetapiQueryTypeDate implements FacetapiQu
 
       // Treat each date facet as a range start, and use the next date facet
       // as range end.  Use 'end' for the final end.
+      $range_end = array();
       $previous = NULL;
 
       // Builds facet counts object used by the server.
