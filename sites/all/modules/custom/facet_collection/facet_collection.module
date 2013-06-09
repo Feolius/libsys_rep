@@ -10,7 +10,6 @@ function facet_collection_menu() {
     'page callback' => 'facet_collection_page',
     'page arguments' => array(),
     'access arguments' => array('search content'),
-    'file' => 'facet_collection_field_relevancy.inc'
   );
   //This paths are used for displaing collection teasers
   $items['collection-teaser/node'] = array(
@@ -56,6 +55,7 @@ function facet_collection_page() {
  * Get needed params to make solr query
  */
 function facet_collection_get_default_params() {
+  require_once 'facet_collection_field_relevancy.inc';
 //The logic is next: if we have 's' parameter in the page query it means that we have complicated search based on usual search,
 //which goes from search block, and search from one or more search filters from facet collection filter block. Moreover, here can be such
 //situation when we don't have usual search, only search from filter block appears here. In this case 's' will be here too.
