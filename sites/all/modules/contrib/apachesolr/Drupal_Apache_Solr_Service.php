@@ -778,7 +778,6 @@ class DrupalApacheSolrService implements DrupalApacheSolrServiceInterface {
     }
     // PHP's built in http_build_query() doesn't give us the format Solr wants.
     $queryString = $this->httpBuildQuery($params);
-    var_dump(urldecode($queryString));
     // Check string length of the query string, change method to POST
     $len = strlen($queryString);
     // Fetch our threshold to find out when to flip to POST
