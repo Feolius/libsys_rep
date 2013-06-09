@@ -59,17 +59,20 @@
 /**
  * Holds Key / Value pairs that represent a Solr Document along with any associated boost
  * values. Field values can be accessed by direct dereferencing such as:
- *
- * @code
+ * <code>
+ * ...
  * $document->title = 'Something';
  * echo $document->title;
+ * ...
+ * </code>
  *
  * Additionally, the field values can be iterated with foreach
  *
- * @code
- *   foreach ($document as $fieldName => $fieldValue) {
- *   ...
- *   }
+ * <code>
+ * foreach ($document as $fieldName => $fieldValue)
+ * {
+ * ...
+ * }
  * </code>
  */
 class ApacheSolrDocument implements IteratorAggregate {
@@ -108,8 +111,7 @@ class ApacheSolrDocument implements IteratorAggregate {
   /**
    * Get current document boost
    *
-   * @return mixed
-   *   will be false for default, or else a float
+   * @return mixed will be false for default, or else a float
    */
   public function getBoost() {
     return $this->_documentBoost;
@@ -118,8 +120,7 @@ class ApacheSolrDocument implements IteratorAggregate {
   /**
    * Set document boost factor
    *
-   * @param mixed $boost
-   *   Use false for default boost, else cast to float that should be > 0 or will be treated as false
+   * @param mixed $boost Use false for default boost, else cast to float that should be > 0 or will be treated as false
    */
   public function setBoost($boost) {
     $boost = (float) $boost;
@@ -141,17 +142,19 @@ class ApacheSolrDocument implements IteratorAggregate {
    * field boost value will be the product of all specified boosts
    * on field values - this is similar to SolrJ's functionality.
    *
-   * @code
-   *   $doc = new ApacheSolrDocument();
-   *   $doc->addField('foo', 'bar', 2.0);
-   *   $doc->addField('foo', 'baz', 3.0);
-   *   // resultant field boost will be 6!
-   *   echo $doc->getFieldBoost('foo');
+   * <code>
+   * $doc = new ApacheSolrDocument();
+   *
+   * $doc->addField('foo', 'bar', 2.0);
+   * $doc->addField('foo', 'baz', 3.0);
+   *
+   * // resultant field boost will be 6!
+   * echo $doc->getFieldBoost('foo');
+   * </code>
    *
    * @param string $key
    * @param mixed $value
-   * @param mixed $boost
-   *   Use false for default boost, else cast to float that should be > 0 or will be treated as false
+   * @param mixed $boost Use false for default boost, else cast to float that should be > 0 or will be treated as false
    */
   public function addField($key, $value, $boost = FALSE) {
     if (!isset($this->_fields[$key])) {
@@ -181,8 +184,7 @@ class ApacheSolrDocument implements IteratorAggregate {
    *
    * @param string $key
    * @param string $value
-   * @param mixed $boost
-   *   Use false for default boost, else cast to float that should be > 0 or will be treated as false
+   * @param mixed $boost Use false for default boost, else cast to float that should be > 0 or will be treated as false
    *
    * @deprecated Use addField(...) instead
    */
@@ -215,8 +217,7 @@ class ApacheSolrDocument implements IteratorAggregate {
    *
    * @param string $key
    * @param mixed $value
-   * @param mixed $boost
-   *   Use false for default boost, else cast to float that should be > 0 or will be treated as false
+   * @param mixed $boost Use false for default boost, else cast to float that should be > 0 or will be treated as false
    */
   public function setField($key, $value, $boost = FALSE) {
     $this->_fields[$key] = $value;
@@ -227,8 +228,7 @@ class ApacheSolrDocument implements IteratorAggregate {
    * Get the currently set field boost for a document field
    *
    * @param string $key
-   * @return float
-   *   currently set field boost, false if one is not set
+   * @return float currently set field boost, false if one is not set
    */
   public function getFieldBoost($key) {
     return isset($this->_fieldBoosts[$key]) ? $this->_fieldBoosts[$key] : FALSE;
@@ -237,10 +237,8 @@ class ApacheSolrDocument implements IteratorAggregate {
   /**
    * Set the field boost for a document field
    *
-   * @param string $key
-   *   field name for the boost
-   * @param mixed $boost
-   *   Use false for default boost, else cast to float that should be > 0 or will be treated as false
+   * @param string $key field name for the boost
+   * @param mixed $boost Use false for default boost, else cast to float that should be > 0 or will be treated as false
    */
   public function setFieldBoost($key, $boost) {
     $boost = (float) $boost;
@@ -283,11 +281,12 @@ class ApacheSolrDocument implements IteratorAggregate {
   /**
    * IteratorAggregate implementation function. Allows usage:
    *
-   * @code
-   *   foreach ($document as $key => $value) {
-   *     ...
-   *   }
-   *
+   * <code>
+   * foreach ($document as $key => $value)
+   * {
+   *   ...
+   * }
+   * </code>
    */
   public function getIterator() {
     $arrayObject = new ArrayObject($this->_fields);
@@ -320,12 +319,12 @@ class ApacheSolrDocument implements IteratorAggregate {
   /**
    * Magic isset for fields values.  Do not call directly. Allows usage:
    *
-   * @code
-   *   isset($document->some_field);
+   * <code>
+   * isset($document->some_field);
+   * </code>
    *
    * @param string $key
    * @return boolean
-   *   Whether the given key is set in the document
    */
   public function __isset($key) {
     return isset($this->_fields[$key]);
@@ -334,8 +333,9 @@ class ApacheSolrDocument implements IteratorAggregate {
   /**
    * Magic unset for field values. Do not call directly. Allows usage:
    *
-   * @code
-   *   unset($document->some_field);
+   * <code>
+   * unset($document->some_field);
+   * </code>
    *
    * @param string $key
    */
@@ -347,10 +347,7 @@ class ApacheSolrDocument implements IteratorAggregate {
   /**
    * Create an XML fragment from a ApacheSolrDocument instance appropriate for use inside a Solr add call
    *
-   * @param ApacheSolrDocument $document
-   *
    * @return string
-   *   an xml formatted string from the given document
    */
   public static function documentToXml(ApacheSolrDocument $document) {
     $xml = '<doc';
