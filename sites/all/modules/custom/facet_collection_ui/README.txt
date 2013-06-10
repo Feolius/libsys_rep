@@ -18,3 +18,7 @@ The structure of variable facet_collection_filters_settings:
 (           -> field_name(for text types)              -> bundle_name                                                                                                          )
 (           -> field_name(for list types)              -> bundle_name                                                                                                          )
 All names and types is machine-readable and in lower case.
+
+Also the module could add into the filter settings node title. In the structure it was represented the next way:
+
+(title -> array of bundle_name
