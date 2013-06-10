@@ -4,7 +4,7 @@
  * Implements hook_block_info()
  */
 function facet_collection_rows_number_selector_block_info() {
-  $blocks['library_rows_number_selector'] = array(
+  $blocks['library_rows_num_selector'] = array(
     'info' => t('Rows number selector')
   );
   return $blocks;
