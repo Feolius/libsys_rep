@@ -74,7 +74,9 @@ function facet_collection_get_default_params() {
   if(isset($_GET['rNum'])){
     $params['rows'] = $_GET['rNum'];
   }else{
-    $params['rows'] = 25;
+    $facet_collection_rows_number_variants = variable_get('facet_collection_rows_number_variants', '25 50 100');
+    $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
+    $params['rows'] = $facet_collection_rows_number_variants[0];
   }
   $params['hl.fl'] = _facet_collection_build_hl_fl_parameter();
   if (!isset($_GET['s'])) {
