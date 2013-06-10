@@ -1,6 +1,6 @@
 <div id="collection_page_tabs">
   <ul>
-    <?php foreach ($content as $view):   kpr($view);die;?>
+    <?php foreach ($content as $view): ?>
       <li id=<?php print 'tab-button-' . $view['#id']; ?>><a
           href=<?php print '#tab-' . $view['#id']; ?> class=<?php print $view['#class']; ?>
           ><?php print $view['#title']; ?></a>
