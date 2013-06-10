@@ -274,6 +274,7 @@ function apachesolr_index_entity_to_documents($item, $env_id) {
   // Restore the user.
   $user = $saved_user;
   drupal_save_session(TRUE);
+
   return $documents;
 }
 
@@ -428,6 +429,12 @@ function _apachesolr_index_process_entity_get_document($entity, $entity_type) {
 /**
  * Returns an array of rows from a query based on an indexing environment.
  * @todo Remove the read only because it is not environment specific
+ *
+ * @param $env_id
+ * @param $entity_type
+ * @param $limit
+ *
+ * @return array list of row to index
  */
 function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
   $rows = array();
