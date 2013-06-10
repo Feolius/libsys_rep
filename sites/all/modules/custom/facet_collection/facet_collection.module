@@ -67,6 +67,12 @@ function facet_collection_get_default_params() {
   $boosts = facet_collection_get_field_boosts();
   $params += apachesolr_search_basic_params();
   unset($params['hl.fl']);
+  unset($params['rows']);
+  if(isset($_GET['rNum'])){
+    $params['rows'] = $_GET['rNum'];
+  }else{
+    $params['rows'] = 25;
+  }
   $params['hl.fl'] = _facet_collection_build_hl_fl_parameter();
   if (!isset($_GET['s'])) {
     $params['defType'] = 'dismax';
