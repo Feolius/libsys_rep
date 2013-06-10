@@ -79,12 +79,12 @@ function entity_reference_primary_media_field_formatter_view($entity_type, $enti
               $element[$delta] = module_invoke($ref_display['module'], 'field_formatter_view', $ref_entity_type, $ref_entity, $ref_field, $ref_instance, $ref_langcode, $ref_items, $ref_display);
             }
           }
-          else{
+          else {
             $tmp_display = $display;
             $tmp_display['type'] = 'entityreference_label';
             $tmp_display['settings']['link'] = TRUE;
             $result = entityreference_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, array(0 => $item), $tmp_display);
-            $element[$delta] =  $result[0];
+            $element[$delta] = $result[0];
           }
         }
       }

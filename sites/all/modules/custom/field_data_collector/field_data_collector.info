@@ -1,0 +1,8 @@
+name = Field Data Collector
+description = "Provides the possibility to collect the data from several entity reference fields into one field"
+package = Media
+core = 7.x
+dependencies[] = entityreference
+
+
+
