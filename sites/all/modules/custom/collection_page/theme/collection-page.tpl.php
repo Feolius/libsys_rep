@@ -2,7 +2,7 @@
   <ul>
     <?php foreach ($content as $view): ?>
       <li id=<?php print 'tab-button-' . $view['#id']; ?>><a
-          href=<?php print '#tab-' . $view['#id']; ?> class=<?php print $view['#class']; ?>
+          href=<?php print '#tab-' . $view['#id']; ?>
           ><?php print $view['#title']; ?></a>
       </li>
     <?php endforeach; ?>
