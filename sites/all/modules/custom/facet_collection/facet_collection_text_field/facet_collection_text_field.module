@@ -4,40 +4,33 @@
  * Implements hook_facet_collection_field_type_info()
  */
 function facet_collection_text_field_facet_collection_field_type_info() {
-  return array(
-    'search' => array('text', 'text_long', 'text_with_summary'),
-  );
+    return array(
+        'search' => array('text', 'text_long', 'text_with_summary'),
+    );
 }
 
 /**
  * Implements hook_facet_collection_index_field()
  */
 function facet_collection_text_field_facet_collection_index_field($filedocument, $node, $field_info) {
-  $field_name = $field_info['field_name'];
-  $index_field_name = 'tm_collection_' . $field_name;
-  $items = field_get_items('node', $node, $field_name);
-  $text = '';
-  if (!empty($items)) {
-    foreach ($items as $item) {
-      $text = $text . apachesolr_clean_text($item['value']) . ' ';
+    $field_name = $field_info['field_name'];
+    $index_field_name = 'tm_collection_' . $field_name;
+    $items = field_get_items('node', $node, $field_name);
+    if (!empty($items)) {
+        $text = '';
+        foreach ($items as $item) {
+            $text = $text . $item['value'];
+            $variables['text'] = $text;
+        }
+        $filedocument->addField($index_field_name, $text);
     }
-    $text = trim($text);
-    $content = $filedocument->getField('content');
-    $content_value = $content['value'];
-    $content_boost = $content['boost'];
-    $content_value = $content_value . $text;
-    $filedocument->content = $content_value;
-    if($content_boost != FALSE){
-      $filedocument->setFieldBoost('content', $content_boost);
-    }
-  }
-  $filedocument->addField($index_field_name, $text);
-  return $filedocument;
+
+    return $filedocument;
 }
 
 /**
  * Implements hook_facet_collection_index_field_name()
  */
-function facet_collection_text_field_facet_collection_index_field_name($field_name) {
-  return 'tm_collection_' . $field_name;
+function facet_collection_text_field_facet_collection_index_field_name($field_info){
+    return 'tm_collection_' . $field_info['field_name'];
 }
