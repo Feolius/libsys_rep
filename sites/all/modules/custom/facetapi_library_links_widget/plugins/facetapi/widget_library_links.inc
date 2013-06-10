@@ -7,7 +7,6 @@ class FacetapiWidgetLibraryLinks extends FacetapiWidgetLinks {
 
   public function execute() {
     $response = $this->makeStatisticQuery();
-
     $environment = apachesolr_default_environment();
     $indexed_bundles = apachesolr_get_index_bundles($environment, 'node');
     $entity_info = entity_get_info('node');
@@ -15,21 +14,18 @@ class FacetapiWidgetLibraryLinks extends FacetapiWidgetLinks {
     foreach ($indexed_bundles as $bundle) {
       if (!isset($element[$bundle])) {
         if(isset($response->facet_counts->facet_fields->bundle->{$bundle})){
-          $count = $response->facet_counts->facet_fields->bundle->{$bundle};
-        }else{
-          $count = FALSE;
-        }
-        $element[$bundle] = array(
+          $element[$bundle] = array(
             '#markup' => $entity_info['bundles'][$bundle]['label'],
             '#path' => arg(0) . '/' . arg(1),
             '#html' => FALSE,
             '#indexed_value' => $bundle,
-            '#count' => $count ? $count : '0',
+            '#count' => $response->facet_counts->facet_fields->bundle->{$bundle},
             '#active' => 0,
             '#item_parents' => array(),
             '#item_children' => array(),
             '#query' => array('f' => array('bundle:' . $bundle)),
-        );
+          );
+        }
       }
     }
     // Sets each item's theme hook, builds item list.

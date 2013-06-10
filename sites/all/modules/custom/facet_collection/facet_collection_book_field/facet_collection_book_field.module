@@ -48,6 +48,6 @@ function facet_collection_book_field_facet_collection_index_field($filedocument,
 /**
  * Implements hook_facet_collection_index_field_name()
  */
-function facet_collection_book_field_facet_collection_index_field_name($field_info){
+function facet_collection_book_field_facet_collection_index_field_name($field_name){
     return 'tm_collection_book_field';
 }
