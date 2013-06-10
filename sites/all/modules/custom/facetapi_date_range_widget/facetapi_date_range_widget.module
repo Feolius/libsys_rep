@@ -42,98 +42,108 @@ function facetapi_date_range_widget_filter_submit($form, &$form_state) {
   $basic_path = $form_state['build_info']['args'][0]['search path'];
   $field_alias = $form_state['build_info']['args'][0]['field alias'];
   $facet_name = $form_state['build_info']['args'][0]['facet name'];
-  $current_status = $form_state['input']['flag'];
-  if ($current_status){
-    //We consider to use dateapi functions instead of facetapi date functions for converting date to ISO format
-    //because it gives better precision and convienience.
-    //Perform smart date fulling for apache solr query.
-    $min_date = $form_state['input']['min_date'];
-    $min_date_parts = explode('/', $min_date);
-    $parts_number = count($min_date_parts);
 
-    //We add the minimal possible date here because we deal with min date field
-    if ($parts_number == 1) {
-      $min_date_full = $min_date . '/01/01';
-    }
-    if ($parts_number == 2) {
-      $min_date_full = $min_date . '/01';
-    }
-    if ($parts_number == 3) {
-      $min_date_full = $min_date;
-    }
-    $date_min_obj = new DateObject($min_date_full, NULL, 'Y/m/d');
-    $max_date = $form_state['input']['max_date'];
-    $max_date_parts = explode('/', $max_date);
-    $parts_number = count($max_date_parts);
+  //We consider to use dateapi functions instead of facetapi date functions for converting date to ISO format
+  //because it gives better precision and convienience.
+  //Perform smart date fulling for apache solr query.
+  $min_date = $form_state['input']['min_date'];
+  $min_date_parts = explode('/', $min_date);
+  $parts_number = count($min_date_parts);
 
-    //We add the max possible date here because we deal with max date field
-    if ($parts_number == 1) {
-      $max_date_full = $max_date . '/12/31';
-    }
-    if ($parts_number == 2) {
-      $month = $max_date_parts[1];
-      $year = $max_date_parts[0];
-      $days_number = date_days_in_month($year, $month);
-      $max_date_full = $max_date . '/' . $days_number;
-    }
-    if ($parts_number == 3) {
-      $max_date_full = $max_date;
-    }
-    $date_max_obj = new DateObject($max_date_full, NULL, 'Y/m/d');
-
-    //Get difference between current min and max dates and absolute. If both limits are matching, we don't need any filter
-    $min_date_array = $date_min_obj->toArray();
-    $min_date_ISO = $date_min_obj->toISO($min_date_array);
-    $max_date_array = $date_max_obj->toArray();
-    $max_date_ISO = $date_max_obj->toISO($max_date_array);
-
-    //Build request
-    $request = $field_alias . ':[' . $min_date_ISO . 'Z TO ' . $max_date_ISO . 'Z]';
-    $merge = TRUE;
-    $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
-    if (isset($get_params['f'])) {
-      $f = $get_params['f'];
-      foreach ($f as $key => $row) {
-        if (strstr($row, $field_alias)) {
-          $f[$key] = $request;
-          $merge = FALSE;
-          break;
-        }
-      }
-      if ($merge) {
-        $f = array_merge($f, array($request));
-      }
-    }
-    else {
-      $f = array($request);
-    }
-    $get_params['f'] = $f;
-    $get_params['min_' . $facet_name] = $min_date;
-    $get_params['max_' . $facet_name] = $max_date;
-    $options = array(
-      'query' => $get_params,
-    );
-  }else{
-    $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
-    if (isset($get_params['f'])) {
-      $f = $get_params['f'];
-      foreach ($f as $key => $row) {
-        if (strstr($row, $field_alias)) {
-          unset($f[$key]);
-          break;
-        }
-      }
-    }
-    $get_params['f'] = $f;
-    if(isset($get_params['min_' . $facet_name])){
-      unset($get_params['min_' . $facet_name]);
-      unset($get_params['max_' . $facet_name]);
-    }
-    $options = array(
-      'query' => $get_params,
-    );
+  //We add the minimal possible date here because we deal with min date field
+  if ($parts_number == 1) {
+    $min_date_full = $min_date . '/01/01';
   }
+  if ($parts_number == 2) {
+    $min_date_full = $min_date . '/01';
+  }
+  if ($parts_number == 3) {
+    $min_date_full = $min_date;
+  }
+  $date_min_obj = new DateObject($min_date_full, NULL, 'Y/m/d');
+  $min_date_array = $date_min_obj->toArray();
+  $min_date_ISO = $date_min_obj->toISO($min_date_array);
+  $max_date = $form_state['input']['max_date'];
+  $max_date_parts = explode('/', $max_date);
+  $parts_number = count($max_date_parts);
 
+  //We add the max possible date here because we deal with max date field
+  if ($parts_number == 1) {
+    $max_date_full = $max_date . '/12/31';
+  }
+  if ($parts_number == 2) {
+    $month = $max_date_parts[1];
+    $year = $max_date_parts[0];
+    $days_number = date_days_in_month($year, $month);
+    $max_date_full = $max_date . '/' . $days_number;
+  }
+  if ($parts_number == 3) {
+    $max_date_full = $max_date;
+  }
+  $date_max_obj = new DateObject($max_date_full, NULL, 'Y/m/d');
+  $max_date_array = $date_max_obj->toArray();
+  $max_date_ISO = $date_max_obj->toISO($max_date_array);
+
+  //Build request
+  $request = $field_alias . ':[' . $min_date_ISO . 'Z TO ' . $max_date_ISO . 'Z]';
+  $merge = TRUE;
+  if (isset($_GET['f'])) {
+    $f = $_GET['f'];
+    foreach ($f as $key => $row) {
+      if (strstr($row, $field_alias)) {
+        $f[$key] = $request;
+        $merge = FALSE;
+        continue;
+      }
+    }
+    if ($merge) {
+      $f = array_merge($f, array($request));
+    }
+  }
+  else {
+    $f = array($request);
+  }
+  $options = array(
+    'query' => array(
+      'f' => $f,
+      'min_' . $facet_name => $min_date,
+      'max_' . $facet_name => $max_date,
+    ),
+  );
+  $form_state['redirect'] = array(
+    $basic_path,
+    $options,
+    302
+  );
+}
+
+/**
+ * Reset callback for date filter form
+ */
+function facetapi_date_range_widget_reset_submit($form, &$form_state) {
+
+  //Find and unset filter query from GET request
+  $options = array();
+  $basic_path = $form_state['build_info']['args'][0]['search path'];
+  $field_alias = $form_state['build_info']['args'][0]['field alias'];
+  if (isset($_GET['f'])) {
+    $f = $_GET['f'];
+    foreach ($f as $key => $row) {
+      if (strstr($row, $field_alias)) {
+        unset($f[$key]);
+        $merge = FALSE;
+        continue;
+      }
+    }
+
+    if (!empty($f)) {
+      $options = array(
+        'query' => array(
+          'f' => $f,
+        ),
+      );
+    }
+  }
   $form_state['redirect'] = array(
     $basic_path,
     $options,
@@ -163,31 +173,6 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
     $max_date = $_GET['max_' . $facet_name];
   }
 
-  //Determine if we need to set this filter as active by default. If there is a needed filter GET param it means that filter should be active
-  $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
-  $is_active = FALSE;
-  if (isset($get_params['f'])) {
-    $f = $get_params['f'];
-    foreach ($f as $row) {
-      $arr = explode(':', $row);
-      if ($arr[0] == $args['field alias']) {
-        $is_active = TRUE;
-        break;
-      }
-    }
-  }
-  $on_status_label = t('Status: On');
-  $off_status_label = t('Status: Off');
-  $switcher_label_on = t('Turn filter On');
-  $switcher_label_off = t('Turn filter Off');
-  if($is_active){
-    $status_label = $on_status_label;
-    $switcher_label = $switcher_label_off;
-  }else{
-    $status_label = $off_status_label;
-    $switcher_label = $switcher_label_on;
-  }
-
   //Unfortunately there can be such situation when few forms with one form id will be in one page.
   //To prevent possible conflicts we should define what HTML form id will this form have and put it in Drupal js settings.
   $form_id = $form_state['build_info']['form_id'];
@@ -209,9 +194,6 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
     $max_datepicker_id = 'facetapi-datepicker-max-' . $facet_name;
     $min_date_id = 'facetapi-range-min-' . $facet_name;
     $max_date_id = 'facetapi-range-max-' . $facet_name;
-    $flag_id =  'facetapi-flag-' . $facet_name;
-    $status_label_id = 'facetapi-status-label-' . $facet_name;
-    $status_switcher_id = 'facetapi-status-switcher-' . $facet_name;
   }
   else {
     $slider_id = 'facetapi-slider-' . $facet_name . '-' . $seen_id;
@@ -219,9 +201,6 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
     $max_datepicker_id = 'facetapi-datepicker-max-' . $facet_name . '-' . $seen_id;
     $min_date_id = 'facetapi-range-min-' . $facet_name . '-' . $seen_id;
     $max_date_id = 'facetapi-range-max-' . $facet_name . '-' . $seen_id;
-    $flag_id =  'facetapi-flag-' . $facet_name . '-' . $seen_id;
-    $status_label_id = 'facetapi-status-label-' . $facet_name . '-' . $seen_id;
-    $status_switcher_id = 'facetapi-status-switcher-' . $facet_name . '-' . $seen_id;
   }
   $settings = array(
     'forms' => array(
@@ -235,13 +214,6 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
         'minValue' => $min_date,
         'maxValue' => $max_date,
         'sliderID' => $slider_id,
-        'flagID' => $flag_id,
-        'statusSwitcherID' => $status_switcher_id,
-        'onStatusLabel' => $on_status_label,
-        'offStatusLabel' => $off_status_label,
-        'statusLabelID' => $status_label_id,
-        'switcherLabelOn' => $switcher_label_on,
-        'switcherLabelOff' => $switcher_label_off
       ),
     ),
     'iconPath' => base_path() . drupal_get_path('module', 'facetapi_date_range_widget') . '/images/calendar.gif',
@@ -257,13 +229,8 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
   $form = array(
     'title' => array(
       '#type' => 'item',
-      '#markup' => '<h3>' . t($label) . '</h3>',
+      '#markup' => '<h3>' . $label . '</h3>',
       '#weight' => -21,
-    ),
-    'status_label' => array(
-      '#type' => 'item',
-      '#markup' => '<div id="' . $status_label_id . '">' . t($status_label) . ' </div>',
-      '#weight' => -13,
     ),
     'min_date_picker' => array(
       '#type' => 'item',
@@ -297,8 +264,7 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
     ),
     'label' => array(
       '#type' => 'item',
-      '#weight' => -14,
-      '#markup' => '<div class="desription">' . t($format) . ' </div>',
+      '#markup' => '<div class="desription">' . $format . ' </div>',
     ),
     'slider' => array(
       '#type' => 'item',
@@ -308,23 +274,14 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
     'filter_button' => array(
       '#type' => 'submit',
       '#value' => t('Filter'),
-      '#weight' => -14,
+      '#weight' => 14,
       '#submit' => array('facetapi_date_range_widget_filter_submit'),
     ),
-    'flag' => array(
-      '#type' => 'hidden',
-      '#default_value' => $is_active,
-      '#attributes' => array(
-        'id' => $flag_id,
-      )
-    ),
-    'status_switcher' => array(
-      '#type' => 'button',
-      '#value' => t($switcher_label),
-      '#attributes' => array(
-        'id' => $status_switcher_id,
-      ),
-      '#weight' => -12,
+    'reset_button' => array(
+      '#type' => 'submit',
+      '#value' => t('Reset'),
+      '#weight' => 15,
+      '#submit' => array('facetapi_date_range_widget_reset_submit'),
     ),
   );
   return $form;

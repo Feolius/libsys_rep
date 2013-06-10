@@ -6,7 +6,7 @@
 
 function facet_collection_search_block_block_info() {
   $blocks['facet_collection_search_block'] = array(
-    'info' => t('Search block for collection')
+      'info' => t('Search block for collection')
   );
   return $blocks;
 }
@@ -40,46 +40,39 @@ function facet_collection_search_block_form($form, &$form_state) {
   }
   $form_id = $form_state['build_info']['form_id'];
   $form[$form_id] = array(
-    '#type' => 'textfield',
-    '#title' => t('Search'),
-    '#title_display' => 'invisible',
-    '#size' => 15,
-    '#default_value' => $default_value,
-    '#attributes' => array('title' => t('Enter the terms you wish to search for.')),
+      '#type' => 'textfield',
+      '#title' => t('Search'),
+      '#title_display' => 'invisible',
+      '#size' => 15,
+      '#default_value' => $default_value,
+      '#attributes' => array('title' => t('Enter the terms you wish to search for.')),
   );
 
   $form['actions'] = array('#type' => 'actions');
-  if (arg(0) == 'library') {
-    $get_value = json_encode(array_diff_key($_GET, array(
-      'q' => 1,
-      'page' => 1,
-      'solrsort' => 1,
-      'retain-filters' => 1
-    )));
-  }
-  else {
+  if (arg(0) == 'library'){
+    $get_value = json_encode(array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1)));
+  }else{
     $get_value = json_encode(array());
   }
   $form['basic']['get'] = array(
-    '#type' => 'hidden',
-    '#default_value' => $get_value,
+      '#type' => 'hidden',
+      '#default_value' => $get_value,
   );
   $form['submit'] = array(
-    '#type' => 'submit',
-    '#submit' => array('facet_collection_search_block_form_submit'),
-    '#value' => t('Search')
+      '#type' => 'submit',
+      '#submit' => array('facet_collection_search_block_form_submit'),
+      '#value' => t('Search')
   );
   if (arg(0) == 'library') {
     $clear_access = TRUE;
-  }
-  else {
+  } else {
     $clear_access = FALSE;
   }
   $form['clear'][] = array(
-    '#type' => 'submit',
-    '#submit' => array('facet_collection_search_block_form_remove_filter'),
-    '#value' => t('Remove filter'),
-    '#access' => $clear_access
+      '#type' => 'submit',
+      '#submit' => array('facet_collection_search_block_form_remove_filter'),
+      '#value' => t('Remove filter'),
+      '#access' => $clear_access
   );
   return $form;
 }
@@ -92,25 +85,75 @@ function facet_collection_search_block_form_submit($form, &$form_state) {
   if ($form_state['values'][$form_id] == '') {
     form_set_error('keys', t('Please enter some keywords.'));
   }
-  $search_query = $form_state['values'][$form_id];
+  $info = search_get_default_module_info();
+  $search_query_string = arg(1);
+  $current_search_queries = array();
+  if (!empty($search_query_string)) {
+    $current_search_queries = explode(' AND ', $search_query_string);
+
+    //We should remove prev query
+    foreach ($current_search_queries as $key => $query) {
+      //Also remove default query *:*
+      if ($query == '*:*') {
+        unset($current_search_queries[$key]);
+      }
+      $query_parts = explode(':', $query);
+      if (count($query_parts) == 1) {
+        unset($current_search_queries[$key]);
+      }
+    }
+  }
+  $current_search_queries[] = trim($form_state['values'][$form_id]);
+  $search_query_string = implode(' AND ', $current_search_queries);
   $get = json_decode($form_state['values']['get'], TRUE);
   //Check if we have filters. If not, then we should set filter by content type files, because it means that we go from another page
-  if (!isset($get['f'])) {
+  if(!isset($get['f'])){
     $get['f'][] = 'bundle:files';
   }
-  if (!empty($search_query)) {
-    $redirect_path = 'library/' . $search_query;
-  }else{
-    $redirect_path = 'library';
+  if(!isset($get['bundle'])){
+
   }
-  $form_state['redirect'] = array($redirect_path, array('query' => $get));
+  if (!empty($search_query_string)) {
+    $redirect_path = 'library/' . $search_query_string;
+  }
+  if (!empty($info) && $info['module'] == 'apachesolr_search') {
+    $form_state['redirect'] = array($redirect_path, array('query' => $get));
+  } else {
+    form_set_error(NULL, t('Search is currently disabled.'), 'error');
+  }
 }
 
 /**
  * Clear callback for search block form
  */
 function facet_collection_search_block_form_remove_filter($form, &$form_state) {
+  $info = search_get_default_module_info();
   $get = json_decode($form_state['values']['get'], TRUE);
-  $redirect_path = 'library';
-  $form_state['redirect'] = array($redirect_path, array('query' => $get));
+  $search_query_string = arg(1);
+  $current_search_queries = array();
+  if (!empty($search_query_string)) {
+    $current_search_queries = explode(' AND ', $search_query_string);
+    //We should find and remove query
+    foreach ($current_search_queries as $key => $query) {
+      //Also remove default query *:*
+      if ($query == '*:*') {
+        unset($current_search_queries[$key]);
+      }
+      $query_parts = explode(':', $query);
+      if (count($query_parts) == 1) {
+        unset($current_search_queries[$key]);
+      }
+    }
+  }
+  $search_query_string = implode(' AND ', $current_search_queries);
+  if (empty($search_query_string)) {
+    $redirect_path = 'library';
+  } else {
+    $redirect_path = 'library/' . $search_query_string;
+  }
+  if (!empty($info) && $info['module'] == 'apachesolr_search') {
+    $form_state['redirect'] = array($redirect_path, array('query' => $get));
+  } else {
+    form_set_error(NULL, t('Search is currently disabled.'), 'error');
+  }
 }

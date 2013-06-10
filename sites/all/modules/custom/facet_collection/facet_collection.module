@@ -10,6 +10,7 @@ function facet_collection_menu() {
     'page callback' => 'facet_collection_page',
     'page arguments' => array(),
     'access arguments' => array('search content'),
+    'file' => 'facet_collection_field_relevancy.inc'
   );
   //This paths are used for displaing collection teasers
   $items['collection-teaser/node'] = array(
