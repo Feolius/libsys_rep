@@ -8,15 +8,14 @@
  * @return
  *   A string containing the breadcrumb output.
  */
-function corporateclean_breadcrumb($variables){
+function corporateclean_breadcrumb($variables) {
   $breadcrumb = $variables['breadcrumb'];
   $breadcrumb_separator=theme_get_setting('breadcrumb_separator','corporateclean');
   
   $show_breadcrumb_home = theme_get_setting('breadcrumb_home');
   if (!$show_breadcrumb_home) {
-  array_shift($breadcrumb);
+    array_shift($breadcrumb);
   }
-  
   if (!empty($breadcrumb)) {
     $breadcrumb[] = drupal_get_title();
     return '<div class="breadcrumb">' . implode(' <span class="breadcrumb-separator">' . $breadcrumb_separator . '</span>', $breadcrumb) . '</div>';

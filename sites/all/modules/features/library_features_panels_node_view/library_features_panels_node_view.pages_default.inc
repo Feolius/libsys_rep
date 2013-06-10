@@ -260,27 +260,6 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->locks = array();
     $display->content['new-7'] = $pane;
     $display->panels['content'][1] = 'new-7';
-    $pane = new stdClass();
-    $pane->pid = 'new-8';
-    $pane->panel = 'right_sidebar';
-    $pane->type = 'block';
-    $pane->subtype = 'collection_pager_block-collection_pager';
-    $pane->shown = TRUE;
-    $pane->access = array();
-    $pane->configuration = array(
-      'override_title' => 0,
-      'override_title_text' => '',
-    );
-    $pane->cache = array();
-    $pane->style = array(
-      'settings' => NULL,
-    );
-    $pane->css = array();
-    $pane->extras = array();
-    $pane->position = 0;
-    $pane->locks = array();
-    $display->content['new-8'] = $pane;
-    $display->panels['right_sidebar'][0] = 'new-8';
   $display->hide_title = PANELS_TITLE_NONE;
   $display->title_pane = 'new-5';
   $handler->conf['display'] = $display;

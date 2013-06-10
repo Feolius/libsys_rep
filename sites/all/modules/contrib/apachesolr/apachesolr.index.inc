@@ -195,9 +195,9 @@ function apachesolr_index_entity_to_documents($item, $env_id) {
   // Always build the content for the index as an anonynmous user to avoid
   // exposing restricted fields and such.
   // @todo Uncomment these lines when we're done debugging, since they break dpm().
-//  global $user;
-//  drupal_save_session(FALSE);
-//  $saved_user = $user;
+  global $user;
+  drupal_save_session(FALSE);
+  $saved_user = $user;
   // Should indexing take place using anon ( default )
   // or as another user
   $uid = variable_get('apachesolr_index_user', 0);
@@ -274,6 +274,7 @@ function apachesolr_index_entity_to_documents($item, $env_id) {
   // Restore the user.
   $user = $saved_user;
   drupal_save_session(TRUE);
+
   return $documents;
 }
 
@@ -428,6 +429,12 @@ function _apachesolr_index_process_entity_get_document($entity, $entity_type) {
 /**
  * Returns an array of rows from a query based on an indexing environment.
  * @todo Remove the read only because it is not environment specific
+ *
+ * @param $env_id
+ * @param $entity_type
+ * @param $limit
+ *
+ * @return array list of row to index
  */
 function apachesolr_index_get_entities_to_index($env_id, $entity_type, $limit) {
   $rows = array();

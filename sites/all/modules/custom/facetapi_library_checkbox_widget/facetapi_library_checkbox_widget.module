@@ -80,7 +80,7 @@ function facetapi_library_checkbox_widget_filter_submit($form, &$form_state){
   $search_path = $form_state['build_info']['args'][0]['search path'];
   $field_alias = $form_state['build_info']['args'][0]['field alias'];
   $checkboxes = $form_state['input']['checkboxes'];
-  foreach($checkboxes as $key => $checkbox) {
+  foreach($checkboxes as $key => $checkbox){
     if(is_null($checkbox)){
       unset($checkboxes[$key]);
     }

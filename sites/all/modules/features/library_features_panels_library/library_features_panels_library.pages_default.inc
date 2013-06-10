@@ -19,18 +19,7 @@ function library_features_panels_library_default_page_manager_pages() {
   $page->access = array(
     'logic' => 'and',
   );
-  $page->menu = array(
-    'type' => 'normal',
-    'title' => 'Library',
-    'name' => 'main-menu',
-    'weight' => '0',
-    'parent' => array(
-      'type' => 'none',
-      'title' => '',
-      'name' => 'navigation',
-      'weight' => '0',
-    ),
-  );
+  $page->menu = '';
   $page->arguments = array();
   $page->conf = array(
     'admin_paths' => FALSE,
@@ -137,7 +126,7 @@ function library_features_panels_library_default_page_manager_pages() {
     $pane->pid = 'new-4';
     $pane->panel = 'right_sidebar';
     $pane->type = 'block';
-    $pane->subtype = 'facet_collection_search_block-facet_collection_search_block';
+    $pane->subtype = 'audio_album-audio_album_block';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
@@ -158,7 +147,7 @@ function library_features_panels_library_default_page_manager_pages() {
     $pane->pid = 'new-5';
     $pane->panel = 'right_sidebar';
     $pane->type = 'block';
-    $pane->subtype = 'facet_collection-content_types_selection';
+    $pane->subtype = 'facetapi-GiIy4zr9Gu0ZSa0bumw1Y9qIIpIDf1wu';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
@@ -175,6 +164,48 @@ function library_features_panels_library_default_page_manager_pages() {
     $pane->locks = array();
     $display->content['new-5'] = $pane;
     $display->panels['right_sidebar'][1] = 'new-5';
+    $pane = new stdClass();
+    $pane->pid = 'new-6';
+    $pane->panel = 'right_sidebar';
+    $pane->type = 'block';
+    $pane->subtype = 'facet_collection-content_types_selection';
+    $pane->shown = TRUE;
+    $pane->access = array();
+    $pane->configuration = array(
+      'override_title' => 0,
+      'override_title_text' => '',
+    );
+    $pane->cache = array();
+    $pane->style = array(
+      'settings' => NULL,
+    );
+    $pane->css = array();
+    $pane->extras = array();
+    $pane->position = 2;
+    $pane->locks = array();
+    $display->content['new-6'] = $pane;
+    $display->panels['right_sidebar'][2] = 'new-6';
+    $pane = new stdClass();
+    $pane->pid = 'new-7';
+    $pane->panel = 'right_sidebar';
+    $pane->type = 'block';
+    $pane->subtype = 'system-navigation';
+    $pane->shown = TRUE;
+    $pane->access = array();
+    $pane->configuration = array(
+      'override_title' => 0,
+      'override_title_text' => '',
+    );
+    $pane->cache = array();
+    $pane->style = array(
+      'settings' => NULL,
+    );
+    $pane->css = array();
+    $pane->extras = array();
+    $pane->position = 3;
+    $pane->locks = array();
+    $display->content['new-7'] = $pane;
+    $display->panels['right_sidebar'][3] = 'new-7';
   $display->hide_title = PANELS_TITLE_NONE;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
