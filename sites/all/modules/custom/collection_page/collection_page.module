@@ -457,3 +457,22 @@ function template_preprocess_collection_search_results(&$variables) {
   }
   $variables['pager'] = theme('pager', array('tags' => NULL));
 }
+
+function collection_page_preprocess_breadcrumb(&$variables) {
+  if (arg(0) == 'node'
+    && is_numeric(arg(1))
+    && (isset($_GET['collection']) && $_GET['collection'] == 'true')
+    && isset($_GET['curr'])) {
+
+    // Build link at library page.
+    $library_get_options = $_GET;
+    unset($library_get_options['query']);
+    unset($library_get_options['numFound']);
+    unset($library_get_options['curr']);
+    unset($library_get_options['collection']);
+    unset($library_get_options['q']);
+
+    $back_to_library_html = l(t('Library'), 'library/' . $_GET['query'], array('query' => $library_get_options));
+    $variables['breadcrumb'][1] = $back_to_library_html;
+  }
+}

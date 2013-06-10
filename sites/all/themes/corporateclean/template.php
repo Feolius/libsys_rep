@@ -17,9 +17,7 @@ function corporateclean_breadcrumb($variables) {
     array_shift($breadcrumb);
   }
   if (!empty($breadcrumb)) {
-    if (!preg_match("/library(.*)/", current_path())) {
-      $breadcrumb[] = drupal_get_title();
-    }
+    $breadcrumb[] = drupal_get_title();
     return '<div class="breadcrumb">' . implode(' <span class="breadcrumb-separator">' . $breadcrumb_separator . '</span>', $breadcrumb) . '</div>';
   }
 }
