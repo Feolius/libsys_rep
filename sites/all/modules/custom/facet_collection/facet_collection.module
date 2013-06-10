@@ -47,6 +47,8 @@ function facet_collection_page() {
   $page = pager_find_page();
   $query->page = $page;
   list($final_query, $response) = apachesolr_do_query($query, $page);
+  $env_id = $query->solr('getId');
+  apachesolr_has_searched($env_id, TRUE);
   $results = apachesolr_search_process_response($response, $final_query);
   $build = theme('facet_collection_search_results__alter', array('results' => $results));
   return $build;
@@ -67,6 +69,12 @@ function facet_collection_get_default_params() {
   $boosts = facet_collection_get_field_boosts();
   $params += apachesolr_search_basic_params();
   unset($params['hl.fl']);
+  unset($params['rows']);
+  if(isset($_GET['rNum'])){
+    $params['rows'] = $_GET['rNum'];
+  }else{
+    $params['rows'] = 25;
+  }
   $params['hl.fl'] = _facet_collection_build_hl_fl_parameter();
   if (!isset($_GET['s'])) {
     $params['defType'] = 'dismax';

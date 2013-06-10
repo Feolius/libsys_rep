@@ -14,12 +14,17 @@ class FacetapiWidgetLibraryLinks extends FacetapiWidgetLinks {
     $element = &$this->build[$this->facet['field alias']];
     foreach ($indexed_bundles as $bundle) {
       if (!isset($element[$bundle])) {
+        if(isset($response->facet_counts->facet_fields->bundle->{$bundle})){
+          $count = $response->facet_counts->facet_fields->bundle->{$bundle};
+        }else{
+          $count = FALSE;
+        }
         $element[$bundle] = array(
             '#markup' => $entity_info['bundles'][$bundle]['label'],
             '#path' => arg(0) . '/' . arg(1),
             '#html' => FALSE,
             '#indexed_value' => $bundle,
-            '#count' => $response->facet_counts->facet_fields->bundle->{$bundle},
+            '#count' => $count ? $count : '0',
             '#active' => 0,
             '#item_parents' => array(),
             '#item_children' => array(),

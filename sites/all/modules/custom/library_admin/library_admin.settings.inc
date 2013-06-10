@@ -72,6 +72,20 @@ function library_admin_settings_form() {
     '#submit' => array('library_admin_clear_temp_folder_submit')
   );
 
+  $form['facet_collection_rows_number_selector'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Rows number selector settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['facet_collection_rows_number_selector']['facet_collection_rows_number_variants'] = array(
+    '#type' => 'textfield',
+    '#title' => t(''),
+    '#description' => t('Space separated variants of possible numbers of results in library page. The first number will be used by default'),
+    '#default_value' => variable_get('facet_collection_rows_number_variants'),
+  );
+
   return system_settings_form($form);
 }
 
