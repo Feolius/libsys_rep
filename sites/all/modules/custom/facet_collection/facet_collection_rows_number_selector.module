@@ -1,0 +1,71 @@
+<?php
+
+/**
+ * Implements hook_block_info()
+ */
+function facet_collection_rows_number_selector_block_info() {
+  $blocks['library_rows_number_selector'] = array(
+    'info' => t('Rows number selector')
+  );
+  return $blocks;
+}
+
+/*
+ * Implements hook_block_view()
+ */
+function facet_collection_rows_number_selector_block_view($delta) {
+  $content = drupal_get_form('facet_collection_rows_number_selector_form');
+  return array(
+    'subject' => t('Rows selector'),
+    'content' => $content,
+  );
+}
+
+/**
+ * Form callback for block form
+ */
+function facet_collection_rows_number_selector_form($form, &$form_state) {
+  $facet_collection_rows_number_variants = variable_get('facet_collection_rows_number_variants', '25 50 100');
+  $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
+  if(isset($_GET['rNum'])){
+    $default_values = array_keys($facet_collection_rows_number_variants, $_GET['rNum']);
+    if(!empty($default_values)){
+      $default_value = $default_values[0];
+    }else{
+      $default_value = 0;
+    }
+  }else{
+    $default_value = 0;
+  }
+  $form = array(
+    'radios' => array(
+      '#type' => 'radios',
+      '#title' => t('Rows number'),
+      '#default_value' => $default_value,
+      '#options' => $facet_collection_rows_number_variants,
+      '#description' => t('Choose number of results shown on search page.'),
+    ),
+    'submit' => array(
+      '#type' => 'submit',
+      '#value' => t('Choose'),
+      '#submit' => array('facet_collection_rows_number_selector_form_submit'),
+    )
+  );
+  return $form;
+}
+
+/**
+ * Submit callback for facet_collection_rows_number_selector_form
+ */
+function facet_collection_rows_number_selector_form_submit($form, &$form_state){
+  $facet_collection_rows_number_variants = variable_get('facet_collection_rows_number_variants');
+  $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
+  $redirect_path = $_GET['q'];
+  $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
+  $get_params['rNum'] = $facet_collection_rows_number_variants[$form_state['input']['radios']['value']];
+  $form_state['redirect'] = array(
+    $redirect_path,
+    array('query' => $get_params),
+    302
+  );
+}

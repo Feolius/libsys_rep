@@ -175,7 +175,6 @@ function facet_collection_block_form($form, &$form_state) {
     $form['filter_button'] = array(
       '#type' => 'submit',
       '#value' => t('Filter'),
-      '#description' => t('Format:'),
       '#weight' => 20,
       '#submit' => array('facet_collection_block_form_submit'),
     );

@@ -1,0 +1,5 @@
+name = Facet Collection Rows Number Selector
+description = Create a block to allow users to change the number of search results shown on the library page
+package = Facet Collection
+core = 7.x
+dependencies[] = facet_collection
