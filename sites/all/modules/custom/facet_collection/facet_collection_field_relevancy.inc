@@ -45,8 +45,10 @@ define('FIELD_TOPICS_BODY_BOOST', '1.0');
  * It's hardcoded function. Return an array with keys are machine field names and values are boost values. This fields will be used in default search.
  * Need to be replaced by admin settings.
  */
-function facet_collection_get_field_boosts(){
+function facet_collection_get_field_boosts($chosen_content_type){
   $boosts = array();
+  $constants = get_defined_constants();
+  $boosts['title'] = $constants[strtoupper($chosen_content_type . '_title_boost')];
   //Files
   $boosts['files_title'] = FILES_TITLE_BOOST;
   $boosts['field_files_description'] = FIELD_FILES_DESCRIPTION_BOOST;
