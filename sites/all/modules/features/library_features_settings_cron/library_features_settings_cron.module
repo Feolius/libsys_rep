@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Library features settings cron feature.
+ */
+
+include_once 'library_features_settings_cron.features.inc';
