@@ -67,7 +67,7 @@ function collection_page_theme() {
  * @param $variables
  * @return string
  */
-function theme_facet_collection_search_results__alter($variables) {kpr($variables);
+function theme_facet_collection_search_results__alter($variables) {
   $results = $variables['results'];
   //Put apache_solr request results into SESSION for process those in timeline data callback
   $_SESSION['collection_page_apache_solr_results'] = $results;
