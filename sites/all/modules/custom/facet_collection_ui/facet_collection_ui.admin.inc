@@ -488,6 +488,82 @@ function facet_collection_ui_filters_overview_form($form, &$form_state, $entity_
   }
 
 
+  //------------------------------Title description---------------------------
+  //By default we need to have posibility to filter by title, but the title is not
+  // like simple field.
+
+  $filter_by_label = 'Title';
+  if (isset($filters['title']['weight'])) {
+    $filter_weight = $filters['title']['weight'];
+  }
+  else {
+    $filter_weight = $row_weight;
+  }
+  $row_weight += 1;
+  $name = 'title';
+  $table['title'] = array(
+    '#attributes' => array('class' => array('draggable', 'tabledrag-leaf')),
+    '#row_type' => 'field',
+    '#region_callback' => 'facet_collection_ui_filters_overview_row_region',
+    '#js_settings' => array(
+      'rowHandler' => 'field',
+    ),
+    'human_name' => array(
+      '#markup' => 'Title',
+    ),
+    'weight' => array(
+      '#type' => 'textfield',
+      '#title' => t('Weight for @title', array('@title' => 'Title')),
+      '#title_display' => 'invisible',
+      '#default_value' => $filter_weight,
+      '#size' => 3,
+      '#attributes' => array('class' => array('field-weight')),
+    ),
+    'parent_wrapper' => array(
+      'parent' => array(
+        '#type' => 'select',
+        '#title' => t('Label filter for @title', array('@title' => 'Title')),
+        '#title_display' => 'invisible',
+        '#options' => $table['#parent_options'],
+        '#empty_value' => '',
+        '#attributes' => array('class' => array('field-parent')),
+        '#parents' => array('fields', $name, 'parent'),
+      ),
+      'hidden_name' => array(
+        '#type' => 'hidden',
+        '#default_value' => $name,
+        '#attributes' => array('class' => array('field-name')),
+      ),
+    ),
+    'filter_by' => array(
+      '#markup' => check_plain($filter_by_label),
+    ),
+  );
+
+  $filter_states['hidden'] = t('Inactive');
+  $filter_states['visible'] = t('Acvite');
+  $filter_current_state = 'hidden';
+  if (isset($filters['title']['state'])) {
+    $filter_current_state = $filters['title']['state'];
+  }
+
+  $table[$name]['state'] = array(
+    'type' => array(
+      '#type' => 'select',
+      '#title' => t('States for @title', array('@title' => 'Title')),
+      '#title_display' => 'invisible',
+      '#options' => $filter_states,
+      '#default_value' => $filter_current_state,
+      '#parents' => array('fields', $name, 'type'),
+      '#attributes' => array('class' => array('field-formatter-type')),
+    ),
+    'settings_edit_form' => array(),
+  );
+
+
+  //------------------------------end Title description---------------------------
+
+
   $form['fields'] = $table;
 
 // In overviews involving nested rows from contributed modules (i.e
@@ -665,39 +741,62 @@ function facet_collection_ui_filters_overview_form_submit($form, &$form_state) {
   //Erase the current bundle entries from existing version of facet_collections_filters_settings
   if (isset($facet_filters[$bundle])) {
     foreach ($facet_filters[$bundle] as $filter_name => $filter) {
-      $field = field_info_field($filter_name);
-      $function = $filterable_type_list[$field['type']] . '_facet_collection_ui_delete_field';
-      if (function_exists($function)) {
-        $function($field, $bundle, $facet_filters_settings, $filter);
+      if ($filter_name == 'title') {
+
+        if ($filter['state'] == 'visible') {
+          if (isset($facet_filters_settings['title'][$bundle])) {
+            unset($facet_filters_settings['title'][$bundle]);
+          }
+          if (isset($facet_filters_settings['filter_order'][$bundle]) && ($key = array_search('title', $facet_filters_settings['filter_order'][$bundle]))) {
+            unset($facet_filters_settings['filter_order'][$bundle][$key]);
+          }
+        }
       }
-      if ($filter['state'] == 'visible') {
-        if (isset($facet_filters_settings['filter_order'][$bundle]) && array_key_exists($field['field_name'], $facet_filters_settings['filter_order'][$bundle])) {
-          unset($facet_filters_settings['filter_order'][$bundle][$filter['weight']]);
+      else {
+        $field = field_info_field($filter_name);
+        $function = $filterable_type_list[$field['type']] . '_facet_collection_ui_delete_field';
+        if (function_exists($function)) {
+          $function($field, $bundle, $facet_filters_settings, $filter);
+        }
+        if ($filter['state'] == 'visible') {
+          if (isset($facet_filters_settings['filter_order'][$bundle]) && ($key = array_search($field['field_name'], $facet_filters_settings['filter_order'][$bundle]))) {
+            unset($facet_filters_settings['filter_order'][$bundle][$key]);
+          }
         }
       }
     }
   }
 
-  //Clear information about current bundle filters orger
+  //Clear information about current bundle filters order
   unset($facet_filters_settings['filter_order'][$bundle]);
 
   //Save changed filters setting in more convenient for apache_solr form at
   //facet_collections_filters_settings common variable
   foreach ($content_type_filters as $filter_name => $filter) {
-    $field = field_info_field($filter_name);
-    $function = $filterable_type_list[$field['type']] . '_facet_collection_ui_add_field';
-    if (function_exists($function)) {
-      $function($field, $bundle, $facet_filters_settings, $filter);
+    if ($filter_name == 'title') {
+      if ($filter['state'] == 'visible') {
+        $facet_filters_settings['title'][$bundle] = $bundle;
+        //Save the filters order in structure for facet_collection module
+        $facet_filters_settings['filter_order'][$bundle][$filter['weight']] = 'title';
+      }
     }
-    //Save the filters order in structure for facet_collection module
-    if ($filter['state'] == 'visible') {
-      $facet_filters_settings['filter_order'][$bundle][$filter['weight']] = $field['field_name'];
+    else {
+      $field = field_info_field($filter_name);
+      $function = $filterable_type_list[$field['type']] . '_facet_collection_ui_add_field';
+      if (function_exists($function)) {
+        $function($field, $bundle, $facet_filters_settings, $filter);
+      }
+      //Save the filters order in structure for facet_collection module
+      if ($filter['state'] == 'visible') {
+        $facet_filters_settings['filter_order'][$bundle][$filter['weight']] = $field['field_name'];
+      }
     }
   }
 
   if (isset($facet_filters_settings['filter_order'][$bundle])) {
     ksort($facet_filters_settings['filter_order'][$bundle]);
   }
+
 
   //Save filters settings at the variables
   $facet_filters[$bundle] = $content_type_filters;
