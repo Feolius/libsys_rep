@@ -179,52 +179,13 @@ function library_admin_get_faq_nodes() {
 }
 
 /**
- * Return array terms of taxonomy.
- */
-function library_admin_get_terms_home_region() {
-  $output = array();
-  if ($term_home_left = taxonomy_term_load(LIBRARY_ADMIN_TAXONOMY_HOME_REGION_HOME_LEFT)) {
-    $output[$term_home_left->tid] = $term_home_left->name;
-  }
-  if ($term_home_right = taxonomy_term_load(LIBRARY_ADMIN_TAXONOMY_HOME_REGION_HOME_RIGHT)) {
-    $output[$term_home_right->tid] = $term_home_right->name;
-  }
-  if ($term_home_middle = taxonomy_term_load(LIBRARY_ADMIN_TAXONOMY_HOME_REGION_HOME_MIDDLE)) {
-    $output[$term_home_middle->tid] = $term_home_middle->name;
-  }
-
-  return $output;
-}
-
-/**
- * Return array terms of taxonomy.
- */
-function library_admin_get_display_for_view_home_top($term) {
-  $display = '';
-  if ($term) {
-    switch ($term) {
-      case LIBRARY_ADMIN_TAXONOMY_HOME_REGION_HOME_LEFT:
-        $display = 'home_left';
-        break;
-
-      case LIBRARY_ADMIN_TAXONOMY_HOME_REGION_HOME_MIDDLE:
-        $display = 'home_middle';
-        break;
-
-      case LIBRARY_ADMIN_TAXONOMY_HOME_REGION_HOME_RIGHT:
-        $display = 'home_right';
-        break;
-
-    }
-
-  }
-  return $display;
-}
-
-/**
  * Implements hook_entity_info_alter().
  */
 function library_admin_entity_info_alter(&$entity_info) {
+  $entity_info['node']['view modes']['home_top'] = array(
+    'label' => t('Home Top'),
+    'custom settings' => TRUE,
+  );
   $entity_info['node']['view modes']['home_left'] = array(
     'label' => t('Home Left'),
     'custom settings' => TRUE,
@@ -237,22 +198,8 @@ function library_admin_entity_info_alter(&$entity_info) {
     'label' => t('Home Right'),
     'custom settings' => TRUE,
   );
-}
-
-/**
- * Home top get node.
- */
-function library_admin_home_get_node($conf) {
-  $cache = &drupal_static(__FUNCTION__);
-
-  if ($type = $conf['home_region']) {
-    $hash = md5(serialize(array($conf['home_region'])));
-    if (!isset($cache[$hash])) {
-      $cache[$hash] = '';
-      $display = library_admin_get_display_for_view_home_top($type);
-      $results = views_embed_view('home_top', $display, $type);
-      $cache[$hash] = $results;
-    }
-  }
-  return $cache[$hash];
+  $entity_info['node']['view modes']['home_bottom'] = array(
+    'label' => t('Home Bottom'),
+    'custom settings' => TRUE,
+  );
 }
