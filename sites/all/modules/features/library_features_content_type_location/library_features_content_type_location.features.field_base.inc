@@ -441,6 +441,96 @@ function library_features_content_type_location_field_default_field_bases() {
     'type' => 'text',
   );
 
+  // Exported field_base: 'field_location_tab_events'
+  $field_bases['field_location_tab_events'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_location_tab_events',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'field_data_collector',
+    'settings' => array(
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'field_data_collector',
+  );
+
+  // Exported field_base: 'field_location_tab_images'
+  $field_bases['field_location_tab_images'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_location_tab_images',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'field_data_collector',
+    'settings' => array(
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'field_data_collector',
+  );
+
+  // Exported field_base: 'field_location_tab_received_docs'
+  $field_bases['field_location_tab_received_docs'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_location_tab_received_docs',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'field_data_collector',
+    'settings' => array(
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'field_data_collector',
+  );
+
+  // Exported field_base: 'field_location_tab_videos'
+  $field_bases['field_location_tab_videos'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_location_tab_videos',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'field_data_collector',
+    'settings' => array(
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'field_data_collector',
+  );
+
+  // Exported field_base: 'field_location_tab_written_docs'
+  $field_bases['field_location_tab_written_docs'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_location_tab_written_docs',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'field_data_collector',
+    'settings' => array(
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'field_data_collector',
+  );
+
   // Exported field_base: 'field_location_visit_date'
   $field_bases['field_location_visit_date'] = array(
     'active' => 1,

@@ -772,6 +772,148 @@ function library_features_content_type_people_field_default_field_bases() {
     'type' => 'text',
   );
 
+  // Exported field_base: 'field_people_tab_events'
+  $field_bases['field_people_tab_events'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_tab_events',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'field_data_collector',
+    'settings' => array(
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'field_data_collector',
+  );
+
+  // Exported field_base: 'field_people_tab_images'
+  $field_bases['field_people_tab_images'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_tab_images',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'field_data_collector',
+    'settings' => array(
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'field_data_collector',
+  );
+
+  // Exported field_base: 'field_people_tab_location'
+  $field_bases['field_people_tab_location'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_tab_location',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'field_data_collector',
+    'settings' => array(
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'field_data_collector',
+  );
+
+  // Exported field_base: 'field_people_tab_received_docs'
+  $field_bases['field_people_tab_received_docs'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_tab_received_docs',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'field_data_collector',
+    'settings' => array(
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'field_data_collector',
+  );
+
+  // Exported field_base: 'field_people_tab_videos'
+  $field_bases['field_people_tab_videos'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_tab_videos',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'field_data_collector',
+    'settings' => array(
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'field_data_collector',
+  );
+
+  // Exported field_base: 'field_people_tab_written_docs'
+  $field_bases['field_people_tab_written_docs'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_tab_written_docs',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'field_data_collector',
+    'settings' => array(
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'field_data_collector',
+  );
+
+  // Exported field_base: 'field_people_tags'
+  $field_bases['field_people_tags'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_tags',
+    'foreign keys' => array(
+      'tid' => array(
+        'columns' => array(
+          'tid' => 'tid',
+        ),
+        'table' => 'taxonomy_term_data',
+      ),
+    ),
+    'indexes' => array(
+      'tid' => array(
+        0 => 'tid',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'taxonomy',
+    'settings' => array(
+      'allowed_values' => array(
+        0 => array(
+          'vocabulary' => 'tags',
+          'parent' => 0,
+        ),
+      ),
+    ),
+    'translatable' => 0,
+    'type' => 'taxonomy_term_reference',
+  );
+
   // Exported field_base: 'field_people_title'
   $field_bases['field_people_title'] = array(
     'active' => 1,
