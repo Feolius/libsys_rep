@@ -450,10 +450,22 @@ function template_preprocess_collection_standard_default_view(&$variables) {
 function template_preprocess_collection_search_results(&$variables) {
   $variables['search_results'] = '';
   $results = $variables['results'];
+  //Number of rows in page
+  if(isset($_GET['rNum'])){
+    $r_num = $_GET['rNum'];
+  }else{
+    $facet_collection_rows_number_variants = variable_get('facet_collection_rows_number_variants', '25 50 100');
+    $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
+    $r_num = $facet_collection_rows_number_variants[0];
+  }
+  $page = pager_find_page();
+  $result_number_in_page = 1;
   foreach ($results as $result) {
     unset($result['user']);
     unset($result['date']);
+    $result['title'] = ($page*$r_num + $result_number_in_page) . '. ' . $result['title'];
     $variables['search_results'] .= theme('search_result', array('result' => $result, 'module' => 'collection_page'));
+    $result_number_in_page++;
   }
   $variables['pager'] = theme('pager', array('tags' => NULL));
 }
