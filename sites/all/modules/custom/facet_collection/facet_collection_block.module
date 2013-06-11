@@ -8,8 +8,8 @@ function facet_collection_block_field_search_form($form, &$form_state, $args) {
   $field_name = $args['field_name'];
   $default_value = '';
   $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
-  if(isset($get_params['s'])){
-    foreach($get_params['s'] as $search_filter){
+  if (isset($get_params['s'])) {
+    foreach ($get_params['s'] as $search_filter) {
       $search_filter_parts = explode(':', $search_filter);
       if ($search_filter_parts[0] == $field_name) {
         $default_value = $search_filter_parts[1];
@@ -46,8 +46,8 @@ function facet_collection_block_field_search_form_submit($form, &$form_state) {
   $value = trim($form_state['input']['textfield']);
   $redirect_path = $_GET['q'];
   $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
-  if(isset($get_params['s'])){
-    foreach($get_params['s'] as $key => $search_filter){
+  if (isset($get_params['s'])) {
+    foreach ($get_params['s'] as $key => $search_filter) {
       $search_filter_parts = explode(':', $search_filter);
       if ($search_filter_parts[0] == $field_name) {
         unset($get_params['s'][$key]);
@@ -82,11 +82,18 @@ function facet_collection_block_block_info() {
  * Implements hook_block_view()
  */
 function facet_collection_block_block_view($delta) {
-  $content = drupal_get_form('facet_collection_block_form');
-  return array(
-    'subject' => t('Filters'),
-    'content' => $content,
-  );
+  //Check if our response contain any search results
+  $searcher_info = facetapi_get_searcher_info();
+  $searchers = array_keys($searcher_info);
+  $searcher = $searchers[0];
+  $response = apachesolr_static_response_cache($searcher);
+  if ($response->response->numFound != 0) {
+    $content = drupal_get_form('facet_collection_block_form');
+    return array(
+      'subject' => t('Filters'),
+      'content' => $content,
+    );
+  }
 }
 
 /**
@@ -151,7 +158,8 @@ function facet_collection_block_form($form, &$form_state) {
       }
     }
   }
-  //Continue with search forms
+
+  // Continue with search forms.
   $search_filters_info = facet_collection_get_search_filters_info();
   $search_deltas = array();
   $last_delta = 1;
@@ -179,7 +187,6 @@ function facet_collection_block_form($form, &$form_state) {
       '#submit' => array('facet_collection_block_form_submit'),
     );
   }
-
   $form_state['build_info']['args'][0]['callbacks'] = $callbacks;
   $form_state['build_info']['args'][0]['facet_deltas'] = $facet_deltas;
   $form_state['build_info']['args'][0]['facet_fields'] = $facet_fields;
@@ -243,9 +250,9 @@ function facet_collection_block_form_submit($form, &$form_state) {
  * Filter parameter can be 'f' or 's'. First case corresponds to facets, second case corresponds to search filters
  */
 function facet_collection_block_fix_get_params($query_part, $facet_field_alias, $filter_parameter) {
-  if(isset($query_part[$filter_parameter])){
+  if (isset($query_part[$filter_parameter])) {
     $new_filters = _facet_collection_block_filters_to_array($query_part[$filter_parameter]);
-    if(isset($_GET[$filter_parameter])){
+    if (isset($_GET[$filter_parameter])) {
       $filters = _facet_collection_block_filters_to_array($_GET[$filter_parameter]);
     }
     foreach ($new_filters as $field_alias => $values) {
@@ -262,8 +269,9 @@ function facet_collection_block_fix_get_params($query_part, $facet_field_alias, 
         $_GET[$key] = $value;
       }
     }
-  }else{
-    if(isset($_GET[$filter_parameter])){
+  }
+  else {
+    if (isset($_GET[$filter_parameter])) {
       $filters = _facet_collection_block_filters_to_array($_GET[$filter_parameter]);
       unset($filters[$facet_field_alias]);
     }

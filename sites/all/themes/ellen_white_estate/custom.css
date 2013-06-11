@@ -319,3 +319,7 @@ a.download {
 #collection-pager-container {
   clear: both;
 }
+
+.panel-node .bottom {
+  clear: both;
+}
