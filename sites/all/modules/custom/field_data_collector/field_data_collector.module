@@ -210,6 +210,7 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
       $target_bundles = $instance['widget']['settings']['target_bundles'];
       $collecting_fields = $instance['widget']['settings']['collecting_fields'];
 
+      
       foreach ($collecting_fields as $collecting_field_name) {
 
         $collecting_field_items = field_get_items($entity_type, $entity, $collecting_field_name);
@@ -365,12 +366,11 @@ function field_data_collector_field_formatter_prepare_view($entity_type, $entiti
   $target_ids = array();
   $unserialized_items = array();
 
-
-  $tmp_array = NULL;
-  $serialized_tmp_array = serialize($tmp_array);
-  dpm($serialized_tmp_array, 'serialized array');
-  $unserialized = unserialize($serialized_tmp_array);
-  dpm($unserialized, 'unserialized');
+//  $tmp_array = NULL;
+//  $serialized_tmp_array = serialize($tmp_array);
+//  dpm($serialized_tmp_array, 'serialized array');
+//  $unserialized = unserialize($serialized_tmp_array);
+//  dpm($unserialized, 'unserialized');
 
   // Collect every possible entity attached to any of the entities.
   foreach ($entities as $id => $entity) {
