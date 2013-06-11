@@ -11,7 +11,7 @@ function field_data_collector_field_info() {
       'label' => t('Field data collector'),
       'description' => t('This field stores data from another fields'),
       'default_widget' => 'field_data_collector_entityreference_widget',
-      'default_formatter' => 'field_data_collector_entityreference_formatter',
+      'default_formatter' => 'field_data_collector_default_formatter',
       'settings' => array(
         'target_type' => 'node',
       ),
@@ -48,6 +48,11 @@ function field_data_collector_field_formatter_info() {
       'settings' => array(
         'content_types_settings' => array(),
       ),
+    ),
+    'field_data_collector_default_formatter' => array(
+      'label' => t('Default'),
+      'field types' => array('field_data_collector'),
+      'description' => t('Display the titles of referenced nodes'),
     ),
   );
 }
@@ -115,7 +120,7 @@ function _field_data_collector_widget_settings_form_process($form, $form_state) 
       '#default_value' => $collecting_fields_settings,
       '#size' => 6,
       '#multiple' => TRUE,
-      '#description' => t('The fields data from whose will be collected into this field. Optional, leave empty for collecting from all bundles.'),
+      '#description' => t('The fields data from whose will be collected into this field.'),
       '#ajax' => array(
         'callback' => '_field_data_collector_widget_settings_ajax_callback',
         'wrapper' => 'target_bundles_checkboxes',
@@ -210,11 +215,11 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
       $target_bundles = $instance['widget']['settings']['target_bundles'];
       $collecting_fields = $instance['widget']['settings']['collecting_fields'];
 
-      
       foreach ($collecting_fields as $collecting_field_name) {
 
         $collecting_field_items = field_get_items($entity_type, $entity, $collecting_field_name);
         $origin_collecting_field_items = field_get_items($entity_type, $entity->original, $collecting_field_name);
+
 
         if ($collecting_field_items != $origin_collecting_field_items) {
 
@@ -265,9 +270,9 @@ function field_data_collector_field_is_empty($item, $field) {
  */
 function field_data_collector_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
-  $settings = $display['settings']['content_types_settings'];
 
   if ($display['type'] == 'field_data_collector_entityreference_formatter' && !empty($items)) {
+    $settings = $display['settings']['content_types_settings'];
     foreach ($items as $delta => $item) {
       $target_entity = isset($item['entity']) ? $item['entity'] : NULL;
 
@@ -354,8 +359,26 @@ function field_data_collector_field_formatter_view($entity_type, $entity, $field
       }
     }
   }
+  if ($display['type'] == 'field_data_collector_default_formatter') {
+
+    foreach ($items as $delta => $item) {
+      $target_entity = isset($item['entity']) ? $item['entity'] : NULL;
+      if (!empty($target_entity)) {
+        $label = $target_entity->title;
+        // If the link is to be displayed and the entity has a uri, display a link.
+        // Note the assignment ($url = ) here is intended to be an assignment.
+        if (($uri = entity_uri($field['settings']['target_type'], $target_entity))) {
+          $element[$delta] = array('#markup' => l($label, $uri['path'], $uri['options']));
+        }
+        else {
+          $element[$delta] = array('#markup' => check_plain($label));
+        }
+      }
+    }
+  }
 
   return $element;
+
 }
 
 
@@ -387,11 +410,10 @@ function field_data_collector_field_formatter_prepare_view($entity_type, $entiti
       }
     }
   }
-  $items = array_values($unserialized_items);
+
   if ($target_ids) {
     $target_entities = entity_load($field['settings']['target_type'], $target_ids);
     foreach ($entities as $id => $entity) {
-      $items[$id]['entity'] = 'node';
       foreach ($unserialized_items[$id] as $delta => $target_id) {
         // Check whether the referenced entity could be loaded.
         if (isset($target_entities[$target_id])) {
@@ -913,26 +935,55 @@ function _field_data_collector_field_formatter_settings_callback($form, $form_st
  * Implements hook_field_formatter_settings_summary().
  */
 function field_data_collector_field_formatter_settings_summary($field, $instance, $view_mode) {
-  $settings = $instance['display'][$view_mode]['settings']['content_types_settings'];
+  $display = $instance['display'][$view_mode];
+
+
   $summary = '';
-  $entity_info = entity_get_info('node');
-  foreach ($settings as $bundle => $bundle_settings) {
-    $bundle_label = $entity_info['bundles'][$bundle]['label'];
-    $summary .= "For bundle " . $bundle_label . " ";
-    if ($bundle_settings['primary_media_field'] != 'none') {
-      $primary_media_field_formatter_and_field_for_values_settings = $bundle_settings['primary_media_values_fields_with_formatters'];
 
-      $primary_media_field_instance = field_info_instance($field['settings']['target_type'], $bundle_settings['primary_media_field'], $bundle);
-      $primary_media_field_instance_label = $primary_media_field_instance['label'];
+  if ($display['type'] == 'field_data_collector_entityreference_formatter') {
 
-      $summary .= "primary media field - " . $primary_media_field_instance_label . " <br>";
+    $settings = $display['settings']['content_types_settings'];
+    $entity_info = entity_get_info('node');
+    foreach ($settings as $bundle => $bundle_settings) {
+      $bundle_label = $entity_info['bundles'][$bundle]['label'];
+      $summary .= "For bundle " . $bundle_label . " ";
+      if ($bundle_settings['primary_media_field'] != 'none') {
+        $primary_media_field_formatter_and_field_for_values_settings = $bundle_settings['primary_media_values_fields_with_formatters'];
 
-      $primary_media_field = field_info_field($bundle_settings['primary_media_field']);
-      $primary_media_field_allowed_values = $primary_media_field['settings']['allowed_values'];
+        $primary_media_field_instance = field_info_instance($field['settings']['target_type'], $bundle_settings['primary_media_field'], $bundle);
+        $primary_media_field_instance_label = $primary_media_field_instance['label'];
 
-      foreach ($primary_media_field_formatter_and_field_for_values_settings as $primary_field_value => $formatter_and_field_settings) {
-        $primary_media_field_value_label = $primary_media_field_allowed_values[$primary_field_value];
+        $summary .= "primary media field - " . $primary_media_field_instance_label . " <br>";
 
+        $primary_media_field = field_info_field($bundle_settings['primary_media_field']);
+        $primary_media_field_allowed_values = $primary_media_field['settings']['allowed_values'];
+
+        foreach ($primary_media_field_formatter_and_field_for_values_settings as $primary_field_value => $formatter_and_field_settings) {
+          $primary_media_field_value_label = $primary_media_field_allowed_values[$primary_field_value];
+
+          if ($formatter_and_field_settings['field_for_value'] != 'none') {
+
+            if ($formatter_and_field_settings['formatter_for_field']['formatter'] != 'none') {
+
+              $field_info = field_info_field($formatter_and_field_settings['field_for_value']);
+              $formatters_option_list = field_ui_formatter_options($field_info['type']);
+              $formatter_label = $formatters_option_list[$formatter_and_field_settings['formatter_for_field']['formatter']];
+
+              $field_instance = field_info_instance($field['settings']['target_type'], $formatter_and_field_settings['field_for_value'], $bundle);
+              $field_instance_label = $field_instance['label'];
+
+              $summary .= "for value " . $primary_media_field_value_label . " : field - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
+
+            }
+          }
+        }
+      }
+      else {
+        $summary .= "primary media field - none<br>";
+
+        $primary_media_field_value = 'default';
+        $primary_media_field_formatter_and_field_for_values_settings = $bundle_settings['primary_media_values_fields_with_formatters'];
+        $formatter_and_field_settings = $primary_media_field_formatter_and_field_for_values_settings[$primary_media_field_value];
         if ($formatter_and_field_settings['field_for_value'] != 'none') {
 
           if ($formatter_and_field_settings['formatter_for_field']['formatter'] != 'none') {
@@ -944,39 +995,18 @@ function field_data_collector_field_formatter_settings_summary($field, $instance
             $field_instance = field_info_instance($field['settings']['target_type'], $formatter_and_field_settings['field_for_value'], $bundle);
             $field_instance_label = $field_instance['label'];
 
-            $summary .= "for value " . $primary_media_field_value_label . " : field - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
+            $summary .= $primary_media_field_value . " : field - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
 
           }
         }
       }
     }
-    else {
-      $summary .= "primary media field - none<br>";
 
-      $primary_media_field_value = 'default';
-      $primary_media_field_formatter_and_field_for_values_settings = $bundle_settings['primary_media_values_fields_with_formatters'];
-      $formatter_and_field_settings = $primary_media_field_formatter_and_field_for_values_settings[$primary_media_field_value];
-      if ($formatter_and_field_settings['field_for_value'] != 'none') {
-
-        if ($formatter_and_field_settings['formatter_for_field']['formatter'] != 'none') {
-
-          $field_info = field_info_field($formatter_and_field_settings['field_for_value']);
-          $formatters_option_list = field_ui_formatter_options($field_info['type']);
-          $formatter_label = $formatters_option_list[$formatter_and_field_settings['formatter_for_field']['formatter']];
-
-          $field_instance = field_info_instance($field['settings']['target_type'], $formatter_and_field_settings['field_for_value'], $bundle);
-          $field_instance_label = $field_instance['label'];
-
-          $summary .= $primary_media_field_value . " : field - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
-
-        }
-      }
+    if (empty($settings)) {
+      $summary = 'No settings was predefined';
     }
   }
 
-  if (empty($settings)) {
-    $summary = 'No settings was predefined';
-  }
 
   return $summary;
 }
