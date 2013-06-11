@@ -206,8 +206,10 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
   foreach ($instances as $instance) {
     if ($instance['widget']['type'] == 'field_data_collector_entityreference_widget') {
       $collector_field_field_items = array();
+      $collecting_fields_could_have_needed_items = FALSE;
       $target_bundles = $instance['widget']['settings']['target_bundles'];
       $collecting_fields = $instance['widget']['settings']['collecting_fields'];
+
       foreach ($collecting_fields as $collecting_field_name) {
 
         $collecting_field_items = field_get_items($entity_type, $entity, $collecting_field_name);
@@ -244,7 +246,6 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
           ),
         );
       }
-      break;
     }
   }
 }
@@ -363,6 +364,13 @@ function field_data_collector_field_formatter_view($entity_type, $entity, $field
 function field_data_collector_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items, $displays) {
   $target_ids = array();
   $unserialized_items = array();
+
+
+  $tmp_array = NULL;
+  $serialized_tmp_array = serialize($tmp_array);
+  dpm($serialized_tmp_array, 'serialized array');
+  $unserialized = unserialize($serialized_tmp_array);
+  dpm($unserialized, 'unserialized');
 
   // Collect every possible entity attached to any of the entities.
   foreach ($entities as $id => $entity) {
