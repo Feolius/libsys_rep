@@ -2,6 +2,7 @@ name = Library features content type files
 description = library_features_content_type_files
 core = 7.x
 package = Library
+php = 5.2.4
 version = 7.x-1.0
 project = library_features_content_type_files
 dependencies[] = book_field
