@@ -84,12 +84,16 @@ function library_features_panels_home_default_page_manager_pages() {
   $display->panels = array();
     $pane = new stdClass();
     $pane->pid = 'new-1';
-    $pane->panel = 'left';
-    $pane->type = 'welcome_block';
-    $pane->subtype = 'welcome_block';
+    $pane->panel = 'bottom';
+    $pane->type = 'views_panes';
+    $pane->subtype = 'homepage-home_bottom';
     $pane->shown = TRUE;
     $pane->access = array();
-    $pane->configuration = array();
+    $pane->configuration = array(
+      'arguments' => array(
+        'title' => '',
+      ),
+    );
     $pane->cache = array();
     $pane->style = array(
       'settings' => NULL,
@@ -99,19 +103,18 @@ function library_features_panels_home_default_page_manager_pages() {
     $pane->position = 0;
     $pane->locks = array();
     $display->content['new-1'] = $pane;
-    $display->panels['left'][0] = 'new-1';
+    $display->panels['bottom'][0] = 'new-1';
     $pane = new stdClass();
     $pane->pid = 'new-2';
-    $pane->panel = 'top';
-    $pane->type = 'home_top_block';
-    $pane->subtype = 'home_top_block';
+    $pane->panel = 'left';
+    $pane->type = 'views_panes';
+    $pane->subtype = 'homepage-home_left';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
-      'override_title' => 0,
-      'override_title_text' => '',
-      'menu' => 'devel',
-      'tags' => '3',
+      'arguments' => array(
+        'field_home_region_tid' => '',
+      ),
     );
     $pane->cache = array();
     $pane->style = array(
@@ -122,19 +125,18 @@ function library_features_panels_home_default_page_manager_pages() {
     $pane->position = 0;
     $pane->locks = array();
     $display->content['new-2'] = $pane;
-    $display->panels['top'][0] = 'new-2';
+    $display->panels['left'][0] = 'new-2';
     $pane = new stdClass();
     $pane->pid = 'new-3';
-    $pane->panel = 'top';
-    $pane->type = 'home_top_block';
-    $pane->subtype = 'home_top_block';
+    $pane->panel = 'middle';
+    $pane->type = 'views_panes';
+    $pane->subtype = 'homepage-home_middle';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
-      'override_title' => 0,
-      'override_title_text' => '',
-      'menu' => 'devel',
-      'tags' => '5',
+      'arguments' => array(
+        'field_home_region_tid' => '',
+      ),
     );
     $pane->cache = array();
     $pane->style = array(
@@ -142,22 +144,21 @@ function library_features_panels_home_default_page_manager_pages() {
     );
     $pane->css = array();
     $pane->extras = array();
-    $pane->position = 1;
+    $pane->position = 0;
     $pane->locks = array();
     $display->content['new-3'] = $pane;
-    $display->panels['top'][1] = 'new-3';
+    $display->panels['middle'][0] = 'new-3';
     $pane = new stdClass();
     $pane->pid = 'new-4';
-    $pane->panel = 'top';
-    $pane->type = 'home_top_block';
-    $pane->subtype = 'home_top_block';
+    $pane->panel = 'right';
+    $pane->type = 'views_panes';
+    $pane->subtype = 'homepage-home_right';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
-      'override_title' => 0,
-      'override_title_text' => '',
-      'menu' => 'devel',
-      'tags' => '5789',
+      'arguments' => array(
+        'field_home_region_tid' => '',
+      ),
     );
     $pane->cache = array();
     $pane->style = array(
@@ -165,10 +166,32 @@ function library_features_panels_home_default_page_manager_pages() {
     );
     $pane->css = array();
     $pane->extras = array();
-    $pane->position = 2;
+    $pane->position = 0;
     $pane->locks = array();
     $display->content['new-4'] = $pane;
-    $display->panels['top'][2] = 'new-4';
+    $display->panels['right'][0] = 'new-4';
+    $pane = new stdClass();
+    $pane->pid = 'new-5';
+    $pane->panel = 'top';
+    $pane->type = 'views_panes';
+    $pane->subtype = 'homepage-home_top';
+    $pane->shown = TRUE;
+    $pane->access = array();
+    $pane->configuration = array(
+      'arguments' => array(
+        'title' => '',
+      ),
+    );
+    $pane->cache = array();
+    $pane->style = array(
+      'settings' => NULL,
+    );
+    $pane->css = array();
+    $pane->extras = array();
+    $pane->position = 0;
+    $pane->locks = array();
+    $display->content['new-5'] = $pane;
+    $display->panels['top'][0] = 'new-5';
   $display->hide_title = PANELS_TITLE_NONE;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;

@@ -12,7 +12,7 @@
  *   $content['middle']: The only panel in the layout.
  */
 ?>
-<div class="panel-panel panel-node">
+<div class="panel-panel panel-library">
   <?php if (!empty($content['breadcrumb']) || !empty($content['content'])) : ?>
     <div id="main">
       <?php if (!empty($content['breadcrumb'])): ?>
@@ -28,11 +28,6 @@
   <?php if (!empty($content['right_sidebar'])): ?>
     <div id="sidebar">
       <?php print $content['right_sidebar']; ?>
-    </div>
-  <?php endif; ?>
-  <?php if (!empty($content['bottom'])): ?>
-    <div class="node-bottom">
-      <?php print $content['bottom']; ?>
     </div>
   <?php endif; ?>
 </div>
