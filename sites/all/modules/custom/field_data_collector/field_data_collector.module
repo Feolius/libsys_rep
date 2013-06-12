@@ -1,7 +1,5 @@
 <?php
 
-
-
 /**
  * Implements hook_field_info().
  */
@@ -14,24 +12,21 @@ function field_data_collector_field_info() {
       'default_formatter' => 'field_data_collector_default_formatter',
       'settings' => array(
         'target_type' => 'node',
+        'collecting_fields' => array(),
+        'target_bundles' => array(),
       ),
     ),
   );
 }
-
 
 /**
  * Implements hook_field_widget_info().
  */
 function field_data_collector_field_widget_info() {
   return array(
-    'field_data_collector_entityreference_widget' => array(
-      'label' => t('Field data collector for Entity Reference'),
+    'field_data_collector_default_widget' => array(
+      'label' => t('Field data collector'),
       'field types' => array('field_data_collector'),
-      'settings' => array(
-        'collecting_fields' => array(),
-        'target_bundles' => array(),
-      ),
     ),
   );
 }
@@ -60,34 +55,30 @@ function field_data_collector_field_formatter_info() {
 /**
  * Implements hook_field_widget_settings_form().
  */
-function field_data_collector_field_widget_settings_form($field, $instance) {
+function field_data_collector_field_settings_form($field, $instance, $has_data) {
   // The field settings infrastructure is not AJAX enabled by default,
   // because it doesn't pass over the $form_state.
   // Build the whole form into a #process in which we actually have access
   // to the form state.
-  $form = array();
-  $widget = $instance['widget'];
 
-  if ($widget['type'] == 'field_data_collector_entityreference_widget') {
-    $form = array(
-      '#type' => 'container',
-      '#process' => array(
-        '_field_data_collector_widget_settings_form_process',
-      ),
-      '#field' => $field,
-      '#instance' => $instance,
-    );
-  }
+  $form = array(
+    '#type' => 'container',
+    '#process' => array(
+      '_field_data_collector_field_settings_form_process',
+    ),
+    '#field' => $field,
+    '#instance' => $instance,
+    '#has_data' => $has_data,
+  );
+
   return $form;
 }
 
-function _field_data_collector_widget_settings_form_process($form, $form_state) {
+function _field_data_collector_field_settings_form_process($form, $form_state) {
   $field = isset($form_state['field_data_collector']['field']) ? $form_state['field_data_collector']['field'] : $form['#field'];
   $instance = isset($form_state['field_data_collector']['instance']) ? $form_state['field_data_collector']['instance'] : $form['#instance'];
 
-  $widget = $instance['widget'];
-  $settings = $widget['settings'] + field_info_widget_settings($widget['type']);
-
+  $settings = $field['settings'];
 
   $bundle = $instance['bundle'];
   $instances = field_info_instances('node', $bundle);
@@ -109,8 +100,8 @@ function _field_data_collector_widget_settings_form_process($form, $form_state) 
 
     $collecting_fields_settings = $settings['collecting_fields'];
 
-    $collecting_fields_settings = isset($form_state['values']['instance']['widget']['settings']['collecting_fields'])
-      ? $form_state['values']['instance']['widget']['settings']['collecting_fields']
+    $collecting_fields_settings = isset($form_state['values']['field']['settings']['collecting_fields'])
+      ? $form_state['values']['field']['settings']['collecting_fields']
       : $collecting_fields_settings;
 
     $form['collecting_fields'] = array(
@@ -122,7 +113,7 @@ function _field_data_collector_widget_settings_form_process($form, $form_state) 
       '#multiple' => TRUE,
       '#description' => t('The fields data from whose will be collected into this field.'),
       '#ajax' => array(
-        'callback' => '_field_data_collector_widget_settings_ajax_callback',
+        'callback' => '_field_data_collector_field_settings_ajax_callback',
         'wrapper' => 'target_bundles_checkboxes',
         'method' => 'replace',
         'effect' => 'fade',
@@ -186,8 +177,8 @@ function _field_data_collector_widget_settings_form_process($form, $form_state) 
  * @param $form_state
  * @return mixed
  */
-function _field_data_collector_widget_settings_ajax_callback($form, $form_state) {
-  return $form['instance']['widget']['settings']['target_bundles'];
+function _field_data_collector_field_settings_ajax_callback($form, $form_state) {
+  return $form['field']['settings']['target_bundles'];
 }
 
 /**
@@ -209,11 +200,12 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
   $bundle = $entity->type;
   $instances = field_info_instances($entity_type, $bundle);
   foreach ($instances as $instance) {
-    if ($instance['widget']['type'] == 'field_data_collector_entityreference_widget') {
+    $field = field_info_field($instance['field_name']);
+    if ($field['type'] == 'field_data_collector') {
       $collector_field_field_items = array();
       $collecting_fields_could_have_needed_items = FALSE;
-      $target_bundles = $instance['widget']['settings']['target_bundles'];
-      $collecting_fields = $instance['widget']['settings']['collecting_fields'];
+      $target_bundles = $field['settings']['target_bundles'];
+      $collecting_fields = $field['settings']['collecting_fields'];
 
       foreach ($collecting_fields as $collecting_field_name) {
 
@@ -443,7 +435,7 @@ function field_data_collector_field_formatter_settings_form($field, $instance, $
     : array();
 
   $target_type = 'node';
-  $target_bundles = $instance['widget']['settings']['target_bundles'];
+  $target_bundles = $field['settings']['target_bundles'];
   $optional_primary_media_fields = array();
 
   foreach ($target_bundles as $target_bundle => $target_bundle_widget_value) {
@@ -915,7 +907,7 @@ function _field_data_collector_field_formatter_callback($form, $form_state) {
   foreach ($array_parents as $key) {
     $temp_form = & $temp_form[$key];
   }
-  return $temp_form['formatter_for_field'];
+  return $form['formatter_for_field'];
 }
 
 /*
