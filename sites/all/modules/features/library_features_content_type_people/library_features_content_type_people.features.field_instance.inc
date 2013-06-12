@@ -40,19 +40,19 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 9,
       ),
       'home_left' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 2,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 9,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -64,7 +64,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 32,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -88,7 +88,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'taxonomy_autocomplete',
-      'weight' => 31,
+      'weight' => 58,
     ),
   );
 
@@ -122,19 +122,19 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 12,
       ),
       'home_left' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 13,
+        'weight' => 14,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 12,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -146,7 +146,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 33,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -178,7 +178,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'year_range' => '-3:+3',
       ),
       'type' => 'library_date_field_text',
-      'weight' => 26,
+      'weight' => 51,
     ),
   );
 
@@ -214,19 +214,19 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 13,
       ),
       'home_left' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 12,
+        'weight' => 13,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 13,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -238,7 +238,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 34,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -263,7 +263,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete_tags',
-      'weight' => 27,
+      'weight' => 53,
     ),
   );
 
@@ -299,19 +299,19 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 14,
       ),
       'home_left' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 14,
+        'weight' => 15,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 14,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -323,7 +323,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 14,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -348,7 +348,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 17,
+      'weight' => 41,
     ),
   );
 
@@ -388,13 +388,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 23,
+        'weight' => 24,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 24,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -406,7 +406,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 23,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -430,7 +430,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 14,
+      'weight' => 38,
     ),
   );
 
@@ -470,13 +470,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 28,
+        'weight' => 29,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 29,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -488,7 +488,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 5,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -563,13 +563,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 26,
+        'weight' => 27,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 27,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -581,7 +581,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 26,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -605,7 +605,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 12,
+      'weight' => 36,
     ),
   );
 
@@ -645,13 +645,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 20,
+        'weight' => 21,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 20,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -663,7 +663,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 35,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -733,13 +733,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 16,
+        'weight' => 17,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 16,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -751,7 +751,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 16,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -775,7 +775,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 7,
+      'weight' => 31,
     ),
   );
 
@@ -815,13 +815,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 27,
+        'weight' => 28,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 28,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -833,7 +833,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 28,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -897,13 +897,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 8,
+        'weight' => 9,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 7,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -915,7 +915,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 3,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -947,7 +947,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'year_range' => '-3:+3',
       ),
       'type' => 'library_date_field_text',
-      'weight' => 24,
+      'weight' => 49,
     ),
   );
 
@@ -989,13 +989,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 2,
+        'weight' => 3,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 1,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -1007,7 +1007,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 2,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1032,7 +1032,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 22,
+      'weight' => 47,
     ),
   );
 
@@ -1072,21 +1072,23 @@ function library_features_content_type_people_field_default_field_instances() {
       ),
       'home_left' => array(
         'label' => 'hidden',
-        'module' => 'image',
-        'settings' => array(
-          'image_link' => 'content',
-          'image_style' => 'home-image-full',
-        ),
-        'type' => 'image',
-        'weight' => 0,
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 1,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 21,
       ),
       'home_right' => array(
+        'label' => 'hidden',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 1,
+      ),
+      'home_top' => array(
         'label' => 'hidden',
         'module' => 'image',
         'settings' => array(
@@ -1094,12 +1096,6 @@ function library_features_content_type_people_field_default_field_instances() {
           'image_style' => 'home-image-full',
         ),
         'type' => 'image',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
         'weight' => 0,
       ),
       'rendered_in_node' => array(
@@ -1182,13 +1178,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 21,
+        'weight' => 22,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 22,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -1200,7 +1196,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 21,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1282,7 +1278,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 22,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1346,13 +1342,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 9,
+        'weight' => 10,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 8,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -1364,7 +1360,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 8,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1436,13 +1432,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 17,
+        'weight' => 18,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 17,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -1454,7 +1450,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 17,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1522,13 +1518,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 24,
+        'weight' => 25,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 25,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -1540,7 +1536,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 24,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1563,7 +1559,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'display_label' => 0,
       ),
       'type' => 'options_onoff',
-      'weight' => 15,
+      'weight' => 39,
     ),
   );
 
@@ -1623,7 +1619,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 12,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1690,13 +1686,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 7,
+        'weight' => 8,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 6,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -1708,7 +1704,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 31,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1775,13 +1771,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 6,
+        'weight' => 7,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 5,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -1793,7 +1789,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 6,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1878,7 +1874,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 19,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -1951,13 +1947,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 4,
+        'weight' => 5,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 3,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -1969,7 +1965,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 4,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -2052,7 +2048,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 15,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -2134,7 +2130,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 27,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -2218,7 +2214,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 10,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -2313,7 +2309,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 13,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -2397,7 +2393,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 9,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -2483,7 +2479,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 7,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -2567,7 +2563,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 25,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -2659,7 +2655,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 20,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -2723,13 +2719,13 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 25,
+        'weight' => 26,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 26,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -2741,7 +2737,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 36,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -2765,7 +2761,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 13,
+      'weight' => 37,
     ),
   );
 
@@ -2799,19 +2795,19 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 2,
       ),
       'home_left' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 3,
+        'weight' => 4,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 2,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -2823,7 +2819,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 29,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -2891,19 +2887,19 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 4,
       ),
       'home_left' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 5,
+        'weight' => 6,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 4,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -2915,7 +2911,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 30,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -3000,7 +2996,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 18,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -3096,7 +3092,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 11,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -3147,9 +3143,14 @@ function library_features_content_type_people_field_default_field_instances() {
         'weight' => 33,
       ),
       'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
+        'label' => 'hidden',
+        'module' => 'title',
+        'settings' => array(
+          'title_class' => '',
+          'title_link' => '',
+          'title_style' => '',
+        ),
+        'type' => 'title_linked',
         'weight' => 0,
       ),
       'home_left' => array(
@@ -3161,25 +3162,40 @@ function library_features_content_type_people_field_default_field_instances() {
           'title_style' => 'h2',
         ),
         'type' => 'title_linked',
-        'weight' => 1,
+        'weight' => 0,
       ),
       'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
+        'label' => 'hidden',
+        'module' => 'title',
+        'settings' => array(
+          'title_class' => '',
+          'title_link' => '',
+          'title_style' => '',
+        ),
+        'type' => 'title_linked',
         'weight' => 0,
       ),
       'home_right' => array(
         'label' => 'hidden',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 1,
+        'module' => 'title',
+        'settings' => array(
+          'title_class' => '',
+          'title_link' => '',
+          'title_style' => '',
+        ),
+        'type' => 'title_linked',
+        'weight' => 0,
       ),
       'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
+        'label' => 'hidden',
+        'module' => 'title',
+        'settings' => array(
+          'title_class' => '',
+          'title_link' => 'content',
+          'title_style' => 'h2',
+        ),
+        'type' => 'title_linked',
+        'weight' => 1,
       ),
       'teaser' => array(
         'label' => 'above',
