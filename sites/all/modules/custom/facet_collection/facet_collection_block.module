@@ -87,7 +87,7 @@ function facet_collection_block_block_view($delta) {
   $searchers = array_keys($searcher_info);
   $searcher = $searchers[0];
   $response = apachesolr_static_response_cache($searcher);
-  if ($response->response->numFound != 0) {
+  if (!empty($response->response->numFound)) {
     $content = drupal_get_form('facet_collection_block_form');
     return array(
       'subject' => t('Filters'),
