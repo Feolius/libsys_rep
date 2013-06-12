@@ -42,7 +42,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 15,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -54,7 +54,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 11,
+        'weight' => 16,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -66,7 +66,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 11,
+        'weight' => 17,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -125,7 +125,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 21,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -137,7 +137,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 16,
+        'weight' => 21,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -149,7 +149,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 16,
+        'weight' => 21,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -208,7 +208,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 17,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -220,7 +220,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 14,
+        'weight' => 19,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -232,7 +232,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 15,
+        'weight' => 20,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -290,7 +290,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 2,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -302,7 +302,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 6,
+        'weight' => 11,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -314,7 +314,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 4,
+        'weight' => 11,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -382,7 +382,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 10,
       ),
       'home_left' => array(
         'label' => 'hidden',
@@ -394,7 +394,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'hidden',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 2,
+        'weight' => 7,
       ),
       'home_right' => array(
         'label' => 'hidden',
@@ -479,7 +479,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 16,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -491,7 +491,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 15,
+        'weight' => 20,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -503,7 +503,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 13,
+        'weight' => 18,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -565,7 +565,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 18,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -577,7 +577,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 4,
+        'weight' => 9,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -589,7 +589,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 7,
+        'weight' => 13,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -647,7 +647,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 13,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -659,7 +659,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 12,
+        'weight' => 17,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -671,7 +671,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 9,
+        'weight' => 15,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -729,7 +729,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 14,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -741,7 +741,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 10,
+        'weight' => 15,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -753,7 +753,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 10,
+        'weight' => 16,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -811,7 +811,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 11,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -823,7 +823,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 3,
+        'weight' => 8,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -835,7 +835,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 3,
+        'weight' => 10,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -893,7 +893,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 19,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -905,7 +905,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 8,
+        'weight' => 13,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -917,7 +917,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 8,
+        'weight' => 14,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -975,7 +975,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 20,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -987,7 +987,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 9,
+        'weight' => 14,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -999,7 +999,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 14,
+        'weight' => 19,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1025,6 +1025,418 @@ function library_features_content_type_events_field_default_field_instances() {
       ),
       'type' => 'entityreference_autocomplete',
       'weight' => 9,
+    ),
+  );
+
+  // Exported field_instance: 'node-events-field_events_tab_documents'
+  $field_instances['node-events-field_events_tab_documents'] = array(
+    'bundle' => 'events',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'field_data_collector',
+        'settings' => array(),
+        'type' => 'field_data_collector_default_formatter',
+        'weight' => 18,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 5,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 1,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 3,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_events_tab_documents',
+    'label' => 'Documents',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'field_data_collector',
+      'settings' => array(
+        'collecting_fields' => array(),
+        'target_bundles' => array(),
+      ),
+      'type' => 'field_data_collector_entityreference_widget',
+      'weight' => 32,
+    ),
+  );
+
+  // Exported field_instance: 'node-events-field_events_tab_images'
+  $field_instances['node-events-field_events_tab_images'] = array(
+    'bundle' => 'events',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'field_data_collector',
+        'settings' => array(),
+        'type' => 'field_data_collector_default_formatter',
+        'weight' => 17,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 9,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 2,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 5,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_events_tab_images',
+    'label' => 'Images',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'field_data_collector',
+      'settings' => array(
+        'collecting_fields' => array(),
+        'target_bundles' => array(),
+      ),
+      'type' => 'field_data_collector_entityreference_widget',
+      'weight' => 31,
+    ),
+  );
+
+  // Exported field_instance: 'node-events-field_events_tab_map'
+  $field_instances['node-events-field_events_tab_map'] = array(
+    'bundle' => 'events',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'field_data_collector',
+        'settings' => array(),
+        'type' => 'field_data_collector_default_formatter',
+        'weight' => 20,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 8,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 3,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 9,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_events_tab_map',
+    'label' => 'Map',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'field_data_collector',
+      'settings' => array(
+        'collecting_fields' => array(),
+        'target_bundles' => array(
+          'location' => 'location',
+        ),
+      ),
+      'type' => 'field_data_collector_entityreference_widget',
+      'weight' => 34,
+    ),
+  );
+
+  // Exported field_instance: 'node-events-field_events_tab_timeline'
+  $field_instances['node-events-field_events_tab_timeline'] = array(
+    'bundle' => 'events',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'field_data_collector',
+        'settings' => array(),
+        'type' => 'field_data_collector_default_formatter',
+        'weight' => 21,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 7,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 5,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 8,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_events_tab_timeline',
+    'label' => 'Timeline',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'field_data_collector',
+      'settings' => array(
+        'collecting_fields' => array(),
+        'target_bundles' => array(),
+      ),
+      'type' => 'field_data_collector_entityreference_widget',
+      'weight' => 35,
+    ),
+  );
+
+  // Exported field_instance: 'node-events-field_events_tab_videos'
+  $field_instances['node-events-field_events_tab_videos'] = array(
+    'bundle' => 'events',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'field_data_collector',
+        'settings' => array(),
+        'type' => 'field_data_collector_default_formatter',
+        'weight' => 19,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 6,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 4,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 7,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_events_tab_videos',
+    'label' => 'Videos',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'field_data_collector',
+      'settings' => array(
+        'collecting_fields' => array(),
+        'target_bundles' => array(),
+      ),
+      'type' => 'field_data_collector_entityreference_widget',
+      'weight' => 33,
     ),
   );
 
@@ -1058,7 +1470,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 3,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -1070,7 +1482,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 5,
+        'weight' => 10,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -1079,7 +1491,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'weight' => 3,
       ),
       'home_top' => array(
-        'label' => 'above',
+        'label' => 'hidden',
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 2,
@@ -1147,7 +1559,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 1,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -1159,7 +1571,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 7,
+        'weight' => 12,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -1171,7 +1583,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 5,
+        'weight' => 12,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1236,7 +1648,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 12,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -1248,7 +1660,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 13,
+        'weight' => 18,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -1260,7 +1672,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 12,
+        'weight' => 6,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1319,7 +1731,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 4,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -1331,7 +1743,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 1,
+        'weight' => 6,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -1343,7 +1755,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 6,
+        'weight' => 4,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1397,9 +1809,14 @@ function library_features_content_type_events_field_default_field_instances() {
         'weight' => 15,
       ),
       'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
+        'label' => 'hidden',
+        'module' => 'title',
+        'settings' => array(
+          'title_class' => '',
+          'title_link' => 'content',
+          'title_style' => 'h2',
+        ),
+        'type' => 'title_linked',
         'weight' => 0,
       ),
       'home_left' => array(
@@ -1411,15 +1828,15 @@ function library_features_content_type_events_field_default_field_instances() {
           'title_style' => 'h2',
         ),
         'type' => 'title_linked',
-        'weight' => 0,
+        'weight' => 1,
       ),
       'home_middle' => array(
         'label' => 'hidden',
         'module' => 'title',
         'settings' => array(
           'title_class' => '',
-          'title_link' => 'content',
-          'title_style' => 'h2',
+          'title_link' => '',
+          'title_style' => '',
         ),
         'type' => 'title_linked',
         'weight' => 0,
@@ -1474,11 +1891,14 @@ function library_features_content_type_events_field_default_field_instances() {
   // Included for use with string extractors like potx.
   t('Author');
   t('Description');
+  t('Documents');
   t('Home');
   t('Home date');
   t('Home region');
   t('Image');
+  t('Images');
   t('Main character');
+  t('Map');
   t('Original place');
   t('Place nodes');
   t('Receiver');
@@ -1486,7 +1906,9 @@ function library_features_content_type_events_field_default_field_instances() {
   t('Route start');
   t('Route to');
   t('Time');
+  t('Timeline');
   t('Title');
+  t('Videos');
   t('Visit date');
   t('Visit nodes');
 
