@@ -126,7 +126,7 @@ function library_admin_get_faq_nodes() {
         }
       }
     }
-    if (!empty($tid)) {
+    if (db_table_exists('field_data_field_tags')) {
       $query['nodes'] = db_query('
         SELECT n.nid, n.title from {node} n
         LEFT OUTER JOIN {field_data_field_tags} t ON t.entity_id = n.nid
