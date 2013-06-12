@@ -1,0 +1,13 @@
+name = Library features view home
+description = library_features_view_home
+core = 7.x
+package = Library
+php = 5.2.4
+version = 7.x-1.0
+project = library_features_view_home
+dependencies[] = views
+dependencies[] = views_content
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:1
+features[views_view][] = homepage
+features_exclude[dependencies][ctools] = ctools

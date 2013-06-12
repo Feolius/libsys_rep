@@ -53,10 +53,10 @@ function library_features_content_type_files_field_group_info() {
   $field_group->entity_type = 'node';
   $field_group->bundle = 'files';
   $field_group->mode = 'form';
-  $field_group->parent_name = '';
+  $field_group->parent_name = 'group_files_text';
   $field_group->data = array(
     'label' => 'Additional info',
-    'weight' => '2',
+    'weight' => '17',
     'children' => array(
       0 => 'field_files_author_location',
       1 => 'field_files_category',
@@ -94,7 +94,7 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = 'group_files_additional_info';
   $field_group->data = array(
     'label' => 'Administrative',
-    'weight' => '35',
+    'weight' => '36',
     'children' => array(
       0 => 'field_files_handwritten',
       1 => 'field_files_keywords',
@@ -119,6 +119,35 @@ function library_features_content_type_files_field_group_info() {
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
   $field_group->api_version = 1;
+  $field_group->identifier = 'group_files_audio|node|files|form';
+  $field_group->group_name = 'group_files_audio';
+  $field_group->entity_type = 'node';
+  $field_group->bundle = 'files';
+  $field_group->mode = 'form';
+  $field_group->parent_name = '';
+  $field_group->data = array(
+    'label' => 'Audio',
+    'weight' => '4',
+    'children' => array(
+      0 => 'field_audio_year',
+      1 => 'field_files_album_poster',
+      2 => 'field_files_artist',
+      3 => 'field_files_audio',
+      4 => 'field_files_length',
+      5 => 'field_files_topics',
+      6 => 'field_files_video_location',
+      7 => 'field_files_album',
+    ),
+    'format_type' => 'multistep_adl',
+    'format_settings' => array(
+      'formatter' => '',
+    ),
+  );
+  $export['group_files_audio|node|files|form'] = $field_group;
+
+  $field_group = new stdClass();
+  $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
+  $field_group->api_version = 1;
   $field_group->identifier = 'group_files_dates|node|files|form';
   $field_group->group_name = 'group_files_dates';
   $field_group->entity_type = 'node';
@@ -129,8 +158,8 @@ function library_features_content_type_files_field_group_info() {
     'label' => 'Dates',
     'weight' => '16',
     'children' => array(
-      0 => 'field_files_received_date',
-      1 => 'field_files_filed_date',
+      0 => 'field_files_filed_date',
+      1 => 'field_files_received_date',
       2 => 'field_files_published_date',
     ),
     'format_type' => 'fieldset',
@@ -157,10 +186,10 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = 'group_files_start';
   $field_group->data = array(
     'label' => 'Additional Information',
-    'weight' => '-2',
+    'weight' => '5',
     'children' => array(
-      0 => 'field_files_rating',
-      1 => 'field_files_creation_date',
+      0 => 'field_files_creation_date',
+      1 => 'field_files_rating',
       2 => 'field_files_provenance',
     ),
     'format_type' => 'fieldset',
@@ -189,12 +218,12 @@ function library_features_content_type_files_field_group_info() {
     'label' => 'Image',
     'weight' => '3',
     'children' => array(
-      0 => 'field_files_exif',
-      1 => 'field_files_galleries',
-      2 => 'field_files_image',
-      3 => 'field_files_image_date',
-      4 => 'field_files_images',
-      5 => 'field_fields_photographer',
+      0 => 'field_fields_photographer',
+      1 => 'field_files_exif',
+      2 => 'field_files_galleries',
+      3 => 'field_files_image',
+      4 => 'field_files_image_date',
+      5 => 'field_files_images',
       6 => 'field_image_date_taken',
       7 => 'field_files_image_event',
       8 => 'field_files_image_location',
@@ -219,7 +248,7 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = 'group_files_additional_info';
   $field_group->data = array(
     'label' => 'Source',
-    'weight' => '34',
+    'weight' => '35',
     'children' => array(
       0 => 'field_files_source_chapter',
       1 => 'field_files_source_number',
@@ -255,7 +284,7 @@ function library_features_content_type_files_field_group_info() {
     'children' => array(
       0 => 'field_files_description',
       1 => 'field_files_primary_media',
-      2 => 'title_field',
+      2 => 'path',
       3 => 'group_files_general_additional',
       4 => 'group_files_general_tagging',
     ),
@@ -281,9 +310,10 @@ function library_features_content_type_files_field_group_info() {
     'children' => array(
       0 => 'field_files_author',
       1 => 'field_files_collection',
-      2 => 'field_files_file',
-      3 => 'field_files_text',
-      4 => 'group_files_dates',
+      2 => 'field_files_text',
+      3 => 'field_files_file',
+      4 => 'group_files_additional_info',
+      5 => 'group_files_dates',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(
@@ -303,13 +333,13 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Video',
-    'weight' => '4',
+    'weight' => '5',
     'children' => array(
       0 => 'field_files_file_type',
       1 => 'field_files_youtube_media',
       2 => 'field_video_date_taken',
-      3 => 'field_files_video_people',
-      4 => 'field_files_video_event',
+      3 => 'field_files_video_event',
+      4 => 'field_files_video_people',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(
