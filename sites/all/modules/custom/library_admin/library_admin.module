@@ -126,50 +126,52 @@ function library_admin_get_faq_nodes() {
         }
       }
     }
-    $query['nodes'] = db_query('
-      SELECT n.nid, n.title from {node} n
-      LEFT OUTER JOIN {field_data_field_tags} t ON t.entity_id = n.nid
-      WHERE n.type = :type AND t.field_tags_tid = :tid',
-      array(
-        ':type' => 'files',
-        ':tid' => $tid
-      )
-    );
+    if (!empty($tid)) {
+      $query['nodes'] = db_query('
+        SELECT n.nid, n.title from {node} n
+        LEFT OUTER JOIN {field_data_field_tags} t ON t.entity_id = n.nid
+        WHERE n.type = :type AND t.field_tags_tid = :tid',
+        array(
+          ':type' => 'files',
+          ':tid' => $tid
+        )
+      );
 
-    $nodes = $query['nodes']->fetchAllAssoc('nid');
-    if (!empty($nodes)) {
-      $nids = implode(', ', array_map(function($node) {return $node->nid ;}, $nodes));
-      $source = array_map(function($node) {return '\'' . 'node/' . $node->nid . '\'' ;}, $nodes);
+      $nodes = $query['nodes']->fetchAllAssoc('nid');
+      if (!empty($nodes)) {
+        $nids = implode(', ', array_map(function($node) {return $node->nid ;}, $nodes));
+        $source = array_map(function($node) {return '\'' . 'node/' . $node->nid . '\'' ;}, $nodes);
 
-      // Get aliases nodes.
-      if (db_table_exists('url_alias')) {
-        $source = implode(', ', $source);
-        $query['aliases'] = db_query("
-          SELECT u.alias, u.source from {url_alias} u
-          WHERE u.source IN ($source)");
-        $aliases = $query['aliases']->fetchAllAssoc('source');
-      }
+        // Get aliases nodes.
+        if (db_table_exists('url_alias')) {
+          $source = implode(', ', $source);
+          $query['aliases'] = db_query("
+            SELECT u.alias, u.source from {url_alias} u
+            WHERE u.source IN ($source)");
+          $aliases = $query['aliases']->fetchAllAssoc('source');
+        }
 
-      // Get keywords nodes.
-      if (db_table_exists('field_data_field_files_key_points')) {
-        $query['keywords'] = db_query("
-          SELECT k.entity_id, k.field_files_key_points_value from {field_data_field_files_key_points} k
-          WHERE k.entity_id IN ($nids)");
-        $keywords = $query['keywords']->fetchAllAssoc('entity_id');
-      }
+        // Get keywords nodes.
+        if (db_table_exists('field_data_field_files_key_points')) {
+          $query['keywords'] = db_query("
+            SELECT k.entity_id, k.field_files_key_points_value from {field_data_field_files_key_points} k
+            WHERE k.entity_id IN ($nids)");
+          $keywords = $query['keywords']->fetchAllAssoc('entity_id');
+        }
 
-      foreach ($nodes as $key => $node) {
-        $source = 'node/' . $key;
-        $output[] = array(
-          'nid' => $key,
-          'title' => $node->title,
-          'alias' => (!empty($aliases) && ($source == $aliases[$source]->source))
-            ? $aliases['node/' . $key]->alias
-            : '',
-          'keywords' => (!empty($keywords) && isset($keywords[$key]->field_files_key_points_value))
-            ? $keywords[$key]->field_files_key_points_value
-            : ''
-        );
+        foreach ($nodes as $key => $node) {
+          $source = 'node/' . $key;
+          $output[] = array(
+            'nid' => $key,
+            'title' => $node->title,
+            'alias' => (!empty($aliases) && ($source == $aliases[$source]->source))
+              ? $aliases['node/' . $key]->alias
+              : '',
+            'keywords' => (!empty($keywords) && isset($keywords[$key]->field_files_key_points_value))
+              ? $keywords[$key]->field_files_key_points_value
+              : ''
+          );
+        }
       }
     }
 
