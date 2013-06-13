@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Library location view openlayers map  feature.
+ */
+
+include_once 'library_location_view_openlayers_map_.features.inc';

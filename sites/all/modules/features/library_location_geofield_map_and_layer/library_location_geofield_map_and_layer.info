@@ -1,0 +1,11 @@
+name = Library location geofield map and layer
+core = 7.x
+package = Library
+version = 7.x-1.0
+project = library_location_geofield_map_and_layer
+dependencies[] = geofield
+features[features_api][] = api:1
+features[features_override_items][] = openlayers_layers.geofield_formatter
+features[features_override_items][] = openlayers_maps.geofield_formatter_map
+features[features_overrides][] = openlayers_layers.geofield_formatter.disabled
+features[features_overrides][] = openlayers_maps.geofield_formatter_map.disabled

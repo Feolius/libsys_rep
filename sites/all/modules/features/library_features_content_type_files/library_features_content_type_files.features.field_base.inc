@@ -759,36 +759,25 @@ function library_features_content_type_files_field_default_field_bases() {
   // Exported field_base: 'field_files_image_date'
   $field_bases['field_files_image_date'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_files_image_date',
-    'foreign keys' => array(
-      'tid' => array(
-        'columns' => array(
-          'tid' => 'tid',
-        ),
-        'table' => 'taxonomy_term_data',
-      ),
-    ),
-    'indexes' => array(
-      'tid' => array(
-        0 => 'tid',
-      ),
-    ),
+    'foreign keys' => array(),
+    'indexes' => array(),
     'locked' => 0,
-    'module' => 'taxonomy',
+    'module' => 'library_date_field',
     'settings' => array(
-      'allowed_values' => array(
-        0 => array(
-          'vocabulary' => 'exif',
-          'parent' => 0,
-        ),
+      'granularity' => array(
+        'day' => 'day',
+        'month' => 'month',
+        'year' => 'year',
       ),
-      'options_list_callback' => NULL,
+      'timezone_db' => 'UTC',
+      'tz_handling' => 'site',
     ),
     'translatable' => 0,
-    'type' => 'taxonomy_term_reference',
+    'type' => 'library_date_field',
   );
 
   // Exported field_base: 'field_files_image_event'
@@ -1251,6 +1240,7 @@ function library_features_content_type_files_field_default_field_bases() {
         'image' => 'Image',
         'audio' => 'Audio',
         'video' => 'Video',
+        'url' => 'URL',
       ),
       'allowed_values_function' => '',
     ),
