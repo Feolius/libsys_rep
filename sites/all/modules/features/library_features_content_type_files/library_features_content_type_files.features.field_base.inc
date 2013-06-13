@@ -34,6 +34,30 @@ function library_features_content_type_files_field_default_field_bases() {
     'type' => 'library_date_field',
   );
 
+  // Exported field_base: 'field_field_image_date_taken'
+  $field_bases['field_field_image_date_taken'] = array(
+    'active' => 1,
+    'cardinality' => -1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_field_image_date_taken',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'library_date_field',
+    'settings' => array(
+      'granularity' => array(
+        'day' => 'day',
+        'month' => 'month',
+        'year' => 'year',
+      ),
+      'timezone_db' => 'UTC',
+      'tz_handling' => 'site',
+    ),
+    'translatable' => 0,
+    'type' => 'library_date_field',
+  );
+
   // Exported field_base: 'field_fields_photographer'
   $field_bases['field_fields_photographer'] = array(
     'active' => 1,
@@ -1717,6 +1741,35 @@ function library_features_content_type_files_field_default_field_bases() {
     'type' => 'entityreference',
   );
 
+  // Exported field_base: 'field_files_track_number'
+  $field_bases['field_files_track_number'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_files_track_number',
+    'foreign keys' => array(
+      'format' => array(
+        'columns' => array(
+          'format' => 'format',
+        ),
+        'table' => 'filter_format',
+      ),
+    ),
+    'indexes' => array(
+      'format' => array(
+        0 => 'format',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'text',
+    'settings' => array(
+      'max_length' => 255,
+    ),
+    'translatable' => 0,
+    'type' => 'text',
+  );
+
   // Exported field_base: 'field_files_typewritten'
   $field_bases['field_files_typewritten'] = array(
     'active' => 1,
@@ -1741,6 +1794,60 @@ function library_features_content_type_files_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'list_boolean',
+  );
+
+  // Exported field_base: 'field_files_url_link'
+  $field_bases['field_files_url_link'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_files_url_link',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'link',
+    'settings' => array(
+      'attributes' => array(
+        'class' => '',
+        'rel' => '',
+        'target' => 'default',
+      ),
+      'display' => array(
+        'url_cutoff' => 80,
+      ),
+      'enable_tokens' => 1,
+      'title' => 'optional',
+      'title_maxlength' => 128,
+      'title_value' => '',
+      'url' => 0,
+    ),
+    'translatable' => 0,
+    'type' => 'link_field',
+  );
+
+  // Exported field_base: 'field_files_video_date_taken'
+  $field_bases['field_files_video_date_taken'] = array(
+    'active' => 1,
+    'cardinality' => -1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_files_video_date_taken',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'library_date_field',
+    'settings' => array(
+      'granularity' => array(
+        'day' => 'day',
+        'month' => 'month',
+        'year' => 'year',
+      ),
+      'timezone_db' => 'UTC',
+      'tz_handling' => 'site',
+    ),
+    'translatable' => 0,
+    'type' => 'library_date_field',
   );
 
   // Exported field_base: 'field_files_video_event'
@@ -1950,6 +2057,36 @@ function library_features_content_type_files_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'library_date_field',
+  );
+
+  // Exported field_base: 'field_provenance_url'
+  $field_bases['field_provenance_url'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_provenance_url',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'link',
+    'settings' => array(
+      'attributes' => array(
+        'class' => '',
+        'rel' => '',
+        'target' => 'default',
+      ),
+      'display' => array(
+        'url_cutoff' => 80,
+      ),
+      'enable_tokens' => 1,
+      'title' => 'optional',
+      'title_maxlength' => 128,
+      'title_value' => '',
+      'url' => 0,
+    ),
+    'translatable' => 0,
+    'type' => 'link_field',
   );
 
   // Exported field_base: 'field_tags'
