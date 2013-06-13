@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Library location geofield map and layer feature.
+ */
+
+include_once 'library_location_geofield_map_and_layer.features.inc';
