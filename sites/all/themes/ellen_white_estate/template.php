@@ -487,7 +487,7 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
         )
     ) . '</li>';
   }
-  $sum = array_sum(array_map(function($link) {return empty($link) ? 0 : 1;}, $links));
+  $sum = array_sum(array_map('ellen_white_estate_help_tabs_callback', $links));
   if ($sum > 1) {
     $output['container'] = array(
       '#prefix' => '<div id="ui-tabs"><ul>',
@@ -535,6 +535,13 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
     );
   }
   return $output;
+}
+
+/**
+ * Help callback for _ellen_white_estate_preprocess_node__tabs_files.
+ */
+function ellen_white_estate_help_tabs_callback($link) {
+  return empty($link) ? 0 : 1;
 }
 
 /**
