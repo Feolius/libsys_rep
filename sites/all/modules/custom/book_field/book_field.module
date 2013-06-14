@@ -284,7 +284,7 @@ function _book_field_managed_book_create_swf($file, $folder_name, $conversion_pi
   $numberOfPages = getNumPagesPdf($path);
 
   //Execute command in pipe to reviewing current progress of conversion
-  $command = "pdf2swf '" . $path . "' -o '" . $swf_folder_path . "/" . $folder_name . "%.swf' -f -T 9 -t -s storeallcharacters";
+  $command = "/usr/local/bin/pdf2swf '" . $path . "' -o '" . $swf_folder_path . "/" . $folder_name . "%.swf' -f -T 9 -t -s storeallcharacters";
   $handle = popen($command, 'r');
 
   //Try to make conversion
@@ -330,7 +330,7 @@ function _book_field_managed_book_create_png($file, $folder_name, $pid) {
   //Get number of swf. It is more reliable than get number of pages in the pdf
   $swf_number = count(scandir($folder_path)) - 2;
   for ($i = 1; $i <= $swf_number; $i++) {
-    $command = "swfrender '" . $folder_path . "/" . $folder_name . $i . ".swf' -o '" . $folder_path . "/" . $folder_name . $i . ".png' -X 1024 -s keepaspectratio";
+    $command = "/usr/local/bin/swfrender '" . $folder_path . "/" . $folder_name . $i . ".swf' -o '" . $folder_path . "/" . $folder_name . $i . ".png' -X 1024 -s keepaspectratio";
     exec($command);
     //Write record to progress table for each 5 conversions
     if ($i % 5 == 0) {
