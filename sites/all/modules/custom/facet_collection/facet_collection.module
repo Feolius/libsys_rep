@@ -319,24 +319,6 @@ function facet_collection_get_available_facets() {
 }
 
 /**
- * Sort content in right order
- */
-function facet_collection_sort_content($content) {
-  $ordered_content = array();
-  $filter_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
-  $filter_order = $filter_settings['filter_order'];
-
-  foreach ($filter_order as $field_names) {
-    foreach ($field_names as $field_name) {
-      if (!empty($content[$field_name])) {
-        $ordered_content[] = $content[$field_name];
-      }
-    }
-  }
-  return $ordered_content;
-}
-
-/**
  * Get chosen content types
  */
 function facet_collection_get_filtered_content_type() {
