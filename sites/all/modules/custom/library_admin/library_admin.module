@@ -210,8 +210,8 @@ function library_admin_entity_info_alter(&$entity_info) {
  */
 function library_admin_field_formatter_info() {
   return array(
-    'library_text_plain' => array(
-      'label' => t('Library text plain'),
+    'library_text' => array(
+      'label' => t('Library text'),
       'field types' => array('text_long', 'text_with_summary'),
     ),
   );
@@ -222,12 +222,16 @@ function library_admin_field_formatter_info() {
  */
 function library_admin_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
-  if (!empty($items)) {
-    foreach ($items as $delta => $item) {
-      $output = _text_sanitize($instance, $langcode, $item, 'value');
-      $output = library_admin_replacement_tags($output);
-      $element[$delta] = array('#markup' => $output);
-    }
+  switch ($display['type']) {
+    case 'library_text':
+      if (!empty($items)) {
+        foreach ($items as $delta => $item) {
+          $output = _text_sanitize($instance, $langcode, $item, 'value');
+          $output = library_admin_replacement_tags($output);
+          $element[$delta] = array('#markup' => $output);
+        }
+      }
+    break;
   }
   return $element;
 }
