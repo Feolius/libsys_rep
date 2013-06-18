@@ -323,3 +323,31 @@ a.download {
 .panel-node .node-bottom {
   clear: both;
 }
+
+.question,
+.answer {
+  margin: 0px 0px 0 8px;
+  background-repeat: no-repeat;
+}
+
+.question {
+  background-image: url("images/email_question.png");
+}
+
+.answer {
+  background-image: url("images/email_answer.png");
+}
+
+.question .mailheader,
+.answer .mailheader {
+  font-weight: bold;
+  margin: 0px 8px 0 17px;
+  margin-right: 8px;
+  background-color: #F0F0F0;
+  border-top: 1px solid #AAAAAA;
+  border-right: 1px solid #AAAAAA;
+  border-bottom: 1px solid #AAAAAA;
+  padding: 0px 2px 0px 8px;
+  line-height: 125%;
+  font-size: 12px;
+}

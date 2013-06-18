@@ -119,6 +119,12 @@ function facet_collection_block_form($form, &$form_state) {
   $forms = module_invoke_all('forms', 'facet_collection_block_form', array());
   $facet_deltas = array();
   $deltas = array();
+  //All facets should be already built. Check it and if needed build facets
+  $builds = &drupal_static('facetapi_block_view', array());
+  $group = $searcher . ':' . $realm_name;
+  if (!isset($builds[$group])) {
+    $builds[$group] = facetapi_build_realm($searcher, $realm_name);
+  }
   //Build unsorted form array. We need keys in the form array to be names of fields to perform sort after building. But facet names
   //are needed too in all widget forms. So, we store all field api names and corresponding facets in $facet_fields array
   $facet_fields = array();
@@ -180,6 +186,9 @@ function facet_collection_block_form($form, &$form_state) {
   }
 
   if (!empty($form)) {
+    //Put filters in right order
+    $form = facet_collection_block_sort_content($form);
+
     $form['filter_button'] = array(
       '#type' => 'submit',
       '#value' => t('Filter'),
@@ -192,6 +201,23 @@ function facet_collection_block_form($form, &$form_state) {
   $form_state['build_info']['args'][0]['facet_fields'] = $facet_fields;
   $form_state['build_info']['args'][0]['search_deltas'] = $search_deltas;
   return $form;
+}
+
+/**
+ * Sort filters in the form in right order
+ */
+function facet_collection_block_sort_content($content) {
+  $ordered_content = array();
+  $filter_settings = facet_collection_get_filter_settings();
+  $filter_order = $filter_settings['filter_order'];
+  foreach ($filter_order as $field_names) {
+    foreach ($field_names as $field_name) {
+      if (!empty($content[$field_name])) {
+        $ordered_content[$field_name] = $content[$field_name];
+      }
+    }
+  }
+  return $ordered_content;
 }
 
 function facet_collection_block_set_form_delta(&$form, $delta) {

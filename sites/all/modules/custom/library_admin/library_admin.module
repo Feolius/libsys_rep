@@ -205,3 +205,42 @@ function library_admin_entity_info_alter(&$entity_info) {
     'custom settings' => TRUE,
   );
 }
+/**
+ * Implements hook_field_formatter_info().
+ */
+function library_admin_field_formatter_info() {
+  return array(
+    'library_text_plain' => array(
+      'label' => t('Library text plain'),
+      'field types' => array('text_long', 'text_with_summary'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function library_admin_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  if (!empty($items)) {
+    foreach ($items as $delta => $item) {
+      $output = _text_sanitize($instance, $langcode, $item, 'value');
+      $output = library_admin_replacement_tags($output);
+      $element[$delta] = array('#markup' => $output);
+    }
+  }
+  return $element;
+}
+
+/**
+ * Help function for replace tags <QUESTION> and <ANSWER>.
+ */
+function library_admin_replacement_tags($value) {
+  $value = preg_replace('/<question>/', '<div class="question"><div class ="mailheader">Question</div>', $value);
+  $value = preg_replace('/<\/question>/', '</div>', $value);
+  $value = preg_replace('/<answer>/', '<div class="answer"><div class ="mailheader">Answer</div>', $value);
+  $value = preg_replace('/<\/answer>/', '</div>', $value);
+  $value = preg_replace('/{\*/', '__', $value);
+  $value = preg_replace('/\*}/', '__', $value);
+  return $value;
+}

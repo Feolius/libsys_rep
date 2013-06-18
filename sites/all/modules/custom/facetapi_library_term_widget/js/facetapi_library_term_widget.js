@@ -7,7 +7,7 @@
                     var self = this;
                     var select = this.element.hide();
                     //Marker element which allow to decline chosen filters  
-                    var marker = '<a class="facetapi-term-widget-decline-marker" href="">X</a>';
+                    var marker = '<a class="' + self.options.markerClass + '" href="">X</a>';
                     var markerClickHandler = function(event, object){
                         var parent = $(object).parent();
                         var value = parent.find('input').val();
@@ -55,8 +55,8 @@
                                 items = JSON.stringify(items);
                                 $('#' + self.options.containerId).val(items);
                                 list.append('<li><input type="hidden" value="' + ui.item.option.value + '"><label class="facetapi-term-widget-item-label">' + ui.item.option.text + '</label> [' + marker + ']</li>');
-                                $('.facetapi-term-widget-decline-marker').unbind('click');
-                                $('.facetapi-term-widget-decline-marker').click(function(event){
+                                $('.' + self.options.markerClass).unbind('click');
+                                $('.' + self.options.markerClass).click(function(event){
                                     markerClickHandler(event, this);
                                 });
                                 //Remove option from select element
@@ -96,8 +96,8 @@
                     var defaultItems = self.options.defaultItems;
                     for (var defaultItem in defaultItems){
                         list.append('<li><input type="hidden" value="' + defaultItem + '"><label class="facetapi-term-widget-item-label">' + defaultItems[defaultItem] + '</label>[' + marker + ']</li>');
-                        $('.facetapi-term-widget-decline-marker').unbind('click');
-                        $('.facetapi-term-widget-decline-marker').click(function(event){
+                        $('.' + self.options.markerClass).unbind('click');
+                        $('.' + self.options.markerClass).click(function(event){
                             markerClickHandler(event, this);
                         });
                     }
@@ -135,7 +135,8 @@
                 var combobx = $('#' + selectId).libraryCombobox({
                     form: formId,
                     containerId: formIdProperties.itemContainerId,
-                    defaultItems: formIdProperties.defaultItems
+                    defaultItems: formIdProperties.defaultItems,
+                    markerClass: formIdProperties.markerClass
                 });
             });
         }

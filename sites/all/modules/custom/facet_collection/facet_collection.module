@@ -71,9 +71,10 @@ function facet_collection_get_default_params() {
   $params += apachesolr_search_basic_params();
   unset($params['hl.fl']);
   unset($params['rows']);
-  if(isset($_GET['rNum'])){
+  if (isset($_GET['rNum'])) {
     $params['rows'] = $_GET['rNum'];
-  }else{
+  }
+  else {
     $facet_collection_rows_number_variants = variable_get('facet_collection_rows_number_variants', '25 50 100');
     $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
     $params['rows'] = $facet_collection_rows_number_variants[0];
@@ -164,7 +165,7 @@ function facet_collection_get_search_filters_info() {
     $info = array();
     $field_type_list = variable_get('facet_collection:field_type_search_list');
     $filtered_content_type = facet_collection_get_filtered_content_type();
-    $filter_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
+    $filter_settings = facet_collection_get_filter_settings();
     $searchable_fields = facet_collection_get_searchable_fields(array_keys($field_type_list));
     $field_names = $searchable_fields[$filtered_content_type];
     foreach ($field_names as $field_name) {
@@ -185,7 +186,7 @@ function facet_collection_get_search_filters_info() {
       }
     }
     //Also we should add title here if needed
-    if(isset($filter_settings['title'][$filtered_content_type])){
+    if (isset($filter_settings['title'][$filtered_content_type])) {
       $info['title'] = array(
         'label' => t('title'),
         'index_field_name' => 'label'
@@ -284,7 +285,7 @@ function facet_collection_set_facets_visibility($adapter, $realm_name, $searcher
 function facet_collection_get_available_facets() {
   $available_facets = array();
   //Get filter settings
-  $filter_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
+  $filter_settings = facet_collection_get_filter_settings();
   $field_type_list = variable_get('facet_collection:field_type_facet_list');
   $facet_collection = variable_get('facet_collection:facet_collection');
 //Get all facets for collection from cache
@@ -316,24 +317,6 @@ function facet_collection_get_available_facets() {
   }
 
   return $available_facets;
-}
-
-/**
- * Sort content in right order
- */
-function facet_collection_sort_content($content) {
-  $ordered_content = array();
-  $filter_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
-  $filter_order = $filter_settings['filter_order'];
-
-  foreach ($filter_order as $field_names) {
-    foreach ($field_names as $field_name) {
-      if (!empty($content[$field_name])) {
-        $ordered_content[] = $content[$field_name];
-      }
-    }
-  }
-  return $ordered_content;
 }
 
 /**
@@ -383,7 +366,7 @@ function facet_collection_apachesolr_index_document_build_node($filedocument, $n
  */
 function facet_collection_facetapi_facet_info($searcher_info) {
   //Get filter settings
-  $filter_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
+  $filter_settings = facet_collection_get_filter_settings();
   $facets = array();
   $field_type_facet_list = array();
   $field_type_search_list = array();
@@ -445,6 +428,17 @@ function facet_collection_facetapi_facet_info($searcher_info) {
   //Contatins all facets provided facet collection module
   cache_set('facet_collection:listfacets', array_keys($facets), 'cache', CACHE_TEMPORARY);
   return $facets;
+}
+
+/**
+ * Return json decoded filter settings
+ */
+function facet_collection_get_filter_settings() {
+  $filter_settings = & drupal_static(__FUNCTION__);
+  if (!isset($filter_settings)) {
+    $filter_settings = drupal_json_decode(variable_get('facet_collection_filters_settings'));
+  }
+  return $filter_settings;
 }
 
 /**
