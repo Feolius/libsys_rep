@@ -443,6 +443,7 @@ function facet_collection_block_theme() {
 function theme_library_block_chosen_item($variables) {
   $content_type_label = $variables['content_type_label'];
   $out = '<div id="library-chosen-content-type-filter-label">' . $content_type_label . '</div>';
-  $out = $out . drupal_render(drupal_get_form('facet_collection_block_form'));
+  $form = drupal_get_form('facet_collection_block_form');
+  $out = $out . drupal_render($form);
   return $out;
 }
