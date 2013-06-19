@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Library admin module.
+ */
+
+/**
+ * Replace formats for field_files_text.
+ */
+function library_admin_update_7040() {
+  if (db_table_exists('field_data_field_files_text')) {
+    db_update('field_data_field_files_text')
+      ->fields(array('field_files_text_format' => 'full_html'))
+      ->execute();
+  }
+}
