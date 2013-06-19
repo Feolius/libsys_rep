@@ -244,7 +244,6 @@ function library_admin_replacement_tags($value) {
   $value = preg_replace('/<\/question>/', '</div>', $value);
   $value = preg_replace('/<answer>/', '<div class="answer"><div class ="mailheader">Answer</div>', $value);
   $value = preg_replace('/<\/answer>/', '</div>', $value);
-  $value = preg_replace('/{\*/', '__', $value);
-  $value = preg_replace('/\*}/', '__', $value);
+  $value = preg_replace('/{\*(.*)\*}/', '___________', $value);
   return $value;
 }
