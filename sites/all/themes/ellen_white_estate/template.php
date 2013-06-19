@@ -43,7 +43,6 @@ function ellen_white_estate_preprocess_html(&$variables) {
 function ellen_white_estate_preprocess_node__people_full(&$vars) {
   $node = $vars['node'];
   $vars['full_name_people'] = '';
-  kpr($vars);
   if (!empty($node->title)) {
     $vars['full_name_people'] .= "{$node->title} ";
   }
@@ -90,11 +89,22 @@ function ellen_white_estate_preprocess_node__files_full(&$vars) {
       case 'document':
         $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_document($vars);
         break;
+
+      case 'url':
+        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_url($vars);
+        break;
     }
   }
   else {
     $vars['output'] = $multiple_media;
   }
+}
+
+/**
+ * Preprocesses variables for files with primary media url.
+ */
+function _ellen_white_estate_preprocess_node__files_primary_url($vars) {
+  return $vars['content'];
 }
 
 /**
@@ -321,9 +331,11 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
   }
   if (isset($vars['content']['field_files_file'])) {
     $file = $vars['content']['field_files_file'];
+    $output['file'] = $vars['content']['field_files_file'];
   }
   if (isset($vars['content']['field_files_text'])) {
     $text = $vars['content']['field_files_text'];
+    $output['text'] = $vars['content']['field_files_text'];
   }
   if (isset($vars['content']['field_files_file']) && isset($vars['content']['field_files_text'])) {
     $output['file'] = '<div id="file-tabs-1">' . drupal_render($file) . '</div>';
@@ -486,7 +498,7 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
         )
     ) . '</li>';
   }
-  $sum = array_sum(array_map('ellen_white_estate_help_tabs_callback', $links));
+  $sum = array_sum(array_map(function($link) {return empty($link) ? 0 : 1;}, $links));
   if ($sum > 1) {
     $output['container'] = array(
       '#prefix' => '<div id="ui-tabs"><ul>',
@@ -534,13 +546,6 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
     );
   }
   return $output;
-}
-
-/**
- * Help callback for _ellen_white_estate_preprocess_node__tabs_files.
- */
-function ellen_white_estate_help_tabs_callback($link) {
-  return empty($link) ? 0 : 1;
 }
 
 /**
