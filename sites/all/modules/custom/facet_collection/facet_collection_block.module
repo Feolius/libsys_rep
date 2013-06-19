@@ -84,16 +84,37 @@ function facet_collection_block_block_info() {
 function facet_collection_block_block_view($delta) {
   //Check if our response contain any search results
   $searcher_info = facetapi_get_searcher_info();
-  $searchers = array_keys($searcher_info);
-  $searcher = $searchers[0];
-  $response = apachesolr_static_response_cache($searcher);
-  if (!empty($response->response->numFound)) {
-    $content = drupal_get_form('facet_collection_block_form');
-    return array(
-      'subject' => t('Filters'),
-      'content' => $content,
-    );
+  $entity_info = entity_get_info('node');
+  $environment = apachesolr_default_environment();
+  $indexed_bundles = apachesolr_get_index_bundles($environment, 'node');
+  $filtered_content_type = facet_collection_get_filtered_content_type();
+  $variables['items'] = array();
+  $variables['type'] = 'ul';
+  foreach ($indexed_bundles as $bundle) {
+    if ($bundle != $filtered_content_type) {
+      $text = $entity_info['bundles'][$bundle]['label'];
+      $path = $_GET['q'];
+      $options['query']['f']['0'] = 'bundle:' . $bundle;
+      $options['attributes']['class'][] = 'library-content-type-filter-link';
+      $item['data'] = l($text, $path, $options);
+      $item['class'] = array('leaf', 'library-leaf');
+
+    }
+    else {
+      $item['data'] = theme('library_block_chosen_item', array(
+        'content_type_label' => $entity_info['bundles'][$bundle]['label']
+      ));
+      $item['class'] = array('leaf', 'library-leaf-active');
+    }
+    $variables['items'][] = $item;
   }
+  $variables['title'] = '';
+  $variables['attributes'] = array('id' => 'library-filter-list');
+  $content = theme_item_list($variables);
+  return array(
+    'subject' => t('Filters'),
+    'content' => $content,
+  );
 }
 
 /**
@@ -120,7 +141,7 @@ function facet_collection_block_form($form, &$form_state) {
   $facet_deltas = array();
   $deltas = array();
   //All facets should be already built. Check it and if needed build facets
-  $builds = &drupal_static('facetapi_block_view', array());
+  $builds = & drupal_static('facetapi_block_view', array());
   $group = $searcher . ':' . $realm_name;
   if (!isset($builds[$group])) {
     $builds[$group] = facetapi_build_realm($searcher, $realm_name);
@@ -188,7 +209,6 @@ function facet_collection_block_form($form, &$form_state) {
   if (!empty($form)) {
     //Put filters in right order
     $form = facet_collection_block_sort_content($form);
-
     $form['filter_button'] = array(
       '#type' => 'submit',
       '#value' => t('Filter'),
@@ -404,4 +424,25 @@ function facet_collection_block_remove_submits(&$form) {
     }
   }
   return FALSE;
+}
+
+/**
+ * Implements hook_theme()
+ */
+function facet_collection_block_theme() {
+  return array(
+    'library_block_chosen_item' => array(
+      'variables' => array('content_type_label' => NULL),
+    )
+  );
+}
+
+/**
+ * Theme function for chosen item
+ */
+function theme_library_block_chosen_item($variables) {
+  $content_type_label = $variables['content_type_label'];
+  $out = '<div id="library-chosen-content-type-filter-label">' . $content_type_label . '</div>';
+  $out = $out . drupal_render(drupal_get_form('facet_collection_block_form'));
+  return $out;
 }

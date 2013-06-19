@@ -79,6 +79,7 @@ function facet_collection_get_default_params() {
     $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
     $params['rows'] = $facet_collection_rows_number_variants[0];
   }
+  $params['hl'] = 'true';
   $params['hl.fl'] = _facet_collection_build_hl_fl_parameter();
   if (!isset($_GET['s'])) {
     $params['defType'] = 'dismax';
@@ -109,8 +110,6 @@ function facet_collection_get_default_params() {
     }
     $params['q'] = implode(' AND ', $q);
   }
-  $params['hl.fl'][] = 'label';
-  $params['hl.fl'][] = 'tm_collection_book_field';
   $params['fq'] = 'entity_type:node';
   return $params;
 }
@@ -124,7 +123,7 @@ function _facet_collection_build_qf_parameter($boosts) {
   $field_type_list = variable_get('facet_collection:field_type_search_list');
   $searchable_fields = facet_collection_get_searchable_fields(array_keys($field_type_list));
   $needed_fields = $searchable_fields[$chosen_content_type];
-  $qf = $qf . 'label^' . $boosts[$chosen_content_type . '_title'] . ' ';
+  $qf = $qf . 'label^' . $boosts['title'] . ' ';
   foreach ($needed_fields as $field_name) {
     $field_info = field_info_field($field_name);
     $module = $field_type_list[$field_info['type']];
@@ -489,7 +488,6 @@ function facet_collection_theme() {
  */
 function template_preprocess_apachesolr_search_snippets__node(&$variables) {
   $snippets = $variables['snippets'];
-  $variables['show_preview_label'] = t("Show preview");
   $module_path = drupal_get_path('module', 'facet_collection');
   drupal_add_css($module_path . '/CSS/facet_collection_snippet.css');
   drupal_add_js($module_path . '/js/collection-teaser.js');
@@ -525,10 +523,7 @@ function template_preprocess_apachesolr_search_snippets__node(&$variables) {
     }
   }
   else {
-    foreach ($snippets as $field_snippets) {
-      $text .= (strlen($text) > 0) ? ' ... ' : '';
-      $text = $text . implode(' ... ', $field_snippets);
-    }
+    $text = implode(' ... ', $snippets);
   }
   $variables['text'] = $text;
   foreach ($instances as $field_name => $instance) {
