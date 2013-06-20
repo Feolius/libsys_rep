@@ -479,6 +479,7 @@ function template_preprocess_collection_search_results(&$variables) {
 
 function collection_page_preprocess_breadcrumb(&$variables) {
   kpr($_GET);
+  kpr(drupal_get_title());
   if (arg(0) == 'node'
     && is_numeric(arg(1))
     && (isset($_GET['collection']) && $_GET['collection'] == 'true')
