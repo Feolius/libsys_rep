@@ -552,7 +552,7 @@ function template_preprocess_collection_search_result(&$variables) {
   $image = collection_page_node_snippet_image_url($result['node']->entity_id, $style);
   if (empty($image)) {
     //TODO:we need dummy url
-    $uri = file_build_uri('default.png');
+    $uri = file_build_uri('collection_page_images/default.png');
     $image = theme('image_style', array('style_name' => $style, 'path' => $uri));
   }
   $variables['image'] = $image;
@@ -667,15 +667,15 @@ function collection_page_files_snippet_image($node, $thumbnail_style) {
             }
           }
         }
-        elseif ($item['value'] == 'videos') {
+        elseif ($item['value'] == 'video') {
           if ((module_exists('youtube'))) {
             $youtube_field_items = field_get_items('node', $node, 'field_files_youtube_media');
             if (!empty($youtube_field_items)) {
               foreach ($youtube_field_items as $item) {
-                if (isset($youtube_field_items['video_id'])) {
-                  $image = theme_youtube_thumbnail(array(
-                    'video_id' => $youtube_field_items['video_id'],
-                    'image_style' => 'library_page_thumbnail'
+                if (isset($item['video_id'])) {
+                  $image = theme('youtube_thumbnail', array(
+                    'video_id' => $item['video_id'],
+                    'image_style' => $thumbnail_style
                   ));
                 }
                 //We need only one picture from the image field
@@ -697,8 +697,8 @@ function collection_page_files_snippet_image($node, $thumbnail_style) {
                 //For email display just an Email dummy image
                 if ($term->name == 'E-Mail') {
                   //TODO:we need Email image url
-                  //$uri = 'email_image_url';
-                  //$image = theme('image', array('path' => $uri));
+                  $uri = file_build_uri('collection_page_images/email.png');
+                  $image = theme('image_style', array('style_name' => $thumbnail_style, 'path' => $uri));
                 }
               }
               //We need only one picture from the image field
@@ -714,10 +714,12 @@ function collection_page_files_snippet_image($node, $thumbnail_style) {
               foreach ($book_field_items as $item) {
                 if (isset($item['fid_thumb'])) {
                   $file_thumb = file_load($item['fid_thumb']);
-                  $uri_thumb = $file_thumb->uri;
-                  $styles = image_styles();
-                  if (in_array($thumbnail_style, array_keys($styles))) {
-                    $image = theme('image_style', array('style_name' => $thumbnail_style, 'path' => $uri_thumb));
+                  if ($file_thumb) {
+                    $uri_thumb = $file_thumb->uri;
+                    $styles = image_styles();
+                    if (in_array($thumbnail_style, array_keys($styles))) {
+                      $image = theme('image_style', array('style_name' => $thumbnail_style, 'path' => $uri_thumb));
+                    }
                   }
                 }
                 //We need only one picture from the image field
@@ -870,6 +872,8 @@ function collection_page_node_snippet_data($nid, $snippet) {
         $field = field_info_field('field_location_address');
         $instance = field_info_instance('node', 'field_location_address', $node->type);
         $display = $instance['display']['default'];
+        $display['type'] = 'addressfield_default';
+        $display['settings']['format_handlers'] = array('address');
         $field_element = addressfield_field_formatter_view('node', $node, $field, $instance, LANGUAGE_NONE, $items, $display);
         $address = drupal_render($field_element);
 
@@ -1168,7 +1172,7 @@ function collection_page_files_node_snippet_data($node, $trimmed_characters_leng
             ),
           ));
         }
-        elseif ($item['value'] == 'videos') {
+        elseif ($item['value'] == 'video') {
 
           $description = '';
           $length = '';
@@ -1198,7 +1202,7 @@ function collection_page_files_node_snippet_data($node, $trimmed_characters_leng
           if (!empty($length_items)) {
             foreach ($length_items as $item) {
               //Trim the description text
-              if (module_exists('date') && isset($item['value'])) {
+              if (isset($item['value'])) {
                 $length = date('H:i:s', $item['value']);
               }
               //We need only one picture from the image field
