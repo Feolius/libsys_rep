@@ -111,7 +111,7 @@ function theme_facet_collection_search_results__alter($variables) {
     }
   }
 
-  //Set page title
+  // Set page title.
   drupal_set_title('Library');
 
   $timeline_library = libraries_get_path('timeline');
@@ -456,7 +456,7 @@ function template_preprocess_collection_standard_default_view(&$variables) {
 function template_preprocess_collection_search_results(&$variables) {
   $variables['search_results'] = '';
   $results = $variables['results'];
-  //Number of rows in page
+  // Number of rows in page.
   if (isset($_GET['rNum'])) {
     $r_num = $_GET['rNum'];
   }
@@ -495,7 +495,18 @@ function collection_page_preprocess_breadcrumb(&$variables) {
     $back_to_library_html = l(t('Library'), 'library/' . $_GET['query'], array('query' => $library_get_options));
     $variables['breadcrumb'][1] = $back_to_library_html;
   } else {
-    $back_to_library_html = t('Library');
-    $variables['breadcrumb'][1] = $back_to_library_html;
+    $variables['breadcrumb'][1] = t('Library');
+
+    // Get the label of the bundle.
+    foreach ($_GET['f'] as $filter) {
+      $exploded_filter = explode(':', $filter);
+      if ($exploded_filter[0] == 'bundle') {
+        $bundle = $exploded_filter[1];
+        $info = entity_get_info('node');
+        $variables['breadcrumb'][2] = $info['bundles'][$bundle]['label'];
+      }
+    }
+
+    kpr($_GET);
   }
 }
