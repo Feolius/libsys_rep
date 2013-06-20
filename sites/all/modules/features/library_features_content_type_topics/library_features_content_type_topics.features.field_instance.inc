@@ -720,7 +720,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'collecting_fields' => array(),
         'target_bundles' => array(),
       ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'type' => 'field_data_collector_default_widget',
       'weight' => 37,
     ),
   );
@@ -806,7 +806,7 @@ function library_features_content_type_topics_field_default_field_instances() {
           'events' => 'events',
         ),
       ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'type' => 'field_data_collector_default_widget',
       'weight' => 35,
     ),
   );
@@ -888,7 +888,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'collecting_fields' => array(),
         'target_bundles' => array(),
       ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'type' => 'field_data_collector_default_widget',
       'weight' => 33,
     ),
   );
@@ -970,7 +970,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'collecting_fields' => array(),
         'target_bundles' => array(),
       ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'type' => 'field_data_collector_default_widget',
       'weight' => 36,
     ),
   );
@@ -1052,7 +1052,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'collecting_fields' => array(),
         'target_bundles' => array(),
       ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'type' => 'field_data_collector_default_widget',
       'weight' => 34,
     ),
   );
