@@ -473,83 +473,10 @@ function facet_collection_apachesolr_process_results(&$results, DrupalSolrQueryI
  */
 function facet_collection_theme() {
   return array(
-    'apachesolr_search_snippets__node' => array(
-      'template' => 'facet-collection-snippet',
-      'variables' => array('doc' => NULL, 'snippets' => array()),
-    ),
     'facet_collection_search_results' => array(
       'variables' => array('results' => NULL),
     ),
   );
-}
-
-/**
- * Process variables for facet-collection-snippet.tpl.php.
- */
-function template_preprocess_apachesolr_search_snippets__node(&$variables) {
-  $snippets = $variables['snippets'];
-  $module_path = drupal_get_path('module', 'facet_collection');
-  drupal_add_css($module_path . '/CSS/facet_collection_snippet.css');
-  drupal_add_js($module_path . '/js/collection-teaser.js');
-  $text = '';
-  $nid = $variables['doc']->entity_id;
-  $variables['nid'] = $nid;
-  $node = node_load($nid);
-  $instances = field_info_instances('node', $node->type);
-  if (empty($snippets)) {
-    //We take a text for snippet from long text with summary field
-    $node_teaser = node_view($node, 'teaser');
-    foreach ($instances as $instance) {
-      $field_name = $instance['field_name'];
-      $field_info = field_info_field($field_name);
-      //If there is a trim display in node teaser we take it
-      if ($field_info['type'] == 'text_with_summary') {
-        if (isset($node_teaser[$field_name])) {
-          $text = $node_teaser[$field_name][0]['#markup'];
-          break;
-        }
-        else {
-          //Else we should get full text
-          $items = field_get_items('node', $node, $field_name);
-          if (!empty($items)) {
-            foreach ($items as $item) {
-              $text = $item['value'];
-              break;
-            }
-            break;
-          }
-        }
-      }
-    }
-  }
-  else {
-    $text = implode(' ... ', $snippets);
-  }
-  $variables['text'] = $text;
-  foreach ($instances as $field_name => $instance) {
-    $field_info = field_info_field($field_name);
-    if ($field_info['type'] == 'image') {
-      $items = field_get_items('node', $node, $field_info['field_name']);
-      if (!empty($items)) {
-        foreach ($items as $item) {
-          $uri = $item['uri'];
-          $style = 'thumbnail';
-          $styles = image_styles();
-          if (in_array($style, array_keys($styles))) {
-            $image_path = image_style_url($style, $uri);
-          }
-          else {
-            $image_path = file_create_url($uri);
-          }
-          $variables['image_path'] = $image_path;
-          break;
-        }
-      }
-      if (!empty($variables['image_path'])) {
-        break;
-      }
-    }
-  }
 }
 
 /**
@@ -578,6 +505,7 @@ function facet_collection_entity_info_alter(&$entity_info) {
     'collection_thumbnail' => array(
       'label' => t('Collection thumbnail'),
       'custom settings' => TRUE,
-    )
+    ),
   );
 }
+

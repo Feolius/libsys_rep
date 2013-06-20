@@ -1,0 +1,9 @@
+.collection-page-search-result-thumbnail-image {
+    float: left;
+    width: 100px;
+    margin: 15px;
+}
+
+.collection-page-search-result-snippet .collection-page-search-result-title {
+    padding: 15px;
+}

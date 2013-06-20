@@ -54,10 +54,18 @@ function collection_page_theme() {
       'template' => 'theme/collection-search-results',
       'variables' => array('results' => NULL, 'bundle_machine_name' => NULL)
     ),
+    'collection_search_result' => array(
+      'template' => 'theme/collection-search-result',
+      'variables' => array('result' => NULL)
+    ),
     'collection_standard_default_view' => array(
       'template' => 'theme/collection-standard-default-view',
       'variables' => array('results' => NULL)
-    )
+    ),
+    'collection_search_result_snippet_data' => array(
+      'template' => 'theme/collection-page-search-result-snippet',
+      'variables' => array('snippet_type' => NULL, 'snippet_data' => NULL),
+    ),
   );
 }
 
@@ -451,32 +459,8 @@ function template_preprocess_collection_standard_default_view(&$variables) {
 }
 
 /**
- * Preprocess function for collection_search_results
+ * Implement hook_preprocess_breadcrumb().
  */
-function template_preprocess_collection_search_results(&$variables) {
-  $variables['search_results'] = '';
-  $results = $variables['results'];
-  //Number of rows in page
-  if (isset($_GET['rNum'])) {
-    $r_num = $_GET['rNum'];
-  }
-  else {
-    $facet_collection_rows_number_variants = variable_get('facet_collection_rows_number_variants', '25 50 100');
-    $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
-    $r_num = $facet_collection_rows_number_variants[0];
-  }
-  $page = pager_find_page();
-  $result_number_in_page = 1;
-  foreach ($results as $result) {
-    unset($result['user']);
-    unset($result['date']);
-    $result['title'] = ($page * $r_num + $result_number_in_page) . '. ' . $result['title'];
-    $variables['search_results'] .= theme('search_result', array('result' => $result, 'module' => 'collection_page'));
-    $result_number_in_page++;
-  }
-  $variables['pager'] = theme('pager', array('tags' => NULL));
-}
-
 function collection_page_preprocess_breadcrumb(&$variables) {
   if (arg(0) == 'node'
     && is_numeric(arg(1))
@@ -495,4 +479,841 @@ function collection_page_preprocess_breadcrumb(&$variables) {
     $back_to_library_html = l(t('Library'), 'library/' . $_GET['query'], array('query' => $library_get_options));
     $variables['breadcrumb'][1] = $back_to_library_html;
   }
+}
+
+/**
+ * Preprocess function for collection_search_results
+ */
+function template_preprocess_collection_search_results(&$variables) {
+  $variables['search_results'] = '';
+  $results = $variables['results'];
+  drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_search_result.css');
+  //Number of rows in page
+  if (isset($_GET['rNum'])) {
+    $r_num = $_GET['rNum'];
+  }
+  else {
+    $facet_collection_rows_number_variants = variable_get('facet_collection_rows_number_variants', '25 50 100');
+    $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
+    $r_num = $facet_collection_rows_number_variants[0];
+  }
+  $page = pager_find_page();
+  $result_number_in_page = 1;
+  foreach ($results as $result) {
+    $result['title'] = ($page * $r_num + $result_number_in_page) . '. ' . $result['title'];
+    $variables['search_results'] .= theme('collection_search_result', array('result' => $result));
+    $result_number_in_page++;
+  }
+  $variables['pager'] = theme('pager', array('tags' => NULL));
+}
+
+/**
+ * Preprocess function for collection_search_result
+ */
+function template_preprocess_collection_search_result(&$variables) {
+  global $language;
+
+  $result = $variables['result'];
+  $variables['url'] = check_url($result['link']);
+  $variables['title'] = check_plain($result['title']);
+  if (isset($result['language']) && $result['language'] != $language->language && $result['language'] != LANGUAGE_NONE) {
+    $variables['title_attributes_array']['xml:lang'] = $result['language'];
+    $variables['content_attributes_array']['xml:lang'] = $result['language'];
+  }
+  $style = 'library_page_thumbnail';
+  $image = collection_page_node_snippet_image_url($result['node']->entity_id, $style);
+  if (empty($image)) {
+    //TODO:we need dummy url
+    $uri = file_build_uri('default.png');
+    $image = theme('image_style', array('style_name' => $style, 'path' => $uri));
+  }
+  $variables['image'] = $image;
+
+  $result_snippet_data = collection_page_node_snippet_data($result['node']->entity_id, $result['snippet']);
+
+  $variables['snippet'] = empty($result_snippet_data) ? $result['snippet'] : $result_snippet_data;
+}
+
+function collection_page_node_snippet_image_url($nid, $style) {
+  $image = FALSE;
+
+  $image_field_name = '';
+  $node = node_load($nid);
+
+  //Depending on node type the snippet image will be takes from different fields.
+  //If the such field is image field, we need only name of this field, and the image
+  // will be takes downwards.
+  switch ($node->type) {
+    case 'files':
+      $image = collection_page_files_snippet_image($node, $style);
+      break;
+    case 'people':
+      $image_field_name = 'field_people_image';
+      break;
+    case 'location':
+      $image_field_name = 'field_location_image';
+      break;
+    case 'events':
+      $image_field_name = 'field_events_image';
+      break;
+    case 'topics':
+      $image_field_name = 'field_topics_image';
+      break;
+
+  }
+
+  //If a type of node is not the files, then the $image variable will not be defined.
+  //In that case we need to get image url from needed field in with name form variable
+  // $image_field_name and build and return an '<img>' block.
+  if (empty($image) && !empty($image_field_name)) {
+    $items = field_get_items('node', $node, $image_field_name);
+    if (!empty($items)) {
+      foreach ($items as $item) {
+        if ((module_exists('image') && isset($item['uri']))) {
+          $uri = $item['uri'];
+          $styles = image_styles();
+          if (in_array($style, array_keys($styles))) {
+            $image = theme('image_style', array('style_name' => $style, 'path' => $uri));
+          }
+        }
+        //We need only one picture from the image field
+        //If the field have more then one picture we take the first one.
+        break;
+      }
+    }
+  }
+
+  return $image;
+}
+
+/**
+ * Return the image for Files node depending on the primary media field value
+ *
+ * @param $node
+ * @return bool|string
+ */
+function collection_page_files_snippet_image($node, $thumbnail_style) {
+  $image = FALSE;
+
+  $items = field_get_items('node', $node, 'field_files_primary_media');
+  if (!empty($items)) {
+    foreach ($items as $item) {
+      if (isset($item['value'])) {
+        if ($item['value'] == 'image') {
+
+          $image_field_name = 'field_files_image';
+          $items = field_get_items('node', $node, $image_field_name);
+          if (!empty($items)) {
+            foreach ($items as $item) {
+              if ((module_exists('image') && isset($item['uri']))) {
+                $uri = $item['uri'];
+                $styles = image_styles();
+                if (in_array($thumbnail_style, array_keys($styles))) {
+                  $image = theme('image_style', array('style_name' => $thumbnail_style, 'path' => $uri));
+                }
+              }
+              //We need only one picture from the image field
+              //If the field have more then one picture we take the first one.
+              break;
+            }
+          }
+
+        }
+        elseif ($item['value'] == 'audio') {
+
+          $image_field_name = 'field_files_album_poster';
+          $items = field_get_items('node', $node, $image_field_name);
+          if (!empty($items)) {
+            foreach ($items as $item) {
+              if ((module_exists('image') && isset($item['uri']))) {
+                $uri = $item['uri'];
+                $styles = image_styles();
+                if (in_array($thumbnail_style, array_keys($styles))) {
+                  $image = theme('image_style', array('style_name' => $thumbnail_style, 'path' => $uri));
+                }
+              }
+              //We need only one picture from the image field
+              //If the field have more then one picture we take the first one.
+              break;
+            }
+          }
+        }
+        elseif ($item['value'] == 'videos') {
+          if ((module_exists('youtube'))) {
+            $youtube_field_items = field_get_items('node', $node, 'field_files_youtube_media');
+            if (!empty($youtube_field_items)) {
+              foreach ($youtube_field_items as $item) {
+                if (isset($youtube_field_items['video_id'])) {
+                  $image = theme_youtube_thumbnail(array(
+                    'video_id' => $youtube_field_items['video_id'],
+                    'image_style' => 'library_page_thumbnail'
+                  ));
+                }
+                //We need only one picture from the image field
+                //If the field have more then one picture we take the first one.
+                break;
+              }
+            }
+          }
+        }
+        elseif ($item['value'] == 'document') {
+          //We have two types of snippets for primary media document
+          //The first one is Email - if the category of document is Email.
+          //The second one - all other documents
+          $category_items = field_get_items('node', $node, 'field_files_category');
+          if (!empty($category_items)) {
+            foreach ($category_items as $item) {
+              if ((module_exists('taxonomy')) && isset($item['tid'])) {
+                $term = taxonomy_term_load($item['tid']);
+                //For email display just an Email dummy image
+                if ($term->name == 'E-Mail') {
+                  //TODO:we need Email image url
+                  //$uri = 'email_image_url';
+                  //$image = theme('image', array('path' => $uri));
+                }
+              }
+              //We need only one picture from the image field
+              //If the field have more then one picture we take the first one.
+              break;
+            }
+          }
+
+          //For the document display thumbnail of pdf file
+          if (!$image) {
+            $book_field_items = field_get_items('node', $node, 'field_files_file');
+            if (!empty($book_field_items)) {
+              foreach ($book_field_items as $item) {
+                if (isset($item['fid_thumb'])) {
+                  $file_thumb = file_load($item['fid_thumb']);
+                  $uri_thumb = $file_thumb->uri;
+                  $styles = image_styles();
+                  if (in_array($thumbnail_style, array_keys($styles))) {
+                    $image = theme('image_style', array('style_name' => $thumbnail_style, 'path' => $uri_thumb));
+                  }
+                }
+                //We need only one picture from the image field
+                //If the field have more then one picture we take the first one.
+                break;
+              }
+            }
+          }
+
+        }
+      }
+      break;
+    }
+  }
+
+  return $image;
+}
+
+function collection_page_node_snippet_data($nid, $snippet) {
+  $snippet_data = '';
+  $node = node_load($nid);
+  $trimmed_characters_length = 200;
+  $snippet_contain_search_result = FALSE;
+  if (isset($_GET['s']) || (arg(0) == 'library' && arg(1) != NULL)) {
+    $snippet_contain_search_result = TRUE;
+  }
+
+  switch ($node->type) {
+    case 'files':
+      $snippet_data = collection_page_files_node_snippet_data($node, $trimmed_characters_length, $snippet, $snippet_contain_search_result);
+      break;
+    case 'people':
+      //Snippet data for People content type consist of Description, Birth and Death Date
+      $description = '';
+      $birth_date = '';
+      $death_date = '';
+
+      //Fetch the description
+      if ($snippet_contain_search_result) {
+        //If the user search some word or frase, we nned to show the snippet from apache solr
+        //with highlighted found text.
+        $description = $snippet;
+      }
+      else {
+        $items = field_get_items('node', $node, 'field_people_description');
+        if (!empty($items)) {
+          foreach ($items as $item) {
+            //Trim the description text
+            if ((module_exists('text') && isset($item['value']))) {
+              $description = text_summary($item['value'], NULL, $trimmed_characters_length);
+            }
+            //We need only one picture from the image field
+            //If the field have more then one picture we take the first one.
+            break;
+          }
+        }
+      }
+      //Fetch the birth date
+      $items = field_get_items('node', $node, 'field_people_birthday');
+      if (!empty($items)) {
+        foreach ($items as $item) {
+          //Trim the description text
+          if ((module_exists('library_date_field') && isset($item['value']))) {
+            $process = array('value', 'value2');
+            foreach ($process as $processed) {
+              $date[$processed] = library_date_field_get_date($item, $processed);
+            }
+            $output = !empty($date['value']) ? $date['value'] : '';
+            if (sizeof($process) == 2 && !empty($date['value2']) && $date['value'] != $date['value2']) {
+              $output .= " - {$date['value2']}";
+            }
+            $birth_date = $output;
+          }
+          //We need only one picture from the image field
+          //If the field have more then one picture we take the first one.
+          break;
+        }
+      }
+
+      //Fetch the death date
+      $items = field_get_items('node', $node, 'field_people_death_date');
+      if (!empty($items)) {
+        foreach ($items as $item) {
+          //Trim the description text
+          if ((module_exists('library_date_field') && isset($item['value']))) {
+            $process = array('value', 'value2');
+            foreach ($process as $processed) {
+              $date[$processed] = library_date_field_get_date($item, $processed);
+            }
+            $output = !empty($date['value']) ? $date['value'] : '';
+            if (sizeof($process) == 2 && !empty($date['value2']) && $date['value'] != $date['value2']) {
+              $output .= " - {$date['value2']}";
+            }
+            $death_date = $output;
+          }
+          //We need only one picture from the image field
+          //If the field have more then one picture we take the first one.
+          break;
+        }
+      }
+      $snippet_data = theme('collection_search_result_snippet_data', array(
+        'snippet_type' => 'people',
+        'snippet_data' => array(
+          'description' => array(
+            '#label' => FALSE,
+            '#data' => $description,
+          ),
+          'birth_date' => array(
+            '#label' => 'Birth Date',
+            '#data' => $birth_date,
+          ),
+          'death_date' => array(
+            '#label' => 'Death Date',
+            '#data' => $death_date,
+          ),
+        ),
+      ));
+
+      break;
+    case 'location':
+
+      //Snippet data for Location content type consict of Desctription and Address
+      $description = '';
+      $address = '';
+
+      //Fetch the description
+      if ($snippet_contain_search_result) {
+        //If the user search some word or frase, we nned to show the snippet from apache solr
+        //with highlighted found text.
+        $description = $snippet;
+      }
+      else {
+        $items = field_get_items('node', $node, 'field_location_description');
+        if (!empty($items)) {
+          foreach ($items as $item) {
+            //Trim the description text
+            if ((module_exists('text') && isset($item['value']))) {
+              $description = text_summary($item['value'], NULL, $trimmed_characters_length);
+            }
+            //We need only one picture from the image field
+            //If the field have more then one picture we take the first one.
+            break;
+          }
+        }
+      }
+
+      //Fetch the address
+      if (module_exists('addressfield')) {
+        $items = field_get_items('node', $node, 'field_location_address');
+        $field = field_info_field('field_location_address');
+        $instance = field_info_instance('node', 'field_location_address', $node->type);
+        $display = $instance['display']['default'];
+        $field_element = addressfield_field_formatter_view('node', $node, $field, $instance, LANGUAGE_NONE, $items, $display);
+        $address = drupal_render($field_element);
+
+        if (empty($address)) {
+          $address = $node->title;
+        }
+      }
+      $snippet_data = theme('collection_search_result_snippet_data', array(
+        'snippet_type' => 'location',
+        'snippet_data' => array(
+          'description' => array(
+            '#label' => FALSE,
+            '#data' => $description,
+          ),
+          'address' => array(
+            '#label' => 'Address',
+            '#data' => $address,
+          ),
+        ),
+      ));
+
+      break;
+    case 'events':
+      //Snippet data for Events content type consict of Desctription, Location and Date
+      $location = array();
+      $description = '';
+      $date = '';
+
+      //Fetch the descritpion
+      if ($snippet_contain_search_result) {
+        //If the user search some word or frase, we nned to show the snippet from apache solr
+        //with highlighted found text.
+        $description = $snippet;
+      }
+      else {
+        $items = field_get_items('node', $node, 'field_events_description');
+        if (!empty($items)) {
+          foreach ($items as $item) {
+            //Trim the description text
+            if ((module_exists('text') && isset($item['value']))) {
+              $description = text_summary($item['value'], NULL, $trimmed_characters_length);
+            }
+            //We need only one picture from the image field
+            //If the field have more then one picture we take the first one.
+            break;
+          }
+        }
+      }
+
+      //Fetch the location
+      $items = field_get_items('node', $node, 'field_events_place_nodes');
+      if (!empty($items) && module_exists('entityreference')) {
+        $target_ids = array();
+        foreach ($items as $item) {
+          if (isset($item['target_id'])) {
+            $target_ids[] = $item['target_id'];
+          }
+        }
+        $field = field_info_field('field_events_place_nodes');
+        $target_entities = entity_load($field['settings']['target_type'], $target_ids);
+
+        foreach ($target_entities as $target_entity) {
+          if (isset($target_entity->title)) {
+            $label = $target_entity->title;
+            $uri = entity_uri($field['settings']['target_type'], $target_entity);
+            if ($uri) {
+              $location[] = l($label, $uri['path'], $uri['options']);
+            }
+            else {
+              $location[] = check_plain($label);
+            }
+          }
+        }
+      }
+
+      //Fetch the date
+      if (isset($node->created)) {
+        $date = date('d F Y', $node->created);
+      }
+
+      $snippet_data = theme('collection_search_result_snippet_data', array(
+        'snippet_type' => 'events',
+        'snippet_data' => array(
+          'description' => array(
+            '#label' => FALSE,
+            '#data' => $description,
+          ),
+          'location' => array(
+            '#label' => 'Location',
+            '#data' => implode(',', $location),
+          ),
+          'date' => array(
+            '#label' => 'Date',
+            '#data' => $date,
+          ),
+        ),
+      ));
+
+      break;
+    case
+      'topics':
+
+      $description = '';
+      if ($snippet_contain_search_result) {
+        //If the user search some word or frase, we nned to show the snippet from apache solr
+        //with highlighted found text.
+        $description = $snippet;
+      }
+      else {
+        $items = field_get_items('node', $node, 'field_topics_body');
+        if (!empty($items)) {
+          foreach ($items as $item) {
+            //Trim the description text
+            if ((module_exists('text') && isset($item['value']))) {
+              $description = text_summary($item['value'], NULL, $trimmed_characters_length);
+            }
+            //We need only one picture from the image field
+            //If the field have more then one picture we take the first one.
+            break;
+          }
+        }
+      }
+
+      $snippet_data = theme('collection_search_result_snippet_data', array(
+        'snippet_type' => 'topics',
+        'snippet_data' => array(
+          'description' => array(
+            '#label' => FALSE,
+            '#data' => $description,
+          ),
+        ),
+      ));
+
+      break;
+  }
+
+  return $snippet_data;
+}
+
+/**
+ * Return the html with snippet data for nodes with content type files
+ *
+ * @param $node
+ * @param $trimmed_characters_length
+ * @param $snippet
+ * @return string
+ */
+function collection_page_files_node_snippet_data($node, $trimmed_characters_length, $snippet, $snippet_contain_search_result) {
+  $snippet_data = '';
+
+  $items = field_get_items('node', $node, 'field_files_primary_media');
+  if (!empty($items)) {
+    foreach ($items as $item) {
+      if (isset($item['value'])) {
+        if ($item['value'] == 'image') {
+
+          //If the user search some word or frase, we nned to show the snippet from apache solr
+          //with highlighted found text.
+          $search_snippet = $snippet_contain_search_result ? $snippet : FALSE;
+          $people = array();
+          $location = array();
+          $date = '';
+
+          //Fetch the people
+          $people_items = field_get_items('node', $node, 'field_files_image_people');
+          if (!empty($people_items) && module_exists('entityreference')) {
+            $target_ids = array();
+            foreach ($people_items as $item) {
+              if (isset($item['target_id'])) {
+                $target_ids[] = $item['target_id'];
+              }
+            }
+            $field = field_info_field('field_files_image_people');
+            $target_entities = entity_load($field['settings']['target_type'], $target_ids);
+
+            foreach ($target_entities as $target_entity) {
+              if (isset($target_entity->title)) {
+                $label = $target_entity->title;
+                $uri = entity_uri($field['settings']['target_type'], $target_entity);
+                if ($uri) {
+                  $people[] = l($label, $uri['path'], $uri['options']);
+                }
+                else {
+                  $people[] = check_plain($label);
+                }
+              }
+            }
+          }
+
+          //Fetch the location
+          $location_items = field_get_items('node', $node, 'field_files_image_location');
+          if (!empty($location_items) && module_exists('entityreference')) {
+            $target_ids = array();
+            foreach ($location_items as $item) {
+              if (isset($item['target_id'])) {
+                $target_ids[] = $item['target_id'];
+              }
+            }
+            $field = field_info_field('field_files_image_location');
+            $target_entities = entity_load($field['settings']['target_type'], $target_ids);
+
+            foreach ($target_entities as $target_entity) {
+              if (isset($target_entity->title)) {
+                $label = $target_entity->title;
+                $uri = entity_uri($field['settings']['target_type'], $target_entity);
+                if ($uri) {
+                  $location[] = l($label, $uri['path'], $uri['options']);
+                }
+                else {
+                  $location[] = check_plain($label);
+                }
+              }
+            }
+          }
+
+          //Fetch the date
+          if (isset($node->created)) {
+            $date = date('d F Y', $node->created);
+          }
+
+          $snippet_data = theme('collection_search_result_snippet_data', array(
+            'snippet_type' => 'files-image',
+            'snippet_data' => array(
+              'search_snippet' => array(
+                '#label' => FALSE,
+                '#data' => $search_snippet,
+              ),
+              'people' => array(
+                '#label' => 'People',
+                '#data' => implode(',', $people),
+              ),
+              'location' => array(
+                '#label' => 'Location',
+                '#data' => implode(',', $location),
+              ),
+              'date' => array(
+                '#label' => 'Date',
+                '#data' => $date,
+              ),
+            ),
+          ));
+        }
+        elseif ($item['value'] == 'audio') {
+          //Snippet for files node with primary media audio consist of description and length of audio file
+
+          $description = '';
+          $length = '';
+          //Fetch the description
+          if ($snippet_contain_search_result) {
+            //If the user search some word or frase, we nned to show the snippet from apache solr
+            //with highlighted found text.
+            $description = $snippet;
+          }
+          else {
+            $description_items = field_get_items('node', $node, 'field_files_description');
+            if (!empty($description_items)) {
+              foreach ($description_items as $item) {
+                //Trim the description text
+                if ((module_exists('text') && isset($item['value']))) {
+                  $description = text_summary($item['value'], NULL, $trimmed_characters_length);
+
+                }
+                //We need only one picture from the image field
+                //If the field have more then one picture we take the first one.
+                break;
+              }
+            }
+          }
+
+          //Fetch the length
+          $length_items = field_get_items('node', $node, 'field_files_length');
+          if (!empty($length_items)) {
+            foreach ($length_items as $item) {
+              //Trim the description text
+              if (isset($item['value'])) {
+                $length = $item['value'];
+              }
+              //We need only one picture from the image field
+              //If the field have more then one picture we take the first one.
+              break;
+            }
+          }
+
+          $snippet_data = theme('collection_search_result_snippet_data', array(
+            'snippet_type' => 'files-audio',
+            'snippet_data' => array(
+              'description' => array(
+                '#label' => FALSE,
+                '#data' => $description,
+              ),
+              'length' => array(
+                '#label' => 'Length',
+                '#data' => $length,
+              ),
+            ),
+          ));
+        }
+        elseif ($item['value'] == 'videos') {
+
+          $description = '';
+          $length = '';
+          //Fetch the description
+          if ($snippet_contain_search_result) {
+            //If the user search some word or frase, we nned to show the snippet from apache solr
+            //with highlighted found text.
+            $description = $snippet;
+          }
+          else {
+            $description_items = field_get_items('node', $node, 'field_files_description');
+            if (!empty($description_items)) {
+              foreach ($description_items as $item) {
+                //Trim the description text
+                if ((module_exists('text') && isset($item['value']))) {
+                  $description = text_summary($item['value'], NULL, $trimmed_characters_length);
+                }
+                //We need only one picture from the image field
+                //If the field have more then one picture we take the first one.
+                break;
+              }
+            }
+          }
+
+          //Fetch the length
+          $length_items = field_get_items('node', $node, 'field_files_video_length');
+          if (!empty($length_items)) {
+            foreach ($length_items as $item) {
+              //Trim the description text
+              if (module_exists('date') && isset($item['value'])) {
+                $length = date('H:i:s', $item['value']);
+              }
+              //We need only one picture from the image field
+              //If the field have more then one picture we take the first one.
+              break;
+            }
+          }
+
+          $snippet_data = theme('collection_search_result_snippet_data', array(
+            'snippet_type' => 'files-videos',
+            'snippet_data' => array(
+              'description' => array(
+                '#label' => FALSE,
+                '#data' => $description,
+              ),
+              'length' => array(
+                '#label' => 'Length',
+                '#data' => $length,
+              ),
+            ),
+          ));
+        }
+        elseif ($item['value'] == 'document') {
+          //We have two types of snippets for primary media document
+          //The first one is Email - if the category of document is Email.
+          //The second one - all other documents
+          $category_items = field_get_items('node', $node, 'field_files_category');
+          if (!empty($category_items)) {
+            foreach ($category_items as $item) {
+              if ((module_exists('taxonomy')) && isset($item['tid'])) {
+                $term = taxonomy_term_load($item['tid']);
+                //For email display just date
+                if ($term->name == 'E-Mail') {
+                  //If the user search some word or frase, we nned to show the snippet from apache solr
+                  //with highlighted found text.
+                  $search_snippet = $snippet_contain_search_result ? $snippet : FALSE;
+                  $date = '';
+                  if (isset($node->created)) {
+                    $date = date('d F Y', $node->created);
+                  }
+
+                  $snippet_data = theme('collection_search_result_snippet_data', array(
+                    'snippet_type' => 'files-email',
+                    'snippet_data' => array(
+                      'search_snippet' => array(
+                        '#label' => FALSE,
+                        '#data' => $search_snippet,
+                      ),
+                      'date' => array(
+                        '#label' => 'Date',
+                        '#data' => $date,
+                      ),
+                    ),
+                  ));
+                }
+                //For the document display author and date and subtitle
+
+              }
+              //We need only one picture from the image field
+              //If the field have more then one picture we take the first one.
+              break;
+            }
+          }
+
+          if (!$snippet_data) {
+            $subtitle = '';
+            $author = array();
+            $date = '';
+
+            //Fetch the subtitle
+            $subtitle_items = field_get_items('node', $node, 'field_files_subtitle');
+            if (!empty($subtitle_items)) {
+              foreach ($subtitle_items as $item) {
+                //Trim the description text
+                if (isset($item['value'])) {
+                  $subtitle = $item['value'];
+                }
+                //We need only one picture from the image field
+                //If the field have more then one picture we take the first one.
+                break;
+              }
+            }
+            //If the user search some word or frase, we nned to show the snippet from apache solr
+            //with highlighted found text.
+            $search_snippet = $snippet_contain_search_result ? $snippet : FALSE;
+
+            //Fetch the location
+            $author_items = field_get_items('node', $node, 'field_files_author');
+            if (!empty($author_items) && module_exists('entityreference')) {
+              $target_ids = array();
+              foreach ($author_items as $item) {
+                if (isset($item['target_id'])) {
+                  $target_ids[] = $item['target_id'];
+                }
+              }
+              $field = field_info_field('field_events_place_nodes');
+              $target_entities = entity_load($field['settings']['target_type'], $target_ids);
+
+              foreach ($target_entities as $target_entity) {
+                if (isset($target_entity->title)) {
+                  $label = $target_entity->title;
+                  $uri = entity_uri($field['settings']['target_type'], $target_entity);
+                  if ($uri) {
+                    $author[] = l($label, $uri['path'], $uri['options']);
+                  }
+                  else {
+                    $author[] = check_plain($label);
+                  }
+                }
+              }
+            }
+
+            //Fetch the date
+            if (isset($node->created)) {
+              $date = date('d F Y', $node->created);
+            }
+
+            $snippet_data = theme('collection_search_result_snippet_data', array(
+              'snippet_type' => 'files-document',
+              'snippet_data' => array(
+                'subtitle' => array(
+                  '#label' => FALSE,
+                  '#data' => $subtitle,
+                ),
+                'search_snippet' => array(
+                  '#label' => FALSE,
+                  '#data' => $search_snippet,
+                ),
+                'author' => array(
+                  '#label' => 'Author',
+                  '#data' => implode(',', $author),
+                ),
+                'date' => array(
+                  '#label' => 'Date',
+                  '#data' => $date,
+                ),
+              ),
+            ));
+
+          }
+        }
+      }
+      break;
+    }
+  }
+
+  return $snippet_data;
 }
