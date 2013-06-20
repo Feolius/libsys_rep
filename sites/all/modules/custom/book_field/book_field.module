@@ -609,6 +609,11 @@ function book_field_field_formatter_info() {
       'label' => t('Book formatter'),
       'field types' => array('book_field'),
     ),
+    'book_field_thumbnail_formatter' => array(
+      'label' => t('Thumbnail formatter'),
+      'field types' => array('book_field'),
+      'settings' => array('image_style' => '')
+    )
   );
 }
 
@@ -649,6 +654,46 @@ function book_field_field_widget_form(&$form, &$form_state, $field, $instance, $
       );
       return $element;
   }
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function book_field_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  $element = array();
+  if ($display['type'] == 'book_field_thumbnail_formatter') {
+    $image_styles = image_style_options(FALSE);
+    $element['image_style'] = array(
+      '#title' => t('Image style'),
+      '#type' => 'select',
+      '#default_value' => $settings['image_style'],
+      '#empty_option' => t('None (original image)'),
+      '#options' => $image_styles,
+    );
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function book_field_field_formatter_settings_summary($field, $instance, $view_mode){
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  $summary = '';
+  if ($display['type'] == 'book_field_thumbnail_formatter') {
+    $image_styles = image_style_options(FALSE);
+    unset($image_styles['']);
+    if (isset($image_styles[$settings['image_style']])) {
+      $summary[] = t('Image style: @style', array('@style' => $image_styles[$settings['image_style']]));
+    }
+    else {
+      $summary[] = t('Original image');
+    }
+  }
+  return implode('<br />', $summary);
 }
 
 /**
@@ -710,7 +755,6 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
   $element = array();
   if ($display['type'] == 'book_field_formatter') {
     foreach ($items as $delta => $item) {
-
       //If swf files was created, we should show it in flexpaper.
       if ($item['fid'] != 0) {
         $file = file_load($item['fid']);
@@ -855,6 +899,18 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
       }
     }
   }
+  elseif ($display['type'] == 'book_field_thumbnail_formatter') {
+    foreach ($items as $delta => $item) {
+      $file_thumb = file_load(($item['fid_thumb']));
+      $uri_thumb = $file_thumb->uri;
+
+      $element[$delta] = array(
+        '#theme' => 'image_formatter',
+        '#item' => array('uri' => $uri_thumb),
+        '#image_style' => $display['settings']['image_style'],
+      );
+    }
+  }
   return $element;
 }
 
@@ -933,7 +989,7 @@ function book_field_field_delete($entity_type, $entity, $field, $instance, $lang
   $batch_info = & batch_get();
   if (!empty($batch_info)) {
     foreach ($batch_info['sets'] as $batch_instance) {
-      if($batch_instance['finished'] == 'migrate_ui_batch_finish'){
+      if ($batch_instance['finished'] == 'migrate_ui_batch_finish') {
         //If it is an import process, we should just delete record from file_managed table about pdf and thumb files.
         foreach ($items as $item) {
           if (isset($item['fid_thumb']) && ($file = file_load($item['fid_thumb']))) {
@@ -1064,7 +1120,7 @@ function get_real_file_name($file) {
 /**
  * Get real file extension
  */
-function _book_field_get_file_extension($file){
+function _book_field_get_file_extension($file) {
   $url_info = parse_url($file->uri);
   $pathinfo = pathinfo($url_info['path']);
   return $pathinfo['extension'];

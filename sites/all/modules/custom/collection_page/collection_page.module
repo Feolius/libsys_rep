@@ -494,5 +494,8 @@ function collection_page_preprocess_breadcrumb(&$variables) {
 
     $back_to_library_html = l(t('Library'), 'library/' . $_GET['query'], array('query' => $library_get_options));
     $variables['breadcrumb'][1] = $back_to_library_html;
+  } else {
+    $back_to_library_html = t('Library');
+    $variables['breadcrumb'][1] = $back_to_library_html;
   }
 }
