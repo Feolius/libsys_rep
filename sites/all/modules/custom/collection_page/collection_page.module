@@ -481,17 +481,33 @@ function collection_page_preprocess_breadcrumb(&$variables) {
     $variables['breadcrumb'][1] = t('Library');
 
     // Get the label of the bundle.
-    foreach ($_GET['f'] as $filter) {
-      $exploded_filter = explode(':', $filter);
-      if ($exploded_filter[0] == 'bundle') {
-        $bundle = $exploded_filter[1];
-        $info = entity_get_info('node');
-        $variables['breadcrumb'][2] = $info['bundles'][$bundle]['label'];
+    if (isset($_GET['f'])) {
+      foreach ($_GET['f'] as $filter) {
+        $exploded_filter = explode(':', $filter);
+        if ($exploded_filter[0] == 'bundle') {
+          $bundle = $exploded_filter[1];
+          $info = entity_get_info('node');
+          $variables['breadcrumb'][2] = $info['bundles'][$bundle]['label'];
+        }
+      }
+    }
+
+    // Add search word in breadcrumbs.
+    if (isset($_GET['q'])) {
+      $query = explode('/', $_GET['q']);
+      if ($query[0] == 'library' && isset($query[1])) {
+        $variables['breadcrumb'][3] = t($query[1]);
+        $searcher_info = facetapi_get_searcher_info();
+        $searchers = array_keys($searcher_info);
+        $searcher = $searchers[0];
+        if ($results = apachesolr_static_response_cache($searcher, NULL)) {
+          $num = $results->response->numFound;
+          $variables['breadcrumb'][3] .= ' (' . $num . ') ';
+        }
       }
     }
   }
 }
-
 
 /**
  * Preprocess function for collection_search_results
@@ -988,6 +1004,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
       ));
 
       break;
+
   }
 
   return $snippet_data;
