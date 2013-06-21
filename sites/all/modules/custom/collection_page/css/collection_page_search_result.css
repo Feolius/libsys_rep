@@ -1,8 +1,37 @@
 .collection-page-search-result-thumbnail-image {
     float: left;
     width: 100px;
+    margin: 15px;
 }
 
 .collection-page-search-result-snippet .collection-page-search-result-title {
     padding: 15px;
 }
+
+.collection-search-result {
+    display: inline;
+}
+
+.collection-page-clearfix {
+    *zoom: 1;
+}
+
+.collection-page-clearfix:before,
+.collection-page-clearfix:after {
+    display: table;
+    line-height: 0;
+    content: "";
+}
+
+.collection-page-clearfix:after {
+    clear: both;
+}
+
+.snippet-field-data {
+    display: inline;
+}
+
+.snippet-field-label {
+    display: inline;
+}
+

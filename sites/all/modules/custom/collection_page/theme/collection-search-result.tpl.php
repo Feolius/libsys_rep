@@ -1,4 +1,4 @@
-<li class="<?php print $classes; ?>"<?php print $attributes; ?>>
+<li class="<?php print $classes . ' collection-page-clearfix'; ?>"<?php print $attributes; ?>>
   <?php if ($image): ?>
     <div class="collection-page-search-result-thumbnail-image">
       <?php print $image; ?>

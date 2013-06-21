@@ -473,9 +473,10 @@ function collection_page_preprocess_breadcrumb(&$variables) {
     unset($library_get_options['curr']);
     unset($library_get_options['collection']);
     unset($library_get_options['q']);
-    if(isset($_GET['query'])){
+    if (isset($_GET['query'])) {
       $path = 'library/' . $_GET['query'];
-    }else{
+    }
+    else {
       $path = 'library';
     }
     $back_to_library_html = l(t('Library'), $path, array('query' => $library_get_options));
@@ -939,7 +940,8 @@ function collection_page_node_snippet_data($nid, $snippet) {
         $field = field_info_field('field_events_place_nodes');
         $target_entities = entity_load($field['settings']['target_type'], $target_ids);
 
-        foreach ($target_entities as $target_entity) {
+        foreach ($target_ids as $target_id) {
+          $target_entity = isset($target_entities[$target_id]) ? $target_entities[$target_id] : array();
           if (isset($target_entity->title)) {
             $label = $target_entity->title;
             $uri = entity_uri($field['settings']['target_type'], $target_entity);
@@ -1038,8 +1040,10 @@ function collection_page_files_node_snippet_data($node, $trimmed_characters_leng
           //If the user search some word or frase, we nned to show the snippet from apache solr
           //with highlighted found text.
           $search_snippet = $snippet_contain_search_result ? $snippet : FALSE;
+          $people_field_data = '';
           $people = array();
-          $location = array();
+          $location_field_data = '';
+          $locations = array();
           $date = '';
 
           //Fetch the people
@@ -1054,15 +1058,17 @@ function collection_page_files_node_snippet_data($node, $trimmed_characters_leng
             $field = field_info_field('field_files_image_people');
             $target_entities = entity_load($field['settings']['target_type'], $target_ids);
 
-            foreach ($target_entities as $target_entity) {
+            foreach ($target_ids as $target_id) {
+              $target_entity = isset($target_entities[$target_id]) ? $target_entities[$target_id] : array();
               if (isset($target_entity->title)) {
                 $label = $target_entity->title;
                 $uri = entity_uri($field['settings']['target_type'], $target_entity);
+                $plain_label = check_plain($label);
                 if ($uri) {
-                  $people[] = l($label, $uri['path'], $uri['options']);
+                  $people[] = array('normal' => l($label, $uri['path'], $uri['options']), 'plain' => $plain_label);
                 }
                 else {
-                  $people[] = check_plain($label);
+                  $people[] = array('normal' => $plain_label, 'plain' => $plain_label);
                 }
               }
             }
@@ -1080,15 +1086,17 @@ function collection_page_files_node_snippet_data($node, $trimmed_characters_leng
             $field = field_info_field('field_files_image_location');
             $target_entities = entity_load($field['settings']['target_type'], $target_ids);
 
-            foreach ($target_entities as $target_entity) {
+            foreach ($target_ids as $target_id) {
+              $target_entity = isset($target_entities[$target_id]) ? $target_entities[$target_id] : array();
               if (isset($target_entity->title)) {
                 $label = $target_entity->title;
                 $uri = entity_uri($field['settings']['target_type'], $target_entity);
+                $plain_label = check_plain($label);
                 if ($uri) {
-                  $location[] = l($label, $uri['path'], $uri['options']);
+                  $locations[] = array('normal' => l($label, $uri['path'], $uri['options']), 'plain' => $plain_label);
                 }
                 else {
-                  $location[] = check_plain($label);
+                  $locations[] = array('normal' => $plain_label, 'plain' => $plain_label);
                 }
               }
             }
@@ -1097,6 +1105,35 @@ function collection_page_files_node_snippet_data($node, $trimmed_characters_leng
           //Fetch the date
           if (isset($node->created)) {
             $date = date('d F Y', $node->created);
+          }
+
+
+          //Cut the people to get the result line without wrap
+          $tmp_people = array();
+          foreach ($people as $person) {
+            $tmp_people[] = $person['plain'];
+            $length = iconv_strlen(implode(',', $tmp_people), 'UTF-8');
+            if ($length < 40) {
+              $people_field_data[] = $person['normal'];
+            }
+            else {
+              $people_field_data[] = '...';
+              break;
+            }
+          }
+
+          //Cut the locations to get the result line without wrap
+          $tmp_locations = array();
+          foreach ($locations as $location) {
+            $tmp_locations[] = $location['plain'];
+            $length = iconv_strlen(implode(',', $tmp_locations), 'UTF-8');
+            if ($length < 40) {
+              $location_field_data[] = $location['normal'];
+            }
+            else {
+              $location_field_data[] = '...';
+              break;
+            }
           }
 
           $snippet_data = theme('collection_search_result_snippet_data', array(
@@ -1108,11 +1145,11 @@ function collection_page_files_node_snippet_data($node, $trimmed_characters_leng
               ),
               'people' => array(
                 '#label' => 'People',
-                '#data' => implode(',', $people),
+                '#data' => implode(',', $people_field_data),
               ),
               'location' => array(
                 '#label' => 'Location',
-                '#data' => implode(',', $location),
+                '#data' => implode(',', $location_field_data),
               ),
               'date' => array(
                 '#label' => 'Date',
@@ -1305,7 +1342,8 @@ function collection_page_files_node_snippet_data($node, $trimmed_characters_leng
               $field = field_info_field('field_events_place_nodes');
               $target_entities = entity_load($field['settings']['target_type'], $target_ids);
 
-              foreach ($target_entities as $target_entity) {
+              foreach ($target_ids as $target_id) {
+                $target_entity = isset($target_entities[$target_id]) ? $target_entities[$target_id] : array();
                 if (isset($target_entity->title)) {
                   $label = $target_entity->title;
                   $uri = entity_uri($field['settings']['target_type'], $target_entity);
