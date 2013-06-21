@@ -10,14 +10,14 @@
  */
 function corporateclean_breadcrumb($variables) {
   $breadcrumb = $variables['breadcrumb'];
-  $breadcrumb_separator=theme_get_setting('breadcrumb_separator','corporateclean');
-  
+  $breadcrumb_separator = theme_get_setting('breadcrumb_separator', 'corporateclean');
+
   $show_breadcrumb_home = theme_get_setting('breadcrumb_home');
   if (!$show_breadcrumb_home) {
     array_shift($breadcrumb);
   }
   if (!empty($breadcrumb)) {
-    if (arg()[0] != 'library') {
+    if (arg(0) != 'library') {
       $breadcrumb[] = drupal_get_title();
     }
     return '<div class="breadcrumb">' . implode(' <span class="breadcrumb-separator">' . $breadcrumb_separator . '</span>', $breadcrumb) . '</div>';
@@ -26,90 +26,104 @@ function corporateclean_breadcrumb($variables) {
 
 function corporateclean_page_alter($page) {
 
-	if (theme_get_setting('responsive_meta','corporateclean')):
-	$mobileoptimized = array(
-		'#type' => 'html_tag',
-		'#tag' => 'meta',
-		'#attributes' => array(
-		'name' =>  'MobileOptimized',
-		'content' =>  'width'
-		)
-	);
+  if (theme_get_setting('responsive_meta', 'corporateclean')):
+    $mobileoptimized = array(
+      '#type' => 'html_tag',
+      '#tag' => 'meta',
+      '#attributes' => array(
+        'name' => 'MobileOptimized',
+        'content' => 'width'
+      )
+    );
 
-	$handheldfriendly = array(
-		'#type' => 'html_tag',
-		'#tag' => 'meta',
-		'#attributes' => array(
-		'name' =>  'HandheldFriendly',
-		'content' =>  'true'
-		)
-	);
+    $handheldfriendly = array(
+      '#type' => 'html_tag',
+      '#tag' => 'meta',
+      '#attributes' => array(
+        'name' => 'HandheldFriendly',
+        'content' => 'true'
+      )
+    );
 
-	$viewport = array(
-		'#type' => 'html_tag',
-		'#tag' => 'meta',
-		'#attributes' => array(
-		'name' =>  'viewport',
-		'content' =>  'width=device-width, initial-scale=1'
-		)
-	);
-	
-	drupal_add_html_head($mobileoptimized, 'MobileOptimized');
-	drupal_add_html_head($handheldfriendly, 'HandheldFriendly');
-	drupal_add_html_head($viewport, 'viewport');
-	endif;
-	
+    $viewport = array(
+      '#type' => 'html_tag',
+      '#tag' => 'meta',
+      '#attributes' => array(
+        'name' => 'viewport',
+        'content' => 'width=device-width, initial-scale=1'
+      )
+    );
+
+    drupal_add_html_head($mobileoptimized, 'MobileOptimized');
+    drupal_add_html_head($handheldfriendly, 'HandheldFriendly');
+    drupal_add_html_head($viewport, 'viewport');
+  endif;
+
 }
 
 function corporateclean_preprocess_html(&$variables) {
 
-	if (!theme_get_setting('responsive_respond','corporateclean')):
-	drupal_add_css(path_to_theme() . '/css/basic-layout.css', array('group' => CSS_THEME, 'browsers' => array('IE' => '(lte IE 8)&(!IEMobile)', '!IE' => FALSE), 'preprocess' => FALSE));
-	endif;
-	
-	drupal_add_css(path_to_theme() . '/css/ie.css', array('group' => CSS_THEME, 'browsers' => array('IE' => '(lte IE 8)&(!IEMobile)', '!IE' => FALSE), 'preprocess' => FALSE));
+  if (!theme_get_setting('responsive_respond', 'corporateclean')):
+    drupal_add_css(path_to_theme() . '/css/basic-layout.css', array(
+      'group' => CSS_THEME,
+      'browsers' => array('IE' => '(lte IE 8)&(!IEMobile)', '!IE' => FALSE),
+      'preprocess' => FALSE
+    ));
+  endif;
+
+  drupal_add_css(path_to_theme() . '/css/ie.css', array(
+    'group' => CSS_THEME,
+    'browsers' => array('IE' => '(lte IE 8)&(!IEMobile)', '!IE' => FALSE),
+    'preprocess' => FALSE
+  ));
 }
 
 /**
  * Override or insert variables into the html template.
  */
 function corporateclean_process_html(&$vars) {
-	// Hook into color.module
-	if (module_exists('color')) {
-	_color_html_alter($vars);
-	}
+  // Hook into color.module
+  if (module_exists('color')) {
+    _color_html_alter($vars);
+  }
 
 }
 
 function corporateclean_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'search_block_form') {
-  
-    unset($form['search_block_form']['#title']);
-	
-    $form['search_block_form']['#title_display'] = 'invisible';
-	$form_default = t('Search');
-    $form['search_block_form']['#default_value'] = $form_default;
-    $form['actions']['submit'] = array('#type' => 'image_button', '#src' => base_path() . path_to_theme() . '/images/search-button.png');
 
- 	$form['search_block_form']['#attributes'] = array('onblur' => "if (this.value == '') {this.value = '{$form_default}';}", 'onfocus' => "if (this.value == '{$form_default}') {this.value = '';}" );
+    unset($form['search_block_form']['#title']);
+
+    $form['search_block_form']['#title_display'] = 'invisible';
+    $form_default = t('Search');
+    $form['search_block_form']['#default_value'] = $form_default;
+    $form['actions']['submit'] = array(
+      '#type' => 'image_button',
+      '#src' => base_path() . path_to_theme() . '/images/search-button.png'
+    );
+
+    $form['search_block_form']['#attributes'] = array(
+      'onblur' => "if (this.value == '') {this.value = '{$form_default}';}",
+      'onfocus' => "if (this.value == '{$form_default}') {this.value = '';}"
+    );
   }
 }
 
 /**
  * Add javascript files for jquery slideshow.
  */
-if (theme_get_setting('slideshow_js','corporateclean')):
+if (theme_get_setting('slideshow_js', 'corporateclean')):
 
-	drupal_add_js(drupal_get_path('theme', 'corporateclean') . '/js/jquery.cycle.all.js');
-	
-	//Initialize slideshow using theme settings
-	$effect=theme_get_setting('slideshow_effect','corporateclean');
-	$effect_time=theme_get_setting('slideshow_effect_time','corporateclean')*1000;
-	$slideshow_randomize=theme_get_setting('slideshow_randomize','corporateclean');
-	$slideshow_wrap=theme_get_setting('slideshow_wrap','corporateclean');
-	$slideshow_pause=theme_get_setting('slideshow_pause','corporateclean');
-	
-	drupal_add_js('jQuery(document).ready(function($) {
+  drupal_add_js(drupal_get_path('theme', 'corporateclean') . '/js/jquery.cycle.all.js');
+
+  //Initialize slideshow using theme settings
+  $effect = theme_get_setting('slideshow_effect', 'corporateclean');
+  $effect_time = theme_get_setting('slideshow_effect_time', 'corporateclean') * 1000;
+  $slideshow_randomize = theme_get_setting('slideshow_randomize', 'corporateclean');
+  $slideshow_wrap = theme_get_setting('slideshow_wrap', 'corporateclean');
+  $slideshow_pause = theme_get_setting('slideshow_pause', 'corporateclean');
+
+  drupal_add_js('jQuery(document).ready(function($) {
 	
 	$(window).load(function() {
 	
@@ -118,12 +132,12 @@ if (theme_get_setting('slideshow_js','corporateclean')):
 		$("#slider-controls-wrapper").fadeIn("slow");
 	
 		$("#slideshow").cycle({
-			fx:    "'.$effect.'",
+			fx:    "' . $effect . '",
 			speed:  "slow",
-			timeout: "'.$effect_time.'",
-			random: '.$slideshow_randomize.',
-			nowrap: '.$slideshow_wrap.',
-			pause: '.$slideshow_pause.',
+			timeout: "' . $effect_time . '",
+			random: ' . $slideshow_randomize . ',
+			nowrap: ' . $slideshow_wrap . ',
+			pause: ' . $slideshow_pause . ',
 			pager:  "#slider-navigation",
 			pagerAnchorBuilder: function(idx, slide) {
 				return "#slider-navigation li:eq(" + (idx) + ") a";
@@ -156,7 +170,7 @@ if (theme_get_setting('slideshow_js','corporateclean')):
 	});
 	
 	});',
-	array('type' => 'inline', 'scope' => 'footer', 'weight' => 5)
-	);
+    array('type' => 'inline', 'scope' => 'footer', 'weight' => 5)
+  );
 
 endif;
