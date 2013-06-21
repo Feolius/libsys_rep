@@ -839,35 +839,7 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
               '#file' => $file,
             )
           );
-//
-          //Determine if we need highlighting
-          $terms = array();
-          if (isset($_GET['query'])) {
-            $query = $_GET['query'];
-            $query_parts = explode(' AND ', $query);
-            foreach ($query_parts as $query_part) {
-              $terms[] = $query_part;
-              $query_part_arr = explode(' ', $query_part);
-              $terms = array_merge($terms, $query_part_arr);
-            }
-          }
-          $field_info = field_info_field_map();
-          if(isset($_GET['s'])){
-            foreach($_GET['s'] as $additional_query){
-              $additional_query_parts = explode(':', $additional_query);
-              $field_name = $additional_query_parts[0];
-              $field_type = $field_info[$field_name];
-              if($field_type == 'book_field'){
-                $additional_query_string = $additional_query_parts[1];
-                $additional_query_string_parts = explode(' AND ', $additional_query_string);
-                foreach($additional_query_string_parts as $additional_query_string_part){
-                  $terms[] = $additional_query_string_part;
-                  $additional_query_string_part_arr = explode(' ', $additional_query_string_part);
-                  $terms = array_merge($terms, $additional_query_string_part_arr);
-                }
-              }
-            }
-          }
+          $terms = _book_field_get_highlighting_terms();
           //Add buttons that allow to jump by terms
           $buttons = array();
           foreach ($terms as $term) {
@@ -883,43 +855,6 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
             $element[$delta] = array_merge($buttons, $element[$delta]);
             $element[$delta] = array_merge(array('label' => array('#markup' => '<h3>Search document</h3>',)), $element[$delta]);
           }
-//          $buttons = array();
-//          if (!empty($main_query)) {
-//            if (substr($main_query, 0, 1) == '"' && substr($main_query, -1) == '"') {
-//              //We need only one button if user want to see the whole string
-//              $main_query = substr($main_query, 1);
-//              $main_query = substr($main_query, 0, -1);
-//              $settings['search'] = $main_query;
-//            }
-//            else {
-//              //We should divide string and make button for each word
-//              $terms = explode(' ', $main_query);
-//              if (count($terms) > 1) {
-//                foreach ($terms as $term) {
-//                  $buttons[$term . '_button'] = array(
-//                    '#type' => 'button',
-//                    '#value' => $term,
-//                    '#attributes' => array(
-//                      'class' => array('flexpaper-highlight-button')
-//                    )
-//                  );
-//                }
-//              }
-//            }
-//            $buttons['search_string_button'] = array(
-//              '#type' => 'button',
-//              '#value' => $main_query,
-//              '#attributes' => array(
-//                'class' => array('flexpaper-highlight-button')
-//              )
-//            );
-//            $settings['search'] = $main_query;
-//            $label = array(
-//              '#markup' => '<h3>Search document</h3>',
-//            );
-//            $element[$delta] = array_merge($buttons, $element[$delta]);
-//            $element[$delta] = array_merge(array('label' => array('#markup' => '<h3>Search document</h3>',)), $element[$delta]);
-//          }
         }
         else {
           $element[$delta] = array(
@@ -943,6 +878,41 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
     }
   }
   return $element;
+}
+
+/**
+ * Return terms for highlighting
+ */
+function _book_field_get_highlighting_terms(){
+  //@TODO We don't perform full query parsing here. We take into account only AND operator
+  $terms = array();
+  if (isset($_GET['query'])) {
+    $query = $_GET['query'];
+    $query_parts = explode(' AND ', $query);
+    foreach ($query_parts as $query_part) {
+      $terms[] = $query_part;
+      $query_part_arr = explode(' ', $query_part);
+      $terms = array_merge($terms, $query_part_arr);
+    }
+  }
+  $field_info = field_info_fields();
+  if(isset($_GET['s'])){
+    foreach($_GET['s'] as $additional_query){
+      $additional_query_parts = explode(':', $additional_query);
+      $field_name = $additional_query_parts[0];
+      $field_type = $field_info[$field_name]['type'];
+      if($field_type == 'book_field'){
+        $additional_query_string = $additional_query_parts[1];
+        $additional_query_string_parts = explode(' AND ', $additional_query_string);
+        foreach($additional_query_string_parts as $additional_query_string_part){
+          $terms[] = $additional_query_string_part;
+          $additional_query_string_part_arr = explode(' ', $additional_query_string_part);
+          $terms = array_merge($terms, $additional_query_string_part_arr);
+        }
+      }
+    }
+  }
+  return $terms;
 }
 
 /**
