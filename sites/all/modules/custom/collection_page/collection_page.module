@@ -475,13 +475,13 @@ function collection_page_preprocess_breadcrumb(&$variables) {
     unset($library_get_options['q']);
     if(isset($_GET['query'])){
       $path = 'library/' . $_GET['query'];
-    }else{
+    } else {
       $path = 'library';
     }
     $back_to_library_html = l(t('Library'), $path, array('query' => $library_get_options));
     $variables['breadcrumb'][1] = $back_to_library_html;
   }
-  else {
+  if ($path == 'library') {
     $variables['breadcrumb'][1] = t('Library');
 
     // Get the label of the bundle.
