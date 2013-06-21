@@ -72,6 +72,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 4,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -102,7 +108,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'year_range' => '-3:+3',
       ),
       'type' => 'library_date_field_text',
-      'weight' => 35,
+      'weight' => 36,
     ),
   );
 
@@ -162,6 +168,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -192,7 +204,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'year_range' => '-3:+3',
       ),
       'type' => 'library_date_field_text',
-      'weight' => 4,
+      'weight' => 16,
     ),
   );
 
@@ -260,6 +272,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 23,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -283,7 +301,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 1,
+      'weight' => 13,
     ),
   );
 
@@ -348,6 +366,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 30,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -441,6 +465,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 14,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -540,6 +570,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 19,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -563,7 +599,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 34,
+      'weight' => 35,
     ),
   );
 
@@ -635,6 +671,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 24,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -728,6 +770,15 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 57,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'module' => 'entityreference',
+        'settings' => array(
+          'link' => 1,
+        ),
+        'type' => 'entityreference_label',
+        'weight' => 1,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -835,6 +886,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 39,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -936,6 +993,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 38,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -1032,6 +1095,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 40,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -1130,6 +1199,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 17,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -1227,6 +1302,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 41,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -1267,7 +1348,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'summary_rows' => 5,
       ),
       'type' => 'text_textarea_with_summary',
-      'weight' => -3,
+      'weight' => -1,
     ),
   );
 
@@ -1321,6 +1402,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'weight' => 0,
       ),
       'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'library_snippet' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -1408,6 +1495,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'weight' => 0,
       ),
       'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'library_snippet' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -1502,6 +1595,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 42,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -1537,7 +1636,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'image_field' => 'field_files_image',
       ),
       'type' => 'exif_readonly',
-      'weight' => 9,
+      'weight' => 15,
     ),
   );
 
@@ -1619,6 +1718,15 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 21,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'module' => 'book_field',
+        'settings' => array(
+          'image_style' => 'thumbnail',
+        ),
+        'type' => 'book_field_thumbnail_formatter',
+        'weight' => 0,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1706,6 +1814,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 37,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -1736,7 +1850,7 @@ function library_features_content_type_files_field_default_field_instances() {
       'module' => 'options',
       'settings' => array(),
       'type' => 'options_select',
-      'weight' => 15,
+      'weight' => 16,
     ),
   );
 
@@ -1801,6 +1915,13 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 3,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'module' => 'library_date_field',
+        'settings' => array(),
+        'type' => 'library_date_field_default',
+        'weight' => 2,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1897,6 +2018,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 36,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -1995,6 +2122,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 13,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -2026,7 +2159,7 @@ function library_features_content_type_files_field_default_field_instances() {
       'module' => 'options',
       'settings' => array(),
       'type' => 'options_select',
-      'weight' => 3,
+      'weight' => 14,
     ),
   );
 
@@ -2095,6 +2228,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 12,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -2212,6 +2351,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'image',
         'weight' => 0,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -2259,7 +2404,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'progress_indicator' => 'throbber',
       ),
       'type' => 'image_image',
-      'weight' => 2,
+      'weight' => 11,
     ),
   );
 
@@ -2319,6 +2464,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -2350,7 +2501,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'year_range' => '-3:+3',
       ),
       'type' => 'library_date_field_text',
-      'weight' => 64,
+      'weight' => 18,
     ),
   );
 
@@ -2418,6 +2569,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 10,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -2440,8 +2597,8 @@ function library_features_content_type_files_field_default_field_instances() {
         'path' => '',
         'size' => 60,
       ),
-      'type' => 'entityreference_autocomplete_tags',
-      'weight' => 5,
+      'type' => 'entityreference_autocomplete',
+      'weight' => 21,
     ),
   );
 
@@ -2509,6 +2666,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 9,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -2531,8 +2694,8 @@ function library_features_content_type_files_field_default_field_instances() {
         'path' => '',
         'size' => 60,
       ),
-      'type' => 'entityreference_autocomplete_tags',
-      'weight' => 8,
+      'type' => 'entityreference_autocomplete',
+      'weight' => 20,
     ),
   );
 
@@ -2600,6 +2763,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 8,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -2622,8 +2791,8 @@ function library_features_content_type_files_field_default_field_instances() {
         'path' => '',
         'size' => 60,
       ),
-      'type' => 'entityreference_autocomplete_tags',
-      'weight' => 10,
+      'type' => 'entityreference_autocomplete',
+      'weight' => 19,
     ),
   );
 
@@ -2689,6 +2858,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 35,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -2720,7 +2895,7 @@ function library_features_content_type_files_field_default_field_instances() {
       'module' => 'options',
       'settings' => array(),
       'type' => 'options_select',
-      'weight' => 7,
+      'weight' => 12,
     ),
   );
 
@@ -2785,6 +2960,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 34,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -2886,6 +3067,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 43,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -2983,6 +3170,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 16,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -3077,6 +3270,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 44,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -3173,6 +3372,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -3261,6 +3466,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 53,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -3367,6 +3578,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 52,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -3468,6 +3685,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 54,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -3559,6 +3782,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'weight' => 0,
       ),
       'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'library_snippet' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -3657,6 +3886,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 55,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -3689,7 +3924,7 @@ function library_features_content_type_files_field_default_field_instances() {
       'module' => 'options',
       'settings' => array(),
       'type' => 'options_select',
-      'weight' => -4,
+      'weight' => -2,
     ),
   );
 
@@ -3754,6 +3989,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 28,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -3839,6 +4080,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 56,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -3936,6 +4183,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 29,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -4040,6 +4293,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 25,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -4127,6 +4386,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 27,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -4225,6 +4490,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 51,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -4328,6 +4599,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 50,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -4435,6 +4712,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 46,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -4541,6 +4824,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 45,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -4642,6 +4931,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 47,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -4742,6 +5037,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 48,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -4848,6 +5149,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 49,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -4949,6 +5256,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 11,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -5008,9 +5321,9 @@ function library_features_content_type_files_field_default_field_instances() {
       ),
       'default' => array(
         'label' => 'hidden',
-        'module' => 'text',
+        'module' => 'library_admin',
         'settings' => array(),
-        'type' => 'text_default',
+        'type' => 'library_text',
         'weight' => 45,
       ),
       'home' => array(
@@ -5048,6 +5361,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 20,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -5128,6 +5447,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'weight' => 0,
       ),
       'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'library_snippet' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -5224,6 +5549,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 15,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -5247,7 +5578,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 33,
+      'weight' => 34,
     ),
   );
 
@@ -5307,6 +5638,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -5332,7 +5669,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'id3_text_widget',
-      'weight' => 44,
+      'weight' => 31,
     ),
   );
 
@@ -5401,6 +5738,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 5,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -5495,6 +5838,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -5531,7 +5880,7 @@ function library_features_content_type_files_field_default_field_instances() {
       'module' => 'link',
       'settings' => array(),
       'type' => 'link_field',
-      'weight' => 55,
+      'weight' => 5,
     ),
   );
 
@@ -5586,6 +5935,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'weight' => 0,
       ),
       'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'library_snippet' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -5689,6 +6044,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 7,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -5711,8 +6072,8 @@ function library_features_content_type_files_field_default_field_instances() {
         'path' => '',
         'size' => 60,
       ),
-      'type' => 'entityreference_autocomplete_tags',
-      'weight' => 51,
+      'type' => 'entityreference_autocomplete',
+      'weight' => 28,
     ),
   );
 
@@ -5780,6 +6141,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 6,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -5802,8 +6169,8 @@ function library_features_content_type_files_field_default_field_instances() {
         'path' => '',
         'size' => 60,
       ),
-      'type' => 'entityreference_autocomplete_tags',
-      'weight' => 31,
+      'type' => 'entityreference_autocomplete',
+      'weight' => 33,
     ),
   );
 
@@ -5871,6 +6238,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 2,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -5893,8 +6266,8 @@ function library_features_content_type_files_field_default_field_instances() {
         'path' => '',
         'size' => 60,
       ),
-      'type' => 'entityreference_autocomplete_tags',
-      'weight' => 52,
+      'type' => 'entityreference_autocomplete',
+      'weight' => 26,
     ),
   );
 
@@ -5965,6 +6338,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 22,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -6002,7 +6381,7 @@ function library_features_content_type_files_field_default_field_instances() {
       'module' => 'youtube',
       'settings' => array(),
       'type' => 'youtube',
-      'weight' => 54,
+      'weight' => 29,
     ),
   );
 
@@ -6062,6 +6441,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 32,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -6084,103 +6469,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'taxonomy_autocomplete',
-      'weight' => -2,
-    ),
-  );
-
-  // Exported field_instance: 'node-files-field_image_date_taken'
-  $field_instances['node-files-field_image_date_taken'] = array(
-    'bundle' => 'files',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'inline',
-        'module' => 'library_date_field',
-        'settings' => array(),
-        'type' => 'library_date_field_default',
-        'weight' => 60,
-      ),
-      'home' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 14,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 5,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 7,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 16,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 5,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 18,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_image_date_taken',
-    'label' => 'Date taken',
-    'required' => 0,
-    'settings' => array(
-      'default_value' => '',
-      'default_value2' => '',
-      'rounding' => '',
-      'rounding2' => '',
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'library_date_field',
-      'settings' => array(
-        'increment' => 15,
-        'input_format' => 'm/d/Y - H:i:s',
-        'input_format_custom' => '',
-        'label_position' => 'above',
-        'text_parts' => array(),
-        'year_range' => '-3:+3',
-      ),
-      'type' => 'library_date_field_text',
-      'weight' => 4,
+      'weight' => -4,
     ),
   );
 
@@ -6246,6 +6535,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 31,
       ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -6268,103 +6563,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'taxonomy_autocomplete',
-      'weight' => -1,
-    ),
-  );
-
-  // Exported field_instance: 'node-files-field_video_date_taken'
-  $field_instances['node-files-field_video_date_taken'] = array(
-    'bundle' => 'files',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'inline',
-        'module' => 'library_date_field',
-        'settings' => array(),
-        'type' => 'library_date_field_default',
-        'weight' => 61,
-      ),
-      'home' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 15,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 14,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 16,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 17,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 14,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 26,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_video_date_taken',
-    'label' => 'Date taken',
-    'required' => 0,
-    'settings' => array(
-      'default_value' => '',
-      'default_value2' => '',
-      'rounding' => '',
-      'rounding2' => '',
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'library_date_field',
-      'settings' => array(
-        'increment' => 15,
-        'input_format' => 'm/d/Y - H:i:s',
-        'input_format_custom' => '',
-        'label_position' => 'above',
-        'text_parts' => array(),
-        'year_range' => '-3:+3',
-      ),
-      'type' => 'library_date_field_text',
-      'weight' => 55,
+      'weight' => -3,
     ),
   );
 
@@ -6447,6 +6646,12 @@ function library_features_content_type_files_field_default_field_instances() {
         ),
         'type' => 'title_linked',
         'weight' => 1,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'teaser' => array(
         'label' => 'above',

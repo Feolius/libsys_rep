@@ -1100,7 +1100,7 @@ function library_features_content_type_events_field_default_field_instances() {
     ),
     'widget' => array(
       'active' => 1,
-      'module' => 'field_data_collector',
+      'module' => NULL,
       'settings' => array(
         'collecting_fields' => array(),
         'target_bundles' => array(),
@@ -1182,7 +1182,7 @@ function library_features_content_type_events_field_default_field_instances() {
     ),
     'widget' => array(
       'active' => 1,
-      'module' => 'field_data_collector',
+      'module' => NULL,
       'settings' => array(
         'collecting_fields' => array(),
         'target_bundles' => array(),
@@ -1264,7 +1264,7 @@ function library_features_content_type_events_field_default_field_instances() {
     ),
     'widget' => array(
       'active' => 1,
-      'module' => 'field_data_collector',
+      'module' => NULL,
       'settings' => array(
         'collecting_fields' => array(),
         'target_bundles' => array(
@@ -1348,7 +1348,7 @@ function library_features_content_type_events_field_default_field_instances() {
     ),
     'widget' => array(
       'active' => 1,
-      'module' => 'field_data_collector',
+      'module' => NULL,
       'settings' => array(
         'collecting_fields' => array(),
         'target_bundles' => array(),
@@ -1430,7 +1430,7 @@ function library_features_content_type_events_field_default_field_instances() {
     ),
     'widget' => array(
       'active' => 1,
-      'module' => 'field_data_collector',
+      'module' => NULL,
       'settings' => array(
         'collecting_fields' => array(),
         'target_bundles' => array(),

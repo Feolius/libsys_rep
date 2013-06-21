@@ -120,6 +120,30 @@ function library_features_content_type_people_field_default_field_bases() {
     'type' => 'entityreference',
   );
 
+  // Exported field_base: 'field_people_death_date'
+  $field_bases['field_people_death_date'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_death_date',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'library_date_field',
+    'settings' => array(
+      'granularity' => array(
+        'day' => 'day',
+        'month' => 'month',
+        'year' => 'year',
+      ),
+      'timezone_db' => 'UTC',
+      'tz_handling' => 'site',
+    ),
+    'translatable' => 0,
+    'type' => 'library_date_field',
+  );
+
   // Exported field_base: 'field_people_degree'
   $field_bases['field_people_degree'] = array(
     'active' => 1,
@@ -784,6 +808,8 @@ function library_features_content_type_people_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
+      'collecting_fields' => array(),
+      'target_bundles' => array(),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -802,6 +828,8 @@ function library_features_content_type_people_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
+      'collecting_fields' => array(),
+      'target_bundles' => array(),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -820,6 +848,8 @@ function library_features_content_type_people_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
+      'collecting_fields' => array(),
+      'target_bundles' => array(),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -838,6 +868,8 @@ function library_features_content_type_people_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
+      'collecting_fields' => array(),
+      'target_bundles' => array(),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -856,6 +888,8 @@ function library_features_content_type_people_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
+      'collecting_fields' => array(),
+      'target_bundles' => array(),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -874,6 +908,8 @@ function library_features_content_type_people_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
+      'collecting_fields' => array(),
+      'target_bundles' => array(),
       'target_type' => 'node',
     ),
     'translatable' => 0,

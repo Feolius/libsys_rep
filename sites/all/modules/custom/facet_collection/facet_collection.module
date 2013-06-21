@@ -1,6 +1,27 @@
 <?php
 
 /**
+ * Implements hook_init()
+ */
+function facet_collection_init() {
+  //We will check if get parameters is good, and redirect it to default state of library page, if not
+  if (arg(0) == 'library') {
+    //Check if we have right filtered content type
+    $filtered_content_type = facet_collection_get_filtered_content_type();
+    if ($filtered_content_type) {
+      $environment = apachesolr_default_environment();
+      $indexed_bundles = apachesolr_get_index_bundles($environment, 'node');
+      if (in_array($filtered_content_type, $indexed_bundles)) {
+        return;
+      }
+    }
+    //Something is wrong with filtered content type. Redirect to default library page state
+    $query['f'][0] = 'bundle:files';
+    drupal_goto('library', array('query' => $query));
+  }
+}
+
+/**
  * Implements hook_menu()
  */
 function facet_collection_menu() {
@@ -331,12 +352,15 @@ function facet_collection_get_filtered_content_type() {
         $arr = explode(':', $filter);
         if ($arr[0] == 'bundle') {
           $content_type = $arr[1];
-          break;
+          return $content_type;
         }
       }
     }
   }
-  return $content_type;
+  else {
+    return $content_type;
+  }
+  return FALSE;
 }
 
 /**
@@ -446,14 +470,16 @@ function facet_collection_get_filter_settings() {
  */
 function facet_collection_apachesolr_process_results(&$results, DrupalSolrQueryInterface $query) {
   global $base_url;
-  $q = $query->getParam('q');
   $searcher = $query->getSearcher();
   $response = apachesolr_static_response_cache($searcher);
   $numfound = $response->response->numFound;
   $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
   $get_params['collection'] = 'true';
   $get_params['numFound'] = $numfound;
-  $get_params['query'] = $q;
+  $arg = arg(1);
+  if(!empty($arg)){
+    $get_params['query'] = arg(1);
+  }
   $start = $query->getParam('start');
   $result_number = count($results);
   for ($i = 0; $i < $result_number; $i++) {

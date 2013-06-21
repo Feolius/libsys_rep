@@ -382,9 +382,8 @@ function library_features_content_type_location_field_default_field_instances() 
         'module' => 'geofield',
         'settings' => array(
           'data' => 'full',
-          'map_preset' => 'geofield_formatter_map',
         ),
-        'type' => 'geofield_openlayers',
+        'type' => 'geofield_wkt',
         'weight' => 2,
       ),
       'home_bottom' => array(
@@ -1308,7 +1307,7 @@ function library_features_content_type_location_field_default_field_instances() 
           'events' => 'events',
         ),
       ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'type' => 'field_data_collector_default_widget',
       'weight' => 52,
     ),
   );
@@ -1395,7 +1394,7 @@ function library_features_content_type_location_field_default_field_instances() 
           'files' => 'files',
         ),
       ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'type' => 'field_data_collector_default_widget',
       'weight' => 49,
     ),
   );
@@ -1481,7 +1480,7 @@ function library_features_content_type_location_field_default_field_instances() 
           'files' => 'files',
         ),
       ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'type' => 'field_data_collector_default_widget',
       'weight' => 51,
     ),
   );
@@ -1568,7 +1567,7 @@ function library_features_content_type_location_field_default_field_instances() 
           'files' => 'files',
         ),
       ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'type' => 'field_data_collector_default_widget',
       'weight' => 53,
     ),
   );
@@ -1654,7 +1653,7 @@ function library_features_content_type_location_field_default_field_instances() 
           'files' => 'files',
         ),
       ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'type' => 'field_data_collector_default_widget',
       'weight' => 50,
     ),
   );
