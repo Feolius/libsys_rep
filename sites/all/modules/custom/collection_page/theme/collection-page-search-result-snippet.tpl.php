@@ -2,9 +2,11 @@
   <?php foreach ($snippet_data as $element_class => $element): ?>
     <div class=<?php print $element_class; ?>>
       <?php if ($element['#label']): ?>
-        <label><?php print $element['#label'] . ':'; ?> </label>
+        <label class="snippet-field-label"""><?php print $element['#label'] . ':'; ?> </label>
       <?php endif; ?>
-      <?php print $element['#data']; ?>
+      <div class="snippet-field-data">
+        <?php print $element['#data']; ?>
+      </div>
     </div>
   <?php endforeach; ?>
 </div>

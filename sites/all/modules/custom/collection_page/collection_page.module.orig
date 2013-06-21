@@ -482,7 +482,7 @@ function collection_page_preprocess_breadcrumb(&$variables) {
     $back_to_library_html = l(t('Library'), $path, array('query' => $library_get_options));
     $variables['breadcrumb'][1] = $back_to_library_html;
   }
-  if (arg(0) == 'library') {
+  else {
     $variables['breadcrumb'][1] = t('Library');
 
     // Get the label of the bundle.
@@ -1111,7 +1111,7 @@ function collection_page_files_node_snippet_data($node, $trimmed_characters_leng
           //Cut the people to get the result line without wrap
           $tmp_people = array();
           foreach ($people as $person) {
-            $tmp_people[] = $person['plain'];
+            $tmp_people[] = $people['plain'];
             $length = iconv_strlen(implode(',', $tmp_people), 'UTF-8');
             if ($length < 40) {
               $people_field_data[] = $person['normal'];
