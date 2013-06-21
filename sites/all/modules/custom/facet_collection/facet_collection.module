@@ -470,14 +470,16 @@ function facet_collection_get_filter_settings() {
  */
 function facet_collection_apachesolr_process_results(&$results, DrupalSolrQueryInterface $query) {
   global $base_url;
-  $q = $query->getParam('q');
   $searcher = $query->getSearcher();
   $response = apachesolr_static_response_cache($searcher);
   $numfound = $response->response->numFound;
   $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
   $get_params['collection'] = 'true';
   $get_params['numFound'] = $numfound;
-  $get_params['query'] = $q;
+  $arg = arg(1);
+  if(!empty($arg)){
+    $get_params['query'] = arg(1);
+  }
   $start = $query->getParam('start');
   $result_number = count($results);
   for ($i = 0; $i < $result_number; $i++) {
