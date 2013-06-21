@@ -241,11 +241,6 @@
   margin: 0 0 0 1.5em;
 }
 
-.field-type-fivestar {
-  float: right;
-  margin: 25px 0 20px 0;
-}
-
 .panel-separator {
   clear: both;
 }
@@ -354,4 +349,10 @@ a.download {
   padding: 0px 2px 0px 8px;
   line-height: 125%;
   font-size: 12px;
+}
+
+.node-events .field-type-image {
+  float: left;
+  padding-right: 15px;
+  padding-bottom: 5px;
 }
