@@ -60,7 +60,7 @@ function library_features_image_styles_image_default_styles() {
   $styles['events-image-full'] = array(
     'name' => 'events-image-full',
     'effects' => array(
-      7 => array(
+      5 => array(
         'label' => 'Scale',
         'help' => 'Scaling will maintain the aspect-ratio of the original image. If only a single dimension is specified, the other dimension will be calculated.',
         'effect callback' => 'image_scale_effect',
@@ -75,6 +75,35 @@ function library_features_image_styles_image_default_styles() {
           'upscale' => 0,
         ),
         'weight' => 1,
+      ),
+      6 => array(
+        'label' => 'Define canvas',
+        'help' => 'Define the size of the working canvas and background color, this controls the dimensions of the output image.',
+        'effect callback' => 'canvasactions_definecanvas_effect',
+        'dimensions callback' => 'canvasactions_definecanvas_dimensions',
+        'form callback' => 'canvasactions_definecanvas_form',
+        'summary theme' => 'canvasactions_definecanvas_summary',
+        'module' => 'imagecache_canvasactions',
+        'name' => 'canvasactions_definecanvas',
+        'data' => array(
+          'RGB' => array(
+            'HEX' => 'FFFFFF',
+          ),
+          'under' => 1,
+          'exact' => array(
+            'width' => 140,
+            'height' => 138,
+            'xpos' => 'center',
+            'ypos' => 'center',
+          ),
+          'relative' => array(
+            'leftdiff' => '',
+            'rightdiff' => '',
+            'topdiff' => '',
+            'bottomdiff' => '',
+          ),
+        ),
+        'weight' => 2,
       ),
     ),
   );
@@ -201,7 +230,7 @@ function library_features_image_styles_image_default_styles() {
   $styles['people-image-full'] = array(
     'name' => 'people-image-full',
     'effects' => array(
-      5 => array(
+      7 => array(
         'label' => 'Scale and crop',
         'help' => 'Scale and crop will maintain the aspect-ratio of the original image, then crop the larger dimension. This is most useful for creating perfectly square thumbnails without stretching the image.',
         'effect callback' => 'image_scale_and_crop_effect',
@@ -215,6 +244,35 @@ function library_features_image_styles_image_default_styles() {
           'height' => 170,
         ),
         'weight' => 1,
+      ),
+      8 => array(
+        'label' => 'Define canvas',
+        'help' => 'Define the size of the working canvas and background color, this controls the dimensions of the output image.',
+        'effect callback' => 'canvasactions_definecanvas_effect',
+        'dimensions callback' => 'canvasactions_definecanvas_dimensions',
+        'form callback' => 'canvasactions_definecanvas_form',
+        'summary theme' => 'canvasactions_definecanvas_summary',
+        'module' => 'imagecache_canvasactions',
+        'name' => 'canvasactions_definecanvas',
+        'data' => array(
+          'RGB' => array(
+            'HEX' => 'FFFFFF',
+          ),
+          'under' => 1,
+          'exact' => array(
+            'width' => 280,
+            'height' => 170,
+            'xpos' => 'center',
+            'ypos' => 'center',
+          ),
+          'relative' => array(
+            'leftdiff' => '',
+            'rightdiff' => '',
+            'topdiff' => '',
+            'bottomdiff' => '',
+          ),
+        ),
+        'weight' => 2,
       ),
     ),
   );
