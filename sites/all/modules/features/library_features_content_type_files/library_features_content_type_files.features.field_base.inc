@@ -807,7 +807,7 @@ function library_features_content_type_files_field_default_field_bases() {
   // Exported field_base: 'field_files_image_event'
   $field_bases['field_files_image_event'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_files_image_event',
@@ -850,7 +850,7 @@ function library_features_content_type_files_field_default_field_bases() {
   // Exported field_base: 'field_files_image_location'
   $field_bases['field_files_image_location'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_files_image_location',
@@ -893,7 +893,7 @@ function library_features_content_type_files_field_default_field_bases() {
   // Exported field_base: 'field_files_image_people'
   $field_bases['field_files_image_people'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_files_image_people',
@@ -1853,7 +1853,7 @@ function library_features_content_type_files_field_default_field_bases() {
   // Exported field_base: 'field_files_video_event'
   $field_bases['field_files_video_event'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_files_video_event',
@@ -1939,7 +1939,7 @@ function library_features_content_type_files_field_default_field_bases() {
   // Exported field_base: 'field_files_video_people'
   $field_bases['field_files_video_people'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_files_video_people',
@@ -2004,7 +2004,7 @@ function library_features_content_type_files_field_default_field_bases() {
   // Exported field_base: 'field_home_region'
   $field_bases['field_home_region'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_home_region',
@@ -2033,30 +2033,6 @@ function library_features_content_type_files_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'taxonomy_term_reference',
-  );
-
-  // Exported field_base: 'field_image_date_taken'
-  $field_bases['field_image_date_taken'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_image_date_taken',
-    'foreign keys' => array(),
-    'indexes' => array(),
-    'locked' => 0,
-    'module' => 'library_date_field',
-    'settings' => array(
-      'granularity' => array(
-        'day' => 'day',
-        'month' => 'month',
-        'year' => 'year',
-      ),
-      'timezone_db' => 'UTC',
-      'tz_handling' => 'site',
-    ),
-    'translatable' => 0,
-    'type' => 'library_date_field',
   );
 
   // Exported field_base: 'field_provenance_url'
@@ -2122,30 +2098,6 @@ function library_features_content_type_files_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'taxonomy_term_reference',
-  );
-
-  // Exported field_base: 'field_video_date_taken'
-  $field_bases['field_video_date_taken'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_video_date_taken',
-    'foreign keys' => array(),
-    'indexes' => array(),
-    'locked' => 0,
-    'module' => 'library_date_field',
-    'settings' => array(
-      'granularity' => array(
-        'day' => 'day',
-        'month' => 'month',
-        'year' => 'year',
-      ),
-      'timezone_db' => 'UTC',
-      'tz_handling' => 'site',
-    ),
-    'translatable' => 0,
-    'type' => 'library_date_field',
   );
 
   // Exported field_base: 'title_field'

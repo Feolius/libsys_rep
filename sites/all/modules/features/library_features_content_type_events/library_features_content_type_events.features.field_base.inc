@@ -491,6 +491,8 @@ function library_features_content_type_events_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
+      'collecting_fields' => array(),
+      'target_bundles' => array(),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -509,6 +511,8 @@ function library_features_content_type_events_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
+      'collecting_fields' => array(),
+      'target_bundles' => array(),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -527,6 +531,8 @@ function library_features_content_type_events_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
+      'collecting_fields' => array(),
+      'target_bundles' => array(),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -545,6 +551,8 @@ function library_features_content_type_events_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
+      'collecting_fields' => array(),
+      'target_bundles' => array(),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -563,6 +571,8 @@ function library_features_content_type_events_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
+      'collecting_fields' => array(),
+      'target_bundles' => array(),
       'target_type' => 'node',
     ),
     'translatable' => 0,
