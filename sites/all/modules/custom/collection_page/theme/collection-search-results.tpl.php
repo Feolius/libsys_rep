@@ -1,5 +1,5 @@
 <?php if ($search_results): ?>
-  <ol class="collection-search-results-">
+  <ol class="collection-search-results">
     <?php print $search_results; ?>
   </ol>
   <div id="collection-pager-container">
