@@ -1040,9 +1040,9 @@ function collection_page_files_node_snippet_data($node, $trimmed_characters_leng
           //If the user search some word or frase, we nned to show the snippet from apache solr
           //with highlighted found text.
           $search_snippet = $snippet_contain_search_result ? $snippet : FALSE;
-          $people_field_data = '';
+          $people_field_data = array();
           $people = array();
-          $location_field_data = '';
+          $location_field_data = array();
           $locations = array();
           $date = '';
 
