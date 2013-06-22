@@ -3,6 +3,9 @@ description = "Provides the possibility to collect the data from several entity 
 package = Media
 core = 7.x
 dependencies[] = entityreference
+dependencies[] = field_ui
+
+files[] = field_data_collector.admin.inc
 
 
 
