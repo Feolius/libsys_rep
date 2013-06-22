@@ -20,3 +20,10 @@ function field_data_collector_field_schema($field) {
     'columns' => $columns,
   );
 }
+
+/**
+ * Implements hook_uninstall().
+ */
+function field_data_collector_uninstall() {
+  variable_del('field_data_collector_formatter_presets');
+}
