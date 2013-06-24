@@ -358,5 +358,5 @@ a.download {
 }
 
 #collection-upper-thumbnail {
-  z-index: 1000;
+  z-index: 9000;
 }
