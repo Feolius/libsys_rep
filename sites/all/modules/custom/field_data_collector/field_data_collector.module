@@ -592,17 +592,26 @@ function field_data_collector_field_formatter_settings_form($field, $instance, $
   }
   else {
     $bundles = field_info_bundles($target_type);
-    $bundle_info = $bundles[$instance['bundle']];
-    if (isset($bundle_info['admin'])) {
-      $admin_path = isset($bundle_info['admin']['real path']) ? $bundle_info['admin']['real path'] : $bundle_info['admin']['path'];
-    }
+    if (isset($bundles[$instance['bundle']])) {
+      $bundle_info = $bundles[$instance['bundle']];
+      if (isset($bundle_info['admin'])) {
+        $admin_path = isset($bundle_info['admin']['real path']) ? $bundle_info['admin']['real path'] : $bundle_info['admin']['path'];
+      }
 
-    $form['field_settings_is_empty'] = array(
-      '#markup' => '<div class="messages warning">'
-        . t('The bundles did not set at the field settings. You need to set them on the <a href="@field_settings_page">field edit page</a> to proceed.',
-          array('@field_settings_page' => url($admin_path . '/fields/' . $field['field_name']))
-        ) . '</div>',
-    );
+      $form['field_settings_is_empty'] = array(
+        '#markup' => '<div class="messages warning">'
+          . t('The bundles did not set at the field settings. You need to set them on the <a href="@field_settings_page">field edit page</a> to proceed.',
+            array('@field_settings_page' => url($admin_path . '/fields/' . $field['field_name']))
+          ) . '</div>',
+      );
+    }
+    else {
+      $form['field_settings_is_empty'] = array(
+        '#markup' => '<div class="messages warning">'
+          . t('The bundles did not set at the field settings. You need to set them on the field edit page to proceed.')
+          . '</div>',
+      );
+    }
   }
 
   return $form;
