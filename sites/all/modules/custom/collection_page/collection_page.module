@@ -402,16 +402,15 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
               $image_uri = $items[0]['uri'];
               $image_info = image_get_info($image_uri);
               $width = $image_info['width'] * $height / $image_info['height'];
-              kpr($width);
               $thumbnail_content['width'] = $width;
               $thumbnail_content['height'] = $height;
-              kpr($height);
               $thumbnail_url = image_style_url($thumbnail_fields[$bundle]['style'], $image_uri);
               $thumbnail_content['thumbnail_url'] = $thumbnail_url;
               $thumbnail_view = node_view($node, 'collection_thumbnail');
               unset($thumbnail_view[$thumbnail_fields[$bundle]['field_name']]);
               $thumbnail_content['meta_info'] = render($thumbnail_view);
               $results['collection_thumbnails'][] = $thumbnail_content;
+              kpr($results['collection_thumbnails']);
             }
             break;
           }
