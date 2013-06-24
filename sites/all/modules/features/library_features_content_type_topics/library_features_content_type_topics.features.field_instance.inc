@@ -271,7 +271,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'taxonomy_autocomplete',
-      'weight' => 32,
+      'weight' => 8,
     ),
   );
 
@@ -362,6 +362,88 @@ function library_features_content_type_topics_field_default_field_instances() {
       ),
       'type' => 'text_textarea_with_summary',
       'weight' => 2,
+    ),
+  );
+
+  // Exported field_instance: 'node-topics-field_topics_documents'
+  $field_instances['node-topics-field_topics_documents'] = array(
+    'bundle' => 'topics',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 15,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_topics_documents',
+    'label' => 'Documents',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'entityreference',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'path' => '',
+        'size' => 60,
+      ),
+      'type' => 'entityreference_autocomplete',
+      'weight' => 11,
     ),
   );
 
@@ -471,6 +553,88 @@ function library_features_content_type_topics_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-topics-field_topics_images'
+  $field_instances['node-topics-field_topics_images'] = array(
+    'bundle' => 'topics',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 13,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_topics_images',
+    'label' => 'Images',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'entityreference',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'path' => '',
+        'size' => 60,
+      ),
+      'type' => 'entityreference_autocomplete',
+      'weight' => 9,
+    ),
+  );
+
   // Exported field_instance: 'node-topics-field_topics_kind'
   $field_instances['node-topics-field_topics_kind'] = array(
     'bundle' => 'topics',
@@ -552,6 +716,88 @@ function library_features_content_type_topics_field_default_field_instances() {
       'settings' => array(),
       'type' => 'options_select',
       'weight' => 3,
+    ),
+  );
+
+  // Exported field_instance: 'node-topics-field_topics_locations'
+  $field_instances['node-topics-field_topics_locations'] = array(
+    'bundle' => 'topics',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 16,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_topics_locations',
+    'label' => 'Locations',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'entityreference',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'path' => '',
+        'size' => 60,
+      ),
+      'type' => 'entityreference_autocomplete',
+      'weight' => 12,
     ),
   );
 
@@ -664,9 +910,8 @@ function library_features_content_type_topics_field_default_field_instances() {
       ),
       'default' => array(
         'label' => 'above',
-        'module' => 'field_data_collector',
         'settings' => array(),
-        'type' => 'field_data_collector_default_formatter',
+        'type' => 'hidden',
         'weight' => 12,
       ),
       'home_bottom' => array(
@@ -714,12 +959,9 @@ function library_features_content_type_topics_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
+      'active' => 0,
       'module' => 'field_data_collector',
-      'settings' => array(
-        'collecting_fields' => array(),
-        'target_bundles' => array(),
-      ),
+      'settings' => array(),
       'type' => 'field_data_collector_default_widget',
       'weight' => 37,
     ),
@@ -746,9 +988,8 @@ function library_features_content_type_topics_field_default_field_instances() {
       ),
       'default' => array(
         'label' => 'above',
-        'module' => 'field_data_collector',
         'settings' => array(),
-        'type' => 'field_data_collector_default_formatter',
+        'type' => 'hidden',
         'weight' => 10,
       ),
       'home_bottom' => array(
@@ -796,16 +1037,9 @@ function library_features_content_type_topics_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
+      'active' => 0,
       'module' => 'field_data_collector',
-      'settings' => array(
-        'collecting_fields' => array(
-          'field_topics_related_event' => 'field_topics_related_event',
-        ),
-        'target_bundles' => array(
-          'events' => 'events',
-        ),
-      ),
+      'settings' => array(),
       'type' => 'field_data_collector_default_widget',
       'weight' => 35,
     ),
@@ -832,9 +1066,8 @@ function library_features_content_type_topics_field_default_field_instances() {
       ),
       'default' => array(
         'label' => 'above',
-        'module' => 'field_data_collector',
         'settings' => array(),
-        'type' => 'field_data_collector_default_formatter',
+        'type' => 'hidden',
         'weight' => 8,
       ),
       'home_bottom' => array(
@@ -882,12 +1115,9 @@ function library_features_content_type_topics_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
+      'active' => 0,
       'module' => 'field_data_collector',
-      'settings' => array(
-        'collecting_fields' => array(),
-        'target_bundles' => array(),
-      ),
+      'settings' => array(),
       'type' => 'field_data_collector_default_widget',
       'weight' => 33,
     ),
@@ -914,9 +1144,8 @@ function library_features_content_type_topics_field_default_field_instances() {
       ),
       'default' => array(
         'label' => 'above',
-        'module' => 'field_data_collector',
         'settings' => array(),
-        'type' => 'field_data_collector_default_formatter',
+        'type' => 'hidden',
         'weight' => 11,
       ),
       'home_bottom' => array(
@@ -964,12 +1193,9 @@ function library_features_content_type_topics_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
+      'active' => 0,
       'module' => 'field_data_collector',
-      'settings' => array(
-        'collecting_fields' => array(),
-        'target_bundles' => array(),
-      ),
+      'settings' => array(),
       'type' => 'field_data_collector_default_widget',
       'weight' => 36,
     ),
@@ -996,9 +1222,8 @@ function library_features_content_type_topics_field_default_field_instances() {
       ),
       'default' => array(
         'label' => 'above',
-        'module' => 'field_data_collector',
         'settings' => array(),
-        'type' => 'field_data_collector_default_formatter',
+        'type' => 'hidden',
         'weight' => 9,
       ),
       'home_bottom' => array(
@@ -1046,14 +1271,93 @@ function library_features_content_type_topics_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
+      'active' => 0,
       'module' => 'field_data_collector',
-      'settings' => array(
-        'collecting_fields' => array(),
-        'target_bundles' => array(),
-      ),
+      'settings' => array(),
       'type' => 'field_data_collector_default_widget',
       'weight' => 34,
+    ),
+  );
+
+  // Exported field_instance: 'node-topics-field_topics_videos'
+  $field_instances['node-topics-field_topics_videos'] = array(
+    'bundle' => 'topics',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 14,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_topics_videos',
+    'label' => 'Videos',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'entityreference',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'path' => '',
+        'size' => 60,
+      ),
+      'type' => 'entityreference_autocomplete',
+      'weight' => 10,
     ),
   );
 
@@ -1162,7 +1466,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => -5,
+      'weight' => 0,
     ),
   );
 
@@ -1176,6 +1480,7 @@ function library_features_content_type_topics_field_default_field_instances() {
   t('Images');
   t('Kind');
   t('Location');
+  t('Locations');
   t('Rating');
   t('Related event');
   t('Tags');

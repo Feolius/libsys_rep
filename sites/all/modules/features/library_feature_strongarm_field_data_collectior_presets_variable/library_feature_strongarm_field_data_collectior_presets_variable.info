@@ -1,0 +1,11 @@
+name = Library feature strongarm field data collectior presets variable
+description = Library feature strongarm field data collectior presets variable
+core = 7.x
+package = Features
+version = 7.x-1.0
+project = library_feature_strongarm_field_data_collectior_presets_variable
+features[ctools][] = strongarm:strongarm:1
+features[features_api][] = api:1
+features[variable][] = field_data_collector_formatter_presets
+features_exclude[dependencies][ctools] = ctools
+features_exclude[dependencies][strongarm] = strongarm

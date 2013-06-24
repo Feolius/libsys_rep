@@ -179,6 +179,88 @@ function library_features_content_type_events_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-events-field_events_documents'
+  $field_instances['node-events-field_events_documents'] = array(
+    'bundle' => 'events',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 23,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_events_documents',
+    'label' => 'Documents',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'entityreference',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'path' => '',
+        'size' => 60,
+      ),
+      'type' => 'entityreference_autocomplete',
+      'weight' => 19,
+    ),
+  );
+
   // Exported field_instance: 'node-events-field_events_home'
   $field_instances['node-events-field_events_home'] = array(
     'bundle' => 'events',
@@ -447,6 +529,88 @@ function library_features_content_type_events_field_default_field_instances() {
       ),
       'type' => 'image_image',
       'weight' => 1,
+    ),
+  );
+
+  // Exported field_instance: 'node-events-field_events_images'
+  $field_instances['node-events-field_events_images'] = array(
+    'bundle' => 'events',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 22,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_events_images',
+    'label' => 'Images',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'entityreference',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'path' => '',
+        'size' => 60,
+      ),
+      'type' => 'entityreference_autocomplete',
+      'weight' => 18,
     ),
   );
 
@@ -1049,16 +1213,15 @@ function library_features_content_type_events_field_default_field_instances() {
       ),
       'default' => array(
         'label' => 'above',
-        'module' => 'field_data_collector',
         'settings' => array(),
-        'type' => 'field_data_collector_default_formatter',
-        'weight' => 18,
+        'type' => 'hidden',
+        'weight' => 26,
       ),
       'home_bottom' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 5,
+        'weight' => 0,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -1070,7 +1233,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 1,
+        'weight' => 0,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -1082,7 +1245,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 3,
+        'weight' => 0,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1099,14 +1262,11 @@ function library_features_content_type_events_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
-      'module' => NULL,
-      'settings' => array(
-        'collecting_fields' => array(),
-        'target_bundles' => array(),
-      ),
-      'type' => 'field_data_collector_entityreference_widget',
-      'weight' => 32,
+      'active' => 0,
+      'module' => 'field_data_collector',
+      'settings' => array(),
+      'type' => 'field_data_collector_default_widget',
+      'weight' => 41,
     ),
   );
 
@@ -1131,16 +1291,15 @@ function library_features_content_type_events_field_default_field_instances() {
       ),
       'default' => array(
         'label' => 'above',
-        'module' => 'field_data_collector',
         'settings' => array(),
-        'type' => 'field_data_collector_default_formatter',
-        'weight' => 17,
+        'type' => 'hidden',
+        'weight' => 25,
       ),
       'home_bottom' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 9,
+        'weight' => 0,
       ),
       'home_left' => array(
         'label' => 'above',
@@ -1152,7 +1311,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 2,
+        'weight' => 0,
       ),
       'home_right' => array(
         'label' => 'above',
@@ -1164,7 +1323,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 5,
+        'weight' => 0,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1181,14 +1340,11 @@ function library_features_content_type_events_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
-      'module' => NULL,
-      'settings' => array(
-        'collecting_fields' => array(),
-        'target_bundles' => array(),
-      ),
-      'type' => 'field_data_collector_entityreference_widget',
-      'weight' => 31,
+      'active' => 0,
+      'module' => 'field_data_collector',
+      'settings' => array(),
+      'type' => 'field_data_collector_default_widget',
+      'weight' => 39,
     ),
   );
 
@@ -1213,9 +1369,8 @@ function library_features_content_type_events_field_default_field_instances() {
       ),
       'default' => array(
         'label' => 'above',
-        'module' => 'field_data_collector',
         'settings' => array(),
-        'type' => 'field_data_collector_default_formatter',
+        'type' => 'hidden',
         'weight' => 20,
       ),
       'home_bottom' => array(
@@ -1263,98 +1418,11 @@ function library_features_content_type_events_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
-      'module' => NULL,
-      'settings' => array(
-        'collecting_fields' => array(),
-        'target_bundles' => array(
-          'location' => 'location',
-        ),
-      ),
-      'type' => 'field_data_collector_entityreference_widget',
-      'weight' => 34,
-    ),
-  );
-
-  // Exported field_instance: 'node-events-field_events_tab_timeline'
-  $field_instances['node-events-field_events_tab_timeline'] = array(
-    'bundle' => 'events',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'module' => 'field_data_collector',
-        'settings' => array(),
-        'type' => 'field_data_collector_default_formatter',
-        'weight' => 21,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 7,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 5,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 8,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_events_tab_timeline',
-    'label' => 'Timeline',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => NULL,
-      'settings' => array(
-        'collecting_fields' => array(),
-        'target_bundles' => array(),
-      ),
-      'type' => 'field_data_collector_entityreference_widget',
-      'weight' => 35,
+      'active' => 0,
+      'module' => 'field_data_collector',
+      'settings' => array(),
+      'type' => 'field_data_collector_default_widget',
+      'weight' => 42,
     ),
   );
 
@@ -1379,9 +1447,8 @@ function library_features_content_type_events_field_default_field_instances() {
       ),
       'default' => array(
         'label' => 'above',
-        'module' => 'field_data_collector',
         'settings' => array(),
-        'type' => 'field_data_collector_default_formatter',
+        'type' => 'hidden',
         'weight' => 19,
       ),
       'home_bottom' => array(
@@ -1429,14 +1496,11 @@ function library_features_content_type_events_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
-      'module' => NULL,
-      'settings' => array(
-        'collecting_fields' => array(),
-        'target_bundles' => array(),
-      ),
-      'type' => 'field_data_collector_entityreference_widget',
-      'weight' => 33,
+      'active' => 0,
+      'module' => 'field_data_collector',
+      'settings' => array(),
+      'type' => 'field_data_collector_default_widget',
+      'weight' => 40,
     ),
   );
 
@@ -1527,6 +1591,88 @@ function library_features_content_type_events_field_default_field_instances() {
       ),
       'type' => 'library_date_field_text',
       'weight' => 13,
+    ),
+  );
+
+  // Exported field_instance: 'node-events-field_events_videos'
+  $field_instances['node-events-field_events_videos'] = array(
+    'bundle' => 'events',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 24,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_events_videos',
+    'label' => 'Videos',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'entityreference',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'path' => '',
+        'size' => 60,
+      ),
+      'type' => 'entityreference_autocomplete',
+      'weight' => 20,
     ),
   );
 
@@ -1779,7 +1925,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'taxonomy_autocomplete',
-      'weight' => 17,
+      'weight' => 16,
     ),
   );
 
@@ -1883,7 +2029,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => -5,
+      'weight' => 0,
     ),
   );
 
@@ -1906,7 +2052,6 @@ function library_features_content_type_events_field_default_field_instances() {
   t('Route start');
   t('Route to');
   t('Time');
-  t('Timeline');
   t('Title');
   t('Videos');
   t('Visit date');

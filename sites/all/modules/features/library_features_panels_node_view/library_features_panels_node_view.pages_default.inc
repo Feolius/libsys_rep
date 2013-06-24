@@ -204,11 +204,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'files' => array(
+            'bundle_preset' => 'files_images_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -232,11 +238,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'location' => array(
+            'bundle_preset' => 'location_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -260,11 +272,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'files' => array(
+            'bundle_preset' => 'files_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -288,11 +306,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'files' => array(
+            'bundle_preset' => 'files_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -316,11 +340,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'files' => array(
+            'bundle_preset' => 'files_video_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -344,11 +374,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'events' => array(
+            'bundle_preset' => 'events_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -499,11 +535,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'files' => array(
+            'bundle_preset' => 'files_images_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -527,11 +569,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'files' => array(
+            'bundle_preset' => 'files_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -555,11 +603,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'files' => array(
+            'bundle_preset' => 'files_video_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -583,11 +637,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'location' => array(
+            'bundle_preset' => 'location_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -611,11 +671,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'events' => array(
+            'bundle_preset' => 'events_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -766,11 +832,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'files' => array(
+            'bundle_preset' => 'files_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -794,11 +866,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'events' => array(
+            'bundle_preset' => 'events_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -822,11 +900,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'files' => array(
+            'bundle_preset' => 'files_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -850,11 +934,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'files' => array(
+            'bundle_preset' => 'files_images_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -878,11 +968,17 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'files' => array(
+            'bundle_preset' => 'files_video_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -1028,16 +1124,22 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->pid = 'new-30';
     $pane->panel = 'bottom';
     $pane->type = 'entity_field';
-    $pane->subtype = 'node:field_events_tab_timeline';
+    $pane->subtype = 'node:field_events_tab_images';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'files' => array(
+            'bundle_preset' => 'files_images_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -1056,16 +1158,22 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->pid = 'new-31';
     $pane->panel = 'bottom';
     $pane->type = 'entity_field';
-    $pane->subtype = 'node:field_events_tab_images';
+    $pane->subtype = 'node:field_events_tab_map';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'location' => array(
+            'bundle_preset' => 'location_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -1084,16 +1192,22 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->pid = 'new-32';
     $pane->panel = 'bottom';
     $pane->type = 'entity_field';
-    $pane->subtype = 'node:field_events_tab_map';
+    $pane->subtype = 'node:field_events_tab_documents';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'files' => array(
+            'bundle_preset' => 'files_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -1112,16 +1226,22 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->pid = 'new-33';
     $pane->panel = 'bottom';
     $pane->type = 'entity_field';
-    $pane->subtype = 'node:field_events_tab_documents';
+    $pane->subtype = 'node:field_events_tab_videos';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
       'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
+      'formatter' => 'field_data_collector_entityreference_formatter',
       'delta_limit' => 0,
       'delta_offset' => '0',
       'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
+      'formatter_settings' => array(
+        'content_types_settings' => array(
+          'files' => array(
+            'bundle_preset' => 'files_video_preset',
+          ),
+        ),
+      ),
       'context' => 'argument_entity_id:node_1',
       'override_title' => 0,
       'override_title_text' => '',
@@ -1138,34 +1258,6 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $display->panels['bottom'][3] = 'new-33';
     $pane = new stdClass();
     $pane->pid = 'new-34';
-    $pane->panel = 'bottom';
-    $pane->type = 'entity_field';
-    $pane->subtype = 'node:field_events_tab_videos';
-    $pane->shown = TRUE;
-    $pane->access = array();
-    $pane->configuration = array(
-      'label' => 'title',
-      'formatter' => 'field_data_collector_default_formatter',
-      'delta_limit' => 0,
-      'delta_offset' => '0',
-      'delta_reversed' => FALSE,
-      'formatter_settings' => array(),
-      'context' => 'argument_entity_id:node_1',
-      'override_title' => 0,
-      'override_title_text' => '',
-    );
-    $pane->cache = array();
-    $pane->style = array(
-      'settings' => NULL,
-    );
-    $pane->css = array();
-    $pane->extras = array();
-    $pane->position = 4;
-    $pane->locks = array();
-    $display->content['new-34'] = $pane;
-    $display->panels['bottom'][4] = 'new-34';
-    $pane = new stdClass();
-    $pane->pid = 'new-35';
     $pane->panel = 'breadcrumb';
     $pane->type = 'page_breadcrumb';
     $pane->subtype = 'page_breadcrumb';
@@ -1180,10 +1272,10 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->extras = array();
     $pane->position = 0;
     $pane->locks = array();
-    $display->content['new-35'] = $pane;
-    $display->panels['breadcrumb'][0] = 'new-35';
+    $display->content['new-34'] = $pane;
+    $display->panels['breadcrumb'][0] = 'new-34';
     $pane = new stdClass();
-    $pane->pid = 'new-36';
+    $pane->pid = 'new-35';
     $pane->panel = 'content';
     $pane->type = 'page_tabs';
     $pane->subtype = 'page_tabs';
@@ -1203,10 +1295,10 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->extras = array();
     $pane->position = 0;
     $pane->locks = array();
-    $display->content['new-36'] = $pane;
-    $display->panels['content'][0] = 'new-36';
+    $display->content['new-35'] = $pane;
+    $display->panels['content'][0] = 'new-35';
     $pane = new stdClass();
-    $pane->pid = 'new-37';
+    $pane->pid = 'new-36';
     $pane->panel = 'content';
     $pane->type = 'node_content';
     $pane->subtype = 'node_content';
@@ -1231,8 +1323,8 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->extras = array();
     $pane->position = 1;
     $pane->locks = array();
-    $display->content['new-37'] = $pane;
-    $display->panels['content'][1] = 'new-37';
+    $display->content['new-36'] = $pane;
+    $display->panels['content'][1] = 'new-36';
   $display->hide_title = PANELS_TITLE_NONE;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;

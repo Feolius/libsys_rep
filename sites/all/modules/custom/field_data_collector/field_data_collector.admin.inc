@@ -363,12 +363,12 @@ function field_data_collector_field_and_formatter_form(&$form, &$form_state, $va
     : array();
 
   $form['settings']['primary_media_values_fields_with_formatters'][$key] = array(
-    '#title' => t('Field and formatter for value ' . $value),
+    '#title' => t($value),
     '#type' => 'fieldset',
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#tree' => TRUE,
-    '#description' => t('Set the fields and formatters for each prmary media field values'),
+    '#description' => t('Set the fields and formatters for each primary media field values'),
     '#attributes' => array(
       'id' => 'bundle-primary-media-field-value-' . $key . '-field-and-formatter-fieldset'
     ),
@@ -376,7 +376,10 @@ function field_data_collector_field_and_formatter_form(&$form, &$form_state, $va
 
   //Load all possible field for current content type
   $bundle_instances = field_info_instances($target_entity_type, $target_bundle);
-  $bundle_option_list = array('none' => '-None-');
+  $bundle_option_list = array(
+    'none' => '-None-',
+    'title' => 'Title'
+  );
   foreach ($bundle_instances as $instance_info) {
     $bundle_option_list[$instance_info['field_name']] = $instance_info['label'];
   }
@@ -384,151 +387,246 @@ function field_data_collector_field_and_formatter_form(&$form, &$form_state, $va
     unset($bundle_option_list[$primary_media_field_name]);
   }
 
-  //Get stored value from formatter settings
-  $default_primary_media_field_values_field = 'none';
+  $default_primary_media_field_values_field_number = 0;
 
-  $default_primary_media_field_values_field = isset($settings['primary_media_values_fields_with_formatters'][$key]['field_for_value'])
-    ? $settings['primary_media_values_fields_with_formatters'][$key]['field_for_value']
-    : $default_primary_media_field_values_field;
+  $default_primary_media_field_values_field_number = isset($settings['primary_media_values_fields_with_formatters'][$key]['field_number'])
+    ? $settings['primary_media_values_fields_with_formatters'][$key]['field_number']
+    : $default_primary_media_field_values_field_number;
 
-  $default_primary_media_field_values_field = isset($form_state_target_bundle_form_values['primary_media_values_fields_with_formatters'][$key]['field_for_value'])
-    ? $form_state_target_bundle_form_values['primary_media_values_fields_with_formatters'][$key]['field_for_value']
-    : $default_primary_media_field_values_field;
+  $default_primary_media_field_values_field_number = isset($form_state_target_bundle_form_values['primary_media_values_fields_with_formatters'][$key]['field_number'])
+    ? $form_state_target_bundle_form_values['primary_media_values_fields_with_formatters'][$key]['field_number']
+    : $default_primary_media_field_values_field_number;
 
-  //Do not display predefined field for current primary media field value if that field was deleted
-  if (field_info_instance($target_entity_type, $default_primary_media_field_values_field, $target_bundle) == NULL) {
-    $default_primary_media_field_values_field = 'none';
-  }
-
-  //Form to define the field for current primary media field value
-  $form['settings']['primary_media_values_fields_with_formatters'][$key]['field_for_value'] = array(
-    '#title' => t('Chose the field for value - <i>' . $value . '</i>'),
+  $form['settings']['primary_media_values_fields_with_formatters'][$key]['field_number'] = array(
     '#type' => 'select',
-    '#options' => $bundle_option_list,
+    '#title' => t('Chose the number of fields to display'),
+    '#options' => range(1, count($bundle_option_list)),
+    '#default_value' => $default_primary_media_field_values_field_number,
+    '#prefix' => '<div id ="bundle-primary-media-field-value-' . $key . '-fields-number">',
+    '#suffix' => '</div>',
     '#tree' => TRUE,
-    '#default_value' => $default_primary_media_field_values_field,
     '#ajax' => array(
-      'callback' => '_field_data_collector_field_formatter_callback',
-      'wrapper' => 'bundle-primary-media-field-value-' . $key . '-field-formatter',
+      'callback' => '_field_data_collector_field_and_formatter_number_callback',
+      'wrapper' => 'bundle-primary-media-field-value-' . $key . '-fields-and-formatters-container',
       'method' => 'replace',
       'effect' => 'fade',
     ),
   );
 
-  //Container for form to chose the formatter for field chosed above
-  $form['settings']['primary_media_values_fields_with_formatters'][$key]['formatter_for_field'] = array(
+  $form['settings']['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'] = array(
     '#type' => 'container',
     '#tree' => TRUE,
     '#attributes' => array(
-      'id' => 'bundle-primary-media-field-value-' . $key . '-field-formatter',
+      'id' => 'bundle-primary-media-field-value-' . $key . '-fields-and-formatters-container'
     ),
   );
 
-  if ($default_primary_media_field_values_field != 'none') {
+  //Create the number of fieldsets the same as the user choose in selector above
+  for ($index = 0; $index <= $default_primary_media_field_values_field_number; $index++) {
 
-    $formatters_option_list = array('none' => '-None-');
-    $field_info = field_info_field($default_primary_media_field_values_field);
-    $formatters_option_list += field_ui_formatter_options($field_info['type']);
+    $form['settings']['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index] = array(
+      '#title' => t('Field ' . ($index + 1)),
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#tree' => TRUE,
+      '#description' => t('Set the field and formatter for him'),
+      '#attributes' => array(
+        'id' => 'bundle-primary-media-field-value-' . $key . '-field-and-formatter-' . $index . '-fieldset'
+      ),
+    );
 
     //Get stored value from formatter settings
-    $default_primary_media_field_values_field_formatter = 'none';
+    $default_primary_media_field_values_field_weight = $index;
 
-    $default_primary_media_field_values_field_formatter = isset($settings['primary_media_values_fields_with_formatters'][$key]['formatter_for_field']['formatter'])
-      ? $settings['primary_media_values_fields_with_formatters'][$key]['formatter_for_field']['formatter']
-      : $default_primary_media_field_values_field_formatter;
+    $default_primary_media_field_values_field_weight = isset($settings['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_weight'])
+      ? $settings['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_weight']
+      : $default_primary_media_field_values_field_weight;
 
-    $default_primary_media_field_values_field_formatter = isset($form_state_target_bundle_form_values['primary_media_values_fields_with_formatters'][$key]['formatter_for_field']['formatter'])
-      ? $form_state_target_bundle_form_values['primary_media_values_fields_with_formatters'][$key]['formatter_for_field']['formatter']
-      : $default_primary_media_field_values_field_formatter;
+    $default_primary_media_field_values_field_weight = isset($form_state_target_bundle_form_values['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_weight'])
+      ? $form_state_target_bundle_form_values['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_weight']
+      : $default_primary_media_field_values_field_weight;
 
-    //Do not display predefined field for current primary media field value if that field was deleted
-    if (!in_array($default_primary_media_field_values_field_formatter, array_keys($formatters_option_list))) {
-      $default_primary_media_field_values_field_formatter = 'none';
-      $settings['primary_media_values_fields_with_formatters'][$key]['formatter_for_field']['formatter_settings'] = array();
-    }
-
-    //Form to define the formatter for chosed field for current primary media field value
-    $form['settings']['primary_media_values_fields_with_formatters'][$key]['formatter_for_field']['formatter'] = array(
-      '#title' => t('Chose the formatter for value - <i>' . $value . '</i>'),
+    //Form to define the weight for each field for current primary media field value
+    $form['settings']['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_weight'] = array(
+      '#title' => t('Chose field weight'),
       '#type' => 'select',
-      '#prefix' => '<div id ="bundle-primary-media-field-value-' . $key . '-field-formatter">',
-      '#suffix' => '',
+      '#options' => range(1, count($bundle_option_list)),
       '#tree' => TRUE,
-      '#options' => $formatters_option_list,
-      '#default_value' => $default_primary_media_field_values_field_formatter,
+      '#default_value' => $default_primary_media_field_values_field_weight,
+      '#attributes' => array(
+        'id' => 'bundle-primary-media-field-value-' . $key . '-field-' . $index . '-weight',
+      ),
+    );
+
+
+    //Get stored value from formatter settings and form state
+    $default_primary_media_field_values_field_label = 0;
+
+    $default_primary_media_field_values_field_label = isset($settings['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_label'])
+      ? $settings['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_label']
+      : $default_primary_media_field_values_field_label;
+
+    $default_primary_media_field_values_field_label = isset($form_state_target_bundle_form_values['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_label'])
+      ? $form_state_target_bundle_form_values['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_label']
+      : $default_primary_media_field_values_field_label;
+
+
+    //Checkbox to select does the field should be displayed or not
+    $form['settings']['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_label'] = array(
+      '#title' => t('Display the field label'),
+      '#type' => 'checkbox',
+      '#tree' => TRUE,
+      '#attributes' => array(
+        'id' => 'bundle-primary-media-field-value-' . $key . '-field-' . $index . '-label',
+      ),
+    );
+
+
+    //Get stored value from formatter settings
+    $default_primary_media_field_values_field = 'none';
+
+    $default_primary_media_field_values_field = isset($settings['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_for_value'])
+      ? $settings['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_for_value']
+      : $default_primary_media_field_values_field;
+
+    $default_primary_media_field_values_field = isset($form_state_target_bundle_form_values['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_for_value'])
+      ? $form_state_target_bundle_form_values['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_for_value']
+      : $default_primary_media_field_values_field;
+
+    //Form to define the field for current primary media field value
+    $form['settings']['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_for_value'] = array(
+      '#title' => t('Chose the field'),
+      '#type' => 'select',
+      '#options' => $bundle_option_list,
+      '#tree' => TRUE,
+      '#default_value' => $default_primary_media_field_values_field,
+      '#prefix' => '<div id ="bundle-primary-media-field-value-' . $key . '-field-' . $index . '">',
+      '#suffix' => '</div>',
       '#ajax' => array(
-        'callback' => '_field_data_collector_field_formatter_settings_callback',
-        'wrapper' => 'bundle-primary-media-field-value-' . $key . '-field-formatter-settings-fieldset',
+        'callback' => '_field_data_collector_field_formatter_callback',
+        'wrapper' => 'bundle-primary-media-field-value-' . $key . '-field-' . $index . '-formatter-container',
         'method' => 'replace',
         'effect' => 'fade',
       ),
     );
 
 
-    if ($default_primary_media_field_values_field_formatter != 'none') {
+    //Container for form to chose the formatter for field chosed above
+    $form['settings']['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['formatter_for_field'] = array(
+      '#type' => 'container',
+      '#tree' => TRUE,
+      '#attributes' => array(
+        'id' => 'bundle-primary-media-field-value-' . $key . '-field-' . $index . '-formatter-container',
+      ),
+    );
 
-      $instance = $bundle_instances[$field_info['field_name']];
+    if ($default_primary_media_field_values_field != 'none' && $default_primary_media_field_values_field != 'title') {
 
-      $view_mode = 'default';
+      $formatters_option_list = array('none' => '-None-');
+      $field_info = field_info_field($default_primary_media_field_values_field);
+      $formatters_option_list += field_ui_formatter_options($field_info['type']);
 
-      // Fill the field instance settings by needed data considering the chosed formatter
-      $instance['display'][$view_mode]['settings'] = isset($settings['primary_media_values_fields_with_formatters'][$key]['formatter_for_field']['formatter_settings'])
-        ? $settings['primary_media_values_fields_with_formatters'][$key]['formatter_for_field']['formatter_settings']
-        : array();
+      //Get stored value from formatter settings
+      $default_primary_media_field_values_field_formatter = 'none';
 
-      $primary_media_value_field_formatter = field_info_formatter_types($default_primary_media_field_values_field_formatter);
+      $default_primary_media_field_values_field_formatter = isset($settings['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['formatter_for_field']['formatter'])
+        ? $settings['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['formatter_for_field']['formatter']
+        : $default_primary_media_field_values_field_formatter;
 
-      $instance['display'][$view_mode]['settings'] += field_info_formatter_settings($default_primary_media_field_values_field_formatter);
-      $instance['display'][$view_mode]['type'] = $default_primary_media_field_values_field_formatter;
-      $instance['display'][$view_mode]['module'] = $primary_media_value_field_formatter['module'];
+      $default_primary_media_field_values_field_formatter = isset($form_state_target_bundle_form_values['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['formatter_for_field']['formatter'])
+        ? $form_state_target_bundle_form_values['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['formatter_for_field']['formatter']
+        : $default_primary_media_field_values_field_formatter;
 
-      $formatter_settings_summary = array();
-      $function = $primary_media_value_field_formatter['module'] . '_field_formatter_settings_summary';
-      if (function_exists($function)) {
-        $formatter_settings_summary = $function($field_info, $instance, $view_mode);
+      //Do not display predefined field for current primary media field value if that field was deleted
+      if (!in_array($default_primary_media_field_values_field_formatter, array_keys($formatters_option_list))) {
+        $default_primary_media_field_values_field_formatter = 'none';
+        $settings['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['formatter_for_field']['formatter_settings'] = array();
       }
 
-      if (!empty($formatter_settings_summary)) {
+      //Form to define the formatter for chosed field for current primary media field value
+      $form['settings']['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['formatter_for_field']['formatter'] = array(
+        '#title' => t('Chose the formatter'),
+        '#type' => 'select',
+        '#prefix' => '<div id ="bundle-primary-media-field-value-' . $key . '-field-' . $index . '-formatter">',
+        '#suffix' => '</div>',
+        '#tree' => TRUE,
+        '#options' => $formatters_option_list,
+        '#default_value' => $default_primary_media_field_values_field_formatter,
+        '#ajax' => array(
+          'callback' => '_field_data_collector_field_formatter_settings_callback',
+          'wrapper' => 'bundle-primary-media-field-value-' . $key . '-field-' . $index . '-formatter-settings-fieldset',
+          'method' => 'replace',
+          'effect' => 'fade',
+        ),
+      );
 
-        //Get the settings form for chosed formatter
-        $settings_form = array();
-        $function = $primary_media_value_field_formatter['module'] . '_field_formatter_settings_form';
+
+      if ($default_primary_media_field_values_field_formatter != 'none') {
+
+        $instance = $bundle_instances[$field_info['field_name']];
+
+        $view_mode = 'default';
+
+        // Fill the field instance settings by needed data considering the chosed formatter
+        $instance['display'][$view_mode]['settings'] = isset($settings['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['formatter_for_field']['formatter_settings']['settings'])
+          ? $settings['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['formatter_for_field']['formatter_settings']['settings']
+          : array();
+
+        $primary_media_value_field_formatter = field_info_formatter_types($default_primary_media_field_values_field_formatter);
+
+        $instance['display'][$view_mode]['settings'] += field_info_formatter_settings($default_primary_media_field_values_field_formatter);
+        $instance['display'][$view_mode]['type'] = $default_primary_media_field_values_field_formatter;
+        $instance['display'][$view_mode]['module'] = $primary_media_value_field_formatter['module'];
+
+        $formatter_settings_summary = array();
+        $function = $primary_media_value_field_formatter['module'] . '_field_formatter_settings_summary';
         if (function_exists($function)) {
-          $settings_form = $function($field_info, $instance, $view_mode, $form, $form_state);
+          $formatter_settings_summary = $function($field_info, $instance, $view_mode);
         }
-        //Wrap this settings from in fieldset
-        $form['settings']['primary_media_values_fields_with_formatters'][$key]['formatter_for_field']['formatter_settings'] = array(
-          '#title' => t('Formatter settings for field ' . $instance['label']),
-          '#type' => 'fieldset',
-          '#collapsible' => TRUE,
-          '#collapsed' => TRUE,
-          '#tree' => TRUE,
-          '#attributes' => array(
-            'id' => 'bundle-primary-media-field-value-' . $key . '-field-formatter-settings-fieldset'
-          ),
-          'settings' => $settings_form,
-        );
+
+        if (!empty($formatter_settings_summary)) {
+
+          //Get the settings form for chosen formatter
+          $settings_form = array();
+          $function = $primary_media_value_field_formatter['module'] . '_field_formatter_settings_form';
+          if (function_exists($function)) {
+            $settings_form = $function($field_info, $instance, $view_mode, $form, $form_state);
+          }
+          //Wrap this settings from in fieldset
+          $form['settings']['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['formatter_for_field']['formatter_settings'] = array(
+            '#title' => t('Formatter settings for field ' . $instance['label']),
+            '#type' => 'fieldset',
+            '#collapsible' => TRUE,
+            '#collapsed' => TRUE,
+            '#tree' => TRUE,
+            '#attributes' => array(
+              'id' => 'bundle-primary-media-field-value-' . $key . '-field-' . $index . '-formatter-settings-fieldset'
+            ),
+            'settings' => $settings_form,
+          );
+        }
+        else {
+          $form['settings']['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['formatter_for_field']['formatter_settings'] = array(
+            '#type' => 'container',
+            '#tree' => TRUE,
+            '#attributes' => array(
+              'id' => 'bundle-primary-media-field-value-' . $key . '-field-' . $index . '-formatter-settings-fieldset'
+            ),
+          );
+        }
+
       }
       else {
-        $form['settings']['primary_media_values_fields_with_formatters'][$key]['formatter_for_field']['formatter_settings'] = array(
+        //If the user did not chose the formatter keep just empty contatiner for the formatter settings
+        $form['settings']['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['formatter_for_field']['formatter_settings'] = array(
           '#type' => 'container',
           '#tree' => TRUE,
           '#attributes' => array(
-            'id' => 'bundle-primary-media-field-value-' . $key . '-field-formatter-settings-fieldset'
+            'id' => 'bundle-primary-media-field-value-' . $key . '-field-' . $index . '-formatter-settings-fieldset'
           ),
         );
       }
-
-    }
-    else {
-      //If the user did not chose the formatter keep just empty contatiner for the formatter settings
-      $form['settings']['primary_media_values_fields_with_formatters'][$key]['formatter_for_field']['formatter_settings'] = array(
-        '#type' => 'container',
-        '#tree' => TRUE,
-        '#attributes' => array(
-          'id' => 'bundle-primary-media-field-value-' . $key . '-field-formatter-settings-fieldset'
-        ),
-      );
     }
   }
 }
@@ -539,6 +637,7 @@ function field_data_collector_field_and_formatter_form(&$form, &$form_state, $va
 function _field_data_collector_bundle_select_callback($form, $form_state) {
   return $form['settings'];
 }
+
 
 /**
  *  AJAX callback for the primary media field selector in preset settings form
@@ -553,8 +652,21 @@ function _field_data_collector_primary_media_field_select_callback($form, $form_
   return $temp_form['primary_media_values_fields_with_formatters'];
 }
 
+/**
+ *  AJAX callback for the fields number selector for primary media field value in preset settings form
+ */
+function _field_data_collector_field_and_formatter_number_callback($form, $form_state) {
+  $array_parents = $form_state['triggering_element']['#array_parents'];
+  array_pop($array_parents);
+  $temp_form = & $form;
+  foreach ($array_parents as $key) {
+    $temp_form = & $temp_form[$key];
+  }
+  return $temp_form['fields_and_formatters'];
+}
+
 /*
- * AJAX callback for the primary media field value preset form
+ * AJAX callback for the field selector in primary media field value fieldset preset form
  */
 function _field_data_collector_field_formatter_callback($form, $form_state) {
   $array_parents = $form_state['triggering_element']['#array_parents'];
@@ -593,48 +705,91 @@ function field_data_collector_preset_settings_summary($settings, $bundle, $entit
     $primary_media_field = field_info_field($settings['primary_media_field']);
     $primary_media_field_allowed_values = $primary_media_field['settings']['allowed_values'];
 
-    foreach ($primary_media_field_formatter_and_field_for_values_settings as $primary_field_value => $formatter_and_field_settings) {
+    foreach ($primary_media_field_formatter_and_field_for_values_settings as $primary_field_value => $value_settings) {
       $primary_media_field_value_label = $primary_media_field_allowed_values[$primary_field_value];
 
-      if ($formatter_and_field_settings['field_for_value'] != 'none') {
+      $primary_media_field_value_fields_and_formatters_settings = $value_settings['fields_and_formatters'];
 
-        if ($formatter_and_field_settings['formatter_for_field']['formatter'] != 'none') {
+      $dispaly_fields_summary = '';
 
-          $field_info = field_info_field($formatter_and_field_settings['field_for_value']);
-          $formatters_option_list = field_ui_formatter_options($field_info['type']);
-          $formatter_label = $formatters_option_list[$formatter_and_field_settings['formatter_for_field']['formatter']];
+      foreach ($primary_media_field_value_fields_and_formatters_settings as $display_field_settings) {
+        if ($display_field_settings['field_for_value'] != 'none') {
+          if ($display_field_settings['field_for_value'] == 'title') {
+            if ($display_field_settings['field_label']) {
+              $dispaly_fields_summary .= "field with label - Title, formatter - default<br>";
+            }
+            else {
+              $dispaly_fields_summary .= "field - Title , formatter - default<br>";
+            }
 
-          $field_instance = field_info_instance($entity_type, $formatter_and_field_settings['field_for_value'], $bundle);
-          $field_instance_label = $field_instance['label'];
+          }
+          else {
+            if ($display_field_settings['formatter_for_field']['formatter'] != 'none') {
 
-          $summary .= "for value " . $primary_media_field_value_label . " : field - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
+              $field_info = field_info_field($display_field_settings['field_for_value']);
+              $formatters_option_list = field_ui_formatter_options($field_info['type']);
+              $formatter_label = $formatters_option_list[$display_field_settings['formatter_for_field']['formatter']];
 
+              $field_instance = field_info_instance($entity_type, $display_field_settings['field_for_value'], $bundle);
+              $field_instance_label = $field_instance['label'];
+
+              if ($display_field_settings['field_label']) {
+                $dispaly_fields_summary .= "field with label - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
+              }
+              else {
+                $dispaly_fields_summary .= "field - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
+              }
+            }
+          }
         }
+      }
+      if (!empty($dispaly_fields_summary)) {
+        $summary .= "for value " . $primary_media_field_value_label . " :<br>" . $dispaly_fields_summary;
       }
     }
   }
+
   else {
     $summary .= "Primary media field - none<br>";
 
     $primary_media_field_value = 'default';
     $primary_media_field_formatter_and_field_for_values_settings = $settings['primary_media_values_fields_with_formatters'];
-    $formatter_and_field_settings = $primary_media_field_formatter_and_field_for_values_settings[$primary_media_field_value];
-    if ($formatter_and_field_settings['field_for_value'] != 'none') {
+    $value_settings = $primary_media_field_formatter_and_field_for_values_settings[$primary_media_field_value];
 
-      if ($formatter_and_field_settings['formatter_for_field']['formatter'] != 'none') {
+    $primary_media_field_value_fields_and_formatters_settings = $value_settings['fields_and_formatters'];
 
-        $field_info = field_info_field($formatter_and_field_settings['field_for_value']);
-        $formatters_option_list = field_ui_formatter_options($field_info['type']);
-        $formatter_label = $formatters_option_list[$formatter_and_field_settings['formatter_for_field']['formatter']];
+    $dispaly_fields_summary = '';
 
-        $field_instance = field_info_instance($entity_type, $formatter_and_field_settings['field_for_value'], $bundle);
-        $field_instance_label = $field_instance['label'];
+    foreach ($primary_media_field_value_fields_and_formatters_settings as $display_field_settings) {
+      if ($display_field_settings['field_for_value'] != 'none') {
+        if ($display_field_settings['field_for_value'] == 'title') {
+          if ($display_field_settings['field_label']) {
+            $dispaly_fields_summary .= "field with label - Title, formatter - default<br>";
+          }
+          else {
+            $dispaly_fields_summary .= "field - Title , formatter - default<br>";
+          }
 
-        $summary .= $primary_media_field_value . " : field - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
+        }
+        else {
+          if ($display_field_settings['formatter_for_field']['formatter'] != 'none') {
 
+            $field_info = field_info_field($display_field_settings['field_for_value']);
+            $formatters_option_list = field_ui_formatter_options($field_info['type']);
+            $formatter_label = $formatters_option_list[$display_field_settings['formatter_for_field']['formatter']];
+
+            $field_instance = field_info_instance($entity_type, $display_field_settings['field_for_value'], $bundle);
+            $field_instance_label = $field_instance['label'];
+
+            $dispaly_fields_summary .= "field - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
+
+          }
+        }
       }
     }
-
+    if (!empty($dispaly_fields_summary)) {
+      $summary .= $primary_media_field_value . " : <br>" . $dispaly_fields_summary;
+    }
   }
 
   if (empty($settings)) {

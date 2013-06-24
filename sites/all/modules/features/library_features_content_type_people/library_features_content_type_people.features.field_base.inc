@@ -10,6 +10,40 @@
 function library_features_content_type_people_field_default_field_bases() {
   $field_bases = array();
 
+  // Exported field_base: 'field_home_region'
+  $field_bases['field_home_region'] = array(
+    'active' => 1,
+    'cardinality' => -1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_home_region',
+    'foreign keys' => array(
+      'tid' => array(
+        'columns' => array(
+          'tid' => 'tid',
+        ),
+        'table' => 'taxonomy_term_data',
+      ),
+    ),
+    'indexes' => array(
+      'tid' => array(
+        0 => 'tid',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'taxonomy',
+    'settings' => array(
+      'allowed_values' => array(
+        0 => array(
+          'vocabulary' => 'home_region',
+          'parent' => 0,
+        ),
+      ),
+    ),
+    'translatable' => 0,
+    'type' => 'taxonomy_term_reference',
+  );
+
   // Exported field_base: 'field_people_birthday'
   $field_bases['field_people_birthday'] = array(
     'active' => 1,
@@ -118,6 +152,30 @@ function library_features_content_type_people_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'entityreference',
+  );
+
+  // Exported field_base: 'field_people_death_date'
+  $field_bases['field_people_death_date'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_death_date',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'library_date_field',
+    'settings' => array(
+      'granularity' => array(
+        'day' => 'day',
+        'month' => 'month',
+        'year' => 'year',
+      ),
+      'timezone_db' => 'UTC',
+      'tz_handling' => 'site',
+    ),
+    'translatable' => 0,
+    'type' => 'library_date_field',
   );
 
   // Exported field_base: 'field_people_degree'
@@ -359,6 +417,40 @@ function library_features_content_type_people_field_default_field_bases() {
     'type' => 'entityreference',
   );
 
+  // Exported field_base: 'field_people_home_region'
+  $field_bases['field_people_home_region'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_home_region',
+    'foreign keys' => array(
+      'tid' => array(
+        'columns' => array(
+          'tid' => 'tid',
+        ),
+        'table' => 'taxonomy_term_data',
+      ),
+    ),
+    'indexes' => array(
+      'tid' => array(
+        0 => 'tid',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'taxonomy',
+    'settings' => array(
+      'allowed_values' => array(
+        0 => array(
+          'vocabulary' => 'home_region',
+          'parent' => 0,
+        ),
+      ),
+    ),
+    'translatable' => 0,
+    'type' => 'taxonomy_term_reference',
+  );
+
   // Exported field_base: 'field_people_image'
   $field_bases['field_people_image'] = array(
     'active' => 1,
@@ -388,6 +480,49 @@ function library_features_content_type_people_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'image',
+  );
+
+  // Exported field_base: 'field_people_images'
+  $field_bases['field_people_images'] = array(
+    'active' => 1,
+    'cardinality' => -1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_images',
+    'foreign keys' => array(
+      'node' => array(
+        'columns' => array(
+          'target_id' => 'nid',
+        ),
+        'table' => 'node',
+      ),
+    ),
+    'indexes' => array(
+      'target_id' => array(
+        0 => 'target_id',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'entityreference',
+    'settings' => array(
+      'handler' => 'base',
+      'handler_settings' => array(
+        'behaviors' => array(
+          'views-select-list' => array(
+            'status' => 0,
+          ),
+        ),
+        'sort' => array(
+          'type' => 'none',
+        ),
+        'target_bundles' => array(
+          'files' => 'files',
+        ),
+      ),
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'entityreference',
   );
 
   // Exported field_base: 'field_people_last_name'
@@ -784,8 +919,17 @@ function library_features_content_type_people_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
-      'collecting_fields' => array(),
-      'target_bundles' => array(),
+      'collecting_fields' => array(
+        'field_people_created_event' => 'field_people_created_event',
+        'field_people_home_nodes' => 'field_people_home_nodes',
+        'field_people_received_event' => 'field_people_received_event',
+        'field_people_related_event' => 'field_people_related_event',
+        'field_people_visit_nodes' => 'field_people_visit_nodes',
+      ),
+      'last_changes_time' => 1372072523,
+      'target_bundles' => array(
+        'events' => 'events',
+      ),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -804,8 +948,13 @@ function library_features_content_type_people_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
-      'collecting_fields' => array(),
-      'target_bundles' => array(),
+      'collecting_fields' => array(
+        'field_people_images' => 'field_people_images',
+      ),
+      'last_changes_time' => 1372072390,
+      'target_bundles' => array(
+        'files' => 'files',
+      ),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -824,8 +973,15 @@ function library_features_content_type_people_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
-      'collecting_fields' => array(),
-      'target_bundles' => array(),
+      'collecting_fields' => array(
+        'field_people_home_nodes' => 'field_people_home_nodes',
+        'field_people_place' => 'field_people_place',
+        'field_people_visit_nodes' => 'field_people_visit_nodes',
+      ),
+      'last_changes_time' => 1372072570,
+      'target_bundles' => array(
+        'location' => 'location',
+      ),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -844,8 +1000,13 @@ function library_features_content_type_people_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
-      'collecting_fields' => array(),
-      'target_bundles' => array(),
+      'collecting_fields' => array(
+        'field_people_received_files' => 'field_people_received_files',
+      ),
+      'last_changes_time' => 1372072484,
+      'target_bundles' => array(
+        'files' => 'files',
+      ),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -864,8 +1025,13 @@ function library_features_content_type_people_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
-      'collecting_fields' => array(),
-      'target_bundles' => array(),
+      'collecting_fields' => array(
+        'field_people_videos' => 'field_people_videos',
+      ),
+      'last_changes_time' => 1372072465,
+      'target_bundles' => array(
+        'files' => 'files',
+      ),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -884,8 +1050,13 @@ function library_features_content_type_people_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
-      'collecting_fields' => array(),
-      'target_bundles' => array(),
+      'collecting_fields' => array(
+        'field_people_written_files' => 'field_people_written_files',
+      ),
+      'last_changes_time' => 1372072421,
+      'target_bundles' => array(
+        'files' => 'files',
+      ),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -953,6 +1124,49 @@ function library_features_content_type_people_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'text',
+  );
+
+  // Exported field_base: 'field_people_videos'
+  $field_bases['field_people_videos'] = array(
+    'active' => 1,
+    'cardinality' => -1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_videos',
+    'foreign keys' => array(
+      'node' => array(
+        'columns' => array(
+          'target_id' => 'nid',
+        ),
+        'table' => 'node',
+      ),
+    ),
+    'indexes' => array(
+      'target_id' => array(
+        0 => 'target_id',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'entityreference',
+    'settings' => array(
+      'handler' => 'base',
+      'handler_settings' => array(
+        'behaviors' => array(
+          'views-select-list' => array(
+            'status' => 0,
+          ),
+        ),
+        'sort' => array(
+          'type' => 'none',
+        ),
+        'target_bundles' => array(
+          'files' => 'files',
+        ),
+      ),
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'entityreference',
   );
 
   // Exported field_base: 'field_people_visit_date'
@@ -1066,22 +1280,33 @@ function library_features_content_type_people_field_default_field_bases() {
     'type' => 'entityreference',
   );
 
-  // Exported field_base: 'field_rating'
-  $field_bases['field_rating'] = array(
+  // Exported field_base: 'title_field'
+  $field_bases['title_field'] = array(
     'active' => 1,
     'cardinality' => 1,
     'deleted' => 0,
     'entity_types' => array(),
-    'field_name' => 'field_rating',
-    'foreign keys' => array(),
-    'indexes' => array(),
-    'locked' => 0,
-    'module' => 'fivestar',
-    'settings' => array(
-      'axis' => 'vote',
+    'field_name' => 'title_field',
+    'foreign keys' => array(
+      'format' => array(
+        'columns' => array(
+          'format' => 'format',
+        ),
+        'table' => 'filter_format',
+      ),
     ),
-    'translatable' => 0,
-    'type' => 'fivestar',
+    'indexes' => array(
+      'format' => array(
+        0 => 'format',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'text',
+    'settings' => array(
+      'max_length' => 255,
+    ),
+    'translatable' => 1,
+    'type' => 'text',
   );
 
   return $field_bases;

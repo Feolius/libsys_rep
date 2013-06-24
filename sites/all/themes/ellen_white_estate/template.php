@@ -151,25 +151,6 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
   $node = $vars['node'];
   $output = array();
 
-  // Download's link.
-  if (isset($vars['content']['field_files_image'])) {
-    $field_language = field_language('node', $node, 'field_files_image');
-    $link = l(
-      t('Download'),
-      file_create_url($node->field_files_image[$field_language][0]['uri']),
-      array(
-        'attributes' => array(
-          'class' => array('download'),
-          'target' => '_blank'
-        )
-      )
-    );
-    $output['download'] = array(
-      '#access' => TRUE,
-      '#markup' => $link,
-    );
-  }
-
   if (isset($vars['content']['field_files_image'])) {
     $output['image'] = $vars['content']['field_files_image'];
   }
@@ -187,6 +168,25 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
   }
   if (isset($vars['content']['field_image_date_taken'])) {
     $output['date_taken'] = $vars['content']['field_image_date_taken'];
+  }
+
+  // Download's link.
+  if (isset($vars['content']['field_files_image'])) {
+    $field_language = field_language('node', $node, 'field_files_image');
+    $link = l(
+      t('Download'),
+      file_create_url($node->field_files_image[$field_language][0]['uri']),
+      array(
+        'attributes' => array(
+          'class' => array('download'),
+          'target' => '_blank'
+        )
+      )
+    );
+    $output['download'] = array(
+      '#access' => TRUE,
+      '#markup' => $link,
+    );
   }
 
   // Copiright.
@@ -218,6 +218,7 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
     $output['description'] = $vars['content']['field_files_description'];
   }
 
+<<<<<<< HEAD
   // Download's link.
   if (isset($vars['content']['field_files_audio'])) {
     $field_language = field_language('node', $node, 'field_files_audio');
@@ -238,6 +239,8 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
     );
   }
 
+=======
+>>>>>>> 2d8115b5f26cc58af2ceda7cf270c9f7c9f92cb1
   // Artist.
   if (!empty($node->field_files_artist)) {
     $items = field_get_items('node', $node, 'field_files_artist');
@@ -253,6 +256,25 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
       '#prefix' => "<div class='field field-name-field-files-topics'><span class='field-label'>{$info['label']}:&nbsp;</span>",
       '#markup' => implode(', ', $artists),
       '#suffix' => '</div>',
+    );
+  }
+
+  // Download's link.
+  if (isset($vars['content']['field_files_audio'])) {
+    $field_language = field_language('node', $node, 'field_files_audio');
+    $link = l(
+      t('Download'),
+      file_create_url($node->field_files_audio[$field_language][0]['uri']),
+      array(
+        'attributes' => array(
+          'class' => array('download'),
+          'target' => '_blank'
+          )
+      )
+    );
+    $output['download'] = array(
+      '#access' => TRUE,
+      '#markup' => $link,
     );
   }
 
