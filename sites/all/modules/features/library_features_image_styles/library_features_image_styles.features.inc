@@ -226,6 +226,12 @@ function library_features_image_styles_image_default_styles() {
     ),
   );
 
+  // Exported image style: original.
+  $styles['original'] = array(
+    'name' => 'original',
+    'effects' => array(),
+  );
+
   // Exported image style: people-image-full.
   $styles['people-image-full'] = array(
     'name' => 'people-image-full',
