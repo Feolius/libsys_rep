@@ -151,25 +151,6 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
   $node = $vars['node'];
   $output = array();
 
-  // Download's link.
-  if (isset($vars['content']['field_files_image'])) {
-    $field_language = field_language('node', $node, 'field_files_image');
-    $link = l(
-      t('Download'),
-      file_create_url($node->field_files_image[$field_language][0]['uri']),
-      array(
-        'attributes' => array(
-          'class' => array('download'),
-          'target' => '_blank'
-        )
-      )
-    );
-    $output['download'] = array(
-      '#access' => TRUE,
-      '#markup' => $link,
-    );
-  }
-
   if (isset($vars['content']['field_files_image'])) {
     $output['image'] = $vars['content']['field_files_image'];
   }
@@ -187,6 +168,25 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
   }
   if (isset($vars['content']['field_image_date_taken'])) {
     $output['date_taken'] = $vars['content']['field_image_date_taken'];
+  }
+
+  // Download's link.
+  if (isset($vars['content']['field_files_image'])) {
+    $field_language = field_language('node', $node, 'field_files_image');
+    $link = l(
+      t('Download'),
+      file_create_url($node->field_files_image[$field_language][0]['uri']),
+      array(
+        'attributes' => array(
+          'class' => array('download'),
+          'target' => '_blank'
+        )
+      )
+    );
+    $output['download'] = array(
+      '#access' => TRUE,
+      '#markup' => $link,
+    );
   }
 
   // Copiright.
