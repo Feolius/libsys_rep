@@ -8,7 +8,6 @@
   <?php if (!empty($content['field_files_rating'])) : ?>
     <?php print drupal_render($content['field_files_rating']); ?>
   <?php endif; ?>
-  <div class="panel-separator"></div>
   <?php if (!empty($output)): ?>
     <?php foreach($output as $value): ?>
       <?php print drupal_render($value); ?>
