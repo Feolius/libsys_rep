@@ -366,13 +366,13 @@ function _collection_page_get_date_fields_from_bundle($bundle) {
  * Preprocess function for collection_standard_thumbnail_view
  */
 function template_preprocess_collection_standard_thumbnail_view(&$results) {
-  //We should find a thumbnail field. It could be any image field. If we find it for
-  //content type we should save it in static variable
-  //This variable contatins array which keys are content type names and values are
-  //field names that contain image for thumbnail
+  // We should find a thumbnail field. It could be any image field. If we find it for
+  // content type we should save it in static variable.
+  // This variable contatins array which keys are content type names and values are
+  // field names that contain image for thumbnail.
   global $base_url;
-  //Coefficient of scaling image
-  $coeff = 1.5;
+  // Coefficient of scaling image.
+  $coeff = 2.5;
   $effects = image_style_effects(image_style_load('collection_thumbnail'));
   foreach ($effects as $effect) {
     if ($effect['name'] == 'image_scale') {
