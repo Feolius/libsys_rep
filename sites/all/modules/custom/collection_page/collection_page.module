@@ -372,7 +372,7 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
   // field names that contain image for thumbnail.
   global $base_url;
   // Coefficient of scaling image.
-  $coeff = 0.5;
+  $coeff = 1.5;
   $effects = image_style_effects(image_style_load('collection_thumbnail'));
   foreach ($effects as $effect) {
     if ($effect['name'] == 'image_scale') {
