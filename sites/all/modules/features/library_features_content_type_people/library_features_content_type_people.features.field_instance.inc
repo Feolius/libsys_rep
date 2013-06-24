@@ -270,6 +270,97 @@ function library_features_content_type_people_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-people-field_people_death_date'
+  $field_instances['node-people-field_people_death_date'] = array(
+    'bundle' => 'people',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'library_date_field',
+        'settings' => array(),
+        'type' => 'library_date_field_default',
+        'weight' => 41,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_people_death_date',
+    'label' => 'Death date',
+    'required' => 0,
+    'settings' => array(
+      'default_value' => '',
+      'default_value2' => '',
+      'rounding' => '',
+      'rounding2' => '',
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'library_date_field',
+      'settings' => array(
+        'display_all_day' => 0,
+        'increment' => 15,
+        'input_format' => 'm/d/Y - H:i:s',
+        'input_format_custom' => '',
+        'label_position' => 'above',
+        'text_parts' => array(),
+        'year_range' => '-3:+3',
+      ),
+      'type' => 'library_date_field_text',
+      'weight' => 65,
+    ),
+  );
+
   // Exported field_instance: 'node-people-field_people_degree'
   $field_instances['node-people-field_people_degree'] = array(
     'bundle' => 'people',
@@ -954,6 +1045,88 @@ function library_features_content_type_people_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-people-field_people_home_region'
+  $field_instances['node-people-field_people_home_region'] = array(
+    'bundle' => 'people',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'taxonomy',
+        'settings' => array(),
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 44,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_people_home_region',
+    'label' => 'Home Region',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'taxonomy',
+      'settings' => array(
+        'autocomplete_path' => 'taxonomy/autocomplete',
+        'size' => 60,
+      ),
+      'type' => 'taxonomy_autocomplete',
+      'weight' => 68,
+    ),
+  );
+
   // Exported field_instance: 'node-people-field_people_image'
   $field_instances['node-people-field_people_image'] = array(
     'bundle' => 'people',
@@ -1057,6 +1230,88 @@ function library_features_content_type_people_field_default_field_instances() {
       ),
       'type' => 'image_image',
       'weight' => 2,
+    ),
+  );
+
+  // Exported field_instance: 'node-people-field_people_images'
+  $field_instances['node-people-field_people_images'] = array(
+    'bundle' => 'people',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 42,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_people_images',
+    'label' => 'Images',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'entityreference',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'path' => '',
+        'size' => 60,
+      ),
+      'type' => 'entityreference_autocomplete',
+      'weight' => 66,
     ),
   );
 
@@ -2064,15 +2319,10 @@ function library_features_content_type_people_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
-      'module' => NULL,
-      'settings' => array(
-        'collecting_fields' => array(),
-        'target_bundles' => array(
-          'events' => 'events',
-        ),
-      ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'active' => 0,
+      'module' => 'field_data_collector',
+      'settings' => array(),
+      'type' => 'field_data_collector_default_widget',
       'weight' => 63,
     ),
   );
@@ -2147,26 +2397,10 @@ function library_features_content_type_people_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
-      'module' => NULL,
-      'settings' => array(
-        'collecting_fields' => array(
-          'field_people_children' => 'field_people_children',
-          'field_people_created_event' => 'field_people_created_event',
-          'field_people_home_nodes' => 'field_people_home_nodes',
-          'field_people_parents' => 'field_people_parents',
-          'field_people_place' => 'field_people_place',
-          'field_people_received_event' => 'field_people_received_event',
-          'field_people_received_files' => 'field_people_received_files',
-          'field_people_related_event' => 'field_people_related_event',
-          'field_people_visit_nodes' => 'field_people_visit_nodes',
-          'field_people_written_files' => 'field_people_written_files',
-        ),
-        'target_bundles' => array(
-          'files' => 'files',
-        ),
-      ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'active' => 0,
+      'module' => 'field_data_collector',
+      'settings' => array(),
+      'type' => 'field_data_collector_default_widget',
       'weight' => 59,
     ),
   );
@@ -2241,15 +2475,10 @@ function library_features_content_type_people_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
-      'module' => NULL,
-      'settings' => array(
-        'collecting_fields' => array(),
-        'target_bundles' => array(
-          'location' => 'location',
-        ),
-      ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'active' => 0,
+      'module' => 'field_data_collector',
+      'settings' => array(),
+      'type' => 'field_data_collector_default_widget',
       'weight' => 64,
     ),
   );
@@ -2324,17 +2553,10 @@ function library_features_content_type_people_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
-      'module' => NULL,
-      'settings' => array(
-        'collecting_fields' => array(
-          'field_people_received_files' => 'field_people_received_files',
-        ),
-        'target_bundles' => array(
-          'files' => 'files',
-        ),
-      ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'active' => 0,
+      'module' => 'field_data_collector',
+      'settings' => array(),
+      'type' => 'field_data_collector_default_widget',
       'weight' => 61,
     ),
   );
@@ -2409,15 +2631,10 @@ function library_features_content_type_people_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
-      'module' => NULL,
-      'settings' => array(
-        'collecting_fields' => array(),
-        'target_bundles' => array(
-          'files' => 'files',
-        ),
-      ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'active' => 0,
+      'module' => 'field_data_collector',
+      'settings' => array(),
+      'type' => 'field_data_collector_default_widget',
       'weight' => 62,
     ),
   );
@@ -2492,17 +2709,10 @@ function library_features_content_type_people_field_default_field_instances() {
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
-      'module' => NULL,
-      'settings' => array(
-        'collecting_fields' => array(
-          'field_people_written_files' => 'field_people_written_files',
-        ),
-        'target_bundles' => array(
-          'files' => 'files',
-        ),
-      ),
-      'type' => 'field_data_collector_entityreference_widget',
+      'active' => 0,
+      'module' => 'field_data_collector',
+      'settings' => array(),
+      'type' => 'field_data_collector_default_widget',
       'weight' => 60,
     ),
   );
@@ -2674,6 +2884,88 @@ function library_features_content_type_people_field_default_field_instances() {
       ),
       'type' => 'text_textfield',
       'weight' => 37,
+    ),
+  );
+
+  // Exported field_instance: 'node-people-field_people_videos'
+  $field_instances['node-people-field_people_videos'] = array(
+    'bundle' => 'people',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 43,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_people_videos',
+    'label' => 'Videos',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'entityreference',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'path' => '',
+        'size' => 60,
+      ),
+      'type' => 'entityreference_autocomplete',
+      'weight' => 67,
     ),
   );
 
@@ -3109,7 +3401,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => -5,
+      'weight' => 0,
     ),
   );
 
@@ -3118,12 +3410,14 @@ function library_features_content_type_people_field_default_field_instances() {
   t('Birthday');
   t('Children');
   t('Created event');
+  t('Death date');
   t('Degree');
   t('Description');
   t('Events');
   t('Favorite food');
   t('First name');
   t('Generic name');
+  t('Home Region');
   t('Home date');
   t('Home nodes');
   t('Image');

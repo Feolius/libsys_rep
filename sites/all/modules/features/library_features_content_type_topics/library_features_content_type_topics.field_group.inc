@@ -21,7 +21,7 @@ function library_features_content_type_topics_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Tabs',
-    'weight' => '35',
+    'weight' => '13',
     'children' => array(
       0 => 'field_topics_tab_images',
       1 => 'field_topics_tab_videos',

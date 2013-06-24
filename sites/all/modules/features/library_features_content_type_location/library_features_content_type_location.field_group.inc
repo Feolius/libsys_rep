@@ -21,7 +21,7 @@ function library_features_content_type_location_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Tabs',
-    'weight' => '51',
+    'weight' => '23',
     'children' => array(
       0 => 'field_location_tab_images',
       1 => 'field_location_tab_written_docs',

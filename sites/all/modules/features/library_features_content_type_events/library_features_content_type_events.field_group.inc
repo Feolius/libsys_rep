@@ -21,13 +21,12 @@ function library_features_content_type_events_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Tabs',
-    'weight' => '38',
+    'weight' => '21',
     'children' => array(
-      0 => 'field_events_tab_images',
-      1 => 'field_events_tab_documents',
-      2 => 'field_events_tab_videos',
-      3 => 'field_events_tab_map',
-      4 => 'field_events_tab_timeline',
+      0 => 'field_events_tab_videos',
+      1 => 'field_events_tab_map',
+      2 => 'field_events_tab_images',
+      3 => 'field_events_tab_documents',
     ),
     'format_type' => 'div',
     'format_settings' => array(
