@@ -399,6 +399,7 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
             $thumbnail_fields[$bundle]['style'] = $display['settings']['image_style'];
             $items = field_get_items('node', $node, $thumbnail_fields[$bundle]['field_name']);
             if (!empty($items)) {
+kpr($items);
               $image_uri = $items[0]['uri'];
               $image_info = image_get_info($image_uri);
               $width = $image_info['width'] * $height / $image_info['height'];
@@ -410,7 +411,6 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
               unset($thumbnail_view[$thumbnail_fields[$bundle]['field_name']]);
               $thumbnail_content['meta_info'] = render($thumbnail_view);
               $results['collection_thumbnails'][] = $thumbnail_content;
-              kpr($results['collection_thumbnails']);
             }
             break;
           }
