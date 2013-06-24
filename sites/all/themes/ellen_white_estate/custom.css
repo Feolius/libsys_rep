@@ -357,6 +357,6 @@ a.download {
   padding-bottom: 5px;
 }
 
-#collection-upper-thumbnail {
-  z-index: 1000;
+#collection-thumbnail-upper-container {
+  z-index: 9000;
 }
