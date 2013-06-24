@@ -884,15 +884,38 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
  * Return terms for highlighting
  */
 function _book_field_get_highlighting_terms(){
-  //@TODO We don't perform full query parsing here. We take into account only AND operator
+  //@TODO We don't perform full query parsing here.
   $terms = array();
   if (isset($_GET['query'])) {
     $query = $_GET['query'];
-    $query_parts = explode(' AND ', $query);
+    //Remove word that don't need to be in search
+    $query = str_replace('-', 'NOT ', $query);
+    $query_parts = explode(' NOT ', $query);
+    if(count($query_parts)>1){
+      $new_query_parts[0] = $query_parts[0];
+      for($i = 1; $i < count($query_parts); $i++){
+        $query_spacer_parts = explode(' ', $query_parts[$i]);
+        unset($query_spacer_parts[0]);
+        $new_query_parts[] = implode(' ', $query_spacer_parts);
+      }
+    }
+    $query = implode(' ', $new_query_parts);
+    //Remove all other operators
+    $query = str_replace(array(' AND ', ' && ', ' || ', ' OR '), ' ', $query);
+    $query = str_replace(array('(' , ')', '+'), '', $query);
+    $query_parts = explode('"', $query);
+    $parts_number = count($query_parts);
+    for($i = 1; $i < $parts_number; $i = $i + 2){
+      $terms[] = $query_parts[$i];
+    }
+    foreach($terms as $term){
+      $query = str_replace('"' . $term . '"', '', $query);
+    }
+    $query_parts = explode(' ', $query);
     foreach ($query_parts as $query_part) {
-      $terms[] = $query_part;
-      $query_part_arr = explode(' ', $query_part);
-      $terms = array_merge($terms, $query_part_arr);
+      if(!empty($query_part)){
+        $terms[] = $query_part;
+      }
     }
   }
   $field_info = field_info_fields();
