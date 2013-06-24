@@ -2,7 +2,7 @@
     Drupal.behaviors.collectionPageThumbnails = {
         attach: function (context, settings) {
             //Coefficient of scaling
-            var coefficient = Drupal.settings.collection_page.coefficient;
+/*            var coefficient = Drupal.settings.collection_page.coefficient;
 
             $(".collection-thumbnail").once('collectionPageThumbnails').each(function () {
                 $(this).height($(this).height() / coefficient);
@@ -62,7 +62,7 @@
                     $("#collection-upper-thumbnail").attr("src", $(this).attr("src"));
                 }
             }, function () {
-            });
+            });*/
         }
     };
 })(jQuery);
