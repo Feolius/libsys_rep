@@ -128,11 +128,7 @@ function library_admin_get_faq_nodes() {
 
       $query['nodes'] = db_query('
         SELECT n.nid, n.title from {node} n
-        WHERE n.type = :type AND n.nid IN ('.implode(',', $nids).') ',
-        array(
-          ':type' => 'files'
-        )
-      );
+        WHERE n.nid IN ('.implode(',', $nids).') ');
 
       $nodes = $query['nodes']->fetchAllAssoc('nid');
       if (!empty($nodes)) {
