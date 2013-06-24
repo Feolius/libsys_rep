@@ -888,6 +888,8 @@ function _book_field_get_highlighting_terms(){
   $terms = array();
   if (isset($_GET['query'])) {
     $query = $_GET['query'];
+    //Remove word that don't need to be in search
+    $query = str_replace('-', 'NOT ', $query);
     $query_parts = explode(' NOT ', $query);
     if(count($query_parts)>1){
       $new_query_parts[0] = $query_parts[0];
@@ -898,8 +900,9 @@ function _book_field_get_highlighting_terms(){
       }
     }
     $query = implode(' ', $new_query_parts);
+    //Remove all other operators
     $query = str_replace(array(' AND ', ' && ', ' || ', ' OR '), ' ', $query);
-    $query = str_replace(array('(' , ')', '+', '-'), '', $query);
+    $query = str_replace(array('(' , ')', '+'), '', $query);
     $query_parts = explode('"', $query);
     $parts_number = count($query_parts);
     for($i = 1; $i < $parts_number; $i = $i + 2){
