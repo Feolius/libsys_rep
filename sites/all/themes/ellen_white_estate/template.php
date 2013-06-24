@@ -218,25 +218,6 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
     $output['description'] = $vars['content']['field_files_description'];
   }
 
-  // Download's link.
-  if (isset($vars['content']['field_files_audio'])) {
-    $field_language = field_language('node', $node, 'field_files_audio');
-    $link = l(
-      t('Download'),
-      file_create_url($node->field_files_audio[$field_language][0]['uri']),
-      array(
-        'attributes' => array(
-          'class' => array('download'),
-          'target' => '_blank'
-        )
-      )
-    );
-    $output['download'] = array(
-      '#access' => TRUE,
-      '#markup' => $link,
-    );
-  }
-
   // Artist.
   if (!empty($node->field_files_artist)) {
     $items = field_get_items('node', $node, 'field_files_artist');
@@ -252,6 +233,25 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
       '#prefix' => "<div class='field field-name-field-files-topics'><span class='field-label'>{$info['label']}:&nbsp;</span>",
       '#markup' => implode(', ', $artists),
       '#suffix' => '</div>',
+    );
+  }
+
+  // Download's link.
+  if (isset($vars['content']['field_files_audio'])) {
+    $field_language = field_language('node', $node, 'field_files_audio');
+    $link = l(
+      t('Download'),
+      file_create_url($node->field_files_audio[$field_language][0]['uri']),
+      array(
+        'attributes' => array(
+          'class' => array('download'),
+          'target' => '_blank'
+          )
+      )
+    );
+    $output['download'] = array(
+      '#access' => TRUE,
+      '#markup' => $link,
     );
   }
 
