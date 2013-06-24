@@ -218,7 +218,7 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
     $output['description'] = $vars['content']['field_files_description'];
   }
 
-  // Artist.
+  //Artist.
   if (!empty($node->field_files_artist)) {
     $items = field_get_items('node', $node, 'field_files_artist');
     foreach ($items as $item) {
