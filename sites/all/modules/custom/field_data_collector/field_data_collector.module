@@ -360,40 +360,79 @@ function field_data_collector_field_formatter_view($entity_type, $entity, $field
             ? $settings[$target_entity->type]['primary_media_values_fields_with_formatters']['default']
             : array();
         }
-        $ref_field_name = isset($primary_media_formatter_settings['field_for_value'])
-          ? $primary_media_formatter_settings['field_for_value']
-          : "";
+        //Get the array of display fields
+        $display_fields_with_settings = isset($primary_media_formatter_settings['fields_and_formatters'])
+          ? $primary_media_formatter_settings['fields_and_formatters']
+          : array();
+        //Sort the display fields by weight
+        usort($display_fields_with_settings, '_field_data_collector_fields_with_settings_compare_by_weight');
 
-        $ref_field_formatter_name = isset($primary_media_formatter_settings['formatter_for_field']['formatter'])
-          ? $primary_media_formatter_settings['formatter_for_field']['formatter']
-          : "";
+        //Display all fields with needed formatters and settings
+        foreach ($display_fields_with_settings as $display_field_settings) {
+          $field_output = '';
+          $ref_field_name = isset($display_field_settings['field_for_value'])
+            ? $display_field_settings['field_for_value']
+            : "";
 
-        $ref_field_formatter_settings = isset($primary_media_formatter_settings['formatter_for_field']['formatter_settings']['settings'])
-          ? $primary_media_formatter_settings['formatter_for_field']['formatter_settings']['settings']
-          : "";
+          if ($ref_field_name == 'title') {
+            if ($display_field_settings['field_label']) {
+              $field_output .= '<div class="field-label">Title: </div>';
+            }
+            if ($uri = entity_uri('node', $entity)) {
+              $field_output .= '<div class="field-data">' . l($entity->title, $uri['path'], $uri['options']) . '</div>';
+            }
+            else {
+              $field_output .= '<div class="field-data">' . check_plain($entity->title) . '</div>';
+            }
+          }
+          else {
+            $ref_field_formatter_name = isset($display_field_settings['formatter_for_field']['formatter'])
+              ? $display_field_settings['formatter_for_field']['formatter']
+              : "";
 
-        if (!empty($ref_field_name) && !empty($ref_field_formatter_name) && !empty($ref_field_formatter_settings)) {
-          $ref_entity_type = $field['settings']['target_type'];
-          $ref_entity = $target_entity;
-          $ref_langcode = $langcode;
+            $ref_field_formatter_settings = isset($display_field_settings['formatter_for_field']['formatter_settings']['settings'])
+              ? $display_field_settings['formatter_for_field']['formatter_settings']['settings']
+              : "";
 
-          $ref_field = field_info_field($ref_field_name);
+            if (!empty($ref_field_name) && !empty($ref_field_formatter_name) && !empty($ref_field_formatter_settings)) {
 
-          $ref_instance = field_info_instance($ref_entity_type, $ref_field_name, $target_entity->type);
 
-          $ref_display = field_get_display($ref_instance, 'default', $ref_entity);
-          $ref_items = field_get_items($ref_entity_type, $ref_entity, $ref_field_name, $ref_langcode);
+              $ref_entity_type = $field['settings']['target_type'];
+              $ref_entity = $target_entity;
+              $ref_langcode = $langcode;
+              $ref_field = field_info_field($ref_field_name);
 
-          $ref_field_formatter = field_info_formatter_types($ref_field_formatter_name);
+              $ref_instance = field_info_instance($ref_entity_type, $ref_field_name, $target_entity->type);
 
-          $ref_display['module'] = $ref_field_formatter['module'];
-          $ref_display['type'] = $ref_field_formatter_name;
-          $ref_display['settings'] = $ref_field_formatter_settings;
+              $ref_display = field_get_display($ref_instance, 'default', $ref_entity);
+              $ref_items = field_get_items($ref_entity_type, $ref_entity, $ref_field_name, $ref_langcode);
 
-          $ref_instance['display']['default'] = $ref_display;
+              $ref_field_formatter = field_info_formatter_types($ref_field_formatter_name);
 
-          if (!empty($ref_items)) {
-            $element[$delta] = module_invoke($ref_display['module'], 'field_formatter_view', $ref_entity_type, $ref_entity, $ref_field, $ref_instance, $ref_langcode, $ref_items, $ref_display);
+              $ref_display['module'] = $ref_field_formatter['module'];
+              $ref_display['type'] = $ref_field_formatter_name;
+              $ref_display['settings'] = $ref_field_formatter_settings;
+
+              $ref_instance['display']['default'] = $ref_display;
+
+              if (!empty($ref_items)) {
+                if ($display_field_settings['field_label']) {
+                  $field_output .= '<div class="field-label">' . $ref_instance['label'] . ': </div>';
+                }
+                $field_data = module_invoke($ref_display['module'], 'field_formatter_view', $ref_entity_type, $ref_entity, $ref_field, $ref_instance, $ref_langcode, $ref_items, $ref_display);
+
+                $field_output .= '<div class="field-data">' . drupal_render($field_data) . '</div>';
+
+                //$element[$delta][] = module_invoke($ref_display['module'], 'field_formatter_view', $ref_entity_type, $ref_entity, $ref_field, $ref_instance, $ref_langcode, $ref_items, $ref_display);
+              }
+            }
+          }
+          if (!empty($field_output)) {
+            $element[$delta][] = array(
+              '#markup' => $field_output,
+              '#prefix' => '<div class="field-info">',
+              '#suffix' => '</div>',
+            );
           }
         }
       }
@@ -418,6 +457,29 @@ function field_data_collector_field_formatter_view($entity_type, $entity, $field
   }
 
   return $element;
+
+}
+
+/**
+ * Comparator for sorting the array of display fields in the primary media formatter settings
+ *
+ * @param $a
+ * @param $b
+ * @return int
+ */
+function _field_data_collector_fields_with_settings_compare_by_weight($a, $b) {
+  if (isset($a['weight']) && isset($b['weight'])) {
+    if ($a['weight'] == $b['weight']) {
+      return 0;
+    }
+    else {
+      return ($a['weight'] < $b['weight']) ? -1 : 1;
+    }
+  }
+  else {
+    return 1;
+  }
+
 
 }
 
