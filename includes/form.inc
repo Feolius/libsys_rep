@@ -2769,7 +2769,7 @@ function theme_fieldset($variables) {
   if (!empty($element['#description'])) {
     $output .= '<div class="fieldset-description">' . $element['#description'] . '</div>';
   }
-  $output .= $element['#children'];
+  //$output .= $element['#children'];
   if (isset($element['#value'])) {
     $output .= $element['#value'];
   }
