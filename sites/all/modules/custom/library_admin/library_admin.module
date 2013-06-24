@@ -105,35 +105,32 @@ function library_admin_faq_form($form, $form_state) {
  */
 function library_admin_get_faq_nodes() {
 
-  if ($cache = cache_get('faq')) {
+/*  if ($cache = cache_get('faq')) {
     $output = $cache->data;
-  } else {
+  } else {*/
     $output = array();
-    $tid = '';
 
     // Get nids and titles nodes.
-    $vocabularies = taxonomy_get_vocabularies();
-    foreach ($vocabularies as $vocabulary) {
-      if ($vocabulary->machine_name == LIBRARY_ADMIN_TAXONOMY_TAGS_COLLECTION) {
-        $vid = $vocabulary->vid;
+    if (db_table_exists('menu_links')) {
+      $nids = array();
+      $query['links'] = db_query('SELECT m.link_path from {menu_links} m
+      WHERE m.router_path = :path AND m.menu_name = :name',
+        array(
+          ':path' => 'node/%',
+          ':name' => 'menu-faq'
+        )
+      );
+      $links = $query['links']->fetchCol();
+      foreach ($links as $link) {
+        $nid = explode('/', $link)[1];
+        $nids[] = $nid;
       }
-    }
-    if (isset($vid)) {
-      $tree = taxonomy_get_tree($vid);
-      foreach ($tree as $item) {
-        if ($item->name == LIBRARY_ADMIN_TAXONOMY_FAQ_TERM) {
-          $tid = $item->tid;
-        }
-      }
-    }
-    if (db_table_exists('field_data_field_tags')) {
+
       $query['nodes'] = db_query('
         SELECT n.nid, n.title from {node} n
-        LEFT OUTER JOIN {field_data_field_tags} t ON t.entity_id = n.nid
-        WHERE n.type = :type AND t.field_tags_tid = :tid',
+        WHERE n.type = :type AND n.nid IN ('.implode(',', $nids).') ',
         array(
-          ':type' => 'files',
-          ':tid' => $tid
+          ':type' => 'files'
         )
       );
 
@@ -173,9 +170,9 @@ function library_admin_get_faq_nodes() {
           );
         }
       }
-    }
+    //}
 
-  cache_set('faq', $output);
+  //cache_set('faq', $output);
 }
   return $output;
 }
