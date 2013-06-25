@@ -388,18 +388,19 @@ function field_data_collector_field_formatter_view($entity_type, $entity, $field
           $ref_field_name = isset($display_field_settings['field_for_value'])
             ? $display_field_settings['field_for_value']
             : "";
-
+          //If the user choose the title as field to display
           if ($ref_field_name == 'title') {
             if ($display_field_settings['field_label']) {
               $field_output .= '<div class="field-label">Title: </div>';
             }
-            if ($uri = entity_uri('node', $entity)) {
-              $field_output .= '<div class="field-data">' . l($entity->title, $uri['path'], $uri['options']) . '</div>';
+            if ($uri = entity_uri('node', $target_entity)) {
+              $field_output .= '<div class="field-data">' . l($target_entity->title, $uri['path'], $uri['options']) . '</div>';
             }
             else {
-              $field_output .= '<div class="field-data">' . check_plain($entity->title) . '</div>';
+              $field_output .= '<div class="field-data">' . check_plain($target_entity->title) . '</div>';
             }
           }
+          //If the user choose any other field to display
           else {
             $ref_field_formatter_name = isset($display_field_settings['formatter_for_field']['formatter'])
               ? $display_field_settings['formatter_for_field']['formatter']
