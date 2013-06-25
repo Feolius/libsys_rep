@@ -359,3 +359,12 @@ a.download {
 img#collection-upper-thumbnail:hover {
   z-index: 9000;
 }
+
+/*
+ * Make OpenLayers img tag behave correctly with responsive stuff.
+ * See #1816826
+ */
+div.olPopup img,
+div.olLayerDiv img.olTileImage {
+    max-width: none!important;
+}
