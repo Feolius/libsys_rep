@@ -49,7 +49,8 @@ class openlayers_layer_type_openlayers_views_vector
     $options = array('' => '<none>');
     foreach ($views as $view) {
       foreach ($view->display as $display => $data) {
-        if ($data->display_plugin == 'openlayers') {
+        $view->set_display($display);
+        if ($data->display_plugin == 'openlayers' && ($view->display_handler->get_option('style_plugin') == 'openlayers_data')) {;
           $options[$view->name . '::' . $display] = $view->human_name . ': ' . $display;
         }
       }
