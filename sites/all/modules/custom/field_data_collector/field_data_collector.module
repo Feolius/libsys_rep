@@ -271,7 +271,7 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
 
           $collecting_field_items = field_get_items($entity_type, $entity, $collecting_field_name);
 
-          $origin_collecting_field_items = property_exist($entity, 'original') ? field_get_items($entity_type, $entity->original, $collecting_field_name) : array();
+          $origin_collecting_field_items = property_exists($entity, 'original') ? field_get_items($entity_type, $entity->original, $collecting_field_name) : array();
 
           //Verify the collecting field, if it isn't changed we shouldn't regerenerate the
           // current field_data_collector field.
