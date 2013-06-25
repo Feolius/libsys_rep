@@ -33,7 +33,7 @@ function library_admin_init() {
   $settings = array(
     'faq' => library_admin_get_faq_nodes(),
   );
-  drupal_add_js(array('Library' => $settings),'setting');
+  drupal_add_js(array('Library' => $settings), 'setting');
 }
 
 /**
@@ -54,7 +54,7 @@ function library_admin_return_copiright() {
       t(LIBRARY_ADMIN_TEXT_TO_COPIRIGHT),
       check_url(LIBRARY_ADMIN_PATH_TO_COPIRIGHT)
     );
-   return $copiright;
+    return $copiright;
   }
 }
 
@@ -62,6 +62,8 @@ function library_admin_return_copiright() {
  * Form for search by faq page.
  */
 function library_admin_faq_form($form, $form_state) {
+  drupal_set_title(t('FAQ'));
+
   $form['main_title'] = array(
     '#prefix' => '<h2>',
     '#markup' => t('Answers'),
@@ -107,7 +109,8 @@ function library_admin_get_faq_nodes() {
 
   if ($cache = cache_get('faq')) {
     $output = $cache->data;
-  } else {
+  }
+  else {
     $output = array();
 
     // Get nids and titles nodes.
@@ -122,18 +125,23 @@ function library_admin_get_faq_nodes() {
       );
       $links = $query['links']->fetchCol();
       foreach ($links as $link) {
-        $nid = explode('/', $link)[1];
+        $exploded_link = explode('/', $link);
+        $nid = $exploded_link[1];
         $nids[] = $nid;
       }
 
       $query['nodes'] = db_query('
         SELECT n.nid, n.title from {node} n
-        WHERE n.nid IN ('.implode(',', $nids).') ');
+        WHERE n.nid IN (' . implode(',', $nids) . ') ');
 
       $nodes = $query['nodes']->fetchAllAssoc('nid');
       if (!empty($nodes)) {
-        $nids = implode(', ', array_map(function($node) {return $node->nid ;}, $nodes));
-        $source = array_map(function($node) {return '\'' . 'node/' . $node->nid . '\'' ;}, $nodes);
+        $nids = implode(', ', array_map(function ($node) {
+          return $node->nid;
+        }, $nodes));
+        $source = array_map(function ($node) {
+          return '\'' . 'node/' . $node->nid . '\'';
+        }, $nodes);
 
         // Get aliases nodes.
         if (db_table_exists('url_alias')) {
@@ -168,8 +176,8 @@ function library_admin_get_faq_nodes() {
       }
     }
 
-  cache_set('faq', $output);
-}
+    cache_set('faq', $output);
+  }
   return $output;
 }
 
@@ -198,6 +206,7 @@ function library_admin_entity_info_alter(&$entity_info) {
     'custom settings' => TRUE,
   );
 }
+
 /**
  * Implements hook_field_formatter_info().
  */
@@ -224,7 +233,7 @@ function library_admin_field_formatter_view($entity_type, $entity, $field, $inst
           $element[$delta] = array('#markup' => $output);
         }
       }
-    break;
+      break;
   }
   return $element;
 }

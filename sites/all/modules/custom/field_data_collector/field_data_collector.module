@@ -270,13 +270,17 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
         foreach ($collecting_fields as $collecting_field_name) {
 
           $collecting_field_items = field_get_items($entity_type, $entity, $collecting_field_name);
-          $origin_collecting_field_items = field_get_items($entity_type, $entity->original, $collecting_field_name);
+
+          $origin_collecting_field_items = property_exists($entity, 'original') ? field_get_items($entity_type, $entity->original, $collecting_field_name) : array();
 
           //Verify the collecting field, if it isn't changed we shouldn't regerenerate the
           // current field_data_collector field.
           //Also if the field_data_collector field was added into the bundle when some content
           // has been already existed we sould also generate the data for the field.
-          if (($entity->changed <= $field_settings_last_changes_time) || ($collecting_field_items != $origin_collecting_field_items)) {
+          if (!empty($collecting_field_items) &&
+            (($entity->changed <= $field_settings_last_changes_time)
+              || ($collecting_field_items != $origin_collecting_field_items))
+          ) {
 
             $collecting_field_info = field_info_field($collecting_field_name);
 
@@ -284,17 +288,28 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
             if ($collecting_field_info['settings']['handler_settings']['target_bundles'] == $target_bundles) {
               $collecting_fields_could_have_needed_items = TRUE;
               foreach ($collecting_field_items as $item) {
-                $collector_field_field_items[$collecting_field_name][] = $item['target_id'];
+                if (count($collector_field_field_items) < 40) {
+                  $collector_field_field_items[] = $item['target_id'];
+                }
+                else {
+                  break;
+                }
               }
             }
             elseif (!empty($bundles_intersection)) {
               $collecting_fields_could_have_needed_items = TRUE;
               foreach ($collecting_field_items as $item) {
-                $target_node = node_load($item['target_id']);
-                if (in_array($target_node->type, $target_bundles)) {
-                  $collector_field_field_items[$collecting_field_name][] = $item['target_id'];
+                if (count($collector_field_field_items) < 40) {
+                  $target_node = node_load($item['target_id']);
+                  if (in_array($target_node->type, $target_bundles)) {
+                    $collector_field_field_items[] = $item['target_id'];
+                  }
+                }
+                else {
+                  break;
                 }
               }
+
             }
           }
         }
@@ -373,18 +388,19 @@ function field_data_collector_field_formatter_view($entity_type, $entity, $field
           $ref_field_name = isset($display_field_settings['field_for_value'])
             ? $display_field_settings['field_for_value']
             : "";
-
+          //If the user choose the title as field to display
           if ($ref_field_name == 'title') {
             if ($display_field_settings['field_label']) {
               $field_output .= '<div class="field-label">Title: </div>';
             }
-            if ($uri = entity_uri('node', $entity)) {
-              $field_output .= '<div class="field-data">' . l($entity->title, $uri['path'], $uri['options']) . '</div>';
+            if ($uri = entity_uri('node', $target_entity)) {
+              $field_output .= '<div class="field-data">' . l($target_entity->title, $uri['path'], $uri['options']) . '</div>';
             }
             else {
-              $field_output .= '<div class="field-data">' . check_plain($entity->title) . '</div>';
+              $field_output .= '<div class="field-data">' . check_plain($target_entity->title) . '</div>';
             }
           }
+          //If the user choose any other field to display
           else {
             $ref_field_formatter_name = isset($display_field_settings['formatter_for_field']['formatter'])
               ? $display_field_settings['formatter_for_field']['formatter']
@@ -495,6 +511,7 @@ function field_data_collector_field_formatter_prepare_view($entity_type, $entiti
   foreach ($entities as $id => $entity) {
     //If the field_data_collector field was added into the bundle when some content
     // has been already existed we sould also generate the data for the field.
+    $unserialized_items[$id] = array();
     if ($entity_type == 'node' && $entity->changed <= $field['settings']['last_changes_time']) {
       node_save($entity);
       $items[$id] = field_get_items($entity_type, $entity, $field['field_name'], $langcode);
@@ -503,13 +520,8 @@ function field_data_collector_field_formatter_prepare_view($entity_type, $entiti
     foreach ($items[$id] as $delta => $item) {
       if (isset($item['value'])) {
         $tmp_items = unserialize($item['value']);
-        $unserialized_items[$id] = array();
-        foreach ($tmp_items as $collecting_field_name => $field_items) {
-          if (property_exists($entity, $collecting_field_name)) {
-            $unserialized_items[$id] = array_merge($unserialized_items[$id], $field_items);
-          }
-        }
-        $target_ids = array_merge($target_ids, $unserialized_items[$id]);
+        $unserialized_items[$id] = array_merge($unserialized_items[$id], $tmp_items);
+        $target_ids = array_merge($target_ids, $tmp_items);
       }
     }
   }
