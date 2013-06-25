@@ -47,19 +47,19 @@ function ellen_white_estate_preprocess_node__people_full(&$vars) {
     $vars['full_name_people'] .= "{$node->title} ";
   }
   if (!empty($node->field_people_first_name)) {
-    $vars['full_name_people'] .= "{$node->field_people_first_name[LANGUAGE_NONE][0]['safe_value']} ";
+    $vars['full_name_people'] .= "{$vars['field_people_first_name'][0]['safe_value']} ";
   }
   if (!empty($node->field_people_middle_name)) {
-    $vars['full_name_people'] .= "{$node->field_people_middle_name[LANGUAGE_NONE][0]['safe_value']} ";
+    $vars['full_name_people'] .= "{$vars['field_people_middle_name'][0]['safe_value']} ";
   }
   if (!empty($node->field_people_last_name)) {
-    $vars['full_name_people'] .= "{$node->field_people_last_name[LANGUAGE_NONE][0]['safe_value']} ";
+    $vars['full_name_people'] .= "{$vars['field_people_last_name'][0]['safe_value']} ";
   }
   if (!empty($node->field_people_maiden_name)) {
-    $vars['full_name_people'] .= "({$node->field_people_maiden_name[LANGUAGE_NONE][0]['safe_value']})";
+    $vars['full_name_people'] .= "({$vars['field_people_maiden_name'][0]['safe_value']})";
   }
   if (!empty($node->field_people_degree)) {
-    $vars['full_name_people'] .= ", {$node->field_people_degree[LANGUAGE_NONE][0]['safe_value']} ";
+    $vars['full_name_people'] .= ", {$vars['field_people_degree'][0]['safe_value']} ";
   }
 }
 

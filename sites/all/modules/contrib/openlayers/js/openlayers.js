@@ -337,6 +337,7 @@ Drupal.openlayers = {
   },
 
   'objectFromFeature': function(feature) {
+
     var wktFormat = new OpenLayers.Format.WKT();
     // Extract geometry either from wkt property or lon/lat properties
     if (feature.wkt) {
