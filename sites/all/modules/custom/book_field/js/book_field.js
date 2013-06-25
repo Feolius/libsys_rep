@@ -85,13 +85,48 @@
 
                         });
                 }
+                var url = document.URL;
+                var pathArray = url.split( '/' );
+                var protocol = pathArray[0];
+                var host = pathArray[2];
+                var baseUrl = protocol + '//' + host;
+                $.ajax({
+                    url: baseUrl + '/book_field/highlight',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        ajax: true,
+                        url: url,
+                        jsonPath: jsonPath
+                    },
+                    success: function(data, status){
+                        if(!$.isEmptyObject(data)){
+                            var parent = $('#' + id).parent();
+                            //Get flexpaper viewer container element
+                            //var parent = parents[1];
+                            var container = $('<div class="highlight-buttons-container"></div>').insertBefore(parent);
+                            container.html('<h3>Search document</h3>');
+                            for(var key in data){
+                                term = data[key];
+                                $('<button> </button>')
+                                    .addClass('flexpaper-highlight-button')
+                                    .val(term)
+                                    .html(term)
+                                    .appendTo(container);
+                            }
+                            $('.flexpaper-highlight-button').click(function(){
+                                var searchTerm = $(this).val();
+                                //@TODO Remove this hardcode and add possibility to use different ids
+                                $FlexPaper("documentViewer").searchText(searchTerm);
+                            });
+
+
+                        }
+
+                    }
+                });
 
             }
-            $('.flexpaper-highlight-button').click(function(){
-                var searchTerm = $(this).val();
-                //@TODO Remove this hardcode and add possibility to use different ids
-                $FlexPaper("documentViewer").searchText(searchTerm);
-            });
         }
     }
 

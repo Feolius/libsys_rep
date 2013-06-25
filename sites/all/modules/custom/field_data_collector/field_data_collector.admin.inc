@@ -476,6 +476,7 @@ function field_data_collector_field_and_formatter_form(&$form, &$form_state, $va
     $form['settings']['primary_media_values_fields_with_formatters'][$key]['fields_and_formatters'][$index]['field_label'] = array(
       '#title' => t('Display the field label'),
       '#type' => 'checkbox',
+      '#default_value' => $default_primary_media_field_values_field_label,
       '#tree' => TRUE,
       '#attributes' => array(
         'id' => 'bundle-primary-media-field-value-' . $key . '-field-' . $index . '-label',
@@ -710,16 +711,16 @@ function field_data_collector_preset_settings_summary($settings, $bundle, $entit
 
       $primary_media_field_value_fields_and_formatters_settings = $value_settings['fields_and_formatters'];
 
-      $dispaly_fields_summary = '';
+      $display_fields_summary = '';
 
       foreach ($primary_media_field_value_fields_and_formatters_settings as $display_field_settings) {
         if ($display_field_settings['field_for_value'] != 'none') {
           if ($display_field_settings['field_for_value'] == 'title') {
             if ($display_field_settings['field_label']) {
-              $dispaly_fields_summary .= "field with label - Title, formatter - default<br>";
+              $display_fields_summary .= "field with label - Title, formatter - default<br>";
             }
             else {
-              $dispaly_fields_summary .= "field - Title , formatter - default<br>";
+              $display_fields_summary .= "field - Title , formatter - default<br>";
             }
 
           }
@@ -734,17 +735,17 @@ function field_data_collector_preset_settings_summary($settings, $bundle, $entit
               $field_instance_label = $field_instance['label'];
 
               if ($display_field_settings['field_label']) {
-                $dispaly_fields_summary .= "field with label - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
+                $display_fields_summary .= "field with label - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
               }
               else {
-                $dispaly_fields_summary .= "field - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
+                $display_fields_summary .= "field - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
               }
             }
           }
         }
       }
-      if (!empty($dispaly_fields_summary)) {
-        $summary .= "for value " . $primary_media_field_value_label . " :<br>" . $dispaly_fields_summary;
+      if (!empty($display_fields_summary)) {
+        $summary .= "for value " . $primary_media_field_value_label . " :<br>" . $display_fields_summary;
       }
     }
   }
@@ -758,16 +759,16 @@ function field_data_collector_preset_settings_summary($settings, $bundle, $entit
 
     $primary_media_field_value_fields_and_formatters_settings = $value_settings['fields_and_formatters'];
 
-    $dispaly_fields_summary = '';
+    $display_fields_summary = '';
 
     foreach ($primary_media_field_value_fields_and_formatters_settings as $display_field_settings) {
       if ($display_field_settings['field_for_value'] != 'none') {
         if ($display_field_settings['field_for_value'] == 'title') {
           if ($display_field_settings['field_label']) {
-            $dispaly_fields_summary .= "field with label - Title, formatter - default<br>";
+            $display_fields_summary .= "field with label - Title, formatter - default<br>";
           }
           else {
-            $dispaly_fields_summary .= "field - Title , formatter - default<br>";
+            $display_fields_summary .= "field - Title , formatter - default<br>";
           }
 
         }
@@ -781,14 +782,20 @@ function field_data_collector_preset_settings_summary($settings, $bundle, $entit
             $field_instance = field_info_instance($entity_type, $display_field_settings['field_for_value'], $bundle);
             $field_instance_label = $field_instance['label'];
 
-            $dispaly_fields_summary .= "field - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
+            if ($display_field_settings['field_label']) {
+              $display_fields_summary .= "field with label - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
+            }
+            else {
+              $display_fields_summary .= "field - " . $field_instance_label . " , formatter - " . $formatter_label . "<br>";
+            }
+
 
           }
         }
       }
     }
-    if (!empty($dispaly_fields_summary)) {
-      $summary .= $primary_media_field_value . " : <br>" . $dispaly_fields_summary;
+    if (!empty($display_fields_summary)) {
+      $summary .= $primary_media_field_value . " : <br>" . $display_fields_summary;
     }
   }
 
