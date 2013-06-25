@@ -167,19 +167,21 @@ function seven_for_ellen_white_estate_form_element($variables) {
   }
   if (!empty($element['#name'])) {
     $attributes['class'][] = 'form-item-' . strtr($element['#name'], array(
-        ' ' => '-',
-        '_' => '-',
-        '[' => '-',
-        ']' => ''
-      ));
+      ' ' => '-',
+      '_' => '-',
+      '[' => '-',
+      ']' => ''
+    ));
   }
   // Add a class for disabled elements to facilitate cross-browser styling.
   if (!empty($element['#attributes']['disabled'])) {
     $attributes['class'][] = 'form-disabled';
   }
-
-  //--------------------Overrided Code----------------------------
-  if (arg(0) == 'node' && (arg(2) == 'edit' || arg(1) == 'add') && $element['#type'] != 'checkbox'
+  $args = arg();
+  //--------------------Overriden Code----------------------------
+  if ((arg(0) == 'node' && (arg(2) == 'edit' || arg(1) == 'add')
+    || (arg(0) == 'system' && arg(1) == 'ajax')
+    || (arg(0) == 'file' && arg(1) == 'ajax')) && $element['#type'] != 'checkbox'
     && !in_array('form-item-field-files-text-und-0-format', $attributes['class'])
     && !in_array('form-item-field-files-description-und-0-format', $attributes['class'])
   ) {
@@ -256,8 +258,13 @@ function seven_for_ellen_white_estate_form_element_label($variables) {
     $attributes['for'] = $element['#id'];
   }
 
-  //--------------------Overrided Code----------------------------
-  if (arg(0) == 'node' && (arg(2) == 'edit' || arg(1) == 'add') && $element['#title_display'] != 'after' && $attributes['for'] != 'edit-field-files-text-und-0-format--2') {
+  //--------------------Overriden Code----------------------------
+  if ((arg(0) == 'node' && (arg(2) == 'edit' || arg(1) == 'add')
+    || (arg(0) == 'system' && arg(1) == 'ajax')
+    || (arg(0) == 'file' && arg(1) == 'ajax'))
+    && $element['#title_display'] != 'after'
+    && $attributes['for'] != 'edit-field-files-text-und-0-format--2'
+  ) {
     $attributes['class'][] = 'area_header';
   }
   //--------------------------------------------------------------
@@ -289,8 +296,10 @@ function seven_for_ellen_white_estate_table($variables) {
     $attributes['class'][] = 'sticky-enabled';
   }
 
-  //--------------------Overrided Code----------------------------
-  if (arg(0) == 'node' && (arg(2) == 'edit' || arg(1) == 'add')) {
+  //--------------------Overriden Code----------------------------
+  if (arg(0) == 'node' && (arg(2) == 'edit' || arg(1) == 'add')
+    || (arg(0) == 'system' && arg(1) == 'ajax')
+  ) {
     $attributes['class'][] = 'area';
   }
   //--------------------------------------------------------------
@@ -448,60 +457,6 @@ function seven_for_ellen_white_estate_table_cell($cell, $header = FALSE) {
 
   return $output;
 }
-
-
-//function seven_for_ellen_white_estate_fieldset($variables) {
-//  $element = $variables['element'];
-//  element_set_attributes($element, array('id'));
-//  seven_for_ellen_white_estate_form_set_class($element, array('form-wrapper'));
-//  $attributes = $element['#attributes'];
-//
-//  //--------------------Overrided Code----------------------------
-//
-//  if (arg(0) == 'node' && (arg(2) == 'edit' || arg(1) == 'add')
-//    && !in_array('field-group-fieldset', $attributes['class'])
-//    ) {
-//    $attributes['class'][] = 'area';
-//  }
-//  //--------------------------------------------------------------
-//
-//
-//  $output = '<fieldset' . drupal_attributes($attributes) . '>';
-//  if (!empty($element['#title'])) {
-//    // Always wrap fieldset legends in a SPAN for CSS positioning.
-//    $output .= '<legend><span class="fieldset-legend">' . $element['#title'] . '</span></legend>';
-//  }
-//  $output .= '<div class="fieldset-wrapper">';
-//  if (!empty($element['#description'])) {
-//    $output .= '<div class="fieldset-description">' . $element['#description'] . '</div>';
-//  }
-//  $output .= $element['#children'];
-//  if (isset($element['#value'])) {
-//    $output .= $element['#value'];
-//  }
-//  $output .= '</div>';
-//  $output .= "</fieldset>\n";
-//  return $output;
-//}
-//
-//function seven_for_ellen_white_estate_form_set_class(&$element, $class = array()) {
-//  if (!empty($class)) {
-//    if (!isset($element['#attributes']['class'])) {
-//      $element['#attributes']['class'] = array();
-//    }
-//    $element['#attributes']['class'] = array_merge($element['#attributes']['class'], $class);
-//  }
-//  // This function is invoked from form element theme functions, but the
-//  // rendered form element may not necessarily have been processed by
-//  // form_builder().
-//  if (!empty($element['#required'])) {
-//    $element['#attributes']['class'][] = 'required';
-//  }
-//  if (isset($element['#parents']) && form_get_error($element) !== NULL && !empty($element['#validated'])) {
-//    $element['#attributes']['class'][] = 'error';
-//  }
-//}
-
 
 
 
