@@ -131,7 +131,7 @@ function library_admin_get_faq_nodes() {
       }
 
       $nodes = array();
-      if(!empty($nids)){
+      if (!empty($nids)) {
       $query['nodes'] = db_query('
         SELECT n.nid, n.title from {node} n
         WHERE n.nid IN (' . implode(',', $nids) . ') ');
