@@ -119,13 +119,9 @@
                                 //@TODO Remove this hardcode and add possibility to use different ids
                                 $FlexPaper("documentViewer").searchText(searchTerm);
                             });
-
-
                         }
-
                     }
                 });
-
             }
         }
     }
