@@ -105,7 +105,8 @@ function facet_collection_get_default_params() {
   if (!isset($_GET['s'])) {
     $params['defType'] = 'dismax';
     if (arg(1)) {
-      $params['q'] = arg(1);
+      $query = _facet_collection_replace_spacers_by_AND(arg(1));
+      $params['q'] = $query;
     }
     //Build qf parameter
     $qf = _facet_collection_build_qf_parameter($boosts);
@@ -120,14 +121,16 @@ function facet_collection_get_default_params() {
     $q = '';
     if (arg(1)) {
       $base_qf = _facet_collection_build_qf_parameter($boosts);
-      $q[0] = '_query_:"{!dismax ' . 'qf=\'' . $base_qf . '\'}' . arg(1) . '"';
+      $query = _facet_collection_replace_spacers_by_AND(arg(1));
+      $q[] = '_query_:"{!dismax ' . 'qf=\'' . $base_qf . '\'}' . $query . '"';
     }
     $searchable_fields_info = facet_collection_get_search_filters_info();
     foreach ($_GET['s'] as $search_filter) {
       $search_filter_parts = explode(':', $search_filter);
       $field_name = $search_filter_parts[0];
       $index_field_name = $searchable_fields_info[$field_name]['index_field_name'];
-      $q[1] = '_query_:"{!dismax qf=' . $index_field_name . '^' . $boosts[$field_name] . '}' . $search_filter_parts[1] . '"';
+      $query = _facet_collection_replace_spacers_by_AND($search_filter_parts[1]);
+      $q[] = '_query_:"{!dismax qf=' . $index_field_name . '^' . $boosts[$field_name] . '}' . $query . '"';
     }
     $params['q'] = implode(' AND ', $q);
   }
@@ -135,6 +138,32 @@ function facet_collection_get_default_params() {
   return $params;
 }
 
+/**
+ * Replace spacsers in query by ' AND ' operator
+ */
+function _facet_collection_replace_spacers_by_AND($query){
+  $operators = array('AND', 'OR', '&&', 'NOT');
+  $query_arr = explode(' ', $query);
+  $quote_found = FALSE;
+  for ($n = 0; $n < count($query_arr); $n++){
+    if(strpos($query_arr[$n], '"') !== FALSE){
+      $quote_found = !$quote_found;
+    }
+    if(!$quote_found){
+      if(in_array($query_arr[$n], $operators)){
+        continue;
+      }elseif(isset($query_arr[$n+1])){
+        if(in_array($query_arr[$n + 1], $operators)){
+          $n++;
+        }else{
+          $query_arr[$n] .= ' AND';
+        }
+      }
+    }
+  }
+  $query = implode(' ', $query_arr);
+  return $query;
+}
 /**
  * Build 'qf' parameter for solr query for base search.
  */
