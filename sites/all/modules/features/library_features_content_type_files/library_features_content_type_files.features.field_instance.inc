@@ -112,102 +112,6 @@ function library_features_content_type_files_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-files-field_field_image_date_taken'
-  $field_instances['node-files-field_field_image_date_taken'] = array(
-    'bundle' => 'files',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'module' => 'library_date_field',
-        'settings' => array(),
-        'type' => 'library_date_field_default',
-        'weight' => 78,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'library_snippet' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_field_image_date_taken',
-    'label' => 'Date taken',
-    'required' => 0,
-    'settings' => array(
-      'default_value' => '',
-      'default_value2' => '',
-      'rounding' => '',
-      'rounding2' => '',
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'library_date_field',
-      'settings' => array(
-        'increment' => 15,
-        'input_format' => 'm/d/Y - H:i:s',
-        'input_format_custom' => '',
-        'label_position' => 'above',
-        'text_parts' => array(),
-        'year_range' => '-3:+3',
-      ),
-      'type' => 'library_date_field_text',
-      'weight' => 16,
-    ),
-  );
-
   // Exported field_instance: 'node-files-field_fields_photographer'
   $field_instances['node-files-field_fields_photographer'] = array(
     'bundle' => 'files',
@@ -1235,7 +1139,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'year_range' => '-3:+3',
       ),
       'type' => 'library_date_field_text',
-      'weight' => 54,
+      'weight' => 73,
     ),
   );
 
@@ -1433,7 +1337,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 18,
+      'weight' => 67,
     ),
   );
 
@@ -2377,8 +2281,8 @@ function library_features_content_type_files_field_default_field_instances() {
         'label' => 'hidden',
         'module' => 'image',
         'settings' => array(
-          'image_link' => 'content',
-          'image_style' => 'thumbnail',
+          'image_link' => '',
+          'image_style' => 'collection_thumbnail',
         ),
         'type' => 'image',
         'weight' => 0,
@@ -2590,6 +2494,96 @@ function library_features_content_type_files_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-files-field_files_image_date_taken'
+  $field_instances['node-files-field_files_image_date_taken'] = array(
+    'bundle' => 'files',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'library_date_field',
+        'settings' => array(),
+        'type' => 'library_date_field_default',
+        'weight' => 85,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_files_image_date_taken',
+    'label' => 'Date taken',
+    'required' => 0,
+    'settings' => array(
+      'default_value' => '',
+      'default_value2' => '',
+      'rounding' => '',
+      'rounding2' => '',
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'library_date_field',
+      'settings' => array(
+        'increment' => 15,
+        'input_format' => 'm/d/Y - H:i:s',
+        'input_format_custom' => '',
+        'label_position' => 'above',
+        'text_parts' => array(),
+        'year_range' => '-3:+3',
+      ),
+      'type' => 'library_date_field_text',
+      'weight' => 72,
+    ),
+  );
+
   // Exported field_instance: 'node-files-field_files_image_event'
   $field_instances['node-files-field_files_image_event'] = array(
     'bundle' => 'files',
@@ -2683,7 +2677,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 21,
+      'weight' => 66,
     ),
   );
 
@@ -2780,7 +2774,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 20,
+      'weight' => 65,
     ),
   );
 
@@ -2877,7 +2871,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 19,
+      'weight' => 64,
     ),
   );
 
@@ -5570,103 +5564,6 @@ function library_features_content_type_files_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-files-field_files_topics'
-  $field_instances['node-files-field_files_topics'] = array(
-    'bundle' => 'files',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'inline',
-        'module' => 'entityreference',
-        'settings' => array(
-          'link' => 1,
-        ),
-        'type' => 'entityreference_label',
-        'weight' => 54,
-      ),
-      'home' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 1,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 2,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 4,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 3,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 2,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 15,
-      ),
-      'library_snippet' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_files_topics',
-    'label' => 'Topics',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'entityreference',
-      'settings' => array(
-        'match_operator' => 'CONTAINS',
-        'path' => '',
-        'size' => 60,
-      ),
-      'type' => 'entityreference_autocomplete',
-      'weight' => 0,
-    ),
-  );
-
   // Exported field_instance: 'node-files-field_files_track_number'
   $field_instances['node-files-field_files_track_number'] = array(
     'bundle' => 'files',
@@ -6061,7 +5958,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'year_range' => '-3:+3',
       ),
       'type' => 'library_date_field_text',
-      'weight' => 25,
+      'weight' => 71,
     ),
   );
 
@@ -6158,7 +6055,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 28,
+      'weight' => 68,
     ),
   );
 
@@ -6255,7 +6152,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 26,
+      'weight' => 70,
     ),
   );
 
@@ -6352,7 +6249,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 27,
+      'weight' => 69,
     ),
   );
 
@@ -6558,8 +6455,8 @@ function library_features_content_type_files_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-files-field_tags'
-  $field_instances['node-files-field_tags'] = array(
+  // Exported field_instance: 'node-files-field_video_date_taken'
+  $field_instances['node-files-field_video_date_taken'] = array(
     'bundle' => 'files',
     'default_value' => NULL,
     'deleted' => 0,
@@ -6578,53 +6475,47 @@ function library_features_content_type_files_field_default_field_instances() {
         'weight' => 0,
       ),
       'default' => array(
-        'label' => 'above',
-        'module' => 'taxonomy',
+        'label' => 'inline',
+        'module' => 'library_date_field',
         'settings' => array(),
-        'type' => 'taxonomy_term_reference_link',
-        'weight' => 75,
+        'type' => 'library_date_field_default',
+        'weight' => 61,
       ),
       'home' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 20,
+        'weight' => 15,
       ),
       'home_bottom' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 19,
+        'weight' => 14,
       ),
       'home_left' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 21,
+        'weight' => 16,
       ),
       'home_middle' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 22,
+        'weight' => 17,
       ),
       'home_right' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 19,
+        'weight' => 14,
       ),
       'home_top' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 31,
-      ),
-      'library_snippet' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 26,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -6634,21 +6525,29 @@ function library_features_content_type_files_field_default_field_instances() {
       ),
     ),
     'entity_type' => 'node',
-    'field_name' => 'field_tags',
-    'label' => 'Tags',
+    'field_name' => 'field_video_date_taken',
+    'label' => 'Date taken',
     'required' => 0,
     'settings' => array(
+      'default_value' => '',
+      'default_value2' => '',
+      'rounding' => '',
+      'rounding2' => '',
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 0,
-      'module' => 'taxonomy',
+      'active' => 1,
+      'module' => 'library_date_field',
       'settings' => array(
-        'autocomplete_path' => 'taxonomy/autocomplete',
-        'size' => 60,
+        'increment' => 15,
+        'input_format' => 'm/d/Y - H:i:s',
+        'input_format_custom' => '',
+        'label_position' => 'above',
+        'text_parts' => array(),
+        'year_range' => '-3:+3',
       ),
-      'type' => 'taxonomy_autocomplete',
-      'weight' => -3,
+      'type' => 'library_date_field_text',
+      'weight' => 74,
     ),
   );
 
@@ -6867,11 +6766,9 @@ function library_features_content_type_files_field_default_field_instances() {
   t('Receiver');
   t('Receiver Location');
   t('Subtitle');
-  t('Tags');
   t('Text');
   t('Title');
   t('Topic Tags');
-  t('Topics');
   t('Track Number');
   t('Typewritten');
   t('URL');

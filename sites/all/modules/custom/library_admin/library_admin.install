@@ -15,3 +15,22 @@ function library_admin_update_7040() {
       ->execute();
   }
 }
+
+/**
+ * Delete fild field_image_date_taken.
+ */
+function library_admin_update_7102() {
+  if (db_table_exists('field_data_field_image_date_taken')) {
+    db_drop_table('field_data_field_image_date_taken');
+  }
+  if (db_table_exists('field_revision_field_image_date_taken')) {
+    db_drop_table('field_revision_field_image_date_taken');
+  }
+  db_delete('field_config_instance')
+    ->condition('field_name', 'field_image_date_taken')
+    ->execute();
+
+  db_delete('field_config')
+    ->condition('field_name', 'field_image_date_taken')
+    ->execute();
+}
