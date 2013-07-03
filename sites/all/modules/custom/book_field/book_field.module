@@ -1142,7 +1142,7 @@ function book_field_theme() {
       'template' => 'theme/flexpaper-container',
     ),
     'book_field_flexpaper_view' => array(
-      'variables' => array('file' => NULL, 'file_swf' => NULL, 'file_thumb' => NULL, 'icon_directory' => NULL),
+      'variables' => array(),
     ),
     'book_field_google_doc_view' => array(
       'variables' => array('file' => NULL, 'file_thumb' => NULL, 'icon_directory' => NULL),
@@ -1175,12 +1175,11 @@ function theme_book_field_google_doc_view($variables) {
  * Theme function for the flexpaper formatter.
  */
 function theme_book_field_flexpaper_view($variables) {
-  $out = theme_file_link($variables);
   $query = array_diff_key($_GET, array('q' => 1));
   $link_html5 = url($_GET['q'], array('query' => array_merge($query, array('view_mode' => 'html5'))));
   $link_html = url($_GET['q'], array('query' => array_merge($query, array('view_mode' => 'html'))));
   $link_flash = url($_GET['q'], array('query' => array_merge($query, array('view_mode' => 'flash'))));
-  $out = $out . theme('flexpaper_mode_switcher', array(
+  $out = theme('flexpaper_mode_switcher', array(
     'link_html5' => $link_html5,
     'link_flash' => $link_flash,
     'link_html' => $link_html
