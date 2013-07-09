@@ -54,7 +54,7 @@
                                 items[items.length] = ui.item.option.value;
                                 items = JSON.stringify(items);
                                 $('#' + self.options.containerId).val(items);
-                                list.append('<li><input type="hidden" value="' + ui.item.option.value + '"><label class="facetapi-term-widget-item-label">' + ui.item.option.text + '</label> [' + marker + ']</li>');
+                                list.append('<li><input type="hidden" value="' + ui.item.option.value + '"><label class="facetapi-term-widget-item-label">' + ui.item.option.text + '</label>' + marker + '</li>');
                                 $('.' + self.options.markerClass).unbind('click');
                                 $('.' + self.options.markerClass).click(function(event){
                                     markerClickHandler(event, this);

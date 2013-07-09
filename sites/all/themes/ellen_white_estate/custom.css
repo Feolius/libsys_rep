@@ -89,11 +89,6 @@
   padding: 0;
 }
 
-.ui-widget-content {
-  border: none;
-  background: none;
-}
-
 .viewerPlaceHolder {
   width: 634px;
 }
@@ -150,14 +145,6 @@
   position: absolute;
   right: 0;
   bottom: 0;
-}
-
-.not-front .social {
-  top: 310px;
-}
-
-.social {
-  top: 310px;
 }
 
 #header-inside-right #facet-collection-search-block-form div.form-item {
@@ -300,18 +287,6 @@ a.download {
 
 .form-item-facet-collection-search-block-form {
   display: inline;
-}
-
-#sidebar .pane-content {
-  background: #f9f7f4;
-  padding: 20px;
-  overflow: hidden;
-  margin: 0 0 40px 0;
-}
-
-#sidebar .form-item input {
-  margin-top: 1em;
-  margin-bottom: 1em;
 }
 
 #collection-pager-container {
