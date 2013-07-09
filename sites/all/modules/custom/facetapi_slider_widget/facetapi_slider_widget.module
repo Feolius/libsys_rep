@@ -4,216 +4,192 @@
  * Implements hook_facetapi_widgets().
  */
 function facetapi_slider_widget_facetapi_widgets() {
-    return array(
-        'facetapi_slider_widget' => array(
-            'handler' => array(
-                'label' => t('Slider'),
-                'class' => 'FacetapiWidgetSlider',
-                'query types' => array('term'),
-            ),
-        ),
-    );
+  return array(
+    'facetapi_slider_widget' => array(
+      'handler' => array(
+        'label' => t('Slider'),
+        'class' => 'FacetapiWidgetSlider',
+        'query types' => array('term'),
+      ),
+    ),
+  );
 }
 
 /**
  * Implements hook_forms().
  */
 function facetapi_slider_widget_forms($form_id, $args) {
-    $forms = array();
-    $searcher_info = facetapi_get_searcher_info();
-    $searchers = array_keys($searcher_info);
-    $searcher = array_shift($searchers);
-    $adapter = facetapi_adapter_load($searcher);
-    $enabled_facets = $adapter->getEnabledFacets();
-    foreach ($enabled_facets as $enabled_facet) {
-        $field_name = $enabled_facet['field api name'];
-        $field_info = field_info_field($field_name);
-        if (in_array('term', $enabled_facet['query types'])) {
-            $forms['facetapi_slider_widget_' . $enabled_facet['name'] . '_form'] = array(
-                'callback' => 'facetapi_slider_widget_filter_form',
-            );
-        }
+  $forms = array();
+  $searcher_info = facetapi_get_searcher_info();
+  $searchers = array_keys($searcher_info);
+  $searcher = array_shift($searchers);
+  $adapter = facetapi_adapter_load($searcher);
+  $enabled_facets = $adapter->getEnabledFacets();
+  foreach ($enabled_facets as $enabled_facet) {
+    $field_name = $enabled_facet['field api name'];
+    $field_info = field_info_field($field_name);
+    if (in_array('term', $enabled_facet['query types'])) {
+      $forms['facetapi_slider_widget_' . $enabled_facet['name'] . '_form'] = array(
+        'callback' => 'facetapi_slider_widget_filter_form',
+      );
     }
-    return $forms;
+  }
+  return $forms;
 }
 
 /**
  * Form callback for date filter
  */
 function facetapi_slider_widget_filter_form($form, &$form_state, $args) {
-    $facet_name = $args['facet name'];
-    $left_limit = $args['left limit'];
-    $right_limit = $args['right limit'];
+  $facet_name = $args['facet name'];
+  $left_limit = $args['left limit'];
+  $right_limit = $args['right limit'];
 
-    //Get min and max set values for slider.
-    if (empty($_GET['min_' . $facet_name])) {
-        $min_value = $left_limit;
-        $max_value = $right_limit;
-    } else {
-        $min_value = $_GET['min_' . $facet_name];
-        $max_value = $_GET['max_' . $facet_name];
-    }
+  //Get min and max set values for slider.
+  if (empty($_GET['min_' . $facet_name])) {
+    $min_value = $left_limit;
+    $max_value = $right_limit;
+  }
+  else {
+    $min_value = $_GET['min_' . $facet_name];
+    $max_value = $_GET['max_' . $facet_name];
+  }
 
-    //Unfortunately there can be such situation when few forms with one form id will be in one page.
-    //To prevent possible conflicts we should define what HTML form id will this form have and put it in Drupal js settings.
-    $form_id = $form_state['build_info']['form_id'];
-    $form_id = strtr(drupal_strtolower($form_id), array(' ' => '-', '_' => '-', '[' => '-', ']' => ''));
-    $form_id = preg_replace('/[^A-Za-z0-9\-_]/', '', $form_id);
-    $form_id = preg_replace('/\-+/', '-', $form_id);
-    $seen_ids = &drupal_static('drupal_html_id');
-    if (isset($seen_ids[$form_id])) {
-        $seen_id = $seen_ids[$form_id] + 1;
-        $form_id = $form_id . '--' . $seen_id;
-    } else {
-        $seen_id = 1;
-    }
-    $label = $args['label'];
-    $facet_name = $args['facet name'];
-    if ($seen_id == 1) {
-        $range_label_id = 'facetapi_range_info_' . $facet_name;
-        $min_value_id = 'facetapi_range_min_' . $facet_name;
-        $max_value_id = 'facetapi_range_max_' . $facet_name;
-    } else {
-        $range_label_id = 'facetapi_range_info_' . $facet_name . '_' . $seen_id;
-        $min_value_id = 'facetapi_range_min_' . $facet_name . '_' . $seen_id;
-        $max_value_id = 'facetapi_range_max_' . $facet_name . '_' . $seen_id;
-    }
-    $settings = array(
-        'forms' => array(
-            $form_id => array(
-                'rangeLabelId' => $range_label_id,
-                'minValueId' => $min_value_id,
-                'maxValueId' => $max_value_id,
-            ),
-        ),
-        'leftLimit' => $left_limit,
-        'right_limit' => $right_limit,
-        'minValue' => $min_value,
-        'maxValue' => $max_value,
-    );
-    //Add js settings and files
-    drupal_add_library('system', 'ui.slider');
-    drupal_add_js(drupal_get_path('module', 'facetapi_slider_widget') . '/js/facetapi_slider.js');
-    drupal_add_css(drupal_get_path('module', 'facetapi_slider_widget') . '/css/facetapi_slider.css');
-    drupal_add_js(array('facetapi_slider_widget' => $settings), 'setting');
+  //Unfortunately there can be such situation when few forms with one form id will be in one page.
+  //To prevent possible conflicts we should define what HTML form id will this form have and put it in Drupal js settings.
+  $form_id = $form_state['build_info']['form_id'];
+  $form_id = strtr(drupal_strtolower($form_id), array(' ' => '-', '_' => '-', '[' => '-', ']' => ''));
+  $form_id = preg_replace('/[^A-Za-z0-9\-_]/', '', $form_id);
+  $form_id = preg_replace('/\-+/', '-', $form_id);
+  $seen_ids = & drupal_static('drupal_html_id');
+  if (isset($seen_ids[$form_id])) {
+    $seen_id = $seen_ids[$form_id] + 1;
+    $form_id = $form_id . '--' . $seen_id;
+  }
+  else {
+    $seen_id = 1;
+  }
+  $label = $args['label'];
+  $facet_name = $args['facet name'];
+  if ($seen_id == 1) {
+    $range_label_id = 'facetapi_range_info_' . $facet_name;
+    $min_value_id = 'facetapi_range_min_' . $facet_name;
+    $max_value_id = 'facetapi_range_max_' . $facet_name;
+  }
+  else {
+    $range_label_id = 'facetapi_range_info_' . $facet_name . '_' . $seen_id;
+    $min_value_id = 'facetapi_range_min_' . $facet_name . '_' . $seen_id;
+    $max_value_id = 'facetapi_range_max_' . $facet_name . '_' . $seen_id;
+  }
+  $settings = array(
+    'forms' => array(
+      $form_id => array(
+        'rangeLabelId' => $range_label_id,
+        'minValueId' => $min_value_id,
+        'maxValueId' => $max_value_id,
+      ),
+    ),
+    'leftLimit' => $left_limit,
+    'rightLimit' => $right_limit,
+    'minValue' => $min_value,
+    'maxValue' => $max_value,
+  );
+  //Add js settings and files
+  drupal_add_library('system', 'ui.slider');
+  drupal_add_js(drupal_get_path('module', 'facetapi_slider_widget') . '/js/facetapi_slider.js');
+  drupal_add_css(drupal_get_path('module', 'facetapi_slider_widget') . '/css/facetapi_slider.css');
+  drupal_add_js(array('facetapi_slider_widget' => $settings), 'setting');
 
-    //Construct form
-    $range_label = '<p><label for="' . $range_label_id . '">Rating range:</label>' .
-            '<input class="range_info" type="text" id="' . $range_label_id . '"/></p>';
-    $form = array(
-        'label' => array(
-            '#type' => 'item',
-            '#markup' => '<h3>' . $label . '</h3>',
-        ),
-        'range_label' => array(
-            '#type' => 'item',
-            '#markup' => '<p><label class="facetapi_range_label" for="' . $range_label_id . '">Rating range:</label>' .
-            '<input class="facetapi_range_info" type="text" id="' . $range_label_id . '"/></p>',
-        ),
-        'min_value' => array(
-            '#type' => 'hidden',
-            '#default_value' => $min_value,
-            '#attributes' => array(
-                'id' => $min_value_id,
-            )
-        ),
-        'max_value' => array(
-            '#type' => 'hidden',
-            '#default_value' => $max_value,
-            '#attributes' => array(
-                'id' => $max_value_id,
-            )
-        ),
-        'slider' => array(
-            '#type' => 'item',
-            '#markup' => '<div class="facetapi-slider"></div>',
-        ),
-        'filter_button' => array(
-            '#type' => 'submit',
-            '#value' => t('Filter'),
-            '#description' => t('Format:'),
-            '#weight' => 15,
-            '#submit' => array('facetapi_slider_widget_filter_submit'),
-        ),
-        'reset_button' => array(
-            '#type' => 'submit',
-            '#value' => t('Reset'),
-            '#description' => t('Format:'),
-            '#weight' => 15,
-            '#submit' => array('facetapi_slider_widget_reset_submit'),
-        ),
-    );
-    return $form;
+  //Construct form
+  $range_label = '<p><label for="' . $range_label_id . '">Rating range:</label>' .
+    '<input class="range_info" type="text" id="' . $range_label_id . '"/></p>';
+  $form = array(
+    '#type' => 'container',
+    '#attributes' => array(
+      'class' => array('facetapi-slider-container')
+    ),
+    'label' => array(
+      '#type' => 'item',
+      '#markup' => '<h3>' . $label . '</h3>',
+    ),
+    'slider' => array(
+      '#type' => 'item',
+      '#markup' => '<div class="facetapi-slider"></div>',
+    ),
+    'range_label' => array(
+      '#type' => 'item',
+      '#markup' => '<p><label class="facetapi_range_label" for="' . $range_label_id . '">Rating range:</label>' .
+        '<input class="facetapi_range_info" type="text" id="' . $range_label_id . '"/></p>',
+    ),
+    'min_value' => array(
+      '#type' => 'hidden',
+      '#default_value' => $min_value,
+      '#attributes' => array(
+        'class' => 'facetapi-slider-min-value',
+        'id' => $min_value_id,
+      )
+    ),
+    'max_value' => array(
+      '#type' => 'hidden',
+      '#default_value' => $max_value,
+      '#attributes' => array(
+        'class' => 'facetapi-slider-max-value',
+        'id' => $max_value_id,
+      )
+    ),
+    'filter_button' => array(
+      '#type' => 'submit',
+      '#value' => t('Filter'),
+      '#description' => t('Format:'),
+      '#weight' => 15,
+      '#submit' => array('facetapi_slider_widget_filter_submit'),
+    ),
+  );
+  return $form;
 }
 
 /**
  * Submit callback for filter form
  */
 function facetapi_slider_widget_filter_submit($form, &$form_state) {
-    $basic_path = $form_state['build_info']['args'][0]['search path'];
-    $field_alias = $form_state['build_info']['args'][0]['field alias'];
-    $facet_name = $form_state['build_info']['args'][0]['facet name'];
-    $min_value = $form_state['input']['min_value'];
-    $max_value = $form_state['input']['max_value'];
+  $basic_path = $form_state['build_info']['args'][0]['search path'];
+  $field_alias = $form_state['build_info']['args'][0]['field alias'];
+  $facet_name = $form_state['build_info']['args'][0]['facet name'];
+  $min_value = $form_state['input']['min_value'];
+  $max_value = $form_state['input']['max_value'];
 
-    //Build request
-    $request = $field_alias . ':[' . $min_value . ' TO ' . $max_value . ']';
-    $merge = TRUE;
-    if (isset($_GET['f'])) {
-        $f = $_GET['f'];
-        foreach ($f as $key => $row) {
-            if (strstr($row, $field_alias)) {
-                $f[$key] = $request;
-                $merge = FALSE;
-                continue;
-            }
-        }
-        if ($merge) {
-            $f = array_merge($f, array($request));
-        }
-    }else
-        $f = array($request);
-    $options = array(
-        'query' => array(
-            'f' => $f,
-            'min_' . $facet_name => $min_value,
-            'max_' . $facet_name => $max_value,
-        ),
-    );
-    $form_state['redirect'] = array(
-        $basic_path, $options, 302
-    );
-}
-
-/**
- * Reset callback for filter form
- */
-function facetapi_slider_widget_reset_submit($form, &$form_state) {
-
-    //Find and unset filter query from GET request
-    $options = array();
-    $basic_path = $form_state['build_info']['args'][0]['search path'];
-    $field_alias = $form_state['build_info']['args'][0]['field alias'];
-    if (isset($_GET['f'])) {
-        $f = $_GET['f'];
-        foreach ($f as $key => $row) {
-            if (strstr($row, $field_alias)) {
-                unset($f[$key]);
-                $merge = FALSE;
-                continue;
-            }
-        }
-
-        if (!empty($f)) {
-            $options = array(
-                'query' => array(
-                    'f' => $f,
-                ),
-            );
-        }
+  //Build request
+  $request = $field_alias . ':[' . $min_value . ' TO ' . $max_value . ']';
+  $merge = TRUE;
+  if (isset($_GET['f'])) {
+    $f = $_GET['f'];
+    foreach ($f as $key => $row) {
+      if (strstr($row, $field_alias)) {
+        $f[$key] = $request;
+        $merge = FALSE;
+        continue;
+      }
     }
-    $form_state['redirect'] = array(
-        $basic_path, $options, 302
-    );
+    if ($merge) {
+      $f = array_merge($f, array($request));
+    }
+  }
+  else {
+    $f = array($request);
+  }
+  $options = array(
+    'query' => array(
+      'f' => $f,
+      'min_' . $facet_name => $min_value,
+      'max_' . $facet_name => $max_value,
+    ),
+  );
+  $form_state['redirect'] = array(
+    $basic_path,
+    $options,
+    302
+  );
 }
+
+
 
