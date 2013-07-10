@@ -327,22 +327,32 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
         'external' => TRUE
       )
     );
-    $output['tabs_start'] = "<div id='file-tabs'><ul><li>{$first_tab}</li><li>{$second_tab}</li></ul>";
+    $output['tabs_start'] = array(
+      '#access' => TRUE,
+      '#markup' => "<div id='file-tabs'><ul><li>{$first_tab}</li><li>{$second_tab}</li></ul>"
+    );
+  } else {
+
+    if (isset($vars['content']['field_files_file'])) {
+      $output['file'] = $vars['content']['field_files_file'];
+    }
+    if (isset($vars['content']['field_files_text'])) {
+      $output['text'] = $vars['content']['field_files_text'];
+    }
   }
-  if (isset($vars['content']['field_files_file'])) {
-    $file = $vars['content']['field_files_file'];
-    $output['file'] = $vars['content']['field_files_file'];
-  }
-  if (isset($vars['content']['field_files_text'])) {
-    $text = $vars['content']['field_files_text'];
-    $output['text'] = $vars['content']['field_files_text'];
-  }
+
   if (isset($vars['content']['field_files_file']) && isset($vars['content']['field_files_text'])) {
-    $output['file'] = '<div id="file-tabs-1">' . drupal_render($file) . '</div>';
-    $output['text'] = '<div id="file-tabs-2">' . drupal_render($text) . '</div></div>';
+    $file = drupal_render($vars['content']['field_files_file']);
+    $text = drupal_render($vars['content']['field_files_text']);
+    $item_file = array(
+      '#access' => TRUE,
+      '#markup' => "<div id='file-tabs-1'>$file</div>");
+    $item_text = array(
+      '#access' => TRUE,
+      '#markup' => "<div id='file-tabs-2'>$text</div></div>");
     $output['tabs'] = array(
       '#access' => TRUE,
-      '#markup' => $output['tabs_start'] . $output['file'] . $output['text']
+      '#markup' => drupal_render($output['tabs_start']) . drupal_render($item_file) . drupal_render($item_text) . '</div>'
     );
   }
 
