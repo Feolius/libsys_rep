@@ -90,16 +90,16 @@ function facet_collection_block_block_view($delta) {
   $variables['items'] = array();
   $variables['type'] = 'ul';
   $content = '';
+  $options['attributes']['class'] = array('library-content-type-filter-link');
   foreach ($indexed_bundles as $bundle) {
     if ($bundle != $filtered_content_type) {
       $text = $entity_info['bundles'][$bundle]['label'];
       $path = $_GET['q'];
       $options['query']['f']['0'] = 'bundle:' . $bundle;
-      $options['attributes']['class'][] = 'library-content-type-filter-link';
       $link = l($text, $path, $options);
-      $content = $content . '<div class="library-leaf">' . $link . '</div>';
+      $content = $content . '<div class="library-leaf library-leaf-' . $bundle . '">' . $link . '</div>';
     }else{
-      $content = $content . '<div class="library-leaf">' . $entity_info['bundles'][$bundle]['label'] . '</div>';
+      $content = $content . '<div class="library-leaf library-leaf-' . $bundle . '">' . $entity_info['bundles'][$bundle]['label'] . '</div>';
       $form = drupal_get_form('facet_collection_block_form');
       $form = drupal_render($form);
       $content = $content . '<div class="library-filter-content">' . $form . '</div>';
