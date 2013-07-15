@@ -77,7 +77,7 @@ function library_admin_faq_form($form, $form_state) {
   $form['title'] = array(
     '#prefix' => '<h3>',
     '#markup' => t('Search'),
-    '#suffix' => '</h3хоро>',
+    '#suffix' => '</h3>',
   );
 
   $form['text'] = array(

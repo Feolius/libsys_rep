@@ -195,9 +195,8 @@
   float: left;
 }
 
-#library-admin-faq-form .form-item-text input {
+#library-admin-faq-form div.form-item-text {
   float: left;
-  padding: 9px;
 }
 
 #library-admin-faq-form input.search-faq {

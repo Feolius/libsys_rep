@@ -21,6 +21,11 @@
       <?php if (!empty($content['content'])): ?>
         <div class="main_inside">
           <?php print $content['content']; ?>
+          <?php if (!empty($content['bottom'])): ?>
+            <div class="node-bottom">
+              <?php print $content['bottom']; ?>
+            </div>
+            <?php endif; ?>
         </div>
       <?php endif; ?>
     </div>
@@ -28,11 +33,6 @@
   <?php if (!empty($content['right_sidebar'])): ?>
     <div id="sidebar">
       <?php print $content['right_sidebar']; ?>
-    </div>
-  <?php endif; ?>
-  <?php if (!empty($content['bottom'])): ?>
-    <div class="node-bottom">
-      <?php print $content['bottom']; ?>
     </div>
   <?php endif; ?>
 </div>
