@@ -152,18 +152,6 @@
   float: left;
 }
 
-#header-inside-right .form-submit {
-  height: 35px;
-  padding: 6px 18px;
-  margin: 0;
-}
-
-#header-inside-right .form-item input[type="text"] {
-  width: 194px;
-  padding: 9px;
-  height: auto;
-}
-
 #header-inside-left {
   padding: 0;
 }

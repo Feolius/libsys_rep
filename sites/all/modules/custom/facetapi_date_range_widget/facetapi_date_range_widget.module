@@ -314,8 +314,7 @@ function facetapi_date_range_widget_filter_form($form, &$form_state, $args) {
         'max_date_picker' => array(
           '#type' => 'item',
           '#markup' => '<input id="' . $max_datepicker_id . '" class="facetapi_datepicker" type="text">',
-          '#weight' => -16,
-          '#description' => t('Right limit'),
+          '#weight' => -16,          
         ),
       ),
     ),

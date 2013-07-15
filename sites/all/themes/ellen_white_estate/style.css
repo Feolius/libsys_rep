@@ -160,11 +160,13 @@ blockquote { background:transparent url('images/blockquote.png') no-repeat top l
 
 #header-inside-right { float:right; padding:0; margin-top:7px; position:relative;}
 
-#header-inside-right .form-item input[type="text"] { width: 194px; padding: 9px; height: auto; border:none;}
+#header-inside-right .form-item input[type="text"] { width: 196px; padding: 9px; height: auto; border:none;}
 
 #header-inside-right #edit-0{ background:url(images/remove_filter.png) no-repeat center 11px #edeaea; position:absolute; left:188px; width:26px; height:34px; padding:0; text-indent:-9999px; overflow:hidden; border:none;}
 
 #header-inside-right #edit-0:hover{ background-position:center -43px;}
+
+#header-inside-right .form-submit { height: 34px; padding: 6px 18px; margin: 0; }
 
 #header-menu-inside .account_controls{position: absolute; right: 0; top: 0; font-size:0; width:250px; text-align:right;}
 
@@ -254,35 +256,35 @@ box-shadow: inset 0 0 18px 0 rgba(0, 0, 0, 0.15);
 
 #main #collection_page_tabs{ background:none; border:none;} 
 
-#collection_page_tabs ul{ background:none; border:none; padding:0; margin:0; border-radius:0; -webkit-border-radius:0; float:right; height:0; position:relative; top:-4px;}
+#collection_page_tabs .ui-tabs-nav{ background:none; border:none; padding:0; margin:0; border-radius:0; -webkit-border-radius:0; float:right; height:0; position:relative; top:-4px;}
 
-#collection_page_tabs ul li{ margin:0; padding:0; border-radius:0; -webkit-border-radius:0; border:none; background:none; top:2px; margin-left:5px;}
+#collection_page_tabs .ui-tabs-nav li{ margin:0; padding:0; border-radius:0; -webkit-border-radius:0; border:none; background:none; top:2px; margin-left:5px;}
 
-#collection_page_tabs ul li a{ display:block; float:none; text-indent:-9999px; overflow:hidden; background:url(images/library_tabs_icons.png) no-repeat; width:31px; height:25px; padding:0; cursor:pointer; -webkit-transition: none; -moz-transition: none; -o-transition: none; transition: none;}
+#collection_page_tabs .ui-tabs-nav li a{ display:block; float:none; text-indent:-9999px; overflow:hidden; background:url(images/library_tabs_icons.png) no-repeat; width:31px; height:25px; padding:0; cursor:pointer; -webkit-transition: none; -moz-transition: none; -o-transition: none; transition: none;}
 
-#collection_page_tabs ul li .standart{ background-position:0 0}
+#collection_page_tabs .ui-tabs-nav li .standart{ background-position:0 0}
 
-#collection_page_tabs ul li .thumbnail{ background-position:-33px 0}
+#collection_page_tabs .ui-tabs-nav li .thumbnail{ background-position:-33px 0}
 
-#collection_page_tabs ul li .location{ background-position:-66px 0}
+#collection_page_tabs .ui-tabs-nav li .location{ background-position:-66px 0}
 
-#collection_page_tabs ul li .timeline{ background-position:-99px 0}
+#collection_page_tabs .ui-tabs-nav li .timeline{ background-position:-99px 0}
 
-#collection_page_tabs ul li .standart:hover{ background-position:0 -27px}
+#collection_page_tabs .ui-tabs-nav li .standart:hover{ background-position:0 -27px}
 
-#collection_page_tabs ul li .thumbnail:hover{ background-position:-33px -27px}
+#collection_page_tabs .ui-tabs-nav li .thumbnail:hover{ background-position:-33px -27px}
 
-#collection_page_tabs ul li .location:hover{ background-position:-66px -27px}
+#collection_page_tabs .ui-tabs-nav li .location:hover{ background-position:-66px -27px}
 
-#collection_page_tabs ul li .timeline:hover{ background-position:-99px -27px}
+#collection_page_tabs .ui-tabs-nav li .timeline:hover{ background-position:-99px -27px}
 
-#collection_page_tabs ul li.ui-state-active .standart{ background-position:0 -53px}
+#collection_page_tabs .ui-tabs-nav li.ui-state-active .standart{ background-position:0 -53px}
 
-#collection_page_tabs ul li.ui-state-active .thumbnail{ background-position:-33px -53px}
+#collection_page_tabs .ui-tabs-nav li.ui-state-active .thumbnail{ background-position:-33px -53px}
 
-#collection_page_tabs ul li.ui-state-active .location{ background-position:-66px -53px}
+#collection_page_tabs .ui-tabs-nav li.ui-state-active .location{ background-position:-66px -53px}
 
-#collection_page_tabs ul li.ui-state-active .timeline{ background-position:-99px -53px}
+#collection_page_tabs .ui-tabs-nav li.ui-state-active .timeline{ background-position:-99px -53px}
 
 #collection_page_tabs .ui-tabs-panel{ padding:0 0 1em; border:none;}
 
@@ -320,29 +322,33 @@ box-shadow: inset 0 0 18px 0 rgba(0, 0, 0, 0.15);
   margin: 0 0 40px 0;
 }
 
+#sidebar .facetapi_range_info{ float:right;}
+
+#sidebar .facetapi_range_label{ line-height:28px;}
+
 #sidebar .pane-facet-collection-rows-number-selector-library-rows-num-selector .pane-content{ padding-top:0;}
 
 #sidebar .pane-facet-collection-block-library-filters .pane-content{ padding:0;}
 
 .pane-content .form-item{ margin:0}
 
-.pane-content h3{margin:15px 0 10px 0;}
+#sidebar .pane-content h3{margin: 20px 0 7px 0;}
 
 #sidebar input[type="text"], #sidebar .ui-autocomplete-input{padding: 5px; border-radius:0; -webkit-border-radius:0;}
 
-#sidebar .ui-autocomplete-input{ width:172px; margin-right:-1px;}
+#sidebar .ui-autocomplete-input{ width: 172px; margin-right:-1px;}
 
-#library-filter-list button.ui-button-icon-only{ height:28px; margin:0; background:#C2C2C2; border-radius:0; -webkit-border-radius:0; border:none;}
+.pane-facet-collection-block-library-filters button.ui-button-icon-only{ height:28px; margin:0; background:#C2C2C2; border-radius:0; -webkit-border-radius:0; border:none;}
 
-#library-filter-list button.ui-button-icon-only:hover{ background:#3BA7CC}
+.pane-facet-collection-block-library-filters button.ui-button-icon-only:hover{ background:#3BA7CC}
 
-#library-filter-list button.ui-button-icon-only:active{background:#0C7091}
+.pane-facet-collection-block-library-filters button.ui-button-icon-only:active{background:#0C7091}
 
 #sidebar .facetapi_range_label{ padding-right:5px;}
 
-#sidebar #edit-textfield{ width:206px;}
+#sidebar #edit-textfield{ width: 206px;}
 
-#sidebar input.form-submit{ margin-top:10px;}
+#sidebar input.form-submit{ margin-top:8px;}
 
 #sidebar p{ margin-bottom:15px;}
 
@@ -352,7 +358,7 @@ box-shadow: inset 0 0 18px 0 rgba(0, 0, 0, 0.15);
 
 #sidebar .dates img{ position:absolute; right:5px; bottom:6px;}
 
-#sidebar .facetapi_range_info{ text-align:center; width:86px;}
+#sidebar .facetapi_range_info{ text-align:center; width: 92px;}
 
 #sidebar .facetapi-library-term-widget-list{ margin-bottom:8px;}
 
@@ -376,13 +382,45 @@ body .ui-slider-horizontal .ui-slider-handle{ top:0; height:100%; border:none; w
 
 #sidebar ul li{ margin: 0; padding: 0; list-style: none;}
 
-#library-filter-list .leaf{ border-top:2px solid #1f2329; padding:0 14px;}
+.pane-facet-collection-block-library-filters .library-leaf{ border-top:2px solid #1f2329; padding:0 14px;}
 
-#library-filter-list .leaf:first-child{ border-top:none;}
+.pane-facet-collection-block-library-filters .library-leaf:first-child{ border-top:none;}
 
-#library-filter-list .leaf > a, #library-chosen-content-type-filter-label, .pane-content .form-type-radios > label{display: block; background: #888888; color: #000; font-size: 18px; font-weight: bold; padding:0 14px; height:38px; line-height:38px; margin:0 -14px;}
+.pane-facet-collection-block-library-filters .library-leaf > .library-content-type-filter-link, .pane-facet-collection-block-library-filters .library-leaf.active, .pane-content .form-type-radios > label{display: block; background: url(images/content_types_icons.png) no-repeat #888888; color: #000; font-size: 18px; font-weight: bold; padding:0 14px 0 40px; height:38px; line-height:38px; margin:0 -14px; -webkit-transition: background-position 0s ease-out; -moz-transition: background-position 0s ease-out; -o-transition: background-position 0s ease-out; transition: background-position 0s ease-out;}
 
-#library-chosen-content-type-filter-label, #library-filter-list .leaf > a:hover, .pane-content .form-type-radios > label{ background:#148eb7; color:#fff;}
+.pane-facet-collection-block-library-filters .library-leaf.library-leaf-files .library-content-type-filter-link{ background-position: 10px -145px;}
+
+.pane-facet-collection-block-library-filters .library-leaf.library-leaf-location .library-content-type-filter-link{ background-position:10px -39px;}
+
+.pane-facet-collection-block-library-filters .library-leaf.library-leaf-people .library-content-type-filter-link{ background-position: 10px 9px;}
+
+.pane-facet-collection-block-library-filters .library-leaf.library-leaf-topics .library-content-type-filter-link{ background-position: 10px -91px;}
+
+.pane-facet-collection-block-library-filters .library-leaf.library-leaf-files .library-content-type-filter-link:hover, .pane-facet-collection-block-library-filters .library-leaf.library-leaf-files.active{ background-position: 10px -360px;}
+
+.pane-facet-collection-block-library-filters .library-leaf.library-leaf-location .library-content-type-filter-link:hover, .pane-facet-collection-block-library-filters .library-leaf.library-leaf-location.active{ background-position:10px -254px;}
+
+.pane-facet-collection-block-library-filters .library-leaf.library-leaf-people .library-content-type-filter-link:hover, .pane-facet-collection-block-library-filters .library-leaf.library-leaf-people.active{ background-position: 10px -206px;}
+
+.pane-facet-collection-block-library-filters .library-leaf.library-leaf-topics .library-content-type-filter-link:hover, .pane-facet-collection-block-library-filters .library-leaf.library-leaf-topics.active{ background-position: 10px -306px;}
+
+.pane-facet-collection-block-library-filters .library-leaf > .library-content-type-filter-link:hover, .pane-facet-collection-block-library-filters .library-leaf.active, .pane-content .form-type-radios > label{ background-color:#148eb7; color:#fff;}
+
+.pane-content .form-type-radios > label{ margin-bottom:10px; padding-left:14px; background-image:none;}
+
+.pane-facet-collection-block-library-filters .library-leaf.active{ margin:0; }
+
+#sidebar .library-filter-content{ padding:14px}
+
+.facetapi-date-range-container{ margin-bottom:8px;}
+
+.facetapi-date-range-container .facetapi-date-range-left-container{ float:left; position:relative;}
+
+.facetapi-date-range-container .facetapi-date-range-right-container{ float:right; position:relative;}
+
+.facetapi-date-range-container input[type="text"]{ width: 92px;}
+
+.facetapi-date-range-container img{ position:absolute; left:80px; top:27px; cursor:pointer;}
 
 .no-sidebars #main { width:960px; padding:0; margin:0; }
 
@@ -461,7 +499,7 @@ padding: 20px; overflow:hidden; margin:0 0 40px 0;
 
 .contact-form label, .comment-form label { font-weight:bold; }
 
-input[type="text"], input[type="password"], .ui-autocomplete-input, textarea, select{background:#edeaea; border:1px solid #cfcdc9; height:16px; padding:10px; font:13px Arial, Helvetica, sans-serif;}
+input[type="text"], input[type="password"], .ui-autocomplete-input, textarea, select{background:#edeaea; border:1px solid #cfcdc9; padding:10px; font:13px Arial, Helvetica, sans-serif;}
 
 input[type="text"]:focus, .ui-autocomplete-input:focus, input[type="password"]:focus, textarea:focus, select:focus{ background:#ffffff; border-color:#c3c1bd;}
 
@@ -753,8 +791,65 @@ ul.inline li { display: inline-block; margin: 0; padding: 10px 5px; zoom: 1; *di
 
 input.form-submit { margin:0 10px 0 0; }
 
+
+/* datepicker */
+
+body .ui-datepicker{ border:none; background: #FFF; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3); -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3); border-radius:0; -webkit-border-radius:0; width:14.5em; z-index:50000 !important;}
+
+body .ui-datepicker .ui-datepicker-header { font-size: 15px; font-weight: bold; color: #4a4a4a !important; padding: 0; background: #148eb7; text-align:center; position: relative; border-radius:0; -webkit-border-radius:0;}
+
+body .ui-datepicker select.ui-datepicker-month, body .ui-datepicker select.ui-datepicker-year{ padding:2px; border:none; background:#148eb7; color:#fff; font-size: 13px;
+font-weight: bold;}
+
+body .ui-datepicker .ui-datepicker-header .ui-corner-all { filter: none; width: 22px; height: 30px; border-radius: 3px; top: 0; left: 0; position: absolute; border-right: 1px solid #0B5E8F; border-radius:0; -webkit-border-radius:0;}
+
+body .ui-datepicker .ui-datepicker-header .ui-corner-all:hover { box-shadow: none; background:#1BA8D8; }
+
+body .ui-datepicker .ui-datepicker-header .ui-corner-all:active { box-shadow: inset 0 1px 2px 0 rgba(0,0,0,0.2); background: #cdcdcd; }
+
+body .ui-datepicker .ui-datepicker-header .ui-corner-all.ui-state-disabled { background: none !important; box-shadow: none !important; }
+
+body .ui-datepicker .ui-datepicker-header .ui-corner-all span { background: url(images/datepicker_arrows.png) no-repeat left top; width: 4px; height: 7px; display:inline-block; text-indent:-9999px; overflow:hidden; position:absolute; left: 9px; top:50%; margin:0; margin-top: -4px; }
+
+body .ui-datepicker .ui-datepicker-header .ui-datepicker-next { right: 0; left: auto; border-left: 1px solid #0B5E8F; border-right: none; -webkit-border-radius: 0; border-radius: 0;}
+
+body .ui-datepicker .ui-datepicker-header .ui-datepicker-prev:hover span{ background-position: left bottom;}
+
+
+body .ui-datepicker .ui-datepicker-header .ui-datepicker-prev.ui-state-disabled span{ background-position: left top; opacity:0.3}
+
+body .ui-datepicker .ui-datepicker-header .ui-datepicker-next span { background-position: right top; left: auto; right: 9px;}
+
+body .ui-datepicker .ui-datepicker-header .ui-datepicker-next:hover span{ background-position: right bottom;}
+
+body .ui-datepicker .ui-datepicker-header .ui-datepicker-next.ui-state-disabled span{ background-position: right top; }
+ 
+body .ui-datepicker .ui-datepicker-title { height: 30px; line-height: 30px; font-size: 13px; font-weight: bold; text-transform: uppercase; color: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);}
+
+body .ui-datepicker-multi .ui-datepicker-group table { width: 100%; margin: 0 auto; }
+
+
+body .ui-datepicker .ui-datepicker-calendar thead tr th { color: #757575; height: 22px; line-height: 22px; font-size: 13px; text-align: center; background: #e6e6e6; padding:2px;}
+
+body .ui-datepicker table { border-collapse: collapse; width:100%; border:none; margin: 0 0 2px;}
+
+body .ui-datepicker td { background: none !important; height: 16px; width:26px; padding: 1px; text-align: center; }
+
+body .ui-datepicker tr:first-child td{ padding-top:2px;}
+
+body .ui-datepicker td.ui-datepicker-unselectable{ padding:0 !important;}
+
+body .ui-datepicker td.ui-state-disabled{ opacity:0.25; filter:alpha(opacity=25); cursor:default;}
+
+body .ui-datepicker .ui-state-default { border: none; background: #F0F0F0; height: 18px; line-height: 18px; font-size: 14px; padding: 0; display: block; color: #7A7A7A; text-decoration: none; text-align:center;}
+
+body .ui-datepicker td.datepicker-checkin-date a, body .ui-datepicker td.datepicker-range-date a, body .ui-datepicker .ui-state-hover, body .ui-datepicker td:hover, body .ui-datepicker .ui-state-active { color: #fff; border: none; background: #1BA8D8; }
+
+#edit-radios .form-item-radios{ float:left; margin-right: 15px; margin-bottom: 8px;}
+
+
 /*
-* Social
+Social
 */
 
 #social{ position:relative;}
@@ -840,7 +935,7 @@ input.form-submit { margin:0 10px 0 0; }
 
 @media only screen and (max-width: 1100px) {
 
-  .not-front .social {top: 190px; left: 50%; margin-left: 251px;}
+  .not-front .social {top: 190px; left: auto; right:10px;}
   
   .not-front .social a{ display:inline-block;}
 

@@ -112,13 +112,14 @@ function facet_collection_entityreference_map_taxonomy_terms($variables) {
 function facet_collection_entityreference_map_entityreference($values, $options) {
   // Gathers entity ids so we can load multiple entities at a time.
   $entity_ids = array();
+  $map = array();
   foreach ($values as $value) {
     list($entity_type, $id) = explode('_', $value);
     $entity_ids[$entity_type][] = $id;
   }
-  // Loads and maps entities.
+  // Loads and maps entities.  
   foreach ($entity_ids as $entity_type => $ids) {
-    $entities = entity_load($entity_type, $ids);
+    $entities = entity_load($entity_type, $ids);    
     foreach ($entities as $id => $entity) {
       $key = $entity_type . '_' . $id;
       $map[$key] = entity_label($entity_type, $entity);

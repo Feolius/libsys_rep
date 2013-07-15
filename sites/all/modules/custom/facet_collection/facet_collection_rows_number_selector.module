@@ -13,6 +13,7 @@ function facet_collection_rows_number_selector_block_info() {
 /*
  * Implements hook_block_view()
  */
+
 function facet_collection_rows_number_selector_block_view($delta) {
   $content = drupal_get_form('facet_collection_rows_number_selector_form');
   return array(
@@ -27,29 +28,37 @@ function facet_collection_rows_number_selector_block_view($delta) {
 function facet_collection_rows_number_selector_form($form, &$form_state) {
   $facet_collection_rows_number_variants = variable_get('facet_collection_rows_number_variants', '25 50 100');
   $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
-  if(isset($_GET['rNum'])){
+  if (isset($_GET['rNum'])) {
     $default_values = array_keys($facet_collection_rows_number_variants, $_GET['rNum']);
-    if(!empty($default_values)){
+    if (!empty($default_values)) {
       $default_value = $default_values[0];
-    }else{
+    } else {
       $default_value = 0;
     }
-  }else{
+  } else {
     $default_value = 0;
   }
   $form = array(
     'radios' => array(
-      '#type' => 'radios',
-      '#title' => t('Rows number'),
-      '#default_value' => $default_value,
-      '#options' => $facet_collection_rows_number_variants,
-      '#description' => t('Choose number of results shown on search page.'),
+        '#type' => 'radios',
+        '#title' => t('Rows number'),
+        '#default_value' => $default_value,
+        '#options' => $facet_collection_rows_number_variants,        
+      ),
+    'library_selector_wrapper' => array(
+      '#type' => 'container',
+      '#attributes' => array(
+        'class' => array('clearfix'),
+      ),            
     ),
+    'description' => array(
+      '#markup' => '<div class="description">' . t('Choose number of results shown on search page.') . '</div>',
+    ),        
     'submit' => array(
-      '#type' => 'submit',
-      '#value' => t('Choose'),
-      '#submit' => array('facet_collection_rows_number_selector_form_submit'),
-    )
+        '#type' => 'submit',
+        '#value' => t('Choose'),
+        '#submit' => array('facet_collection_rows_number_selector_form_submit'),
+      ),
   );
   return $form;
 }
@@ -57,7 +66,7 @@ function facet_collection_rows_number_selector_form($form, &$form_state) {
 /**
  * Submit callback for facet_collection_rows_number_selector_form
  */
-function facet_collection_rows_number_selector_form_submit($form, &$form_state){
+function facet_collection_rows_number_selector_form_submit($form, &$form_state) {
   $facet_collection_rows_number_variants = variable_get('facet_collection_rows_number_variants');
   $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
   $redirect_path = $_GET['q'];

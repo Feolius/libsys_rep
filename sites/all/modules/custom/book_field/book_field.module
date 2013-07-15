@@ -60,7 +60,7 @@ function book_field_menu() {
  * Menu callback which returns info for ajax to create highlighting buttons
  */
 function book_field_highlight(){
-  $terms = array();
+  $terms = array();  
   if(isset($_POST['ajax']) && $_POST['ajax'] == 'true'){
     if (isset($_POST['url']) && isset($_POST['jsonPath'])){
       $url = $_POST['url'];
@@ -937,7 +937,7 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
         '#image_style' => $display['settings']['image_style'],
       );
     }
-  }
+  }  
   return $element;
 }
 
