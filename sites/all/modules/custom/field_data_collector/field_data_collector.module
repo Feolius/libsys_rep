@@ -420,7 +420,7 @@ function field_data_collector_field_formatter_view($entity_type, $entity, $field
 
               $ref_instance = field_info_instance($ref_entity_type, $ref_field_name, $target_entity->type);
 
-              //$ref_display = field_get_display($ref_instance, 'default', $ref_entity);
+              $ref_display = field_get_display($ref_instance, 'default', $ref_entity);
               $ref_items = field_get_items($ref_entity_type, $ref_entity, $ref_field_name, $ref_langcode);
 
               $ref_field_formatter = field_info_formatter_types($ref_field_formatter_name);
@@ -612,16 +612,16 @@ function field_data_collector_field_formatter_settings_form($field, $instance, $
 
       $form['field_settings_is_empty'] = array(
         '#markup' => '<div class="messages warning">'
-          . t('The bundles did not set at the field settings. You need to set them on the <a href="@field_settings_page">field edit page</a> to proceed.',
-            array('@field_settings_page' => url($admin_path . '/fields/' . $field['field_name']))
-          ) . '</div>',
+        . t('The bundles did not set at the field settings. You need to set them on the <a href="@field_settings_page">field edit page</a> to proceed.',
+          array('@field_settings_page' => url($admin_path . '/fields/' . $field['field_name']))
+        ) . '</div>',
       );
     }
     else {
       $form['field_settings_is_empty'] = array(
         '#markup' => '<div class="messages warning">'
-          . t('The bundles did not set at the field settings. You need to set them on the field edit page to proceed.')
-          . '</div>',
+        . t('The bundles did not set at the field settings. You need to set them on the field edit page to proceed.')
+        . '</div>',
       );
     }
   }
