@@ -372,7 +372,7 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
   // field names that contain image for thumbnail.
   global $base_url;
   // Coefficient of scaling image.
-  $coeff = 1.5;
+  $coeff = 0.2;
   $effects = image_style_effects(image_style_load('collection_thumbnail'));
   foreach ($effects as $effect) {
     if ($effect['name'] == 'image_scale') {
@@ -421,9 +421,9 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
       if (!empty($items)) {
         $image_uri = $items[0]['uri'];
         $image_info = image_get_info($image_uri);
-        $width = $image_info['width'] * ($image_info['height'] * 0.2) / $image_info['height'];
+        $width = $image_info['width'] * $height / $image_info['height'];
         $thumbnail_content['width'] = $width;
-        $thumbnail_content['height'] = $image_info['height'] * 0.2;
+        $thumbnail_content['height'] = $height;
         $thumbnail_url = image_style_url($thumbnail_fields[$bundle]['style'], $image_uri);
         $thumbnail_content['thumbnail_url'] = $thumbnail_url;
         $thumbnail_view = node_view($node, 'collection_thumbnail');
@@ -443,20 +443,26 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
  */
 function template_preprocess_collection_standard_default_view(&$variables) {
   $results = $variables['results'];
+  $variables['results'] = theme('collection_search_results',
+    array(
+      'results' => $results,
+    )
+  );
+}
+
+/**
+ * Preprocess function for collection_page.
+ */
+function template_preprocess_collection_page(&$variables) {
   foreach ($_GET['f'] as $filter) {
     $arr = explode(':', $filter);
     if ((count($arr) != 1) && ($arr[0] == 'bundle')) {
       $bundle = $arr[1];
-    }
+      }
   }
   $bundle_list = node_type_get_types();
   $bundle_name = $bundle_list[$bundle]->name;
   $variables['bundle'] = $bundle_name;
-  $variables['results'] = theme('collection_search_results', array(
-    'results' => $results,
-    'bundle_machine_name' => $bundle
-
-  ));
 }
 
 function collection_page_preprocess_breadcrumb(&$variables) {
