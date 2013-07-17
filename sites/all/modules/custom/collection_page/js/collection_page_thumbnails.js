@@ -5,8 +5,8 @@
             var coefficient = Drupal.settings.collection_page.coefficient;
 
             $(".collection-thumbnail").once('collectionPageThumbnails').each(function () {
-                $(this).height($(this).height() / coefficient);
-                $(this).width($(this).width() / coefficient);
+                $(this).height($(this).height());
+                $(this).width($(this).width());
             });
 
             $("#collection-upper-thumbnail", context).hover(function () {
@@ -24,7 +24,7 @@
                 var initialLeft = $(this).position().left - parentPaddingLeft;
                 var initialWidth = $(this).width();
                 var initialHeight = $(this).height();
-                var width = initialWidth * coefficient;
+                var width = initialWidth + coefficient * initialWidth;
                 $("#collection-thumbnail-upper-container").css("width", initialWidth);
                 $("#collection-thumbnail-upper-container").css("top", $(this).position().top - parentPaddingTop);
                 $("#collection-thumbnail-upper-container").css("left", initialLeft);

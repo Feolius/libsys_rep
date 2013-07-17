@@ -330,3 +330,7 @@ div.olPopup img,
 div.olLayerDiv img.olTileImage {
     max-width: none!important;
 }
+
+#collection-standard-thumbnail-view-container {
+  border-top: 1px solid #D3D3D3;
+}
