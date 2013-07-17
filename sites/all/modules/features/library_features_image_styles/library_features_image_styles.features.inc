@@ -37,7 +37,7 @@ function library_features_image_styles_image_default_styles() {
   $styles['collection_thumbnail'] = array(
     'name' => 'collection_thumbnail',
     'effects' => array(
-      9 => array(
+      7 => array(
         'label' => 'Scale',
         'help' => 'Scaling will maintain the aspect-ratio of the original image. If only a single dimension is specified, the other dimension will be calculated.',
         'effect callback' => 'image_scale_effect',
@@ -48,10 +48,26 @@ function library_features_image_styles_image_default_styles() {
         'name' => 'image_scale',
         'data' => array(
           'width' => '',
-          'height' => 300,
+          'height' => 100,
           'upscale' => 1,
         ),
         'weight' => 1,
+      ),
+      8 => array(
+        'label' => 'Overlay: source image to canvas',
+        'help' => 'Places the source image onto the canvas for compositing.',
+        'effect callback' => 'canvasactions_source2canvas_image',
+        'dimensions passthrough' => TRUE,
+        'form callback' => 'canvasactions_source2canvas_form',
+        'summary theme' => 'canvasactions_source2canvas_summary',
+        'module' => 'imagecache_canvasactions',
+        'name' => 'canvasactions_source2canvas',
+        'data' => array(
+          'xpos' => 0,
+          'ypos' => 200,
+          'alpha' => 100,
+        ),
+        'weight' => 2,
       ),
     ),
   );
