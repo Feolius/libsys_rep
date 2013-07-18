@@ -348,6 +348,6 @@ body .ui-datepicker select.ui-datepicker-month option[selected="selected"], body
   height: 16px;
 }
 
-#header-inside-right input[type="submit"] {
+#header-inside-right .form-submit {
   height: 33px;
 }
