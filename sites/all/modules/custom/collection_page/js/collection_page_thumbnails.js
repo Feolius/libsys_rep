@@ -5,8 +5,7 @@
             var coefficient = Drupal.settings.collection_page.coefficient;
 
             $(".collection-thumbnail").once('collectionPageThumbnails').each(function () {
-                $(this).height($(this).height());
-                $(this).width($(this).width());
+                $(this).height($(this).height());                
             });
 
             $("#collection-upper-thumbnail", context).hover(function () {
