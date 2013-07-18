@@ -72,7 +72,10 @@ function facet_collection_search_block_form($form, &$form_state) {
     '#type' => 'submit',
     '#submit' => array('facet_collection_search_block_form_remove_filter'),
     '#value' => t('Remove filter'),
-    '#access' => $clear_access
+    '#access' => $clear_access,
+    '#attributes' => array(
+      'class' => array('remove_filter'),
+    ),
   );
   return $form;
 }
