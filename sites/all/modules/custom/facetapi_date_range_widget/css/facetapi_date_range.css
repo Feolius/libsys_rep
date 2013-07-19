@@ -1,3 +1,6 @@
-.facetapi_datepicker {
-  display: none;
+#sidebar .facetapi-date-range-container input.facetapi_datepicker {
+  height: 0;
+  width: 0;
+  border: none;
+  float: left;
 }
