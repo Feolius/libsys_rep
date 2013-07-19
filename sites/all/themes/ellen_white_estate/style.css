@@ -856,7 +856,7 @@ Social
 
 .social { position: absolute; left: 10px; top: 170px;}
 
-.not-front .social{ top:278px;}
+.not-front .social{ top:350px;}
 
 .social a { display: block; margin-bottom: 3px; background-color:#7f8388; background-color:rgba(255,255,255,0.4); background-image: url(images/social_icons.png); border:1px solid #919497; border:1px solid rgba(255,255,255,0.25); width:36px; height:36px;}
 
@@ -935,8 +935,8 @@ Social
 
 @media only screen and (max-width: 1100px) {
 
-  .not-front .social {top: 190px; left: auto; right:10px;}
+  .not-front .social {position: relative; top: -50px; float: right; margin-right: 10px;}
   
-  .not-front .social a{ display:inline-block;}
+  .not-front .social a { display:inline-block;}
 
 }
