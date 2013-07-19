@@ -336,7 +336,7 @@ div.olLayerDiv img.olTileImage {
 }
 
 body .ui-datepicker select.ui-datepicker-month option, body .ui-datepicker select.ui-datepicker-year option {
-  color: #148eb7!important;
+  color: #fff!important;
 }
 
 body .ui-datepicker select.ui-datepicker-month option[selected="selected"], body .ui-datepicker select.ui-datepicker-year option[selected="selected"] {
