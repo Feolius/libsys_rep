@@ -21,7 +21,7 @@ function library_features_content_type_people_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Tabs',
-    'weight' => '31',
+    'weight' => '32',
     'children' => array(
       0 => 'field_people_tab_images',
       1 => 'field_people_tab_written_docs',
@@ -30,14 +30,19 @@ function library_features_content_type_people_field_group_info() {
       4 => 'field_people_tab_events',
       5 => 'field_people_tab_location',
     ),
-    'format_type' => 'fieldset',
+    'format_type' => 'div',
     'format_settings' => array(
-      'formatter' => 'collapsible',
+      'label' => 'Tabs',
       'instance_settings' => array(
-        'description' => '',
-        'classes' => '',
         'required_fields' => 1,
+        'classes' => '',
+        'description' => '',
+        'show_label' => '0',
+        'label_element' => 'h3',
+        'effect' => 'none',
+        'speed' => 'none',
       ),
+      'formatter' => 'open',
     ),
   );
   $export['group_tabs|node|people|form'] = $field_group;

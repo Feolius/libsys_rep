@@ -23,10 +23,11 @@ function library_features_content_type_events_field_group_info() {
     'label' => 'Tabs',
     'weight' => '21',
     'children' => array(
-      0 => 'field_events_tab_videos',
-      1 => 'field_events_tab_map',
-      2 => 'field_events_tab_images',
-      3 => 'field_events_tab_documents',
+      0 => 'field_events_tab_documents',
+      1 => 'field_events_tab_images',
+      2 => 'field_events_tab_map',
+      3 => 'field_events_tab_timeline',
+      4 => 'field_events_tab_videos',
     ),
     'format_type' => 'div',
     'format_settings' => array(

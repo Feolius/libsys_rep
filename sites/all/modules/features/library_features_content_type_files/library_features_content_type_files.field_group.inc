@@ -62,8 +62,9 @@ function library_features_content_type_files_field_group_info() {
       6 => 'field_files_receiver',
       7 => 'field_files_receiver_location',
       8 => 'field_files_subtitle',
-      9 => 'group_files_administrative',
-      10 => 'group_files_source',
+      9 => 'field_files_file_type',
+      10 => 'group_files_administrative',
+      11 => 'group_files_source',
     ),
     'format_type' => 'fieldset',
     'format_settings' => array(
@@ -89,7 +90,7 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = 'group_files_additional_info';
   $field_group->data = array(
     'label' => 'Administrative',
-    'weight' => '33',
+    'weight' => '36',
     'children' => array(
       0 => 'field_files_handwritten',
       1 => 'field_files_keywords',
@@ -216,6 +217,7 @@ function library_features_content_type_files_field_group_info() {
     'children' => array(
       0 => 'field_files_rating',
       1 => 'field_files_provenance',
+      2 => 'field_files_creation_date',
     ),
     'format_type' => 'fieldset',
     'format_settings' => array(
@@ -247,17 +249,6 @@ function library_features_content_type_files_field_group_info() {
       1 => 'field_files_location_tags',
       2 => 'field_files_event_tags',
       3 => 'field_files_topic_tags',
-      4 => 'field_files_video_date_taken',
-      5 => 'field_files_creation_date',
-      6 => 'field_files_image_event',
-      7 => 'field_files_image_location',
-      8 => 'field_files_image_people',
-      9 => 'field_files_video_event',
-      10 => 'field_files_video_location',
-      11 => 'field_files_video_people',
-      12 => 'field_video_date_taken',
-      13 => 'field_files_document_events',
-      14 => 'field_files_image_date_taken',
     ),
     'format_type' => 'fieldset',
     'format_settings' => array(
@@ -311,7 +302,7 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = 'group_files_additional_info';
   $field_group->data = array(
     'label' => 'Source',
-    'weight' => '32',
+    'weight' => '35',
     'children' => array(
       0 => 'field_files_source_chapter',
       1 => 'field_files_source_number',
@@ -348,10 +339,9 @@ function library_features_content_type_files_field_group_info() {
       0 => 'field_files_description',
       1 => 'field_files_primary_media',
       2 => 'field_home_region',
-      3 => 'field_tags',
-      4 => 'title_field',
-      5 => 'group_files_general_additional',
-      6 => 'group_files_general_tagging',
+      3 => 'title_field',
+      4 => 'group_files_general_additional',
+      5 => 'group_files_general_tagging',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(
@@ -378,9 +368,8 @@ function library_features_content_type_files_field_group_info() {
       2 => 'field_files_text',
       3 => 'field_files_downloads',
       4 => 'field_files_file',
-      5 => 'field_files_file_type',
-      6 => 'group_files_additional_info',
-      7 => 'group_files_dates',
+      5 => 'group_files_additional_info',
+      6 => 'group_files_dates',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(

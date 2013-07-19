@@ -58,14 +58,64 @@ function library_features_content_type_events_strongarm() {
     ),
     'extra_fields' => array(
       'form' => array(
+        'title' => array(
+          'weight' => '0',
+        ),
         'path' => array(
-          'weight' => '17',
+          'weight' => '2',
         ),
       ),
       'display' => array(),
     ),
   );
   $export['field_bundle_settings_node__events'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'language_content_type_events';
+  $strongarm->value = '0';
+  $export['language_content_type_events'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'menu_options_events';
+  $strongarm->value = array(
+    0 => 'main-menu',
+  );
+  $export['menu_options_events'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'menu_parent_events';
+  $strongarm->value = 'main-menu:0';
+  $export['menu_parent_events'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'node_options_events';
+  $strongarm->value = array(
+    0 => 'status',
+    1 => 'promote',
+  );
+  $export['node_options_events'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'node_preview_events';
+  $strongarm->value = '1';
+  $export['node_preview_events'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'node_submitted_events';
+  $strongarm->value = 0;
+  $export['node_submitted_events'] = $strongarm;
 
   return $export;
 }

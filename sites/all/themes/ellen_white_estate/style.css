@@ -606,8 +606,8 @@ padding: 20px; overflow:hidden; background:#ffffff; margin:25px 0 0 0; font-styl
 
 #footer .block ul.menu li a { display: block; padding:5px; }
 
-/* 
-* Footer-bottom menu 
+/*
+* Footer-bottom menu
 */
 ul.secondary-menu { padding:0; margin:0 0 20px 0; display:block; overflow:hidden; }
 
@@ -619,8 +619,8 @@ ul.secondary-menu li.last { border-right:none; margin:0; }
 
 #footer-bottom ul.menu ul.menu { display:none; }
 
-/* 
-* Comments 
+/*
+* Comments
 */
 #comments { padding:20px 0 0 0; }
 
@@ -693,7 +693,7 @@ cursor:pointer;
 
 .region-sidebar-first #block-search-form.block .content  { background:#ffffff; border:1px solid #FFFFFF; overflow:hidden; padding:0; }
 
-/* 
+/*
 * Messages
 */
 div.messages.status { background:#52ac61; border:1px solid #46a055; padding:10px; margin:0 0 15px 0; color:#000000; }
@@ -704,8 +704,8 @@ div.messages.warning { background:#dd6e0c; border:1px solid #d2ac7f; padding:10p
 
 div.messages.status a, div.messages.error a, div.messages.warning a { color:#ffffff; text-decoration:underline; }
 
-/* 
-* Javascript Slideshow 
+/*
+* Javascript Slideshow
 */
 #slideshow { display:none !important; position:relative; overflow: hidden; width: 100% !important; background:transparent; }
 
@@ -729,14 +729,14 @@ div.messages.status a, div.messages.error a, div.messages.warning a { color:#fff
 
 #slider-controls ul li.activeSlide a:hover, #slider-controls ul li.activeSlide a { background:url('images/active-slide.png') no-repeat center center; }
 
-/* 
+/*
 * Slideshow Typography
 */
 #slideshow h2 { margin:0 0 10px 0; color:#222222; font-size:30px; font-weight:bold; }
 
 #slideshow img {  }
 
-/*  
+/*
 * Tables
 */
 table { border-collapse: collapse; width:100%; }
@@ -751,8 +751,8 @@ table tr.even { background:#ffffff; }
 
 table td, table th { padding:5px; }
 
-/* 
-* Lists 
+/*
+* Lists
 */
 ol { list-style-type:decimal; }
 
