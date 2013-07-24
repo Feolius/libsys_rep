@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * Implements hook_update_N().
+ */
+function library_features_content_type_files_update_7400($sandbox){
+  field_delete_field('field_files_image_location');
+  field_delete_field('field_files_image_people');
+  field_delete_field('field_field_image_date_taken');
+  field_delete_field('field_files_video_date_taken');
+  field_delete_field('field_files_video_location');
+  field_delete_field('field_files_video_event');
+  field_delete_field('field_files_video_people');
+  field_delete_field('field_video_date_taken');
+}
