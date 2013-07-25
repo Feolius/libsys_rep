@@ -73,7 +73,7 @@ function jplayer_waveform_field_formatter_info() {
  */
 function jplayer_waveform_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
-
+  
   switch ($display['type']) {
     case 'jplayer_waveform_player':
       if (!empty($items)) {
@@ -462,7 +462,7 @@ function jplayer_waveform_generate_waveform_data($audio_file_fid) {
     $file = file_load($audio_file_fid);
     $file_path = drupal_realpath($file->uri);
 
-    $waveform_data = Waveform::generateWaveformData($file_path);
+    $waveform_data = Waveform::generateWaveformData($file_path);       
     if ($waveform_data != FALSE) {
       $record = array(
         'fid' => $audio_file_fid,
