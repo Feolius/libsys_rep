@@ -35,7 +35,11 @@ function collection_page_theme() {
     ),
     'collection_page' => array(
       'template' => 'theme/collection-page',
-      'variables' => array('content' => NULL, 'default_url' => NULL, 'thumbnail_url' => NULL)
+      'variables' => array(
+        'content' => NULL,
+        'default_url' => NULL,
+        'thumbnail_url' => NULL
+      )
     ),
     'timeline_json' => array(
       'template' => 'theme/timeline-json-page',
@@ -56,7 +60,7 @@ function collection_page_theme() {
     ),
     'collection_search_result' => array(
       'template' => 'theme/collection-search-result',
-      'variables' => array('result' => NULL)
+      'variables' => array('result' => NULL, 'image_style' => NULL)
     ),
     'collection_standard_default_view' => array(
       'template' => 'theme/collection-standard-default-view',
@@ -434,7 +438,12 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
     }
   }
   //exit;
-  drupal_add_js(array('collection_page' => array('height' => $height, 'coefficient' => $coeff)), 'setting');
+  drupal_add_js(array(
+    'collection_page' => array(
+      'height' => $height,
+      'coefficient' => $coeff
+    )
+  ), 'setting');
   $results['pager'] = theme('pager', array('tags' => NULL));
 }
 
@@ -458,7 +467,7 @@ function template_preprocess_collection_page(&$variables) {
     $arr = explode(':', $filter);
     if ((count($arr) != 1) && ($arr[0] == 'bundle')) {
       $bundle = $arr[1];
-      }
+    }
   }
   $bundle_list = node_type_get_types();
   $bundle_name = $bundle_list[$bundle]->name;
@@ -538,9 +547,17 @@ function template_preprocess_collection_search_results(&$variables) {
   }
   $page = pager_find_page();
   $result_number_in_page = 1;
+  $style = 'library_page_thumbnail';
+  $styles = image_styles();
+  if (!in_array($style, array_keys($styles))) {
+    $style = FALSE;
+  }
   foreach ($results as $result) {
     $result['title'] = ($page * $r_num + $result_number_in_page) . '. ' . $result['title'];
-    $variables['search_results'] .= theme('collection_search_result', array('result' => $result));
+    $variables['search_results'] .= theme('collection_search_result', array(
+      'result' => $result,
+      'image_style' => $style
+    ));
     $result_number_in_page++;
   }
   $variables['pager'] = theme('pager', array('tags' => NULL));
@@ -559,33 +576,48 @@ function template_preprocess_collection_search_result(&$variables) {
     $variables['title_attributes_array']['xml:lang'] = $result['language'];
     $variables['content_attributes_array']['xml:lang'] = $result['language'];
   }
-  $style = 'library_page_thumbnail';
-  $image = collection_page_node_snippet_image_url($result['node']->entity_id, $style);
-  if (empty($image)) {
-    //TODO:we need dummy url
-    $uri = file_build_uri('collection_page_images/default.png');
-    $image = theme('image_style', array('style_name' => $style, 'path' => $uri));
+  $node = node_load($result['node']->entity_id);
+  if ($variables['image_style']) {
+    $image_field_name = collection_page_get_image_field($node);
+    $image = collection_page_node_snippet_image($node, $image_field_name, $variables['image_style']);
+  }else{
+    $image = FALSE;
   }
   $variables['image'] = $image;
+
 
   $result_snippet_data = collection_page_node_snippet_data($result['node']->entity_id, $result['snippet']);
 
   $variables['snippet'] = empty($result_snippet_data) ? $result['snippet'] : $result_snippet_data;
 }
 
-
-function collection_page_node_snippet_image_url($nid, $style) {
-  $image = FALSE;
-
-  $image_field_name = '';
-  $node = node_load($nid);
-
+/**
+ * This is hardcoded function which is used for getting image field name for the thumbnail of the given node.
+ */
+function collection_page_get_image_field($node) {
   //Depending on node type the snippet image will be takes from different fields.
   //If the such field is image field, we need only name of this field, and the image
   // will be takes downwards.
   switch ($node->type) {
     case 'files':
-      $image = collection_page_files_snippet_image($node, $style);
+      $items = field_get_items('node', $node, 'field_files_primary_media');
+      switch ($items[0]['value']) {
+        case 'image':
+          $image_field_name = 'field_files_image';
+          break;
+        case 'audio':
+          $image_field_name = 'field_files_album_poster';
+          break;
+        case 'video':
+          $image_field_name = 'video_thumb';
+          break;
+        case 'document':
+          $image_field_name = 'document_thumb';
+          break;
+      }
+      if ($items[0]['value'] == 'image') {
+        $image_field_name = 'field_files_image';
+      }
       break;
     case 'people':
       $image_field_name = 'field_people_image';
@@ -599,153 +631,89 @@ function collection_page_node_snippet_image_url($nid, $style) {
     case 'topics':
       $image_field_name = 'field_topics_image';
       break;
-
   }
-
-  //If a type of node is not the files, then the $image variable will not be defined.
-  //In that case we need to get image url from needed field in with name form variable
-  // $image_field_name and build and return an '<img>' block.
-  if (empty($image) && !empty($image_field_name)) {
-    $items = field_get_items('node', $node, $image_field_name);
-    if (!empty($items)) {
-      foreach ($items as $item) {
-        if ((module_exists('image') && isset($item['uri']))) {
-          $uri = $item['uri'];
-          $styles = image_styles();
-          if (in_array($style, array_keys($styles))) {
-            $image = theme('image_style', array('style_name' => $style, 'path' => $uri));
-          }
-        }
-        //We need only one picture from the image field
-        //If the field have more then one picture we take the first one.
-        break;
-      }
-    }
-  }
-
-  return $image;
+  return $image_field_name;
 }
 
 /**
- * Return the image for Files node depending on the primary media field value
- *
- * @param $node
- * @return bool|string
+ * Provides an image for collection page standart default view according to given style.
  */
-function collection_page_files_snippet_image($node, $thumbnail_style) {
+function collection_page_node_snippet_image($node, $image_field_name, $style) {
   $image = FALSE;
-
-  $items = field_get_items('node', $node, 'field_files_primary_media');
-  if (!empty($items)) {
-    foreach ($items as $item) {
-      if (isset($item['value'])) {
-        if ($item['value'] == 'image') {
-
-          $image_field_name = 'field_files_image';
-          $items = field_get_items('node', $node, $image_field_name);
-          if (!empty($items)) {
-            foreach ($items as $item) {
-              if ((module_exists('image') && isset($item['uri']))) {
-                $uri = $item['uri'];
-                $styles = image_styles();
-                if (in_array($thumbnail_style, array_keys($styles))) {
-                  $image = theme('image_style', array('style_name' => $thumbnail_style, 'path' => $uri));
-                }
-              }
-              //We need only one picture from the image field
-              //If the field have more then one picture we take the first one.
-              break;
-            }
+  if ($image_field_name == 'video_thumb') {
+    if ((module_exists('youtube'))) {
+      $youtube_field_items = field_get_items('node', $node, 'field_files_youtube_media');
+      if (!empty($youtube_field_items)) {
+        foreach ($youtube_field_items as $item) {
+          if (isset($item['video_id'])) {
+            $image = theme('youtube_thumbnail', array(
+              'video_id' => $item['video_id'],
+              'image_style' => $style
+            ));
           }
-
-        }
-        elseif ($item['value'] == 'audio') {
-
-          $image_field_name = 'field_files_album_poster';
-          $items = field_get_items('node', $node, $image_field_name);
-          if (!empty($items)) {
-            foreach ($items as $item) {
-              if ((module_exists('image') && isset($item['uri']))) {
-                $uri = $item['uri'];
-                $styles = image_styles();
-                if (in_array($thumbnail_style, array_keys($styles))) {
-                  $image = theme('image_style', array('style_name' => $thumbnail_style, 'path' => $uri));
-                }
-              }
-              //We need only one picture from the image field
-              //If the field have more then one picture we take the first one.
-              break;
-            }
-          }
-        }
-        elseif ($item['value'] == 'video') {
-          if ((module_exists('youtube'))) {
-            $youtube_field_items = field_get_items('node', $node, 'field_files_youtube_media');
-            if (!empty($youtube_field_items)) {
-              foreach ($youtube_field_items as $item) {
-                if (isset($item['video_id'])) {
-                  $image = theme('youtube_thumbnail', array(
-                    'video_id' => $item['video_id'],
-                    'image_style' => $thumbnail_style
-                  ));
-                }
-                //We need only one picture from the image field
-                //If the field have more then one picture we take the first one.
-                break;
-              }
-            }
-          }
-        }
-        elseif ($item['value'] == 'document') {
-          //We have two types of snippets for primary media document
-          //The first one is Email - if the category of document is Email.
-          //The second one - all other documents
-          $category_items = field_get_items('node', $node, 'field_files_category');
-          if (!empty($category_items)) {
-            foreach ($category_items as $item) {
-              if ((module_exists('taxonomy')) && isset($item['tid'])) {
-                $term = taxonomy_term_load($item['tid']);
-                //For email display just an Email dummy image
-                if ($term->name == 'E-Mail') {
-                  //TODO:we need Email image url
-                  $uri = file_build_uri('collection_page_images/email.png');
-                  $image = theme('image_style', array('style_name' => $thumbnail_style, 'path' => $uri));
-                }
-              }
-              //We need only one picture from the image field
-              //If the field have more then one picture we take the first one.
-              break;
-            }
-          }
-
-          //For the document display thumbnail of pdf file
-          if (!$image) {
-            $book_field_items = field_get_items('node', $node, 'field_files_file');
-            if (!empty($book_field_items)) {
-              foreach ($book_field_items as $item) {
-                if (isset($item['fid_thumb'])) {
-                  $file_thumb = file_load($item['fid_thumb']);
-                  if ($file_thumb) {
-                    $uri_thumb = $file_thumb->uri;
-                    $styles = image_styles();
-                    if (in_array($thumbnail_style, array_keys($styles))) {
-                      $image = theme('image_style', array('style_name' => $thumbnail_style, 'path' => $uri_thumb));
-                    }
-                  }
-                }
-                //We need only one picture from the image field
-                //If the field have more then one picture we take the first one.
-                break;
-              }
-            }
-          }
-
         }
       }
-      break;
     }
   }
+  elseif ($image_field_name == 'document_thumb') {
+    //We have two types of snippets for primary media document
+    //The first one is Email - if the category of document is Email.
+    //The second one - all other documents
+    $category_items = field_get_items('node', $node, 'field_files_category');
+    if (!empty($category_items)) {
+      $item = $category_items[0];
+      $term = taxonomy_term_load($item['tid']);
+      //For email display just an Email dummy image
+      if ($term->name == 'E-Mail') {
+        $uri = file_build_uri('collection_page_images/email.png');
+        $image = theme('image_style', array(
+          'style_name' => $style,
+          'path' => $uri
+        ));
+      }
+    }
+    //For the document display thumbnail of pdf file
+    if (!$image) {
+      $book_field_items = field_get_items('node', $node, 'field_files_file');
+      if (!empty($book_field_items)) {
+        foreach ($book_field_items as $item) {
+          if (isset($item['fid_thumb'])) {
+            $file_thumb = file_load($item['fid_thumb']);
+            if ($file_thumb) {
+              $uri_thumb = $file_thumb->uri;
+              $image = theme('image_style', array(
+                'style_name' => $style,
+                'path' => $uri_thumb
+              ));
+              break;
+            }
+          }
+        }
+      }
+    }
 
+  }
+  else {
+    $items = field_get_items('node', $node, $image_field_name);
+    if (!empty($items)) {
+      $item = $items[0];
+      if (isset($item['uri'])) {
+        $uri = $item['uri'];
+        $image = theme('image_style', array(
+          'style_name' => $style,
+          'path' => $uri
+        ));
+      }
+    }
+  }
+  // If we still have no image, we should get default image.
+  if (!$image) {
+    $uri = file_build_uri('collection_page_images/default.png');
+    $image = theme('image_style', array(
+      'style_name' => $style,
+      'path' => $uri
+    ));
+  }
   return $image;
 }
 
@@ -1071,10 +1039,16 @@ function collection_page_files_node_snippet_data($node, $trimmed_characters_leng
                 $uri = entity_uri($field['settings']['target_type'], $target_entity);
                 $plain_label = check_plain($label);
                 if ($uri) {
-                  $people[] = array('normal' => l($label, $uri['path'], $uri['options']), 'plain' => $plain_label);
+                  $people[] = array(
+                    'normal' => l($label, $uri['path'], $uri['options']),
+                    'plain' => $plain_label
+                  );
                 }
                 else {
-                  $people[] = array('normal' => $plain_label, 'plain' => $plain_label);
+                  $people[] = array(
+                    'normal' => $plain_label,
+                    'plain' => $plain_label
+                  );
                 }
               }
             }
@@ -1099,10 +1073,16 @@ function collection_page_files_node_snippet_data($node, $trimmed_characters_leng
                 $uri = entity_uri($field['settings']['target_type'], $target_entity);
                 $plain_label = check_plain($label);
                 if ($uri) {
-                  $locations[] = array('normal' => l($label, $uri['path'], $uri['options']), 'plain' => $plain_label);
+                  $locations[] = array(
+                    'normal' => l($label, $uri['path'], $uri['options']),
+                    'plain' => $plain_label
+                  );
                 }
                 else {
-                  $locations[] = array('normal' => $plain_label, 'plain' => $plain_label);
+                  $locations[] = array(
+                    'normal' => $plain_label,
+                    'plain' => $plain_label
+                  );
                 }
               }
             }

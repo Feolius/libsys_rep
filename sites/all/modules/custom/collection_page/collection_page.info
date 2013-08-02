@@ -3,3 +3,4 @@ description = "Provides three type of views on collection page - Timeline , Loca
 package = Facet Collection
 core = 7.x
 dependencies[] = facet_collection
+dependencies[] = image
