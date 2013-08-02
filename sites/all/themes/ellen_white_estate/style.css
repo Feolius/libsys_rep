@@ -855,7 +855,7 @@ Social
 
 #social{ position:relative;}
 
-.social { position: absolute; left: 10px; top: 170px;}
+.social { position: absolute; left: 10px; }
 
 .not-front .social{ top:350px;}
 
