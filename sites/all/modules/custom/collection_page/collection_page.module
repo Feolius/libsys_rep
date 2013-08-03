@@ -370,10 +370,9 @@ function _collection_page_get_date_fields_from_bundle($bundle) {
  * Preprocess function for collection_standard_thumbnail_view
  */
 function template_preprocess_collection_standard_thumbnail_view(&$results) {
-  // We should find a thumbnail field. It could be any image field. If we find it for
-  // content type we should save it in static variable.
-  // This variable contatins array which keys are content type names and values are
-  // field names that contain image for thumbnail.
+  // We should find all image fields for the given content type. If somebody puts one of that image fields
+  // in collection_thumbnail display settings, we should exclude it from render array, because only one
+  // image should be shown. We will put it in static cache to avoid this repeating of this search.
   global $base_url;
   // Coefficient of scaling image.
   $coeff = 0.2;
@@ -384,60 +383,34 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
     }
   }
   $results['collection_thumbnails'] = array();
-  $thumbnail_fields = & drupal_static(__FUNCTION__);
   foreach ($results['results'] as $result) {
-    $node = $result['node'];
-    $bundle = $node->bundle;
-    $node = node_load($node->entity_id);
+    $node = node_load($result['node']->entity_id);
+    $bundle = $node->type;
+    $image_fields = _collection_page_get_bundle_image_fields($bundle);
     $thumbnail_content = array();
-    $path = $base_url . url('node/' . $node->nid);
+    //@TODO add needed get params here
+    $path = url('node/' . $node->nid, array('alias' => TRUE));
     $thumbnail_content['node_link'] = $path;
-    if (!isset($thumbnail_fields[$bundle])) {
-      $instances = field_info_instances('node', $bundle);
-      foreach ($instances as $instance) {
-        $field_info = field_info_field($instance['field_name']);
-        if ($field_info['type'] == 'image') {
-          $display = field_get_display($instance, 'collection_thumbnail', $node);
-          if ($display['type'] != 'hidden') {
-            $thumbnail_fields[$bundle]['field_name'] = $instance['field_name'];
-            $thumbnail_fields[$bundle]['style'] = $display['settings']['image_style'];
-            $items = field_get_items('node', $node, $thumbnail_fields[$bundle]['field_name']);
-            if (!empty($items)) {
-              $image_uri = $items[0]['uri'];
-              $image_info = image_get_info($image_uri);
-              $width = $image_info['width'] * $height / $image_info['height'];
-              $thumbnail_content['width'] = $width;
-              $thumbnail_content['height'] = $height;
-              $thumbnail_url = image_style_url($thumbnail_fields[$bundle]['style'], $image_uri);
-              $thumbnail_content['thumbnail_url'] = $thumbnail_url;
-              $thumbnail_view = node_view($node, 'collection_thumbnail');
-              unset($thumbnail_view[$thumbnail_fields[$bundle]['field_name']]);
-              $thumbnail_content['meta_info'] = render($thumbnail_view);
-              $results['collection_thumbnails'][] = $thumbnail_content;
-            }
-            break;
-          }
-        }
+    $thumbnail_field = collection_page_get_image_field($node);
+    $thumbnail_content['image'] = collection_page_node_snippet_image($node, $thumbnail_field, 'image_scale');
+    dpm($thumbnail_content['image']);
+
+//        $image_uri = $items[0]['uri'];
+//        $image_info = image_get_info($image_uri);
+//        $width = $image_info['width'] * $height / $image_info['height'];
+//        $thumbnail_content['width'] = $width;
+//        $thumbnail_content['height'] = $height;
+//        $thumbnail_url = image_style_url($thumbnail_fields[$bundle]['style'], $image_uri);
+//        $thumbnail_content['thumbnail_url'] = $thumbnail_url;
+    $thumbnail_view = node_view($node, 'collection_thumbnail');
+    foreach ($image_fields as $image_field) {
+      if (in_array($image_field, $thumbnail_view)) {
+        unset($thumbnail_view[$image_field]);
       }
     }
-    elseif (isset($thumbnail_fields[$bundle])) {
-      $items = field_get_items('node', $node, $thumbnail_fields[$bundle]['field_name']);
-      if (!empty($items)) {
-        $image_uri = $items[0]['uri'];
-        $image_info = image_get_info($image_uri);
-        $width = $image_info['width'] * $height / $image_info['height'];
-        $thumbnail_content['width'] = $width;
-        $thumbnail_content['height'] = $height;
-        $thumbnail_url = image_style_url($thumbnail_fields[$bundle]['style'], $image_uri);
-        $thumbnail_content['thumbnail_url'] = $thumbnail_url;
-        $thumbnail_view = node_view($node, 'collection_thumbnail');
-        unset($thumbnail_view[$thumbnail_fields[$bundle]['field_name']]);
-        $thumbnail_content['meta_info'] = render($thumbnail_view);
-        $results['collection_thumbnails'][] = $thumbnail_content;
-      }
-    }
+    $thumbnail_content['meta_info'] = render($thumbnail_view);
+    $results['collection_thumbnails'][] = $thumbnail_content;
   }
-  //exit;
   drupal_add_js(array(
     'collection_page' => array(
       'height' => $height,
@@ -448,7 +421,29 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
 }
 
 /**
- * Preprocess function for collection_standard_default_view
+ * Return all image fields for given content type.
+ */
+function _collection_page_get_bundle_image_fields($bundle) {
+  $image_cache = cache_get('collection_page:image_fields');
+  if (!$image_cache || !isset($image_cache->data[$bundle])) {
+    $image_fields = $image_cache->data;
+    $image_fields[$bundle] = array();
+    $instances = field_info_instances('node', $bundle);
+    foreach ($instances as $instance) {
+      $field_info = field_info_field($instance['field_name']);
+      if ($field_info['type'] == 'image') {
+        $image_fields[$bundle][] = $field_info['field_name'];
+      }
+    }
+    cache_set('collection_page:image_fields', $image_fields, 'cache', CACHE_TEMPORARY);
+  }else{
+    $image_fields[$bundle] = $image_cache->data[$bundle];
+  }
+  return $image_fields[$bundle];
+}
+
+/**
+ * Preprocess function for collection_standard_default_view.
  */
 function template_preprocess_collection_standard_default_view(&$variables) {
   $results = $variables['results'];
@@ -580,7 +575,8 @@ function template_preprocess_collection_search_result(&$variables) {
   if ($variables['image_style']) {
     $image_field_name = collection_page_get_image_field($node);
     $image = collection_page_node_snippet_image($node, $image_field_name, $variables['image_style']);
-  }else{
+  }
+  else {
     $image = FALSE;
   }
   $variables['image'] = $image;
