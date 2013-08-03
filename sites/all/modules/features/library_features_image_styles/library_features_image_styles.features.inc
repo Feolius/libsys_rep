@@ -226,6 +226,35 @@ function library_features_image_styles_image_default_styles() {
     ),
   );
 
+  // Exported image style: library_page_thumbnail.
+  $styles['library_page_thumbnail'] = array(
+    'name' => 'library_page_thumbnail',
+    'effects' => array(
+      4 => array(
+        'label' => 'Scale',
+        'help' => 'Scaling will maintain the aspect-ratio of the original image. If only a single dimension is specified, the other dimension will be calculated.',
+        'effect callback' => 'image_scale_effect',
+        'dimensions callback' => 'image_scale_dimensions',
+        'form callback' => 'image_scale_form',
+        'summary theme' => 'image_scale_summary',
+        'module' => 'image',
+        'name' => 'image_scale',
+        'data' => array(
+          'width' => '',
+          'height' => 100,
+          'upscale' => 1,
+        ),
+        'weight' => 1,
+      ),
+    ),
+  );
+
+  // Exported image style: origin.
+  $styles['origin'] = array(
+    'name' => 'origin',
+    'effects' => array(),
+  );
+
   // Exported image style: original.
   $styles['original'] = array(
     'name' => 'original',
