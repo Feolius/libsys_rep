@@ -23,7 +23,7 @@
                 var initialLeft = $(this).position().left - parentPaddingLeft;
                 var initialWidth = $(this).width();
                 var initialHeight = $(this).height();
-                var width = initialWidth + coefficient * initialWidth;
+                var width = coefficient * initialWidth;
                 $("#collection-thumbnail-upper-container").css("width", initialWidth);
                 $("#collection-thumbnail-upper-container").css("top", $(this).position().top - parentPaddingTop);
                 $("#collection-thumbnail-upper-container").css("left", initialLeft);
@@ -40,7 +40,7 @@
                         complete: function () {
                             $(this).css('height', '');
                             $("#collection-thumbnail-metainfo").html(metainfo);
-                            $("#collection-thumbnail-metainfo").width(1.5 * initialWidth);
+                            $("#collection-thumbnail-metainfo").width(coefficient * initialWidth);
                         },
                         step: function (now, fx) {
                             var left = initialLeft - (now - initialWidth) * 0.5;

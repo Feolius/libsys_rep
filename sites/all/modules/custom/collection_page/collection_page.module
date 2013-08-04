@@ -373,36 +373,35 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
   // We should find all image fields for the given content type. If somebody puts one of that image fields
   // in collection_thumbnail display settings, we should exclude it from render array, because only one
   // image should be shown. We will put it in static cache to avoid this repeating of this search.
-  global $base_url;
   // Coefficient of scaling image.
-  $coeff = 0.2;
+  $coeff = 1.2;
+  global $base_url;
   $effects = image_style_effects(image_style_load('collection_thumbnail'));
   foreach ($effects as $effect) {
     if ($effect['name'] == 'image_scale') {
       $height = $effect['data']['height'];
     }
   }
+  // These variables is used in image_theme() function.
+  $attributes = array(
+    'class' => array('collection-thumbnail'),
+    'style' => array("height:" . $height . "px"),
+  );
+  $variables = array(
+    'style_name' => 'origin',
+    'attributes' => $attributes,
+  );
   $results['collection_thumbnails'] = array();
   foreach ($results['results'] as $result) {
     $node = node_load($result['node']->entity_id);
     $bundle = $node->type;
     $image_fields = _collection_page_get_bundle_image_fields($bundle);
     $thumbnail_content = array();
-    //@TODO add needed get params here
-    $path = url('node/' . $node->nid, array('alias' => TRUE));
-    $thumbnail_content['node_link'] = $path;
+    $thumbnail_content['node_link'] = $base_url . $result['link'];
     $thumbnail_field = collection_page_get_image_field($node);
-    $thumbnail_content['image'] = collection_page_node_snippet_image($node, $thumbnail_field, 'image_scale');
-    dpm($thumbnail_content['image']);
-
-//        $image_uri = $items[0]['uri'];
-//        $image_info = image_get_info($image_uri);
-//        $width = $image_info['width'] * $height / $image_info['height'];
-//        $thumbnail_content['width'] = $width;
-//        $thumbnail_content['height'] = $height;
-//        $thumbnail_url = image_style_url($thumbnail_fields[$bundle]['style'], $image_uri);
-//        $thumbnail_content['thumbnail_url'] = $thumbnail_url;
+    $thumbnail_content['image'] = collection_page_node_snippet_image($node, $thumbnail_field, $variables);
     $thumbnail_view = node_view($node, 'collection_thumbnail');
+    // Exclude image fields.
     foreach ($image_fields as $image_field) {
       if (in_array($image_field, $thumbnail_view)) {
         unset($thumbnail_view[$image_field]);
@@ -574,7 +573,7 @@ function template_preprocess_collection_search_result(&$variables) {
   $node = node_load($result['node']->entity_id);
   if ($variables['image_style']) {
     $image_field_name = collection_page_get_image_field($node);
-    $image = collection_page_node_snippet_image($node, $image_field_name, $variables['image_style']);
+    $image = collection_page_node_snippet_image($node, $image_field_name, array('style_name' => $variables['image_style']));
   }
   else {
     $image = FALSE;
@@ -631,10 +630,13 @@ function collection_page_get_image_field($node) {
   return $image_field_name;
 }
 
+
 /**
- * Provides an image for collection page standart default view according to given style.
+ * Return an image html for for the given node and given image field.
+ * @param $variables
+ *  An associative array containing all parameters that theme_image() function can take.
  */
-function collection_page_node_snippet_image($node, $image_field_name, $style) {
+function collection_page_node_snippet_image($node, $image_field_name, $variables) {
   $image = FALSE;
   if ($image_field_name == 'video_thumb') {
     if ((module_exists('youtube'))) {
@@ -644,7 +646,7 @@ function collection_page_node_snippet_image($node, $image_field_name, $style) {
           if (isset($item['video_id'])) {
             $image = theme('youtube_thumbnail', array(
               'video_id' => $item['video_id'],
-              'image_style' => $style
+              'image_style' => $variables['style_name'],
             ));
           }
         }
@@ -662,10 +664,7 @@ function collection_page_node_snippet_image($node, $image_field_name, $style) {
       //For email display just an Email dummy image
       if ($term->name == 'E-Mail') {
         $uri = file_build_uri('collection_page_images/email.png');
-        $image = theme('image_style', array(
-          'style_name' => $style,
-          'path' => $uri
-        ));
+        $image = theme('image_style', array_merge($variables, array('path' => $uri)));
       }
     }
     //For the document display thumbnail of pdf file
@@ -677,11 +676,7 @@ function collection_page_node_snippet_image($node, $image_field_name, $style) {
             $file_thumb = file_load($item['fid_thumb']);
             if ($file_thumb) {
               $uri_thumb = $file_thumb->uri;
-              $image = theme('image_style', array(
-                'style_name' => $style,
-                'path' => $uri_thumb
-              ));
-              break;
+              $image = theme('image_style', array_merge($variables, array('path' => $uri_thumb)));
             }
           }
         }
@@ -695,20 +690,14 @@ function collection_page_node_snippet_image($node, $image_field_name, $style) {
       $item = $items[0];
       if (isset($item['uri'])) {
         $uri = $item['uri'];
-        $image = theme('image_style', array(
-          'style_name' => $style,
-          'path' => $uri
-        ));
+        $image = theme('image_style', array_merge($variables, array('path' => $uri)));
       }
     }
   }
   // If we still have no image, we should get default image.
   if (!$image) {
     $uri = file_build_uri('collection_page_images/default.png');
-    $image = theme('image_style', array(
-      'style_name' => $style,
-      'path' => $uri
-    ));
+    theme('image_style', array_merge($variables, array('path' => $uri)));
   }
   return $image;
 }
