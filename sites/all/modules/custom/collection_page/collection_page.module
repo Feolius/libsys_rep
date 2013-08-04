@@ -663,7 +663,7 @@ function collection_page_node_snippet_image($node, $image_field_name, $variables
       //For email display just an Email dummy image
       if ($term->name == 'E-Mail') {
         $uri = file_build_uri('collection_page_images/email.png');
-        $image = theme('image_style', array_merge($variables, array('path' => $uri)));
+        $image = theme('image', array_merge($variables, array('path' => $uri)));
       }
     }
     //For the document display thumbnail of pdf file
@@ -675,7 +675,7 @@ function collection_page_node_snippet_image($node, $image_field_name, $variables
             $file_thumb = file_load($item['fid_thumb']);
             if ($file_thumb) {
               $uri_thumb = $file_thumb->uri;
-              $image = theme('image_style', array_merge($variables, array('path' => $uri_thumb)));
+              $image = theme('image', array_merge($variables, array('path' => $uri_thumb)));
             }
           }
         }
@@ -689,14 +689,14 @@ function collection_page_node_snippet_image($node, $image_field_name, $variables
       $item = $items[0];
       if (isset($item['uri'])) {
         $uri = $item['uri'];
-        $image = theme('image_style', array_merge($variables, array('path' => $uri)));
+        $image = theme('image', array_merge($variables, array('path' => $uri)));
       }
     }
   }
   // If we still have no image, we should get default image.
   if (!$image) {
     $uri = file_build_uri('collection_page_images/default.png');
-    theme('image_style', array_merge($variables, array('path' => $uri)));
+    $image = theme('image', array_merge($variables, array('path' => $uri)));
   }
   return $image;
 }
