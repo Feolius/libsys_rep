@@ -580,7 +580,6 @@ function template_preprocess_collection_search_result(&$variables) {
   }
   $variables['image'] = $image;
 
-
   $result_snippet_data = collection_page_node_snippet_data($result['node']->entity_id, $result['snippet']);
 
   $variables['snippet'] = empty($result_snippet_data) ? $result['snippet'] : $result_snippet_data;
@@ -644,9 +643,9 @@ function collection_page_node_snippet_image($node, $image_field_name, $variables
       if (!empty($youtube_field_items)) {
         foreach ($youtube_field_items as $item) {
           if (isset($item['video_id'])) {
-            $image = theme('youtube_thumbnail', array(
+            $image = theme('library_youtube_thumbnail', array(
               'video_id' => $item['video_id'],
-              'image_style' => $variables['style_name'],
+              'image_variables' => $variables,
             ));
           }
         }

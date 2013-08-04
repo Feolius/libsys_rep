@@ -1,0 +1,5 @@
+name = Library Youtube Thumbnail
+description = Provides an another theme function which returns thumbnail from video.
+package = Library
+core = 7.x
+dependencies[] = youtube

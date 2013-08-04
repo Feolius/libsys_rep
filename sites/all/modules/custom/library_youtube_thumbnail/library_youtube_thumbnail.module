@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function library_youtube_thumbnail_theme(){
+  return array(
+    'library_youtube_thumbnail' => array(
+      'variables' => array('video_id' => NULL, 'image_variables' => NULL, 'image_link' => NULL),
+    ),
+  );
+}
+
+/**
+ * Theme function for library youtube thumbnails.
+ */
+function theme_library_youtube_thumbnail($variables){
+  //This is an advanced copy of theme_youtube_thumbnail() function.
+  $id = $variables['video_id'];
+  $image_variables = $variables['image_variables'];
+
+  $files = variable_get('file_public_path', conf_path() . '/files');
+  $youtube = variable_get('youtube_thumb_dir', 'youtube');
+  $dest = $files . '/' . $youtube . '/' . $id . '.png';
+
+  // Check to see if a thumbnail exists locally.
+  if (!file_exists($dest)) {
+    // Retrieve the image from YouTube.
+    if (!youtube_get_remote_image($id)) {
+      // Use the remote source if local copy fails.
+      $src = youtube_build_remote_image_path($id);
+      return theme('image', array_merge($image_variables, array('path' => $src)));
+    }
+  }
+  $uri = 'public://' . $youtube . '/' . $id . '.png';
+  $image = theme('image', array_merge($image_variables, array('path' => $uri)));
+
+  // Check if an url path is provided
+  if ($variables['image_link'] != NULL) {
+    $url_path = $variables['image_link']['path'];
+    $options = $variables['image_link']['options'];
+    $image = l($image, $url_path, $options);
+  }
+  return $image;
+}
