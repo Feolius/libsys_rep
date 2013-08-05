@@ -1,13 +1,15 @@
-<li class="<?php print $classes . ' collection-page-clearfix'; ?>"<?php print $attributes; ?>>
+<li
+  class="<?php print $classes . ' collection-page-clearfix'; ?>"<?php print $attributes; ?>>
   <?php if ($image): ?>
     <div class="collection-page-search-result-thumbnail-image">
       <?php print $image; ?>
     </div>
-  <?php endif; ?>  
+  <?php endif; ?>
   <?php if (!empty($snippet)): ?>
-    <div class="collection-page-search-result-snippet"<?php print $content_attributes; ?>>
+    <div
+      class="collection-page-search-result-snippet"<?php print $content_attributes; ?>>
       <h3 class="collection-page-search-result-title"<?php print $title_attributes; ?>>
-        <a href="<?php print $url; ?>"><?php print $title; ?></a>
+        <?php print l(t($title), $url) ?>
       </h3>
       <?php print $snippet; ?>
     </div>

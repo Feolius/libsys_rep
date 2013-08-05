@@ -425,7 +425,6 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
 function _collection_page_get_bundle_image_fields($bundle) {
   $image_cache = cache_get('collection_page:image_fields');
   if (!$image_cache || !isset($image_cache->data[$bundle])) {
-    $image_fields = $image_cache->data;
     $image_fields[$bundle] = array();
     $instances = field_info_instances('node', $bundle);
     foreach ($instances as $instance) {
@@ -562,9 +561,10 @@ function template_preprocess_collection_search_results(&$variables) {
  */
 function template_preprocess_collection_search_result(&$variables) {
   global $language;
+  global $base_url;
 
   $result = $variables['result'];
-  $variables['url'] = check_url($result['link']);
+  $variables['url'] = $base_url . $result['link'];
   $variables['title'] = check_plain($result['title']);
   if (isset($result['language']) && $result['language'] != $language->language && $result['language'] != LANGUAGE_NONE) {
     $variables['title_attributes_array']['xml:lang'] = $result['language'];
@@ -573,7 +573,13 @@ function template_preprocess_collection_search_result(&$variables) {
   $node = node_load($result['node']->entity_id);
   if ($variables['image_style']) {
     $image_field_name = collection_page_get_image_field($node);
-    $image = collection_page_node_snippet_image($node, $image_field_name, array('style_name' => $variables['image_style']));
+    $image_link = array(
+      'path' => $variables['url'],
+      'options' => array(
+        'html' => TRUE,
+      ),
+    );
+    $image = collection_page_node_snippet_image($node, $image_field_name, array('style_name' => $variables['image_style']), $image_link);
   }
   else {
     $image = FALSE;
@@ -633,9 +639,11 @@ function collection_page_get_image_field($node) {
 /**
  * Return an image html for for the given node and given image field.
  * @param $variables
- *  An associative array containing all parameters that theme_image() function can take.
+ * An associative array containing all parameters that theme_image() function can take.
+ * @param $image_link
+ * An associative array comtaining all parameters that l() function can take. It is an array with keys 'path' and 'options'.
  */
-function collection_page_node_snippet_image($node, $image_field_name, $variables) {
+function collection_page_node_snippet_image($node, $image_field_name, $variables, $image_link = NULL) {
   $image = FALSE;
   if ($image_field_name == 'video_thumb') {
     if ((module_exists('youtube'))) {
@@ -697,6 +705,11 @@ function collection_page_node_snippet_image($node, $image_field_name, $variables
   if (!$image) {
     $uri = file_build_uri('collection_page_images/default.png');
     $image = theme('image', array_merge($variables, array('path' => $uri)));
+  }
+  if ($image_link != NULL) {
+    $url_path = $image_link['path'];
+    $options = $image_link['options'];
+    $image = l($image, $url_path, $options);
   }
   return $image;
 }
