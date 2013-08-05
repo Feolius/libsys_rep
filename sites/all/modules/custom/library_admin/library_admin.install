@@ -41,3 +41,10 @@ function library_admin_update_7102() {
 function library_admin_update_7103() {
   field_delete_field('field_home_region');
 }
+
+/**
+ * Delete the item from 'menu-faq'.
+ */
+function library_admin_update_7104() {
+  db_query("DELETE FROM menu_links WHERE link_path = 'node/53'");
+}
