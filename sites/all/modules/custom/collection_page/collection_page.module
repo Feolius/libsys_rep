@@ -403,7 +403,7 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
     $thumbnail_view = node_view($node, 'collection_thumbnail');
     // Exclude image fields.
     foreach ($image_fields as $image_field) {
-      if (in_array($image_field, $thumbnail_view)) {
+      if (in_array($image_field, array_keys($thumbnail_view))) {
         unset($thumbnail_view[$image_field]);
       }
     }
