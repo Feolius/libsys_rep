@@ -48,3 +48,11 @@ function library_admin_update_7103() {
 function library_admin_update_7104() {
   db_query("DELETE FROM menu_links WHERE link_path = 'node/53'");
 }
+
+/**
+ * Delete another fields for home region.
+ */
+function library_admin_update_7105() {
+  field_delete_field('field_people_home_region');
+  field_delete_field('field_location_home_region');
+}
