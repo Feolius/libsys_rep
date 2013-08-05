@@ -34,3 +34,10 @@ function library_admin_update_7102() {
     ->condition('field_name', 'field_image_date_taken')
     ->execute();
 }
+
+/**
+ * Delete field field_home_region.
+ */
+function library_admin_update_7103() {
+  field_delete_field('field_home_region');
+}
