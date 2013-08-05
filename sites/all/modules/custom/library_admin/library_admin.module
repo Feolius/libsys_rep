@@ -109,8 +109,7 @@ function library_admin_get_faq_nodes() {
 
   if ($cache = cache_get('faq')) {
     $output = $cache->data;
-  }
-  else {
+  } else {
     $output = array();
 
     // Get nids and titles nodes.
@@ -124,6 +123,7 @@ function library_admin_get_faq_nodes() {
         )
       );
       $links = $query['links']->fetchCol();
+
       foreach ($links as $link) {
         $exploded_link = explode('/', $link);
         $nid = $exploded_link[1];
@@ -168,7 +168,7 @@ function library_admin_get_faq_nodes() {
           $output[] = array(
             'nid' => $key,
             'title' => $node->title,
-            'alias' => (!empty($aliases) && ($source == $aliases[$source]->source))
+            'alias' => (isset($aliases[$source]) && ($source == $aliases[$source]->source))
               ? $aliases['node/' . $key]->alias
               : '',
             'keywords' => (!empty($keywords) && isset($keywords[$key]->field_files_key_points_value))
