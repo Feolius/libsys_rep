@@ -109,8 +109,7 @@ function library_admin_get_faq_nodes() {
 
   if ($cache = cache_get('faq')) {
     $output = $cache->data;
-  }
-  else {
+  } else {
     $output = array();
 
     // Get nids and titles nodes.
