@@ -338,10 +338,9 @@ function library_features_content_type_files_field_group_info() {
     'children' => array(
       0 => 'field_files_description',
       1 => 'field_files_primary_media',
-      2 => 'field_home_region',
-      3 => 'title_field',
-      4 => 'group_files_general_additional',
-      5 => 'group_files_general_tagging',
+      2 => 'title_field',
+      3 => 'group_files_general_additional',
+      4 => 'group_files_general_tagging',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(

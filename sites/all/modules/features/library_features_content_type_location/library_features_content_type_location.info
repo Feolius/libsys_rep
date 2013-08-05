@@ -102,7 +102,6 @@ features_exclude[field][node-location-field_location_tab_received_docs] = node-l
 features_exclude[field][node-location-field_location_tab_videos] = node-location-field_location_tab_videos
 features_exclude[field][node-location-field_location_tab_written_docs] = node-location-field_location_tab_written_docs
 features_exclude[field][node-location-title_field] = node-location-title_field
-features_exclude[field][node-location-field_home_region] = node-location-field_home_region
 features_exclude[field][node-location-field_location_image] = node-location-field_location_image
 features_exclude[field][node-location-field_location_images] = node-location-field_location_images
 features_exclude[field][node-location-field_location_videos] = node-location-field_location_videos

@@ -55,6 +55,9 @@ function library_features_content_type_people_strongarm() {
       'token' => array(
         'custom_settings' => FALSE,
       ),
+      'library_snippet' => array(
+        'custom_settings' => TRUE,
+      ),
     ),
     'extra_fields' => array(
       'form' => array(
@@ -62,7 +65,7 @@ function library_features_content_type_people_strongarm() {
           'weight' => '-5',
         ),
         'path' => array(
-          'weight' => '30',
+          'weight' => '6',
         ),
       ),
       'display' => array(),
