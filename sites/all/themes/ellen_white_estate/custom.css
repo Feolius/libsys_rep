@@ -363,3 +363,7 @@ ol.collection-search-results, ul.collection-search-results, .page-home .page ul,
 .contextual-links-wrapper ul.contextual-links {
   list-style: none;
 }
+
+#edit-result-number {
+  margin-top: 10px;
+}

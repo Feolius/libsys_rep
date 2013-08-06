@@ -160,7 +160,7 @@ blockquote { background:transparent url('images/blockquote.png') no-repeat top l
 
 #header-inside-right { float:right; padding:0; margin-top:7px; position:relative;}
 
-#header-inside-right .form-item input[type="text"] { width: 196px; padding: 9px; height: 15px; border:none;}
+#header-inside-right .form-item input[type="text"] { width: 196px; padding: 9px; border:none;}
 
 #header-inside-right .remove_filter{ background:url(images/remove_filter.png) no-repeat center 11px #edeaea; position:absolute; left:188px; width:26px; padding:0; text-indent:-9999px; overflow:hidden; border:none;}
 
