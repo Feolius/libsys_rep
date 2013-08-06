@@ -352,6 +352,14 @@ body .ui-datepicker select.ui-datepicker-month option[selected="selected"], body
   height: 33px;
 }
 
-ol.collection-search-results, ul.collection-search-results {
+ol.collection-search-results, ul.collection-search-results, .page-home .page ul, .page-home .page li {
+  list-style: none;
+}
+
+#home-top li.views-row-first {
+  margin-left: 0px;
+}
+
+.contextual-links-wrapper ul.contextual-links {
   list-style: none;
 }
