@@ -473,10 +473,6 @@ class PeopleMigration extends LibraryMigration {
             ->sourceMigration('Files');
     $this->addFieldMapping('field_people_received_files', 'received_files')
             ->sourceMigration('Files');
-    $this->addFieldMapping('field_people_home', 'home')
-            ->sourceMigration('Location');
-    $this->addFieldMapping('field_people_visit_place', 'visit_place')
-            ->sourceMigration('Location');
     $this->addFieldMapping(PEOPLE_FIELD_1, 'people_field_1');
     $this->addFieldMapping(PEOPLE_FIELD_3, 'people_field_3');
     $this->addFieldMapping(PEOPLE_FIELD_14, 'people_field_14');
@@ -513,10 +509,6 @@ class PeopleMigration extends LibraryMigration {
     $sids = array();
     $sids['Events'] = $data['adv_events'];
     $row->people_field_3 = $this->sidsHandler($sids);
-    $data = $this->getRelatedSids($row->ID, 'adv_people', array('adv_location'), 17);
-    $row->home = $data['adv_location'];
-    $data = $this->getRelatedSids($row->ID, 'adv_people', array('adv_location'), 18);
-    $row->visit_place = $data['adv_location'];
     $data = $this->getRelatedSids($row->ID, 'adv_people', array('adv_events', 'adv_location'), 14);
     $sids = array();
     $sids['Events'] = $data['adv_events'];
@@ -596,22 +588,20 @@ class LocationMigration extends LibraryMigration {
     );
     $this->source = new MigrateSourceSQL($query);
     $this->destination = new MigrateDestinationNode('location');
-    $this->addSimpleMappings(array('title', 'description'));
+    $this->addSimpleMappings(array('title'));
+    $this->addFieldMapping('field_location_description', 'description');
     $this->addFieldMapping('field_location_link', 'link');
     $this->addFieldMapping('field_location_source', 'source');
     $this->addFieldMapping('field_location_written_files', 'written_files')
             ->sourceMigration('Files');
     $this->addFieldMapping('field_location_received_files', 'received_files')
             ->sourceMigration('Files');
-    $this->addFieldMapping('field_location_living_people', 'living_people')
-            ->sourceMigration('People');
-    $this->addFieldMapping('field_location_visiter', 'visiters')
-            ->sourceMigration('People');
     $this->addFieldMapping(LOCATION_FIELD_14, 'location_field_14');
     $this->addFieldMapping(LOCATION_FIELD_18, 'location_field_18');
     $this->addFieldMapping(LOCATION_FIELD_20, 'location_field_20');
     $this->addFieldMapping(LOCATION_FIELD_21, 'location_field_21');
     $this->addFieldMapping(LOCATION_FIELD_22, 'location_field_22');
+    $this->addFieldMapping(LOCATION_FIELD_17, 'location_field_17');
   }
 
   public function prepareRow($row) {
@@ -650,11 +640,11 @@ class LocationMigration extends LibraryMigration {
     $data = $this->getRelatedSids($row->ID, 'adv_location', array('file'), 6);
     $row->received_files = $data['file'];
     //Add living people
-    $data = $this->getRelatedSids($row->ID, 'adv_location', array('adv_people'), 17);
-    $row->living_people = $data['adv_people'];
-    //Add visiters
-    $data = $this->getRelatedSids($row->ID, 'adv_location', array('adv_people'), 18);
-    $row->visiters = $data['adv_people'];
+    $data = $this->getRelatedSids($row->ID, 'adv_location', array('adv_people', 'adv_events'), 17);
+    $sids = array();
+    $sids['People'] = $data['adv_people'];
+    $sids['Events'] = $data['adv_events'];
+    $row->location_field_17 = $this->sidsHandler($sids);
     $data = $this->getRelatedSids($row->ID, 'adv_location', array('adv_people', 'adv_events'), 14);
     $sids = array();
     $sids['People'] = $data['adv_people'];

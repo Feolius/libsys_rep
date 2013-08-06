@@ -41,29 +41,24 @@ function library_import_submit() {
       'driver' => 'mysql', // replace with your database driver
   );
   Database::addConnectionInfo('ImportDatabaseKey', 'default', $other_database);
-  /* $query = Database::getConnection('default', 'ImportDatabaseKey')
+   $query = Database::getConnection('default', 'ImportDatabaseKey')
             ->select('egw_linker', 'l');
     $query->join('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
-    $query->join('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id  AND l2.tb_name != l.tb_name AND l.tb_name = :pc', array(':pc' => 'adv_date_time'));
-    $query->join('adv_date_time', 'dt', 'dt.ID = l.tb_id');
-    $query->addField('l2i', 'linkerinfo_id');
+    $query->join('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id  AND l2.tb_name != l.tb_name');
+//    $query->join('adv_date_time', 'dt', 'dt.ID = l.tb_id');
+    $query->addField('l', 'tb_name');
    // $query->addField('l2', 'linker_entry_id');
-    $query->addField('dt', 'ID');
-    $query->condition('l2i.linkerinfo_id', 14, '=');
+//    $query->addField('dt', 'ID');
+    $query->condition('l2i.linkerinfo_id', 18, '=');
     //$query->condition('l.tb_name', 'adv_date_time', '=');
-    $query->condition('l2.tb_name', 'adv_events', '=');
-    $query->isNotNull('dt.end_year');
-    //$query->groupBy('l2i.linkerinfo_id');
+    $query->condition('l2.tb_name', 'adv_people', '=');
+  //$query->condition('l.tb_name', 'adv_events', '=');
+    //$query->isNotNull('dt.end_year');
+   $query->groupBy('l.tb_name');
     $query->range(0, 20);
-    $result = $query->execute();*/
+    $result = $query->execute();
 
     //$query->groupBy('l.file_extension');*$query = Database::getConnection('default', 'ImportDatabaseKey')
-  $query = Database::getConnection('default', 'ImportDatabaseKey')
-            ->select('adv_events', 'l');
-$query->addField('l', 'ID');
-$query->isNotNull('l.source');
-$query->range(0, 10);
-$result = $query->execute();
 
   while ($row = $result->fetchAssoc()) {
          dpm($row);

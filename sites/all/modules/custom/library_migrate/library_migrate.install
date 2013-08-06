@@ -1,0 +1,5 @@
+<?php
+
+function library_migrate_update_7100() {
+  field_delete_field('field_location_home_event');
+}
