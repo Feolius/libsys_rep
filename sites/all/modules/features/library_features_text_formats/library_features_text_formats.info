@@ -1,0 +1,12 @@
+name = Library features text formats
+description = library_features_text_formats
+core = 7.x
+package = Library
+version = 7.x-1.0
+project = library_features_text_formats
+dependencies[] = filter
+features[features_api][] = api:1
+features[filter][] = filtered_html
+features[filter][] = full_html
+features[filter][] = plain_text
+features_exclude[dependencies][features] = features

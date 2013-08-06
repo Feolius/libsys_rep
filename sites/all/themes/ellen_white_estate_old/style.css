@@ -7,7 +7,7 @@ a, abbr, acronym, address, applet, article, aside, audio, b, big, blockquote, bo
 
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section { display: block; }
 
-html, body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, blockquote { list-style: none; }
+html, body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, blockquote { list-style: inherit; }
 
 h1, h2, h3, h4, h5, h6 { line-height: normal; font-weight: normal; }
 

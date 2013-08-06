@@ -351,3 +351,7 @@ body .ui-datepicker select.ui-datepicker-month option[selected="selected"], body
 #header-inside-right .form-submit {
   height: 33px;
 }
+
+ol.collection-search-results, ul.collection-search-results {
+  list-style: none;
+}
