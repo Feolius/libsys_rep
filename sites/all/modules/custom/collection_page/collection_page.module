@@ -127,8 +127,8 @@ function theme_facet_collection_search_results__alter($variables) {
   drupal_set_title('Library');
 
   $timeline_library = libraries_get_path('timeline');
-  $bundle_date_fields = _collection_page_get_date_fields_from_bundle($bundle);
-  if (!empty($timeline_library) && !empty($bundle_date_fields)) {
+  $is_bundle_date_fields_not_empty = _collection_page_is_date_fields_not_empty($results);
+  if (!empty($timeline_library) && $is_bundle_date_fields_not_empty) {
     $content_tabs['#timeline']['#content'] = array(
       '#view' => theme('timeline_iframe'),
       '#pager' => theme('pager', array('tags' => NULL)),
@@ -236,6 +236,31 @@ function collection_page_timeline_json_callback() {
   foreach ($results as $result) {
     $asset = new stdClass();
     $timeline_item = new stdClass();
+
+    $date_fields = _collection_page_get_date_fields_from_bundle($result['bundle']);
+    if (!empty($date_fields)) {
+      foreach ($date_fields as $field_name) {
+        //Do not use the field data if field hasn't it
+        if (empty($result['fields']['dm_facet_collection_' . $field_name])) {
+          continue;
+        }
+        $item_date = date('Y,m,d', strtotime($result['fields']['dm_facet_collection_' . $field_name][0]));
+        //If the node have more then one date fields, the earliest one would be chosen.
+        if (isset($timeline_item->startDate)) {
+          $timeline_item->startDate = (strtotime($timeline_item->startDate) > strtotime($item_date)) ? $item_date : $timeline_item->startDate;
+        }
+        else {
+          $timeline_item->startDate = $item_date;
+        }
+      }
+    }
+    //If the node have not date field, of if these fields have no data
+    //we need not info about that node in timeline
+    if (!property_exists($timeline_item, 'startDate')) {
+      continue;
+    }
+
+    //Create the properties for TimelineJS
     $asset->media = "";
     $asset->credit = "";
     $asset->caption = "";
@@ -266,19 +291,6 @@ function collection_page_timeline_json_callback() {
             $asset->media = $image_path;
             break;
           }
-        }
-      }
-    }
-    $date_fields = _collection_page_get_date_fields_from_bundle($result['bundle']);
-    if (!empty($date_fields)) {
-      foreach ($date_fields as $field_name) {
-        $item_date = date('Y,m,d', strtotime($result['fields']['dm_facet_collection_' . $field_name][0]));
-        //If the node have more then one date fields, the earliest one would be chosen.
-        if (isset($timeline_item->startDate)) {
-          $timeline_item->startDate = (strtotime($timeline_item->startDate) > strtotime($item_date)) ? $item_date : $timeline_item->startDate;
-        }
-        else {
-          $timeline_item->startDate = $item_date;
         }
       }
     }
@@ -352,18 +364,49 @@ function collection_page_apachesolr_query_alter($query) {
  * @return array|null
  */
 function _collection_page_get_date_fields_from_bundle($bundle) {
-  if (!empty($bundle)) {
-    $date_fields = array();
+  $date_fields_cache = cache_get('collection_page:date_fields');
+  if (!$date_fields_cache || !isset($date_fields_cache->data[$bundle])) {
+    $date_fields[$bundle] = array();
     $instances = field_info_instances('node', $bundle);
     foreach ($instances as $instance) {
-      $field = field_info_field($instance['field_name']);
-      if ($field['type'] == 'date' || $field['type'] == 'datetime' || $field['type'] == 'datestamp') {
-        $date_fields[] = $field['field_name'];
+      $field_info = field_info_field($instance['field_name']);
+      if ($field_info['type'] == 'library_date_field') {
+        $date_fields[$bundle][] = $field_info['field_name'];
       }
     }
-    return $date_fields;
+    cache_set('collection_page:date_fields', $date_fields, 'cache', CACHE_TEMPORARY);
   }
-  return NULL;
+  else {
+    $date_fields[$bundle] = $date_fields_cache->data[$bundle];
+  }
+  return $date_fields[$bundle];
+}
+
+/**
+ * Verify the results from apache_solr, and if they have at least one not empty date field
+ * return TRUE, and FAlSE in other ways.
+ *
+ * @param $results
+ * @return bool
+ */
+function _collection_page_is_date_fields_not_empty($results) {
+  if (!empty($results)) {
+    foreach ($results as $result) {
+      $date_fields = _collection_page_get_date_fields_from_bundle($result['bundle']);
+      if (empty($date_fields)) {
+        return FALSE;
+      }
+      foreach ($date_fields as $field_name) {
+        if (!empty($result['fields']['dm_facet_collection_' . $field_name])) {
+          return TRUE;
+        }
+      }
+    }
+    return FALSE;
+  }
+  else {
+    return FALSE;
+  }
 }
 
 /**
@@ -434,7 +477,8 @@ function _collection_page_get_bundle_image_fields($bundle) {
       }
     }
     cache_set('collection_page:image_fields', $image_fields, 'cache', CACHE_TEMPORARY);
-  }else{
+  }
+  else {
     $image_fields[$bundle] = $image_cache->data[$bundle];
   }
   return $image_fields[$bundle];
@@ -951,7 +995,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
 
       break;
     case
-      'topics':
+    'topics':
 
       $description = '';
       if ($snippet_contain_search_result) {
