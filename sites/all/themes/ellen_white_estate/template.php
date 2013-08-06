@@ -620,3 +620,17 @@ function ellen_white_estate_preprocess_node__home_middle(&$vars) {
 function ellen_white_estate_preprocess_node__home_right(&$vars) {
   $vars['content']['allow'] = _ellen_white_estate_preprocess_node__home($vars);
 }
+
+/**
+ * Preprocesses variables for node--home-top.tpl.php.
+ */
+function ellen_white_estate_preprocess_node__home_top(&$vars) {
+  $vars['content']['allow'] = _ellen_white_estate_preprocess_node__home($vars);
+}
+
+/**
+ * Preprocesses variables for node--home-bottom.tpl.php.
+ */
+function ellen_white_estate_preprocess_node__home_bottom(&$vars) {
+  $vars['content']['allow'] = _ellen_white_estate_preprocess_node__home($vars);
+}
