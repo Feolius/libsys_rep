@@ -80,39 +80,40 @@ function collection_pager_block_submit($form, &$form_state) {
       $number = $_GET['curr'] + 1;
       break;
   }
-
-  //We should make solr query to find needed nid
-  $params = array();
-  $params['q'] = $_GET['query'];
-  $params['defType'] = 'lucene';
-  $params['spellcheck'] = FALSE;
-  $params['start'] = $number;
-  $params['rows'] = 1;
-  $query = apachesolr_drupal_query('apachesolr', $params);
-  $searcher = $query->getSearcher();
-  if (module_exists('facetapi')) {
-    // Gets enabled facets, adds filter queries to $params.
-    $adapter = facetapi_adapter_load($searcher);
-    if ($adapter) {
-      $adapter->addActiveFilters($query);
+  $query = $_SESSION['facet_collection_solr_query'];
+  $query->replaceParam('hl', FALSE);
+  $query->replaceParam('start', $number);
+  $query->replaceParam('rows', 1);
+  // This code block from apachesolr_do_query() function.
+  $keys = $query->getParam('q');
+  if (strlen($keys) == 0 && ($filters = $query->getFilters())) {
+    $qalt = array();
+    foreach ($filters as $filter) {
+      // Move the fq param if it has no local params and is not negative.
+      if (!$filter['#exclude'] && !$filter['#local']) {
+        $qalt[] = '(' . $query->makeFilterQuery($filter) . ')';
+        $query->removeFilter($filter['#name'], $filter['#value'], $filter['#exclude']);
+      }
+    }
+    if ($qalt) {
+      $query->addParam('q.alt', implode(' ', $qalt));
     }
   }
-  $keys = $query->getParam('q');
+  $keys = htmlspecialchars($keys, ENT_NOQUOTES, 'UTF-8');
+  $keys = str_replace("'", '&#039;', $keys);
   $response = $query->search($keys);
+
   $nid = $response->response->docs[0]->entity_id;
-
-  //Submit form with needed GET params
-  $options = array('query' => array());
-  $options['query'] ['collection'] = 'true';
-  if (isset($_GET['f'])) {
-    $f = $_GET['f'];
-    $options['query']['f'] = $f;
-  }
-  $options['query']['query'] = $_GET['query'];
-  $options['query']['numFound'] = $_GET['numFound'];
-
+  // Submit form with needed GET params.
+  $get_params = $_GET;
+  unset($get_params['q']);
+  $options['query'] = $get_params;
   $options['query']['curr'] = $number;
+  // Check numFound after each query, because it can be some situation, when user make
+  // new search query and results will be changed.
+  $options['query']['numFound'] = $response->response->numFound;
   $path = 'node/' . $nid;
+  $url = url($path);
   $form_state['redirect'] = array(
     $path,
     $options,

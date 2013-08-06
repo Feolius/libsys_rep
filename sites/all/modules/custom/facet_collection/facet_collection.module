@@ -68,6 +68,8 @@ function facet_collection_page() {
   $page = pager_find_page();
   $query->page = $page;
   list($final_query, $response) = apachesolr_do_query($query, $page);
+  //We should save all query params in session to allow another modules use it if needed.
+  $_SESSION['facet_collection_solr_query'] = $final_query;
   $env_id = $query->solr('getId');
   apachesolr_has_searched($env_id, TRUE);
   $results = apachesolr_search_process_response($response, $final_query);
@@ -502,7 +504,6 @@ function facet_collection_apachesolr_process_results(&$results, DrupalSolrQueryI
   $searcher = $query->getSearcher();
   $response = apachesolr_static_response_cache($searcher);
   $numfound = $response->response->numFound;
-  $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
   $get_params['collection'] = 'true';
   $get_params['numFound'] = $numfound;
   $arg = arg(1);
