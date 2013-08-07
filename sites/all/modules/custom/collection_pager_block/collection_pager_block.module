@@ -14,7 +14,7 @@ function collection_pager_block_block_info() {
  * Implements hook_block_view()
  */
 function collection_pager_block_block_view($delta) {
-  if (isset($_GET['collection'])) {
+  if (isset($_GET['sqid']) && isset($_SESSION['facet_collection_solr_queries'][$_GET['sqid']])) {
     $block['subject'] = t('Collection Pager');
     $block['content'] = drupal_get_form('collection_pager_block_form');
     drupal_add_css(drupal_get_path('module', 'collection_pager_block') . '/css/collection-pager-block-buttons.css');
@@ -80,7 +80,7 @@ function collection_pager_block_submit($form, &$form_state) {
       $number = $_GET['curr'] + 1;
       break;
   }
-  $query = $_SESSION['facet_collection_solr_query'];
+  $query = $_SESSION['facet_collection_solr_queries'][$_GET['sqid']];
   $query->replaceParam('hl', FALSE);
   $query->replaceParam('start', $number);
   $query->replaceParam('rows', 1);
@@ -113,7 +113,6 @@ function collection_pager_block_submit($form, &$form_state) {
   // new search query and results will be changed.
   $options['query']['numFound'] = $response->response->numFound;
   $path = 'node/' . $nid;
-  $url = url($path);
   $form_state['redirect'] = array(
     $path,
     $options,

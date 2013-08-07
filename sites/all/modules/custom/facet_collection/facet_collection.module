@@ -57,7 +57,6 @@ function facet_collection_collection_teaser($nid) {
  * Page callback for collection
  */
 function facet_collection_page() {
-  $build = array();
   $environment = apachesolr_default_environment();
   $solr = apachesolr_get_solr($environment);
   $params = facet_collection_get_default_params();
@@ -69,7 +68,10 @@ function facet_collection_page() {
   $query->page = $page;
   list($final_query, $response) = apachesolr_do_query($query, $page);
   //We should save all query params in session to allow another modules use it if needed.
-  $_SESSION['facet_collection_solr_query'] = $final_query;
+  //Solr query id in session
+  $sqid = &drupal_static('faset_collection_solr_query_id');
+  $sqid = mt_rand();
+  $_SESSION['facet_collection_solr_queries'][$sqid] = $final_query;
   $env_id = $query->solr('getId');
   apachesolr_has_searched($env_id, TRUE);
   $results = apachesolr_search_process_response($response, $final_query);
@@ -143,21 +145,23 @@ function facet_collection_get_default_params() {
 /**
  * Replace spacsers in query by ' AND ' operator
  */
-function _facet_collection_replace_spacers_by_AND($query){
+function _facet_collection_replace_spacers_by_AND($query) {
   $operators = array('AND', 'OR', '&&', 'NOT');
   $query_arr = explode(' ', $query);
   $quote_found = FALSE;
-  for ($n = 0; $n < count($query_arr); $n++){
-    if(strpos($query_arr[$n], '"') !== FALSE){
+  for ($n = 0; $n < count($query_arr); $n++) {
+    if (strpos($query_arr[$n], '"') !== FALSE) {
       $quote_found = !$quote_found;
     }
-    if(!$quote_found){
-      if(in_array($query_arr[$n], $operators)){
+    if (!$quote_found) {
+      if (in_array($query_arr[$n], $operators)) {
         continue;
-      }elseif(isset($query_arr[$n+1])){
-        if(in_array($query_arr[$n + 1], $operators)){
+      }
+      elseif (isset($query_arr[$n + 1])) {
+        if (in_array($query_arr[$n + 1], $operators)) {
           $n++;
-        }else{
+        }
+        else {
           $query_arr[$n] .= ' AND';
         }
       }
@@ -166,6 +170,7 @@ function _facet_collection_replace_spacers_by_AND($query){
   $query = implode(' ', $query_arr);
   return $query;
 }
+
 /**
  * Build 'qf' parameter for solr query for base search.
  */
@@ -500,27 +505,33 @@ function facet_collection_get_filter_settings() {
  * We should provide search key word for flexpaper highlighting
  */
 function facet_collection_apachesolr_process_results(&$results, DrupalSolrQueryInterface $query) {
-  global $base_url;
-  $searcher = $query->getSearcher();
-  $response = apachesolr_static_response_cache($searcher);
-  $numfound = $response->response->numFound;
-  $get_params['collection'] = 'true';
-  $get_params['numFound'] = $numfound;
-  $arg = arg(1);
-  if(!empty($arg)){
-    $get_params['query'] = arg(1);
-  }
-  $start = $query->getParam('start');
-  $result_number = count($results);
-  for ($i = 0; $i < $result_number; $i++) {
-    $link = $results[$i]['link'];
-    $path = str_replace($base_url . '/', '', $link);
-    $get_params['curr'] = $start + $i;
-    $options = array(
-      'query' => $get_params
-    );
-    $link = url($path, $options);
-    $results[$i]['link'] = $link;
+  if (arg(0) == 'library') {
+    global $base_url;
+    $searcher = $query->getSearcher();
+    $response = apachesolr_static_response_cache($searcher);
+    $numfound = $response->response->numFound;
+    $get_params['numFound'] = $numfound;
+    $arg = arg(1);
+    if (!empty($arg)) {
+      $get_params['query'] = $arg;
+    }
+    $start = $query->getParam('start');
+    $result_number = count($results);
+    //We need to add info about solr query id in SESSION to allow collection pager work, since it requires solr query for its work.
+    $sqid = &drupal_static('faset_collection_solr_query_id');
+    for ($i = 0; $i < $result_number; $i++) {
+      $link = $results[$i]['link'];
+      $path = str_replace($base_url . '/', '', $link);
+      $get_params['curr'] = $start + $i;
+      if(!empty($sqid)){
+        $get_params['sqid'] = $sqid;
+      }
+      $options = array(
+        'query' => $get_params
+      );
+      $link = url($path, $options);
+      $results[$i]['link'] = $link;
+    }
   }
 }
 
