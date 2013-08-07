@@ -511,6 +511,7 @@ function facet_collection_apachesolr_process_results(&$results, DrupalSolrQueryI
     $response = apachesolr_static_response_cache($searcher);
     $numfound = $response->response->numFound;
     $get_params['numFound'] = $numfound;
+    $get_params['collection'] = 'true';
     $arg = arg(1);
     if (!empty($arg)) {
       $get_params['query'] = $arg;
