@@ -96,11 +96,12 @@ function theme_facet_collection_search_results__alter($variables) {
       '#title' => t('Timeline View'),
       '#class' => 'timeline',
     ),
-    '#location' => array(
-      '#id' => 'location-view',
-      '#title' => t('Location View'),
-      '#class' => 'location',
-    ),
+    //@TODO uncomment it when location tab will be available
+//    '#location' => array(
+//      '#id' => 'location-view',
+//      '#title' => t('Location View'),
+//      '#class' => 'location',
+//    ),
   );
   $disabled_tabs = array();
 
@@ -137,43 +138,43 @@ function theme_facet_collection_search_results__alter($variables) {
   else {
     $disabled_tabs[] = '#timeline';
   }
-
-  $node_ids = '';
-  foreach ($results as $result) {
-    if ($result['bundle'] == 'location') {
-      //Collect NIDs of nodes for bundle Location
-      $node_ids = implode(',', array($node_ids, $result['node']->entity_id));
-    }
-    else {
-      $node = node_load($result['node']->entity_id);
-      //Collect NIDs of referenced location nodes for bunlde Files
-      $instances = field_info_instances('node', $node->type);
-      foreach ($instances as $field_name => $instance) {
-        $field_info = field_info_field($field_name);
-        if ($field_info['type'] == 'entityreference' && in_array('location', $field_info['settings']['handler_settings']['target_bundles'])) {
-          $items = field_get_items('node', $node, $field_info['field_name']);
-          if (!empty($items)) {
-            $node_ids = implode(',', array($node_ids, $items[0]['target_id']));
-          }
-        }
-      }
-    }
-
-  }
-  $node_ids = substr($node_ids, 1);
-  $location_view_openlayer_map = NULL;
-  if (!empty($node_ids)) {
-    $location_view_openlayer_map = views_embed_view('location_view', 'map', $node_ids);
-  }
-  if (!empty($location_view_openlayer_map)) {
-    $content_tabs['#location']['#content'] = array(
-      '#view' => $location_view_openlayer_map,
-      '#pager' => theme('pager', array('tags' => NULL)),
-    );
-  }
-  else {
-    $disabled_tabs[] = '#location';
-  }
+//@TODO uncomment it when location tab will be available
+//  $node_ids = '';
+//  foreach ($results as $result) {
+//    if ($result['bundle'] == 'location') {
+//      //Collect NIDs of nodes for bundle Location
+//      $node_ids = implode(',', array($node_ids, $result['node']->entity_id));
+//    }
+//    else {
+//      $node = node_load($result['node']->entity_id);
+//      //Collect NIDs of referenced location nodes for bunlde Files
+//      $instances = field_info_instances('node', $node->type);
+//      foreach ($instances as $field_name => $instance) {
+//        $field_info = field_info_field($field_name);
+//        if ($field_info['type'] == 'entityreference' && in_array('location', $field_info['settings']['handler_settings']['target_bundles'])) {
+//          $items = field_get_items('node', $node, $field_info['field_name']);
+//          if (!empty($items)) {
+//            $node_ids = implode(',', array($node_ids, $items[0]['target_id']));
+//          }
+//        }
+//      }
+//    }
+//
+//  }
+//  $node_ids = substr($node_ids, 1);
+//  $location_view_openlayer_map = NULL;
+//  if (!empty($node_ids)) {
+//    $location_view_openlayer_map = views_embed_view('location_view', 'map', $node_ids);
+//  }
+//  if (!empty($location_view_openlayer_map)) {
+//    $content_tabs['#location']['#content'] = array(
+//      '#view' => $location_view_openlayer_map,
+//      '#pager' => theme('pager', array('tags' => NULL)),
+//    );
+//  }
+//  else {
+//    $disabled_tabs[] = '#location';
+//  }
 
   $tabs = array_keys($content_tabs);
 //Define default and disabled tabs on collection page
@@ -183,7 +184,8 @@ function theme_facet_collection_search_results__alter($variables) {
       $default_tab = array_search('#timeline', $tabs);
       break;
     case 'location':
-      $default_tab = array_search('#location', $tabs);
+      //@TODO change it to #location when location tab will be available
+      $default_tab = array_search('#standard_default', $tabs);
       break;
     default:
       $default_tab = array_search('#standard_default', $tabs);
