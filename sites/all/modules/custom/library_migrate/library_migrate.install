@@ -3,3 +3,16 @@
 function library_migrate_update_7100() {
   field_delete_field('field_location_home_event');
 }
+
+function library_migrate_update_7101() {
+  field_delete_field('field_events_visit_nodes');
+  field_delete_field('field_events_visit_date');
+  field_delete_field('field_events_home');
+  field_delete_field('field_events_home_date');
+  field_delete_field('field_people_visit_nodes');
+  field_delete_field('field_people_visit_date');
+  field_delete_field('field_location_visit_nodes');
+  field_delete_field('field_location_visit_date');
+  field_delete_field('field_location_home_nodes');
+  field_delete_field('field_location_home_date');
+}

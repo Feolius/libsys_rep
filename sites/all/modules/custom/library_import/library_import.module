@@ -47,14 +47,14 @@ function library_import_submit() {
     $query->join('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id  AND l2.tb_name != l.tb_name');
 //    $query->join('adv_date_time', 'dt', 'dt.ID = l.tb_id');
     $query->addField('l', 'tb_name');
-   // $query->addField('l2', 'linker_entry_id');
+    $query->addField('l2', 'linker_entry_id');
 //    $query->addField('dt', 'ID');
     $query->condition('l2i.linkerinfo_id', 18, '=');
-    //$query->condition('l.tb_name', 'adv_date_time', '=');
-    $query->condition('l2.tb_name', 'adv_people', '=');
+    $query->condition('l.tb_name', 'adv_date_time', '=');
+    $query->condition('l2.tb_name', 'adv_events', '=');
   //$query->condition('l.tb_name', 'adv_events', '=');
     //$query->isNotNull('dt.end_year');
-   $query->groupBy('l.tb_name');
+   //$query->groupBy('l.tb_name');
     $query->range(0, 20);
     $result = $query->execute();
 
