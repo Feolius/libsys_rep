@@ -28,13 +28,12 @@ function library_features_content_type_people_field_group_info() {
       2 => 'field_people_received_event',
       3 => 'field_people_received_files',
       4 => 'field_people_related_event',
-      5 => 'field_people_visit_date',
-      6 => 'field_people_visit_nodes',
-      7 => 'field_people_written_files',
-      8 => 'field_people_children',
-      9 => 'field_people_parents',
-      10 => 'field_people_images',
-      11 => 'field_people_videos',
+      5 => 'field_people_written_files',
+      6 => 'field_people_children',
+      7 => 'field_people_parents',
+      8 => 'field_people_images',
+      9 => 'field_people_videos',
+      10 => 'field_people_visit_nodes',
     ),
     'format_type' => 'fieldset',
     'format_settings' => array(
@@ -104,7 +103,6 @@ function library_features_content_type_people_field_group_info() {
     'children' => array(
       0 => 'field_people_created_event',
       1 => 'field_people_place',
-      2 => 'field_people_source',
     ),
     'format_type' => 'fieldset',
     'format_settings' => array(

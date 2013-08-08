@@ -123,73 +123,6 @@ function library_features_content_type_events_field_default_field_bases() {
     'type' => 'entityreference',
   );
 
-  // Exported field_base: 'field_events_home'
-  $field_bases['field_events_home'] = array(
-    'active' => 1,
-    'cardinality' => -1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_events_home',
-    'foreign keys' => array(
-      'node' => array(
-        'columns' => array(
-          'target_id' => 'nid',
-        ),
-        'table' => 'node',
-      ),
-    ),
-    'indexes' => array(
-      'target_id' => array(
-        0 => 'target_id',
-      ),
-    ),
-    'locked' => 0,
-    'module' => 'entityreference',
-    'settings' => array(
-      'handler' => 'base',
-      'handler_settings' => array(
-        'behaviors' => array(
-          'views-select-list' => array(
-            'status' => 0,
-          ),
-        ),
-        'sort' => array(
-          'type' => 'none',
-        ),
-        'target_bundles' => array(
-          'location' => 'location',
-        ),
-      ),
-      'target_type' => 'node',
-    ),
-    'translatable' => 0,
-    'type' => 'entityreference',
-  );
-
-  // Exported field_base: 'field_events_home_date'
-  $field_bases['field_events_home_date'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_events_home_date',
-    'foreign keys' => array(),
-    'indexes' => array(),
-    'locked' => 0,
-    'module' => 'library_date_field',
-    'settings' => array(
-      'granularity' => array(
-        'day' => 'day',
-        'month' => 'month',
-        'year' => 'year',
-      ),
-      'timezone_db' => 'UTC',
-      'tz_handling' => 'site',
-    ),
-    'translatable' => 0,
-    'type' => 'library_date_field',
-  );
-
   // Exported field_base: 'field_events_image'
   $field_bases['field_events_image'] = array(
     'active' => 1,
@@ -645,6 +578,27 @@ function library_features_content_type_events_field_default_field_bases() {
     'type' => 'field_data_collector',
   );
 
+  // Exported field_base: 'field_events_tab_timeline'
+  $field_bases['field_events_tab_timeline'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_events_tab_timeline',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'field_data_collector',
+    'settings' => array(
+      'collecting_fields' => array(),
+      'last_changes_time' => 0,
+      'target_bundles' => array(),
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'field_data_collector',
+  );
+
   // Exported field_base: 'field_events_tab_videos'
   $field_bases['field_events_tab_videos'] = array(
     'active' => 1,
@@ -729,74 +683,6 @@ function library_features_content_type_events_field_default_field_bases() {
         ),
         'target_bundles' => array(
           'files' => 'files',
-        ),
-      ),
-      'target_type' => 'node',
-    ),
-    'translatable' => 0,
-    'type' => 'entityreference',
-  );
-
-  // Exported field_base: 'field_events_visit_date'
-  $field_bases['field_events_visit_date'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_events_visit_date',
-    'foreign keys' => array(),
-    'indexes' => array(),
-    'locked' => 0,
-    'module' => 'library_date_field',
-    'settings' => array(
-      'granularity' => array(
-        'day' => 'day',
-        'month' => 'month',
-        'year' => 'year',
-      ),
-      'timezone_db' => 'UTC',
-      'tz_handling' => 'site',
-    ),
-    'translatable' => 0,
-    'type' => 'library_date_field',
-  );
-
-  // Exported field_base: 'field_events_visit_nodes'
-  $field_bases['field_events_visit_nodes'] = array(
-    'active' => 1,
-    'cardinality' => -1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_events_visit_nodes',
-    'foreign keys' => array(
-      'node' => array(
-        'columns' => array(
-          'target_id' => 'nid',
-        ),
-        'table' => 'node',
-      ),
-    ),
-    'indexes' => array(
-      'target_id' => array(
-        0 => 'target_id',
-      ),
-    ),
-    'locked' => 0,
-    'module' => 'entityreference',
-    'settings' => array(
-      'handler' => 'base',
-      'handler_settings' => array(
-        'behaviors' => array(
-          'views-select-list' => array(
-            'status' => 0,
-          ),
-        ),
-        'sort' => array(
-          'type' => 'none',
-        ),
-        'target_bundles' => array(
-          'location' => 'location',
-          'people' => 'people',
         ),
       ),
       'target_type' => 'node',

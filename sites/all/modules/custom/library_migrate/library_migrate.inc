@@ -476,6 +476,7 @@ class PeopleMigration extends LibraryMigration {
     $this->addFieldMapping(PEOPLE_FIELD_1, 'people_field_1');
     $this->addFieldMapping(PEOPLE_FIELD_3, 'people_field_3');
     $this->addFieldMapping(PEOPLE_FIELD_14, 'people_field_14');
+    $this->addFieldMapping(PEOPLE_FIELD_18, 'people_field_18');
     $this->addFieldMapping(PEOPLE_FIELD_23, 'people_field_23');
     $this->addFieldMapping(PEOPLE_FIELD_17, 'people_field_17');
   }
@@ -508,11 +509,19 @@ class PeopleMigration extends LibraryMigration {
     $sids = array();
     $sids['Events'] = $data['adv_events'];
     $row->people_field_3 = $this->sidsHandler($sids);
+    $data = $this->getRelatedSids($row->ID, 'adv_people', array('adv_location'), 17);
+    $row->home = $data['adv_location'];
+    $data = $this->getRelatedSids($row->ID, 'adv_people', array('adv_location'), 18);
+    $row->visit_place = $data['adv_location'];
     $data = $this->getRelatedSids($row->ID, 'adv_people', array('adv_events', 'adv_location'), 14);
     $sids = array();
     $sids['Events'] = $data['adv_events'];
     $sids['Location'] = $data['adv_location'];
     $row->people_field_14 = $this->sidsHandler($sids);
+    $data = $this->getRelatedSids($row->ID, 'adv_people', array('adv_location'), 18);
+    $sids = array();
+    $sids['Location'] = $data['adv_location'];
+    $row->people_field_18 = $this->sidsHandler($sids);
     $data = $this->getRelatedSids($row->ID, 'adv_people', array('adv_events'), 23);
     $sids = array();
     $sids['Events'] = $data['adv_events'];
@@ -559,6 +568,7 @@ class PeopleMigration extends LibraryMigration {
     $node->language = 'en';
     $node->field_people_description['und'][0] = 'filtered_html';
     $this->set_datefield_value(PEOPLE_FIELD_17_DATE, $node, $row->ID, 'adv_people', 17);
+    $this->set_datefield_value(PEOPLE_FIELD_18_DATE, $node, $row->ID, 'adv_people', 18);
   }
 
 }
@@ -590,9 +600,11 @@ class LocationMigration extends LibraryMigration {
     $this->addFieldMapping('field_location_received_files', 'received_files')
             ->sourceMigration('Files');
     $this->addFieldMapping(LOCATION_FIELD_14, 'location_field_14');
+    $this->addFieldMapping(LOCATION_FIELD_18, 'location_field_18');
     $this->addFieldMapping(LOCATION_FIELD_20, 'location_field_20');
     $this->addFieldMapping(LOCATION_FIELD_21, 'location_field_21');
     $this->addFieldMapping(LOCATION_FIELD_22, 'location_field_22');
+    $this->addFieldMapping(LOCATION_FIELD_17, 'location_field_17');
   }
 
   public function prepareRow($row) {
@@ -630,11 +642,20 @@ class LocationMigration extends LibraryMigration {
     //Add received files
     $data = $this->getRelatedSids($row->ID, 'adv_location', array('file'), 6);
     $row->received_files = $data['file'];
+    //Add living people
+    $data = $this->getRelatedSids($row->ID, 'adv_location', array('adv_people'), 17);
+    $sids = array();
+    $sids['People'] = $data['adv_people'];
+    $row->location_field_17 = $this->sidsHandler($sids);
     $data = $this->getRelatedSids($row->ID, 'adv_location', array('adv_people', 'adv_events'), 14);
     $sids = array();
     $sids['People'] = $data['adv_people'];
     $sids['Events'] = $data['adv_events'];
     $row->location_field_14 = $this->sidsHandler($sids);
+    $data = $this->getRelatedSids($row->ID, 'adv_location', array('adv_people'), 18);
+    $sids = array();
+    $sids['People'] = $data['adv_people'];
+    $row->location_field_18 = $this->sidsHandler($sids);
     $data = $this->getRelatedSids($row->ID, 'adv_location', array('adv_events'), 20);
     $sids = array();
     $sids['Events'] = $data['adv_events'];
@@ -668,6 +689,9 @@ class LocationMigration extends LibraryMigration {
     if (($field_value = geocoder_widget_get_field_value('node', $field_instance, $node)) !== FALSE) {
       $node->{$field_instance['field_name']} = $field_value;
     }
+    //Add datefields
+    $this->set_datefield_value(LOCATION_FIELD_18_DATE, $node, $row->ID, 'adv_location', 18);
+    $this->set_datefield_value(LOCATION_FIELD_17_DATE, $node, $row->ID, 'adv_location', 17);
   }
 
 }
@@ -696,6 +720,7 @@ class EventsMigration extends LibraryMigration {
             ->sourceMigration('People');
     $this->addFieldMapping(EVENT_FIELD_3, 'receiver')
             ->sourceMigration('People');
+    //$this->addFieldMapping(EVENT_FIELD_13, 'event_field_13');
     $this->addFieldMapping(EVENT_FIELD_14, 'event_field_14');
     $this->addFieldMapping(EVENT_FIELD_23, 'event_field_23');
     $this->addFieldMapping(EVENT_FIELD_20, 'event_field_20');
@@ -745,6 +770,10 @@ class EventsMigration extends LibraryMigration {
     $node->field_events_description['und'][0]['format'] = 'filtered_html';
     //Add dates
     $this->set_datefield_value(EVENT_FIELD_13_DATE, $node, $row->events_id, 'adv_events', 13);
+    //@see comment in library_migrate_field_names
+    //set_datefield_value(EVENT_FIELD_14_DATE, $node, $row->events_id, 'adv_events', 14);
+    $this->set_datefield_value(EVENT_FIELD_18_DATE, $node, $row->events_id, 'adv_events', 18);
+    $this->set_datefield_value(EVENT_FIELD_17_DATE, $node, $row->events_id, 'adv_events', 17);
   }
 
   public function complete($node, $row) {    

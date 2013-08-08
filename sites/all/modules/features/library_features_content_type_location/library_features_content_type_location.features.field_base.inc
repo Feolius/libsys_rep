@@ -192,7 +192,6 @@ function library_features_content_type_location_field_default_field_bases() {
           'type' => 'none',
         ),
         'target_bundles' => array(
-          'events' => 'events',
           'people' => 'people',
         ),
       ),
@@ -811,7 +810,6 @@ function library_features_content_type_location_field_default_field_bases() {
           'type' => 'none',
         ),
         'target_bundles' => array(
-          'events' => 'events',
           'people' => 'people',
         ),
       ),

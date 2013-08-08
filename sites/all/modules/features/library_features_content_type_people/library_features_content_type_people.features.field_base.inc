@@ -1012,7 +1012,7 @@ function library_features_content_type_people_field_default_field_bases() {
   // Exported field_base: 'field_people_visit_date'
   $field_bases['field_people_visit_date'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_people_visit_date',
@@ -1067,7 +1067,6 @@ function library_features_content_type_people_field_default_field_bases() {
           'type' => 'none',
         ),
         'target_bundles' => array(
-          'events' => 'events',
           'location' => 'location',
         ),
       ),

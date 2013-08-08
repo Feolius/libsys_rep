@@ -412,9 +412,10 @@ function library_features_content_type_location_field_default_field_instances() 
       ),
       'default' => array(
         'label' => 'above',
+        'module' => 'library_date_field',
         'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 13,
+        'type' => 'library_date_field_default',
+        'weight' => 29,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -468,6 +469,7 @@ function library_features_content_type_location_field_default_field_instances() 
       'active' => 1,
       'module' => 'library_date_field',
       'settings' => array(
+        'display_all_day' => 0,
         'increment' => 15,
         'input_format' => 'm/d/Y - H:i:s',
         'input_format_custom' => '',
@@ -476,7 +478,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'year_range' => '-3:+3',
       ),
       'type' => 'library_date_field_text',
-      'weight' => 45,
+      'weight' => 57,
     ),
   );
 
@@ -501,9 +503,12 @@ function library_features_content_type_location_field_default_field_instances() 
       ),
       'default' => array(
         'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 15,
+        'module' => 'entityreference',
+        'settings' => array(
+          'link' => FALSE,
+        ),
+        'type' => 'entityreference_label',
+        'weight' => 28,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -557,8 +562,8 @@ function library_features_content_type_location_field_default_field_instances() 
         'path' => '',
         'size' => 60,
       ),
-      'type' => 'entityreference_autocomplete_tags',
-      'weight' => 47,
+      'type' => 'entityreference_autocomplete',
+      'weight' => 29,
     ),
   );
 
@@ -891,7 +896,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 44,
+      'weight' => 27,
     ),
   );
 
@@ -979,7 +984,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 33,
+      'weight' => 24,
     ),
   );
 
@@ -1143,7 +1148,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 43,
+      'weight' => 26,
     ),
   );
 
@@ -1225,7 +1230,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 42,
+      'weight' => 25,
     ),
   );
 
@@ -1884,9 +1889,10 @@ function library_features_content_type_location_field_default_field_instances() 
       ),
       'default' => array(
         'label' => 'above',
+        'module' => 'library_date_field',
         'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 14,
+        'type' => 'library_date_field_default',
+        'weight' => 27,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1940,6 +1946,7 @@ function library_features_content_type_location_field_default_field_instances() 
       'active' => 1,
       'module' => 'library_date_field',
       'settings' => array(
+        'display_all_day' => 0,
         'increment' => 15,
         'input_format' => 'm/d/Y - H:i:s',
         'input_format_custom' => '',
@@ -1948,7 +1955,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'year_range' => '-3:+3',
       ),
       'type' => 'library_date_field_text',
-      'weight' => 46,
+      'weight' => 55,
     ),
   );
 
@@ -1973,9 +1980,12 @@ function library_features_content_type_location_field_default_field_instances() 
       ),
       'default' => array(
         'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 9,
+        'module' => 'entityreference',
+        'settings' => array(
+          'link' => FALSE,
+        ),
+        'type' => 'entityreference_label',
+        'weight' => 26,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -2030,7 +2040,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 38,
+      'weight' => 28,
     ),
   );
 
@@ -2118,7 +2128,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 32,
+      'weight' => 23,
     ),
   );
 
