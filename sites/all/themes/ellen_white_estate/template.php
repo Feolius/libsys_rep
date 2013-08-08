@@ -71,32 +71,34 @@ function ellen_white_estate_preprocess_node__files_full(&$vars) {
   $multiple_media = _ellen_white_estate_preprocess_node__tabs_files($vars);
 
   $field_language = field_language('node', $node, 'field_files_primary_media');
-  $primary_media = $node->field_files_primary_media[$field_language][0]['value'];
-  if (!$multiple_media) {
-    switch ($primary_media) {
-      case 'video':
-        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_video($vars);
-        break;
+  if ($node->field_files_primary_media[$field_language][0]['value']) {
+    $primary_media = $node->field_files_primary_media[$field_language][0]['value'];
+    if (!$multiple_media) {
+      switch ($primary_media) {
+        case 'video':
+          $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_video($vars);
+          break;
 
-      case 'image':
-        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_image($vars);
-        break;
+        case 'image':
+          $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_image($vars);
+          break;
 
-      case 'audio':
-        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_audio($vars);
-        break;
+        case 'audio':
+          $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_audio($vars);
+          break;
 
-      case 'document':
-        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_document($vars);
-        break;
+        case 'document':
+          $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_document($vars);
+          break;
 
-      case 'url':
-        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_url($vars);
-        break;
+        case 'url':
+          $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_url($vars);
+          break;
+      }
     }
-  }
-  else {
-    $vars['output'] = $multiple_media;
+    else {
+      $vars['output'] = $multiple_media;
+    }
   }
 }
 
