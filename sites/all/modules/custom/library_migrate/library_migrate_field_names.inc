@@ -37,8 +37,8 @@ define('PEOPLE_FIELD_3', 'field_people_received_event');
 //Location: Place of Event. ID 14. Link to events, locations.
 define('PEOPLE_FIELD_14', 'field_people_place');
 //Location: On a Visit. ID 18. Link to events, locations, date. /* Same as above - can be dropped */
-//define('PEOPLE_FIELD_18', 'field_people_visit_nodes');
-//define('PEOPLE_FIELD_18_DATE', 'field_people_visit_date');
+define('PEOPLE_FIELD_18', 'field_people_visit_nodes');
+define('PEOPLE_FIELD_18_DATE', 'field_people_visit_date');
 //People: Main Character. ID 23. Link to events.
 define('PEOPLE_FIELD_23', 'field_people_related_event');
 //Location: Home. ID 17. Link to  locations, date.
@@ -49,11 +49,11 @@ define('PEOPLE_FIELD_17_DATE', 'field_people_home_date');
 //Location: Place of Event. ID 14. Link to events, people.
 define('LOCATION_FIELD_14', 'field_location_related_entities');
 //Location: On a Visit. ID 18. Link to people, events, date. /* Same as above - can be dropped */
-//define('LOCATION_FIELD_18', 'field_location_visit_nodes');
-//define('LOCATION_FIELD_18_DATE', 'field_location_visit_date');
+define('LOCATION_FIELD_18', 'field_location_visit_nodes');
+define('LOCATION_FIELD_18_DATE', 'field_location_visit_date');
 //Location: Home. ID 17. Link to events, people, date. /* See above - can be dropped */
-//define('LOCATION_FIELD_17', 'field_location_home_nodes');
-//define('LOCATION_FIELD_17_DATE', 'field_location_home_date');
+define('LOCATION_FIELD_17', 'field_location_home_nodes');
+define('LOCATION_FIELD_17_DATE', 'field_location_home_date');
 //Location: En Route to. ID 20. Link to events.
 define('LOCATION_FIELD_20', 'field_location_route_to_events');
 //Location: Starting the Route. ID 21. Link to events.

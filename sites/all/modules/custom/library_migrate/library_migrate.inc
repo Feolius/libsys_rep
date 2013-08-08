@@ -771,9 +771,6 @@ class EventsMigration extends LibraryMigration {
     //Add dates
     $this->set_datefield_value(EVENT_FIELD_13_DATE, $node, $row->events_id, 'adv_events', 13);
     //@see comment in library_migrate_field_names
-    //set_datefield_value(EVENT_FIELD_14_DATE, $node, $row->events_id, 'adv_events', 14);
-    $this->set_datefield_value(EVENT_FIELD_18_DATE, $node, $row->events_id, 'adv_events', 18);
-    $this->set_datefield_value(EVENT_FIELD_17_DATE, $node, $row->events_id, 'adv_events', 17);
   }
 
   public function complete($node, $row) {    
