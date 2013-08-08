@@ -224,6 +224,10 @@
   clear: both;
 }
 
+.copiright a {
+  color: #0C7091;
+}
+
 a.download {
   font: bold 12px Arial, Helvetica, sans-serif;
   color: #9FBBD5;
@@ -234,8 +238,9 @@ a.download {
   text-align: center;
   border-radius: 0;
   -webkit-border-radius: 0;
-  margin-top: 20px;
+  margin-top: 7px;
   display: inline-block;
+  float: right;
 }
 
 .field-type-image {
@@ -368,4 +373,16 @@ ol.collection-search-results, ul.collection-search-results, .page-home .page ul,
 
 #edit-result-number {
   margin-top: 10px;
+}
+
+.ui-widget-content {
+  border: none;
+}
+
+.field-name-field-files-audio .jp-interface {
+  width: 632px;
+}
+
+.separator {
+  clear: both;
 }
