@@ -95,8 +95,7 @@ function ellen_white_estate_preprocess_node__files_full(&$vars) {
           $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_url($vars);
           break;
       }
-    }
-    else {
+    } else {
       $vars['output'] = $multiple_media;
     }
   }
