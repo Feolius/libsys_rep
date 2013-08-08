@@ -289,6 +289,7 @@ a.download {
 
 .panel-node .node-bottom {
   clear: both;
+  margin-top: 40px;
 }
 
 .question,
@@ -319,7 +320,8 @@ a.download {
   font-size: 12px;
 }
 
-.node-events .field-type-image {
+.node-events .field-type-image,
+.node-people .field-type-image {
   float: left;
   padding-right: 15px;
   padding-bottom: 5px;
