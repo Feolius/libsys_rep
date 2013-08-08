@@ -71,32 +71,33 @@ function ellen_white_estate_preprocess_node__files_full(&$vars) {
   $multiple_media = _ellen_white_estate_preprocess_node__tabs_files($vars);
 
   $field_language = field_language('node', $node, 'field_files_primary_media');
-  $primary_media = $node->field_files_primary_media[$field_language][0]['value'];
-  if (!$multiple_media) {
-    switch ($primary_media) {
-      case 'video':
-        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_video($vars);
-        break;
+  if ($node->field_files_primary_media[$field_language][0]['value']) {
+    $primary_media = $node->field_files_primary_media[$field_language][0]['value'];
+    if (!$multiple_media) {
+      switch ($primary_media) {
+        case 'video':
+          $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_video($vars);
+          break;
 
-      case 'image':
-        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_image($vars);
-        break;
+        case 'image':
+          $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_image($vars);
+          break;
 
-      case 'audio':
-        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_audio($vars);
-        break;
+        case 'audio':
+          $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_audio($vars);
+          break;
 
-      case 'document':
-        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_document($vars);
-        break;
+        case 'document':
+          $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_document($vars);
+          break;
 
-      case 'url':
-        $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_url($vars);
-        break;
+        case 'url':
+          $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_url($vars);
+          break;
+      }
+    } else {
+      $vars['output'] = $multiple_media;
     }
-  }
-  else {
-    $vars['output'] = $multiple_media;
   }
 }
 
@@ -186,6 +187,7 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
     $output['download'] = array(
       '#access' => TRUE,
       '#markup' => $link,
+      '#suffix' => '<div class="separator"></div>',
     );
   }
 
@@ -208,6 +210,7 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
 function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
   $node = $vars['node'];
   $output = array();
+
   if (isset($vars['content']['field_files_album_poster'])) {
     $output['poster'] = $vars['content']['field_files_album_poster'];
   }
@@ -218,7 +221,7 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
     $output['description'] = $vars['content']['field_files_description'];
   }
 
-  //Artist.
+  // Artist.
   if (!empty($node->field_files_artist)) {
     $items = field_get_items('node', $node, 'field_files_artist');
     foreach ($items as $item) {
@@ -233,25 +236,6 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
       '#prefix' => "<div class='field field-name-field-files-topics'><span class='field-label'>{$info['label']}:&nbsp;</span>",
       '#markup' => implode(', ', $artists),
       '#suffix' => '</div>',
-    );
-  }
-
-  // Download's link.
-  if (isset($vars['content']['field_files_audio'])) {
-    $field_language = field_language('node', $node, 'field_files_audio');
-    $link = l(
-      t('Download'),
-      file_create_url($node->field_files_audio[$field_language][0]['uri']),
-      array(
-        'attributes' => array(
-          'class' => array('download'),
-          'target' => '_blank'
-          )
-      )
-    );
-    $output['download'] = array(
-      '#access' => TRUE,
-      '#markup' => $link,
     );
   }
 
@@ -278,6 +262,26 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
       '#prefix' => "<div class='field field-name-field-files-topics'><span class='field-label'>{$info['label']}:&nbsp;</span>",
       '#markup' => implode(', ', $topics),
       '#suffix' => '</div>',
+    );
+  }
+
+  // Download's link.
+  if (isset($vars['content']['field_files_audio'])) {
+    $field_language = field_language('node', $node, 'field_files_audio');
+    $link = l(
+      t('Download'),
+      file_create_url($node->field_files_audio[$field_language][0]['uri']),
+      array(
+        'attributes' => array(
+          'class' => array('download'),
+          'target' => '_blank'
+        )
+      )
+    );
+    $output['download'] = array(
+      '#access' => TRUE,
+      '#markup' => $link,
+      '#suffix' => '<div class="separator"></div>',
     );
   }
 
@@ -349,7 +353,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
       '#markup' => "<div id='file-tabs-1'>$file</div>");
     $item_text = array(
       '#access' => TRUE,
-      '#markup' => "<div id='file-tabs-2'>$text</div></div>");
+      '#markup' => "<div id='file-tabs-2'>$text</div>");
     $output['tabs'] = array(
       '#access' => TRUE,
       '#markup' => drupal_render($output['tabs_start']) . drupal_render($item_file) . drupal_render($item_text) . '</div>'
@@ -373,6 +377,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
     $output['download'] = array(
       '#access' => TRUE,
       '#markup' => $link,
+      '#suffix' => '<div class="separator"></div>',
     );
   }
 
@@ -472,6 +477,7 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
    'video' => '',
    'image' => ''
   );
+
   if (isset($vars['content']['field_files_file'])) {
     $links['file'] = '<li>' . l(
       t('File'),
@@ -508,7 +514,9 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
         )
     ) . '</li>';
   }
+
   $sum = array_sum(array_map(function($link) {return empty($link) ? 0 : 1;}, $links));
+
   if ($sum > 1) {
     $output['container'] = array(
       '#prefix' => '<div id="ui-tabs"><ul>',
@@ -520,7 +528,7 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
       $file = _ellen_white_estate_preprocess_node__files_primary_document($vars);
       $output['file'] = array(
         '#prefix' => '<div id="ui-tabs-1">',
-        '#markup' => drupal_render($file),
+        '#markup' => drupal_render_children($file),
         '#suffix' => '</div>'
       );
     }
@@ -529,8 +537,8 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
       $audio = _ellen_white_estate_preprocess_node__files_primary_audio($vars);
       $output['audio'] = array(
         '#prefix' => '<div id="ui-tabs-2">',
-        '#markup' => drupal_render($audio),
-        '#suffix' => '</div>'
+        '#markup' => drupal_render_children($audio),
+        '#suffix' => '</div>',
       );
     }
 
@@ -538,7 +546,7 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
       $video = _ellen_white_estate_preprocess_node__files_primary_video($vars);
       $output['video'] = array(
         '#prefix' => '<div id="ui-tabs-3">',
-        '#markup' => drupal_render($video),
+        '#markup' => drupal_render_children($video),
         '#suffix' => '</div>'
       );
     }
@@ -547,14 +555,16 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
       $image = _ellen_white_estate_preprocess_node__files_primary_image($vars);
       $output['image'] = array(
         '#prefix' => '<div id="ui-tabs-4">',
-        '#markup' => drupal_render($image),
+        '#markup' => drupal_render_children($image),
         '#suffix' => '</div>'
       );
     }
+
     $output['footer'] = array(
       '#markup' => "</div>"
     );
   }
+
   return $output;
 }
 
@@ -562,7 +572,7 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
  * Implements hook_js_alter() to override jquery.
  */
 function ellen_white_estate_js_alter(&$javascript) {
-  if(arg(0) != 'library'){
+  if(arg(0) != 'library') {
     $jquery_path = drupal_get_path('theme', 'ellen_white_estate_old') . '/js/jquery-1.8.3.min.js';
     if (module_exists('jquery_update')) {
       foreach ($javascript as $key => $js_info) {
@@ -577,8 +587,7 @@ function ellen_white_estate_js_alter(&$javascript) {
         $javascript[$jquery_path] = $javascript[$jquery_old_key];
         unset($javascript[$jquery_old_key]);
         }
-      }
-      else {
+      } else {
         $javascript[$jquery_path] = $javascript['misc/jquery.js'];
         $javascript[$jquery_path] = $javascript['misc/jquery.js'];
         unset($javascript['misc/jquery.js']);
