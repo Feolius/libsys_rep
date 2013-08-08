@@ -31,7 +31,7 @@ function collection_page_menu() {
 function collection_page_theme() {
   return array(
     'facet_collection_search_results__alter' => array(
-      'variables' => array('results' => NULL),
+      'variables' => array('results' => NULL, 'solr_query_id' => 0,),
     ),
     'collection_page' => array(
       'template' => 'theme/collection-page',
@@ -45,10 +45,14 @@ function collection_page_theme() {
       'template' => 'theme/timeline-json-page',
       'arguments' => array(
         'options' => NULL,
+        'solr_query_id' => 0,
       ),
     ),
     'timeline_iframe' => array(
       'template' => 'theme/timeline-iframe-page',
+      'arguments' => array(
+        'solr_query_id' => 0,
+      ),
     ),
     'collection_standard_thumbnail_view' => array(
       'template' => 'theme/collection-standard-thumbnail-view',
@@ -111,7 +115,7 @@ function theme_facet_collection_search_results__alter($variables) {
 
 
   //Put apache_solr request results into SESSION for process those in timeline data callback
-  $_SESSION['collection_page_apache_solr_results'] = $results;
+  $_SESSION['collection_page_apache_solr_results'][$variables['solr_query_id']] = $results;
 
   //Define for what bundle current apache_solr request was executed
   $bundle = '';
@@ -131,7 +135,7 @@ function theme_facet_collection_search_results__alter($variables) {
   $is_bundle_date_fields_not_empty = _collection_page_is_date_fields_not_empty($results);
   if (!empty($timeline_library) && $is_bundle_date_fields_not_empty) {
     $content_tabs['#timeline']['#content'] = array(
-      '#view' => theme('timeline_iframe'),
+      '#view' => theme('timeline_iframe', array('solr_query_id' => $variables['solr_query_id'])),
       '#pager' => theme('pager', array('tags' => NULL)),
     );
   }
@@ -224,7 +228,12 @@ function collection_page_timeline_frame_callback() {
   $options = new stdClass();
   $options->start_slide = 0;
   $options->timeline_lib_url = $GLOBALS['base_url'] . '/' . libraries_get_path('timeline') . '/compiled/js/storyjs-embed.js';
-  echo theme('timeline_json', array('options' => $options));
+  if (isset($_GET['solr_query_id'])) {
+    echo theme('timeline_json', array('options' => $options, 'solr_query_id' => $_GET['solr_query_id']));
+  }
+  else {
+    echo theme('timeline_json', array('options' => $options, 'solr_query_id' => 0));
+  }
   exit;
 }
 
@@ -233,7 +242,16 @@ function collection_page_timeline_frame_callback() {
  */
 function collection_page_timeline_json_callback() {
   $date = array();
-  $results = $_SESSION['collection_page_apache_solr_results'];
+
+  //If the user have several solr queries in one session, we need to define which query results
+  //we should show in each timeline
+  if (isset($_GET['solr_query_id']) && isset($_SESSION['collection_page_apache_solr_results'][$_GET['solr_query_id']])) {
+    $results = $_SESSION['collection_page_apache_solr_results'][$_GET['solr_query_id']];
+  }
+  else {
+    $results = end($_SESSION['collection_page_apache_solr_results']);
+  }
+
 
   foreach ($results as $result) {
     $asset = new stdClass();
@@ -326,14 +344,24 @@ function collection_page_preprocess_timeline_json(&$vars) {
   $options = $vars['options'];
   $vars['start_slide'] = $options->start_slide;
   $vars['timeline_lib_url'] = $options->timeline_lib_url;
-  $vars['source'] = $GLOBALS['base_url'] . '/timeline-json';
+  if (isset($vars['solr_query_id'])) {
+    $vars['source'] = $GLOBALS['base_url'] . '/timeline-json?solr_query_id=' . $vars['solr_query_id'];
+  }
+  else {
+    $vars['source'] = $GLOBALS['base_url'] . '/timeline-json';
+  }
 }
 
 /**
  * Preprocess for iframe in Timeline View
  */
 function collection_page_preprocess_timeline_iframe(&$vars) {
-  $vars['iframe_url'] = $GLOBALS['base_url'] . '/timeline-iframe';
+  if (isset($vars['solr_query_id'])) {
+    $vars['iframe_url'] = $GLOBALS['base_url'] . '/timeline-iframe?solr_query_id=' . $vars['solr_query_id'];
+  }
+  else {
+    $vars['iframe_url'] = $GLOBALS['base_url'] . '/timeline-iframe';
+  }
   $vars['iframe_width'] = '100%';
   $vars['iframe_height'] = '600px';
 }

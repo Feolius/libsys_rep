@@ -69,13 +69,13 @@ function facet_collection_page() {
   list($final_query, $response) = apachesolr_do_query($query, $page);
   //We should save all query params in session to allow another modules use it if needed.
   //Solr query id in session
-  $sqid = &drupal_static('faset_collection_solr_query_id');
+  $sqid = & drupal_static('faset_collection_solr_query_id');
   $sqid = mt_rand();
   $_SESSION['facet_collection_solr_queries'][$sqid] = $final_query;
   $env_id = $query->solr('getId');
   apachesolr_has_searched($env_id, TRUE);
   $results = apachesolr_search_process_response($response, $final_query);
-  $build = theme('facet_collection_search_results__alter', array('results' => $results));
+  $build = theme('facet_collection_search_results__alter', array('results' => $results, 'solr_query_id' => $sqid));
   return $build;
 }
 
@@ -519,12 +519,12 @@ function facet_collection_apachesolr_process_results(&$results, DrupalSolrQueryI
     $start = $query->getParam('start');
     $result_number = count($results);
     //We need to add info about solr query id in SESSION to allow collection pager work, since it requires solr query for its work.
-    $sqid = &drupal_static('faset_collection_solr_query_id');
+    $sqid = & drupal_static('faset_collection_solr_query_id');
     for ($i = 0; $i < $result_number; $i++) {
       $link = $results[$i]['link'];
       $path = str_replace($base_url . '/', '', $link);
       $get_params['curr'] = $start + $i;
-      if(!empty($sqid)){
+      if (!empty($sqid)) {
         $get_params['sqid'] = $sqid;
       }
       $options = array(
@@ -542,7 +542,10 @@ function facet_collection_apachesolr_process_results(&$results, DrupalSolrQueryI
 function facet_collection_theme() {
   return array(
     'facet_collection_search_results' => array(
-      'variables' => array('results' => NULL),
+      'variables' => array(
+        'results' => NULL,
+        'solr_query_id' => 0,
+      ),
     ),
   );
 }
