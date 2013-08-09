@@ -100,7 +100,7 @@
                         jsonPath: jsonPath
                     },
                     success: function(data, status){
-                        if(!$.isEmptyObject(data)){
+                        if(data.length > 0){
                             var parent = $('#' + id).parent();
                             //Get flexpaper viewer container element
                             //var parent = parents[1];
@@ -108,11 +108,13 @@
                             container.html('<h3>Search document</h3>');
                             for(var key in data){
                                 term = data[key];
-                                $('<button> </button>')
-                                    .addClass('flexpaper-highlight-button')
-                                    .val(term)
-                                    .html(term)
-                                    .appendTo(container);
+                                if (typeof term != 'function') {
+                                    $('<button> </button>')
+                                        .addClass('flexpaper-highlight-button')
+                                        .val(term)
+                                        .html(term)
+                                        .appendTo(container);
+                                }
                             }
                             $('.flexpaper-highlight-button').click(function(){
                                 var searchTerm = $(this).val();
