@@ -75,7 +75,7 @@ function facet_collection_page() {
   $env_id = $query->solr('getId');
   apachesolr_has_searched($env_id, TRUE);
   $results = apachesolr_search_process_response($response, $final_query);
-  $build = theme('facet_collection_search_results__alter', array('results' => $results, 'solr_query_id' => $sqid));
+  $build = theme('facet_collection_search_results__alter', array('results' => $results));
   return $build;
 }
 
@@ -544,7 +544,6 @@ function facet_collection_theme() {
     'facet_collection_search_results' => array(
       'variables' => array(
         'results' => NULL,
-        'solr_query_id' => 0,
       ),
     ),
   );

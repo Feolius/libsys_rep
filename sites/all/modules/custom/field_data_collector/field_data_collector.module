@@ -147,7 +147,8 @@ function _field_data_collector_field_settings_form_process($form, $form_state) {
       $collecting_fields[$instance_name] = $instance['label'];
     }
   }
-
+  // If the bundle have the fields which could be collected
+  // display the settings to choose such fields and the bundles which will be collected
   if (!empty($collecting_fields)) {
 
     $collecting_fields_settings = $settings['collecting_fields'];
@@ -155,7 +156,7 @@ function _field_data_collector_field_settings_form_process($form, $form_state) {
     $collecting_fields_settings = isset($form_state['values']['field']['settings']['collecting_fields'])
       ? $form_state['values']['field']['settings']['collecting_fields']
       : $collecting_fields_settings;
-
+    // Display the possible fields for collecting
     $form['collecting_fields'] = array(
       '#type' => 'checkboxes',
       '#title' => t('Collecting fields'),
@@ -173,6 +174,7 @@ function _field_data_collector_field_settings_form_process($form, $form_state) {
       '#element_validate' => array('_field_data_collector_element_validate_filter'),
     );
 
+    // Calculate the possible bundles for chosen collecting field (with AJAX)
     $bundles = array();
     $entity_info = entity_get_info('node');
     if (empty($collecting_fields_settings)) {
@@ -197,8 +199,6 @@ function _field_data_collector_field_settings_form_process($form, $form_state) {
         }
       }
     }
-
-
     $form['target_bundles'] = array(
       '#type' => 'checkboxes',
       '#title' => t('Target bundles'),
@@ -212,6 +212,7 @@ function _field_data_collector_field_settings_form_process($form, $form_state) {
       '#element_validate' => array('_field_data_collector_element_validate_filter'),
     );
   }
+  // In other way display the message
   else {
     $form['collecting_fields'] = array(
       '#type' => 'fieldset',
@@ -220,6 +221,8 @@ function _field_data_collector_field_settings_form_process($form, $form_state) {
     );
   }
 
+  // Add the hidden value when the last changes were. That will be needed for recollecting the items from field,
+  // when the node will be saved with new settings.
   $form['last_changes_time'] = array(
     '#type' => 'hidden',
     '#value' => REQUEST_TIME,
@@ -278,27 +281,32 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
         $collecting_fields = $field['settings']['collecting_fields'];
         $field_settings_last_changes_time = $field['settings']['last_changes_time'];
 
+        //Look through the settings and collect the data from fields which exist in
+        // the settings for current collector field
         foreach ($collecting_fields as $collecting_field_name) {
 
           $collecting_field_items = field_get_items($entity_type, $entity, $collecting_field_name);
 
-          $origin_collecting_field_items = property_exists($entity, 'original') ? field_get_items($entity_type, $entity->original, $collecting_field_name) : array();
+          $original_collecting_field_items = property_exists($entity, 'original') && !empty($entity->original)
+            ? field_get_items($entity_type, $entity->original, $collecting_field_name)
+            : NULL;
 
-          //Verify the collecting field, if it isn't changed we shouldn't regerenerate the
-          // current field_data_collector field.
-          //Also if the field_data_collector field was added into the bundle when some content
-          // has been already existed we sould also generate the data for the field.
-          if (!empty($collecting_field_items) &&
-            (($entity->changed <= $field_settings_last_changes_time)
-              || ($collecting_field_items != $origin_collecting_field_items))
+          //Write data to the collector field if settings changes were made after the node creation or
+          // the data in collecting field was changed
+          if (($entity->changed <= $field_settings_last_changes_time)
+            || ($collecting_field_items !== $original_collecting_field_items)
           ) {
 
             $collecting_field_info = field_info_field($collecting_field_name);
 
             $bundles_intersection = array_intersect($target_bundles, $collecting_field_info['settings']['handler_settings']['target_bundles']);
+
+            //If the collecting field have the same list of available bundles as list in the
+            //current collector field settings, we could just copy all target ids from this collecting field.
             if ($collecting_field_info['settings']['handler_settings']['target_bundles'] == $target_bundles) {
               $collecting_fields_could_have_needed_items = TRUE;
               foreach ($collecting_field_items as $item) {
+                //Store only first 40 collected items in collector field
                 if (count($collector_field_field_items) < 40) {
                   $collector_field_field_items[] = $item['target_id'];
                 }
@@ -307,9 +315,12 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
                 }
               }
             }
+            //If these list are not the same, we need to filter the traget ids and choose only ids with
+            //needed bundles.
             elseif (!empty($bundles_intersection)) {
               $collecting_fields_could_have_needed_items = TRUE;
               foreach ($collecting_field_items as $item) {
+                //Store only first 40 collected items in collector field
                 if (count($collector_field_field_items) < 40) {
                   $target_node = node_load($item['target_id']);
                   if (in_array($target_node->type, $target_bundles)) {
@@ -324,6 +335,7 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
             }
           }
         }
+        //If the data of field was added or updated we need to write it into the collector field
         if ($collecting_fields_could_have_needed_items) {
           $entity->{$instance['field_name']} = array(
             LANGUAGE_NONE => array(
@@ -354,7 +366,8 @@ function field_data_collector_field_formatter_view($entity_type, $entity, $field
   $element = array();
 
   if ($display['type'] == 'field_data_collector_entityreference_formatter' && !empty($items)) {
-
+    //Display the field content like the primary media field content for each item
+    // from current field_data_collector field
     $formatter_settings = $display['settings']['content_types_settings'];
     $settings = array();
     foreach ($formatter_settings as $bundle => $bundle_settings) {
@@ -363,12 +376,14 @@ function field_data_collector_field_formatter_view($entity_type, $entity, $field
         $settings[$bundle] = $preset['settings'];
       }
     }
-
+    // Look for all items
     foreach ($items as $delta => $item) {
       $target_entity = isset($item['entity']) ? $item['entity'] : NULL;
 
       if (!empty($target_entity)) {
 
+        // If the primary media field was set for current item
+        // we should get the settings for each item bundle
         if (isset($settings[$target_entity->type]['primary_media_field'])
           && $settings[$target_entity->type]['primary_media_field'] != 'none' &&
           property_exists($target_entity, $settings[$target_entity->type]['primary_media_field'])
@@ -381,6 +396,7 @@ function field_data_collector_field_formatter_view($entity_type, $entity, $field
               : array();
           }
         }
+        // In other way we apply the default display settings for each item bundle
         else {
           $primary_media_formatter_settings = isset($settings[$target_entity->type]['primary_media_values_fields_with_formatters']['default'])
             ? $settings[$target_entity->type]['primary_media_values_fields_with_formatters']['default']
@@ -413,17 +429,19 @@ function field_data_collector_field_formatter_view($entity_type, $entity, $field
           }
           //If the user choose any other field to display
           else {
+            //Get the referenced formatter name
             $ref_field_formatter_name = isset($display_field_settings['formatter_for_field']['formatter'])
               ? $display_field_settings['formatter_for_field']['formatter']
               : "";
-
+            //And get the referenced formatter settings
             $ref_field_formatter_settings = isset($display_field_settings['formatter_for_field']['formatter_settings']['settings'])
               ? $display_field_settings['formatter_for_field']['formatter_settings']['settings']
               : "";
 
+            //If somethings needed is not set in the settings, we apply the default formatter for this
+            //field data collector field
             if (!empty($ref_field_name) && !empty($ref_field_formatter_name) && !empty($ref_field_formatter_settings)) {
-
-
+              //Collect the settings for referenced formatter
               $ref_entity_type = $field['settings']['target_type'];
               $ref_entity = $target_entity;
               $ref_langcode = $langcode;
@@ -441,13 +459,13 @@ function field_data_collector_field_formatter_view($entity_type, $entity, $field
               $ref_display['settings'] = $ref_field_formatter_settings;
 
               $ref_instance['display']['default'] = $ref_display;
-
+              //Invoke the referenced formatter
               if (!empty($ref_items)) {
                 if ($display_field_settings['field_label']) {
                   $field_output .= '<div class="field-label">' . $ref_instance['label'] . ': </div>';
                 }
                 $field_data = module_invoke($ref_display['module'], 'field_formatter_view', $ref_entity_type, $ref_entity, $ref_field, $ref_instance, $ref_langcode, $ref_items, $ref_display);
-
+                // Put the returned value from referenced formatter into current formatter output
                 $field_output .= '<div class="field-data">' . drupal_render($field_data) . '</div>';
               }
             }
@@ -464,7 +482,8 @@ function field_data_collector_field_formatter_view($entity_type, $entity, $field
     }
   }
   if ($display['type'] == 'field_data_collector_default_formatter') {
-
+    //Display field content like a list of node titles, with links on nodes
+    //where it's possible
     foreach ($items as $delta => $item) {
       $target_entity = isset($item['entity']) ? $item['entity'] : NULL;
       if (!empty($target_entity)) {
@@ -504,10 +523,7 @@ function _field_data_collector_fields_with_settings_compare_by_weight($a, $b) {
   else {
     return 1;
   }
-
-
 }
-
 
 /**
  * Implements hook_field_formatter_prepare_view().
@@ -526,6 +542,7 @@ function field_data_collector_field_formatter_prepare_view($entity_type, $entiti
       $items[$id] = field_get_items($entity_type, $entity, $field['field_name'], $langcode);
     }
 
+    //Userialize and collect the items from field_data_collector field for preparing
     foreach ($items[$id] as $delta => $item) {
       if (isset($item['value'])) {
         $tmp_items = unserialize($item['value']);
@@ -534,7 +551,7 @@ function field_data_collector_field_formatter_prepare_view($entity_type, $entiti
       }
     }
   }
-
+  //Prepare the items for the main formatter view function
   if ($target_ids) {
     $target_entities = entity_load($field['settings']['target_type'], $target_ids);
     foreach ($entities as $id => $entity) {
@@ -572,11 +589,12 @@ function field_data_collector_field_formatter_settings_form($field, $instance, $
     ),
   );
 
+
   if (!empty($target_bundles)) {
 
+    //Build form for the bundles which this field could store
     foreach ($target_bundles as $target_bundle => $target_bundle_widget_value) {
 
-      // Display the form for the bundle if the bundle have at least on field which could be primary field
       $form['content_types_settings'][$target_bundle] = array(
         '#title' => t($target_bundle . ' preset settings'),
         '#type' => 'fieldset',
@@ -589,8 +607,9 @@ function field_data_collector_field_formatter_settings_form($field, $instance, $
       $default_preset = isset($settings[$target_bundle]['bundle_preset']) ? $settings[$target_bundle]['bundle_preset'] : 'none';
 
       $optional_presets[$target_bundle] = array('none' => '-None-');
+      //Load possible presets for current bundle
       $optional_presets[$target_bundle] += field_data_collection_load_presets_for_bundle($target_bundle);
-
+      //If such presets are exists, display the select list
       if (count($optional_presets[$target_bundle]) > 1) {
         $entity_info = entity_get_info($target_type);
         $form['content_types_settings'][$target_bundle]['bundle_preset'] = array(
@@ -602,7 +621,7 @@ function field_data_collector_field_formatter_settings_form($field, $instance, $
           '#default_value' => $default_preset,
         );
       }
-
+      //In other way display the message
       else {
         $form['content_types_settings'][$target_bundle]['no_preset_message'] = array(
           '#markup' => '<div class="messages warning">' . t('No presets are available. You must to <a href="@create">create a preset</a> to proceed.', array('@create' => url('admin/config/media/field-data-collector-presets/add'))) . '</div>',
@@ -612,6 +631,7 @@ function field_data_collector_field_formatter_settings_form($field, $instance, $
     }
   }
   else {
+    //If acceptable bundles is not set at the settings, display the message
     $bundles = field_info_bundles($target_type);
     if (isset($bundles[$instance['bundle']])) {
       $bundle_info = $bundles[$instance['bundle']];
