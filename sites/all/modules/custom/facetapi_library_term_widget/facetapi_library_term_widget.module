@@ -81,6 +81,7 @@ function facetapi_library_term_widget_filter_form($form, &$form_state, $args) {
           //If we take something from session, it means that current options is not for full for some reasons. So, we shouldn't rewrite it for now
           $rewrite_session = FALSE;
         }
+        break;
       }
     }
     if($rewrite_session){

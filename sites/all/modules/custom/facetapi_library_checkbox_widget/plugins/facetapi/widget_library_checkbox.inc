@@ -24,24 +24,24 @@ class FacetapiWidgetLibraryCheckbox extends FacetapiWidget {
   public function execute() {
     $facet = $this->facet->getFacet();
     $form_id = 'facetapi_library_checkbox_widget_' . $facet['name'] . '_form';
-    $element = &$this->build[$this->facet['field alias']];
+    $element = & $this->build[$this->facet['field alias']];
     if (!empty($element)) {
-      $args = $this->getArgs($element, $facet);
-      $element = array(
-        'markup' => drupal_get_form($form_id, $args),
-      );
+      foreach ($element as $val) {
+        if (isset($val['#path'])) {
+          $args = $this->getArgs($facet, $val['#path']);
+          $element = array(
+            'markup' => drupal_get_form($form_id, $args),
+          );
+          break;
+        }
+      }
     }
   }
 
   /**
    * Get arguments needed for building widget form
    */
-  protected function getArgs($element, $facet){
-    //Get search path.
-    foreach ($element as $val) {
-      $search_path = $val['#path'];
-      break;
-    }
+  protected function getArgs($facet, $search_path) {
     $field_name = $facet['field api name'];
     $field_info = field_info_field($field_name);
     $variants = array();
@@ -52,14 +52,9 @@ class FacetapiWidgetLibraryCheckbox extends FacetapiWidget {
       case 'list_boolean':
         //Save order of checkboxes from field settings
         foreach ($field_info['settings']['allowed_values'] as $allowed_value => $label) {
-          if (isset($element[$allowed_value])) {
-            $variants[$allowed_value] = $label;
-          }
+          $variants[$allowed_value] = $label;
         }
         break;
-      default:
-        $variants = array_keys($element);
-        $variants = drupal_map_assoc($variants);
     }
     $args = array(
       'search path' => $search_path,
@@ -75,17 +70,13 @@ class FacetapiWidgetLibraryCheckbox extends FacetapiWidget {
   /**
    * This method allow to use this widget in facet_collection_block module
    */
-  public function getForm($forms){
+  public function getForm($forms, $path) {
     $facet = $this->facet->getFacet();
     $form_id = 'facetapi_library_checkbox_widget_' . $facet['name'] . '_form';
-    $form = array();
-    $element = $this->build[$this->facet['field alias']];
-    if (!empty($element)) {
-      $args = $this->getArgs($element, $facet);
-      $callback = $forms[$form_id]['callback'];
-      $fake_form_state['build_info']['form_id'] = $form_id;
-      $form = $callback(array(), $fake_form_state, $args);
-    }
+    $args = $this->getArgs($facet, $path);
+    $callback = $forms[$form_id]['callback'];
+    $fake_form_state['build_info']['form_id'] = $form_id;
+    $form = $callback(array(), $fake_form_state, $args);
     return $form;
   }
 

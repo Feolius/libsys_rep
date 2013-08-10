@@ -18,21 +18,23 @@ class FacetapiWidgetDateRange extends FacetapiWidget {
     $form_id = 'facetapi_date_range_widget_' . $facet['name'] . '_form';
 
     $element = & $this->build[$this->facet['field alias']];
-    $args = $this->getArgs($element, $facet);
-    $element = array(
-      'markup' => drupal_get_form($form_id, $args),
-    );
+    if(!empty($element)){
+      foreach($element as $val){
+        if(isset($val['#path'])){
+          $args = $this->getArgs($facet, $val['#path']);
+          $element = array(
+            'markup' => drupal_get_form($form_id, $args),
+          );
+          break;
+        }
+      }
+    }
   }
 
   /**
    * Get arguments needed for building widget form
    */
-  protected function getArgs($element, $facet) {
-    //Get search path.
-    foreach ($element as $val) {
-      $search_path = $val['#path'];
-      break;
-    }
+  protected function getArgs($facet, $search_path) {
     //Get min and max date. Transform it in 'Y/m/d' format for presentation in our widget
     $min_date_unix = $this->facet['min callback']($facet);
     $date_min_obj = new DateObject($min_date_unix, NULL, 'U');
@@ -54,17 +56,13 @@ class FacetapiWidgetDateRange extends FacetapiWidget {
   /**
    * This method allow to use this widget in facet_collection_block module
    */
-  public function getForm($forms) {
+  public function getForm($forms, $path) {
     $facet = $this->facet->getFacet();
     $form_id = 'facetapi_date_range_widget_' . $facet['name'] . '_form';
-    $form = array();
-    $element = $this->build[$this->facet['field alias']];
-    if (!empty($element)) {
-      $args = $this->getArgs($element, $facet);
-      $callback = $forms[$form_id]['callback'];
-      $fake_form_state['build_info']['form_id'] = $form_id;
-      $form = $callback(array(), $fake_form_state, $args);
-    }
+    $args = $this->getArgs($facet, $path);
+    $callback = $forms[$form_id]['callback'];
+    $fake_form_state['build_info']['form_id'] = $form_id;
+    $form = $callback(array(), $fake_form_state, $args);
     return $form;
   }
 

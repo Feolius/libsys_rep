@@ -156,7 +156,7 @@ function facet_collection_block_form($form, &$form_state) {
         $widget_plugin = new $class($widget_name, $realm, $facet_obj, $facet_settings);
         $widget_plugin->init();
         if (method_exists($widget_plugin, 'getForm')) {
-          $widget_form = $widget_plugin->getForm($forms);
+          $widget_form = $widget_plugin->getForm($forms, $_GET['q']);
           if (!empty($widget_form)) {
             $callbacks[$field_name] = facet_collection_block_remove_submits($widget_form);
             if (!isset($deltas[$widget_name])) {
