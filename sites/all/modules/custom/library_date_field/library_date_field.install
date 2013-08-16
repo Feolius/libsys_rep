@@ -21,9 +21,15 @@ function library_date_field_field_schema($field) {
         'not null' => FALSE,
         'views' => TRUE,
       ),
+      'notice' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+        'views' => TRUE,
+      ),
   );
 
  $columns['value2'] = $columns['value'];
  $columns['rounding2'] = $columns['rounding'];
   return array('columns' => $columns);
 }
+

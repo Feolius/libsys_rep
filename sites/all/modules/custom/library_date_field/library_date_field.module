@@ -273,6 +273,12 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
     '#default_value' => $default,
   );
 
+  $element['notice'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('We are uncertain about the exact date'),
+    '#default_value' => $item[$delta]['notice'],
+  );
+
   // Add fieldset.
   $element += array(
     '#type' => 'fieldset',
@@ -356,6 +362,10 @@ function library_date_field_field_formatter_view($entity_type, $entity, $field, 
     $output = !empty($date['value']) ? $date['value'] : '' ;
     if (sizeof($process) == 2 && !empty($date['value2']) && $date['value'] != $date['value2']) {
       $output .= " - {$date['value2']}";
+    }
+    if ($item['notice'] == TRUE) {
+      $output .= "<br>";
+      $output .= t("We are uncertain about the exact date");
     }
     $element[$delta] = array('#markup' => $output);
   }
