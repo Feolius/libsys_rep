@@ -33,3 +33,63 @@ function library_date_field_field_schema($field) {
   return array('columns' => $columns);
 }
 
+/**
+ * Implements hook_update().
+ */
+function library_date_field_update_102() {
+  if (db_table_exists('field_data_field_audio_year')) {
+    db_query('ALTER TABLE {field_data_field_audio_year} ADD notice int');
+  }
+
+  if (db_table_exists('field_data_field_events_time')) {
+    db_query('ALTER TABLE {field_data_field_events_time} ADD notice int');
+  }
+
+  if (db_table_exists('field_data_field_files_creation_date')) {
+    db_query('ALTER TABLE {field_data_field_files_creation_date} ADD notice int');
+  }
+
+  if (db_table_exists('field_data_field_files_filed_date')) {
+    db_query('ALTER TABLE {field_data_field_files_filed_date} ADD notice int');
+  }
+
+  if (db_table_exists('field_data_field_files_published_date')) {
+    db_query('ALTER TABLE {field_data_field_files_published_date} ADD notice int');
+  }
+
+  if (db_table_exists('field_data_field_files_received_date')) {
+    db_query('ALTER TABLE {field_data_field_files_received_date} ADD notice int');
+  }
+
+  if (db_table_exists('field_data_field_location_home_date')) {
+    db_query('ALTER TABLE {field_data_field_location_home_date} ADD notice int');
+  }
+
+  if (db_table_exists('field_data_field_location_visit_date')) {
+    db_query('ALTER TABLE {field_data_field_location_visit_date} ADD notice int');
+  }
+
+  if (db_table_exists('field_data_field_people_birthday')) {
+    db_query('ALTER TABLE {field_data_field_people_birthday} ADD notice int');
+  }
+
+  if (db_table_exists('field_data_field_people_death_date')) {
+    db_query('ALTER TABLE {field_data_field_people_death_date} ADD notice int');
+  }
+
+  if (db_table_exists('field_data_field_people_home_date')) {
+    db_query('ALTER TABLE {field_data_field_people_home_date} ADD notice int');
+  }
+
+  if (db_table_exists('field_data_field_people_marriage_date')) {
+    db_query('ALTER TABLE {field_data_field_people_marriage_date} ADD notice int');
+  }
+
+  if (db_table_exists('field_data_field_people_visit_date')) {
+    db_query('ALTER TABLE {field_data_field_people_visit_date} ADD notice int');
+  }
+
+  if (db_table_exists('field_data_field_publications_date')) {
+    db_query('ALTER TABLE {field_data_field_publications_date} ADD notice int');
+  }
+}
