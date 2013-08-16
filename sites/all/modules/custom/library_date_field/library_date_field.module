@@ -276,7 +276,7 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
   $element['notice'] = array(
     '#type' => 'checkbox',
     '#title' => t('We are uncertain about the exact date'),
-    '#default_value' => $item[$delta]['notice'],
+    '#default_value' => (empty($item[$delta])) ? FALSE : $item[$delta]['notice'],
   );
 
   // Add fieldset.
