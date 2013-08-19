@@ -137,7 +137,7 @@
   background: url(images/more_arrow.png) 0 center #0c7091 no-repeat;
 }
 
-#home-top > div:hover .arrow-link a {
+#home-top li > div:hover .arrow-link a {
   width: 34px;
 }
 
