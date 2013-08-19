@@ -321,7 +321,8 @@ a.download {
 }
 
 .node-events .field-type-image,
-.node-people .field-type-image {
+.node-people .field-type-image,
+.node-topics .field-type-image {
   float: left;
   padding-right: 15px;
   padding-bottom: 5px;
@@ -387,4 +388,19 @@ ol.collection-search-results, ul.collection-search-results, .page-home .page ul,
 
 .separator {
   clear: both;
+}
+
+#content .node-bottom .pane-node-field-people-tab-images div,
+#content .node-bottom .pane-node-field-topics-tab-images div,
+#content .node-bottom .pane-node-field-events-tab-images div,
+#content .node-bottom .pane-node-field-location-tab-images div {
+  display: inline;
+}
+
+#content .node-bottom .pane-node-field-people-tab-images a img,
+#content .node-bottom .pane-node-field-topics-tab-images a img,
+#content .node-bottom .pane-node-field-events-tab-images a img,
+#content .node-bottom .pane-node-field-location-tab-images a img {
+  display: inline;
+  margin: 0 10px 10px 0;
 }

@@ -384,14 +384,14 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
   if (isset($vars['content']['field_files_author'])) {
     $output['author'] = $vars['content']['field_files_author'];
   }
-  elseif (isset($vars['content']['field_files_author_location'])) {
-    $output['author'] = $vars['content']['field_files_author_location'];
+  if (isset($vars['content']['field_files_author_location'])) {
+    $output['author_location'] = $vars['content']['field_files_author_location'];
   }
   if (isset($vars['content']['field_files_receiver'])) {
     $output['receiver'] = $vars['content']['field_files_receiver'];
   }
-  elseif (isset($vars['content']['field_files_receiver_location'])) {
-    $output['receiver'] = $vars['content']['field_files_receiver_location'];
+  if (isset($vars['content']['field_files_receiver_location'])) {
+    $output['receiver_location'] = $vars['content']['field_files_receiver_location'];
   }
   if (isset($vars['content']['field_files_creation_date'])) {
     $output['creation_date'] = $vars['content']['field_files_creation_date'];
