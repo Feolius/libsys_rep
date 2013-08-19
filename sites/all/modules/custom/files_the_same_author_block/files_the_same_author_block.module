@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * Implements hook_block_info().
+ */
+function files_the_same_author_block_block_info() {
+  $blocks = array();
+  $blocks['files_the_same_author_block'] = array(
+    'info' => t('The Same Author Files'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  return $blocks;
+}
+
+
+/**
+ * Implements hook_block_view().
+ */
+function files_the_same_author_block_block_view($delta) {
+  $node = menu_get_object();
+  if (is_object($node)
+    && property_exists($node, 'type')
+    && $node->type == 'files'
+    && property_exists($node, 'field_files_author')
+  ) {
+    $author_items = field_get_items('node', $node, 'field_files_author');
+    $author_id = $author_items ? $author_items[0]['target_id'] : '';
+    if ($author_id) {
+      $content = views_embed_view('the_same_author_files', 'default_display', $author_id);
+      $author_node = node_load($author_id);
+      $author_name = $author_node ? $author_node->title : '';
+      return array(
+        'subject' => "Other " . $author_name . "'s Files ",
+        'content' => $content,
+      );
+    }
+  }
+  return array(
+    'content' => NULL,
+  );
+}

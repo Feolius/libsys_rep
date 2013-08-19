@@ -1,0 +1,5 @@
+name = Files The Same Author Block
+description = Provide a possibility to display files nodes with the same author in a special block
+package = Other
+dependencies[] = views
+core = 7.x
