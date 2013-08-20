@@ -113,6 +113,7 @@ function _ellen_white_estate_preprocess_node__files_primary_url($vars) {
  */
 function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
   $output = array();
+  $node = $vars['node'];
   if (isset($vars['content']['field_files_subtitle'])) {
     $output['subtitle'] = $vars['content']['field_files_subtitle'];
   }
@@ -122,17 +123,82 @@ function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
   if (isset($vars['content']['field_files_description'])) {
     $output['description'] = $vars['content']['field_files_description'];
   }
-  if (isset($vars['content']['field_video_date_taken'])) {
-    $output['date_taken'] = $vars['content']['field_video_date_taken'];
+
+  // General tagging.
+  // Peoples.
+  if (!empty($node->field_files_people_tags)) {
+    $items = field_get_items('node', $node, 'field_files_people_tags');
+      foreach ($items as $item) {
+        $peoples[] = l(
+          t($item['entity']->title),
+          "node/{$item['entity']->nid}"
+        );
+      }
+      $info = field_info_instance('node', 'field_files_people_tags', $node->type);
+      $output['peoples'] = array(
+        '#access' => TRUE,
+        '#label_display' => 'inline',
+        '#prefix' => "<div class='field field-name-field-files-people-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+        '#markup' => implode(', ', $peoples),
+        '#suffix' => '</div>',
+      );
   }
-  if (isset($vars['content']['field_files_video_people'])) {
-    $output['people'] = $vars['content']['field_files_video_people'];
+
+  // Locations.
+  if (!empty($node->field_files_location_tags)) {
+    $items = field_get_items('node', $node, 'field_files_location_tags');
+    foreach ($items as $item) {
+      $locations[] = l(
+        t($item['entity']->title),
+        "node/{$item['entity']->nid}"
+      );
+    }
+    $info = field_info_instance('node', 'field_files_location_tags', $node->type);
+    $output['locations'] = array(
+      '#access' => TRUE,
+      '#label_display' => 'inline',
+      '#prefix' => "<div class='field field-name-field-files-location-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+      '#markup' => implode(', ', $peoples),
+      '#suffix' => '</div>',
+    );
   }
-  if (isset($vars['content']['field_files_video_location'])) {
-    $output['location'] = $vars['content']['field_files_video_location'];
-  }
-  if (isset($vars['content']['field_files_video_event'])) {
-    $output['event'] = $vars['content']['field_files_video_event'];
+
+  // Events.
+  if (!empty($node->field_files_event_tags)) {
+    $items = field_get_items('node', $node, 'field_files_event_tags');
+    foreach ($items as $item) {
+      $events[] = l(
+        t($item['entity']->title),
+        "node/{$item['entity']->nid}"
+      );
+    }
+    $info = field_info_instance('node', 'field_files_event_tags', $node->type);
+    $output['events'] = array(
+      '#access' => TRUE,
+      '#label_display' => 'inline',
+      '#prefix' => "<div class='field field-name-field-files-event-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+      '#markup' => implode(', ', $peoples),
+      '#suffix' => '</div>',
+    );
+    }
+
+  // Topics.
+  if (!empty($node->field_files_topic_tags)) {
+    $items = field_get_items('node', $node, 'field_files_topic_tags');
+    foreach ($items as $item) {
+      $topics[] = l(
+        t($item['entity']->title),
+        "node/{$item['entity']->nid}"
+      );
+    }
+    $info = field_info_instance('node', 'field_files_topic_tags', $node->type);
+    $output['topics'] = array(
+      '#access' => TRUE,
+      '#label_display' => 'inline',
+      '#prefix' => "<div class='field field-name-field-files-topic-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+      '#markup' => implode(', ', $topics),
+      '#suffix' => '</div>',
+    );
   }
   if (isset($vars['content']['field_files_creation_date'])) {
     $output['creation_date'] = $vars['content']['field_files_creation_date'];
@@ -166,14 +232,81 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
   if (isset($vars['content']['field_files_description'])) {
     $output['description'] = $vars['content']['field_files_description'];
   }
-  if (isset($vars['content']['field_files_image_people'])) {
-    $output['people'] = $vars['content']['field_files_image_people'];
+  // General tagging.
+  // Peoples.
+  if (!empty($node->field_files_people_tags)) {
+    $items = field_get_items('node', $node, 'field_files_people_tags');
+    foreach ($items as $item) {
+      $peoples[] = l(
+        t($item['entity']->title),
+        "node/{$item['entity']->nid}"
+      );
+    }
+    $info = field_info_instance('node', 'field_files_people_tags', $node->type);
+    $output['peoples'] = array(
+      '#access' => TRUE,
+      '#label_display' => 'inline',
+      '#prefix' => "<div class='field field-name-field-files-people-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+      '#markup' => implode(', ', $peoples),
+      '#suffix' => '</div>',
+    );
   }
-  if (isset($vars['content']['field_files_image_location'])) {
-    $output['location'] = $vars['content']['field_files_image_location'];
+
+  // Locations.
+  if (!empty($node->field_files_location_tags)) {
+    $items = field_get_items('node', $node, 'field_files_location_tags');
+    foreach ($items as $item) {
+      $locations[] = l(
+        t($item['entity']->title),
+        "node/{$item['entity']->nid}"
+      );
+    }
+    $info = field_info_instance('node', 'field_files_location_tags', $node->type);
+    $output['locations'] = array(
+      '#access' => TRUE,
+      '#label_display' => 'inline',
+      '#prefix' => "<div class='field field-name-field-files-location-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+      '#markup' => implode(', ', $peoples),
+      '#suffix' => '</div>',
+    );
   }
-  if (isset($vars['content']['field_files_image_event'])) {
-    $output['event'] = $vars['content']['field_files_image_event'];
+
+  // Events.
+  if (!empty($node->field_files_event_tags)) {
+    $items = field_get_items('node', $node, 'field_files_event_tags');
+    foreach ($items as $item) {
+      $events[] = l(
+        t($item['entity']->title),
+        "node/{$item['entity']->nid}"
+      );
+    }
+    $info = field_info_instance('node', 'field_files_event_tags', $node->type);
+    $output['events'] = array(
+      '#access' => TRUE,
+      '#label_display' => 'inline',
+      '#prefix' => "<div class='field field-name-field-files-event-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+      '#markup' => implode(', ', $peoples),
+      '#suffix' => '</div>',
+    );
+  }
+
+  // Topics.
+  if (!empty($node->field_files_topic_tags)) {
+    $items = field_get_items('node', $node, 'field_files_topic_tags');
+    foreach ($items as $item) {
+      $topics[] = l(
+        t($item['entity']->title),
+        "node/{$item['entity']->nid}"
+      );
+    }
+    $info = field_info_instance('node', 'field_files_topic_tags', $node->type);
+    $output['topics'] = array(
+      '#access' => TRUE,
+      '#label_display' => 'inline',
+      '#prefix' => "<div class='field field-name-field-files-topic-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+      '#markup' => implode(', ', $topics),
+      '#suffix' => '</div>',
+    );
   }
   if (isset($vars['content']['field_files_creation_date'])) {
     $output['creation_date'] = $vars['content']['field_files_creation_date'];
@@ -256,20 +389,78 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
     $output['length'] = $vars['content']['field_files_length'];
   }
 
+  // General tagging.
+  // Peoples.
+  if (!empty($node->field_files_people_tags)) {
+    $items = field_get_items('node', $node, 'field_files_people_tags');
+    foreach ($items as $item) {
+      $peoples[] = l(
+        t($item['entity']->title),
+        "node/{$item['entity']->nid}"
+      );
+    }
+    $info = field_info_instance('node', 'field_files_people_tags', $node->type);
+    $output['peoples'] = array(
+      '#access' => TRUE,
+      '#label_display' => 'inline',
+      '#prefix' => "<div class='field field-name-field-files-people-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+      '#markup' => implode(', ', $peoples),
+      '#suffix' => '</div>',
+    );
+  }
+
+  // Locations.
+  if (!empty($node->field_files_location_tags)) {
+    $items = field_get_items('node', $node, 'field_files_location_tags');
+    foreach ($items as $item) {
+      $locations[] = l(
+        t($item['entity']->title),
+        "node/{$item['entity']->nid}"
+      );
+    }
+    $info = field_info_instance('node', 'field_files_location_tags', $node->type);
+    $output['locations'] = array(
+      '#access' => TRUE,
+      '#label_display' => 'inline',
+      '#prefix' => "<div class='field field-name-field-files-location-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+      '#markup' => implode(', ', $peoples),
+      '#suffix' => '</div>',
+    );
+  }
+
+  // Events.
+  if (!empty($node->field_files_event_tags)) {
+    $items = field_get_items('node', $node, 'field_files_event_tags');
+    foreach ($items as $item) {
+      $events[] = l(
+        t($item['entity']->title),
+        "node/{$item['entity']->nid}"
+      );
+    }
+    $info = field_info_instance('node', 'field_files_event_tags', $node->type);
+    $output['events'] = array(
+      '#access' => TRUE,
+      '#label_display' => 'inline',
+      '#prefix' => "<div class='field field-name-field-files-event-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+      '#markup' => implode(', ', $peoples),
+      '#suffix' => '</div>',
+    );
+  }
+
   // Topics.
-  if (!empty($node->field_files_topics)) {
-    $items = field_get_items('node', $node, 'field_files_topics');
+  if (!empty($node->field_files_topic_tags)) {
+    $items = field_get_items('node', $node, 'field_files_topic_tags');
     foreach ($items as $item) {
       $topics[] = l(
         t($item['entity']->title),
         "node/{$item['entity']->nid}"
       );
     }
-    $info = field_info_instance('node', 'field_files_topics', $node->type);
+    $info = field_info_instance('node', 'field_files_topic_tags', $node->type);
     $output['topics'] = array(
       '#access' => TRUE,
       '#label_display' => 'inline',
-      '#prefix' => "<div class='field field-name-field-files-topics'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+      '#prefix' => "<div class='field field-name-field-files-topic-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
       '#markup' => implode(', ', $topics),
       '#suffix' => '</div>',
     );

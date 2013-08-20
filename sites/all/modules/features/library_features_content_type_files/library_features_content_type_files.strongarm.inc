@@ -40,6 +40,21 @@ function library_features_content_type_files_strongarm() {
       'token' => array(
         'custom_settings' => FALSE,
       ),
+      'home_top' => array(
+        'custom_settings' => TRUE,
+      ),
+      'home_left' => array(
+        'custom_settings' => TRUE,
+      ),
+      'home_middle' => array(
+        'custom_settings' => TRUE,
+      ),
+      'home_right' => array(
+        'custom_settings' => TRUE,
+      ),
+      'home_bottom' => array(
+        'custom_settings' => TRUE,
+      ),
     ),
     'extra_fields' => array(
       'form' => array(
