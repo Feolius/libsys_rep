@@ -273,12 +273,6 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
     '#default_value' => $default,
   );
 
-  $element['notice'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('We are uncertain about the exact date'),
-    '#default_value' => (empty($item[$delta])) ? FALSE : $item[$delta]['notice'],
-  );
-
   // Add fieldset.
   $element += array(
     '#type' => 'fieldset',
@@ -306,13 +300,19 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
       );
     }
   }
-    $element['value2']['#title'] = t('to:');
-    $element['value2']['#states'] = array(
-      'visible' => array(
-        _library_date_field_process_states($field_name, $langcode, $delta, 'show_end_date') =>
-        array('checked' => TRUE),
-      ),
-    );
+  $element['value2']['#title'] = t('to:');
+  $element['value2']['#states'] = array(
+    'visible' => array(
+      _library_date_field_process_states($field_name, $langcode, $delta, 'show_end_date') =>
+      array('checked' => TRUE),
+    ),
+  );
+
+  $element['notice'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Approximation'),
+    '#default_value' => (empty($item[$delta])) ? FALSE : $item[$delta]['notice'],
+  );
 
   return $element;
 }
@@ -364,8 +364,7 @@ function library_date_field_field_formatter_view($entity_type, $entity, $field, 
       $output .= " - {$date['value2']}";
     }
     if ($item['notice'] == TRUE) {
-      $output .= "<br>";
-      $output .= t("We are uncertain about the exact date");
+      $output .= ' ' . t("(Approximation)");
     }
     $element[$delta] = array('#markup' => $output);
   }
