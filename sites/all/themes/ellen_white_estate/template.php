@@ -113,6 +113,9 @@ function _ellen_white_estate_preprocess_node__files_primary_url($vars) {
  */
 function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
   $output = array();
+  if (isset($vars['content']['field_files_subtitle'])) {
+    $output['subtitle'] = $vars['content']['field_files_subtitle'];
+  }
   if (isset($vars['content']['field_files_youtube_media'])) {
     $output['video'] = $vars['content']['field_files_youtube_media'];
   }
@@ -130,6 +133,9 @@ function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
   }
   if (isset($vars['content']['field_files_video_event'])) {
     $output['event'] = $vars['content']['field_files_video_event'];
+  }
+  if (isset($vars['content']['field_files_creation_date'])) {
+    $output['creation_date'] = $vars['content']['field_files_creation_date'];
   }
 
   // Copiright.
@@ -151,7 +157,9 @@ function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
 function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
   $node = $vars['node'];
   $output = array();
-
+  if (isset($vars['content']['field_files_subtitle'])) {
+    $output['subtitle'] = $vars['content']['field_files_subtitle'];
+  }
   if (isset($vars['content']['field_files_image'])) {
     $output['image'] = $vars['content']['field_files_image'];
   }
@@ -167,8 +175,8 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
   if (isset($vars['content']['field_files_image_event'])) {
     $output['event'] = $vars['content']['field_files_image_event'];
   }
-  if (isset($vars['content']['field_image_date_taken'])) {
-    $output['date_taken'] = $vars['content']['field_image_date_taken'];
+  if (isset($vars['content']['field_files_creation_date'])) {
+    $output['creation_date'] = $vars['content']['field_files_creation_date'];
   }
 
   // Download's link.
@@ -210,7 +218,9 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
 function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
   $node = $vars['node'];
   $output = array();
-
+  if (isset($vars['content']['field_files_subtitle'])) {
+    $output['subtitle'] = $vars['content']['field_files_subtitle'];
+  }
   if (isset($vars['content']['field_files_album_poster'])) {
     $output['poster'] = $vars['content']['field_files_album_poster'];
   }
@@ -518,6 +528,10 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
   $sum = array_sum(array_map(function($link) {return empty($link) ? 0 : 1;}, $links));
 
   if ($sum > 1) {
+    if (isset($vars['content']['field_files_subtitle'])) {
+      $output['subtitle'] = $vars['content']['field_files_subtitle'];
+      unset($vars['content']['field_files_subtitle']);
+    }
     $output['container'] = array(
       '#prefix' => '<div id="ui-tabs"><ul>',
       '#markup' => $links['file'] . $links['audio'] . $links['video'] . $links['image'],
