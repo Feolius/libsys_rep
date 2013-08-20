@@ -364,7 +364,7 @@ function library_date_field_field_formatter_view($entity_type, $entity, $field, 
       $output .= " - {$date['value2']}";
     }
     if ($item['notice'] == TRUE) {
-      $output .= ' ' . t("(Approximation)");
+      $output .= ' ' . t("(approximation)");
     }
     $element[$delta] = array('#markup' => $output);
   }
