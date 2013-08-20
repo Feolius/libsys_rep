@@ -30,11 +30,13 @@
   Drupal.behaviors.libraryDownloadFile = {
     attach: function(context, settings) {
       $('a.download').once(function() {
-        $(this).click(function(event) {
-          event.preventDefault();
-          var url = $('a.download').attr('href');
-          downloadFile(url);
-        })
+        $(this).each(function( index, value ) {
+          $(value).click(function(event) {
+            event.preventDefault();
+            var url = $(value).attr('href');
+            downloadFile(url);
+          });
+        });
       })
     }
   }
@@ -76,7 +78,14 @@
   Drupal.behaviors.libraryContentTabsFile = {
     attach: function(context, settings) {
       $('.node-files').once(function() {
-        $('#ui-tabs').tabs();
+        $('#ui-tabs').tabs({
+            select: function (event, ui) {
+            //TODO: clean openseadragon div only when tab with him selected
+            //TODO: clean openseadragon div only in tab with him
+            $(".openseadragon").html(' ');
+            Drupal.behaviors.openseadragon.attach();
+          }
+        });
         $('#file-tabs').tabs();
       })
     }
