@@ -1570,7 +1570,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'weight' => 0,
       ),
       'default' => array(
-        'label' => 'above',
+        'label' => 'inline',
         'module' => 'library_date_field',
         'settings' => array(),
         'type' => 'library_date_field_default',
@@ -3553,7 +3553,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'weight' => 0,
       ),
       'default' => array(
-        'label' => 'above',
+        'label' => 'inline',
         'module' => 'library_date_field',
         'settings' => array(),
         'type' => 'library_date_field_default',
