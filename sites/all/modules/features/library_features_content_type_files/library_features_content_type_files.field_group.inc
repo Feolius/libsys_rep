@@ -55,16 +55,15 @@ function library_features_content_type_files_field_group_info() {
     'children' => array(
       0 => 'field_files_author_location',
       1 => 'field_files_category',
-      2 => 'field_files_file_type',
-      3 => 'field_files_folder',
-      4 => 'field_files_key_points',
-      5 => 'field_files_original_title',
-      6 => 'field_files_publication',
-      7 => 'field_files_receiver',
-      8 => 'field_files_receiver_location',
-      9 => 'field_files_subtitle',
-      10 => 'group_files_administrative',
-      11 => 'group_files_source',
+      2 => 'field_files_folder',
+      3 => 'field_files_key_points',
+      4 => 'field_files_original_title',
+      5 => 'field_files_publication',
+      6 => 'field_files_receiver',
+      7 => 'field_files_receiver_location',
+      8 => 'field_files_subtitle',
+      9 => 'group_files_administrative',
+      10 => 'group_files_source',
     ),
     'format_type' => 'fieldset',
     'format_settings' => array(
@@ -213,7 +212,7 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = 'group_files_start';
   $field_group->data = array(
     'label' => 'Additional Information',
-    'weight' => '1',
+    'weight' => '-1',
     'children' => array(
       0 => 'field_files_creation_date',
       1 => 'field_files_rating',
@@ -243,7 +242,7 @@ function library_features_content_type_files_field_group_info() {
   $field_group->parent_name = 'group_files_start';
   $field_group->data = array(
     'label' => 'General Tagging',
-    'weight' => '2',
+    'weight' => '0',
     'children' => array(
       0 => 'field_files_event_tags',
       1 => 'field_files_location_tags',
@@ -336,8 +335,9 @@ function library_features_content_type_files_field_group_info() {
       0 => 'field_files_description',
       1 => 'field_files_primary_media',
       2 => 'title_field',
-      3 => 'group_files_general_additional',
-      4 => 'group_files_general_tagging',
+      3 => 'field_files_extended_summary',
+      4 => 'group_files_general_additional',
+      5 => 'group_files_general_tagging',
     ),
     'format_type' => 'multistep_adl',
     'format_settings' => array(

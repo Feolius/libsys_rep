@@ -16,3 +16,9 @@ function library_migrate_update_7101() {
   field_delete_field('field_location_home_nodes');
   field_delete_field('field_location_home_date');
 }
+
+function library_migrate_update_7102() {
+  field_delete_field('field_files_source_volume');
+  field_delete_field('field_files_source_number');
+  field_delete_field('field_files_source_chapter');
+}
