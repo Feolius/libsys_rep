@@ -47,16 +47,14 @@ function facetapi_library_term_widget_filter_form($form, &$form_state, $args) {
   if (isset($seen_ids[$form_id])) {
     $seen_id = $seen_ids[$form_id] + 1;
     $form_id = $form_id . '--' . $seen_id;
-  }
-  else {
+  } else {
     $seen_id = 1;
   }
   if ($seen_id == 1) {
     $select_id = 'facetapi-select-term-' . $facet_name;
     $container_id = 'facetapi-term-item-container-' . $facet_name;
     $marker_class = 'facetapi-term-marker-' . $facet_name;
-  }
-  else {
+  } else {
     $select_id = 'facetapi-select-term-' . $facet_name . '-' . $seen_id;
     $container_id = 'facetapi-term-item-container-' . $facet_name . '-' . $seen_id;
     $marker_class = 'facetapi-term-marker-' . $facet_name . '-' . $seen_id;
@@ -64,75 +62,70 @@ function facetapi_library_term_widget_filter_form($form, &$form_state, $args) {
   $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
   $default_value = array();
   $default_items = array();
+  $_SESSION['facetapi_libray_term_widget_options'][$field_alias] = $options;
   if (isset($get_params['f'])) {
     $f = $get_params['f'];
-    $rewrite_session = TRUE;
     foreach ($f as $key => $row) {
       $arr = explode(':', $row);
       if ($arr[0] == $field_alias) {
         $default_value[] = $arr[1];
-        //Trying to get correct labels from facet options
-        if(!empty($options[$arr[1]])){
+        // Trying to get correct labels from facet options.
+        if (!empty($options[$arr[1]])) {
           $default_items[$arr[1]] = $options[$arr[1]];
           unset($options[$arr[1]]);
-        }else{
-          //If facet get no variants then get it from session
-          $default_items[$arr[1]] = $_SESSION[$field_alias][$form_id][$arr[1]];
-          //If we take something from session, it means that current options is not for full for some reasons. So, we shouldn't rewrite it for now
-          $rewrite_session = FALSE;
+        } else {
+          $default_items[$arr[1]] = $_SESSION['facetapi_libray_term_widget_chosen_options'][$field_alias][$arr[1]];
         }
-        break;
       }
     }
-    if($rewrite_session){
-      $_SESSION[$field_alias][$form_id] = $options;
-    }
   }
-  $default_value = drupal_json_encode($default_value);
-  $settings = array(
-    'forms' => array(
-      $form_id => array(
-        'selectId' => $select_id,
-        'itemContainerId' => $container_id,
-        'defaultItems' => $default_items,
-        'markerClass' => $marker_class
+  $form = array();
+  if (!empty($options) || !empty($default_value)) {
+    $default_value = drupal_json_encode($default_value);
+    $settings = array(
+      'forms' => array(
+        $form_id => array(
+          'selectId' => $select_id,
+          'itemContainerId' => $container_id,
+          'defaultItems' => $default_items,
+          'markerClass' => $marker_class
+        ),
       ),
-    ),
-  );
-  drupal_add_library('system', 'ui.autocomplete');
-  drupal_add_library('system', 'ui.button');
-  drupal_add_js(drupal_get_path('module', 'facetapi_library_term_widget') . '/js/facetapi_library_term_widget.js');
-  drupal_add_js(array('facetapi_library_term_widget' => $settings), 'setting');
-  drupal_add_css(drupal_get_path('module', 'facetapi_library_term_widget') . '/css/facetapi_library_term_widget.css');
-  $form = array(
-    'title' => array(
-      '#type' => 'item',
-      '#markup' => '<h3>' . $args['label'] . '</h3>',
-      '#weight' => -20,
-    ),
-    'select' => array(
-      '#type' => 'select',
-      '#options' => $options,
-      '#validated' => TRUE,
-      '#attributes' => array(
-        'id' => $select_id,
-      )
-    ),
-    'items' => array(
-      '#type' => 'hidden',
-      '#default_value' => $default_value,
-      '#attributes' => array(
-        'id' => $container_id,
-      )
-    ),
-    'filter_button' => array(
-      '#type' => 'submit',
-      '#value' => t('Filter'),
-      '#weight' => 14,
-      '#submit' => array('facetapi_library_term_widget_filter_submit'),
-    ),
-
-  );
+    );
+    drupal_add_library('system', 'ui.autocomplete');
+    drupal_add_library('system', 'ui.button');
+    drupal_add_js(drupal_get_path('module', 'facetapi_library_term_widget') . '/js/facetapi_library_term_widget.js');
+    drupal_add_js(array('facetapi_library_term_widget' => $settings), 'setting');
+    drupal_add_css(drupal_get_path('module', 'facetapi_library_term_widget') . '/css/facetapi_library_term_widget.css');
+    $form = array(
+      'title' => array(
+        '#type' => 'item',
+        '#markup' => '<h3>' . $args['label'] . '</h3>',
+        '#weight' => -20,
+      ),
+      'select' => array(
+        '#type' => 'select',
+        '#options' => $options,
+        '#validated' => TRUE,
+        '#attributes' => array(
+          'id' => $select_id,
+        )
+      ),
+      'items' => array(
+        '#type' => 'hidden',
+        '#default_value' => $default_value,
+        '#attributes' => array(
+          'id' => $container_id,
+        )
+      ),
+      'filter_button' => array(
+        '#type' => 'submit',
+        '#value' => t('Filter'),
+        '#weight' => 14,
+        '#submit' => array('facetapi_library_term_widget_filter_submit'),
+      ),
+    );
+  }
   return $form;
 }
 
@@ -153,11 +146,21 @@ function facetapi_library_term_widget_filter_submit($form, &$form_state) {
       }
     }
   }
+  if (isset($_SESSION['facetapi_libray_term_widget_chosen_options'][$field_alias])) {
+    $old_chosen_options = $_SESSION['facetapi_libray_term_widget_chosen_options'][$field_alias];
+  }
+  $options = $_SESSION['facetapi_libray_term_widget_options'][$field_alias];
   $items = $form_state['input']['items'];
   $items = drupal_json_decode($items);
   foreach ($items as $item) {
+    if (isset($options[$item])) {
+      $new_chosen_options[$item] = $options[$item];
+    } elseif (isset($old_chosen_options[$item])) {
+      $new_chosen_options[$item] = $old_chosen_options[$item];
+    }
     $f[] = $field_alias . ':' . $item;
   }
+  $_SESSION['facetapi_libray_term_widget_chosen_options'][$field_alias] = $new_chosen_options;
   if (!empty($f)) {
     $get_params['f'] = $f;
   }

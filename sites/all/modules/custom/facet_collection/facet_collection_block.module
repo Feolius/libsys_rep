@@ -137,9 +137,9 @@ function facet_collection_block_form($form, &$form_state) {
   //All facets should be already built. Check it and if needed build facets
   $builds = & drupal_static('facetapi_block_view', array());
   $group = $searcher . ':' . $realm_name;
-  if (!isset($builds[$group])) {
-    $builds[$group] = facetapi_build_realm($searcher, $realm_name);
-  }
+//  if (!isset($builds[$group])) {
+//    $builds[$group] = facetapi_build_realm($searcher, $realm_name);
+//  }
   //Build unsorted form array. We need keys in the form array to be names of fields to perform sort after building. But facet names
   //are needed too in all widget forms. So, we store all field api names and corresponding facets in $facet_fields array
   $facet_fields = array();
