@@ -496,6 +496,33 @@ function library_features_content_type_files_field_default_field_bases() {
     'type' => 'entityreference',
   );
 
+  // Exported field_base: 'field_files_extended_summary'
+  $field_bases['field_files_extended_summary'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_files_extended_summary',
+    'foreign keys' => array(
+      'format' => array(
+        'columns' => array(
+          'format' => 'format',
+        ),
+        'table' => 'filter_format',
+      ),
+    ),
+    'indexes' => array(
+      'format' => array(
+        0 => 'format',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'text',
+    'settings' => array(),
+    'translatable' => 0,
+    'type' => 'text_long',
+  );
+
   // Exported field_base: 'field_files_file'
   $field_bases['field_files_file'] = array(
     'active' => 1,
