@@ -286,7 +286,7 @@ class FilesMigration extends LibraryMigration {
     $this->addFieldMapping('field_files_subtitle', 'extendedtopic');
     $this->addFieldMapping('field_files_description', 'description');
     $this->addFieldMapping('field_files_key_points', 'keypoints');
-    $this->addFieldMapping('field_files_description:summary', 'extended_summary');
+    $this->addFieldMapping('field_files_extended_summary', 'extended_summary');
     $this->addFieldMapping('field_files_text', 'text');
     $this->addFieldMapping('field_files_keywords', 'keywords')
             ->separator(',')
