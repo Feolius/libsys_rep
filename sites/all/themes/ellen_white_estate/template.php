@@ -892,36 +892,8 @@ function _ellen_white_estate_preprocess_node__home(&$vars) {
 }
 
 /**
- * Preprocesses variables for node--home-left.tpl.php.
- */
-function ellen_white_estate_preprocess_node__home_left(&$vars) {
-  $vars['content']['allow'] = _ellen_white_estate_preprocess_node__home($vars);
-}
-
-/**
- * Preprocesses variables for node--home-middle.tpl.php.
- */
-function ellen_white_estate_preprocess_node__home_middle(&$vars) {
-    $vars['content']['allow'] = _ellen_white_estate_preprocess_node__home($vars);
-}
-
-/**
- * Preprocesses variables for node--home-right.tpl.php.
- */
-function ellen_white_estate_preprocess_node__home_right(&$vars) {
-  $vars['content']['allow'] = _ellen_white_estate_preprocess_node__home($vars);
-}
-
-/**
  * Preprocesses variables for node--home-top.tpl.php.
  */
 function ellen_white_estate_preprocess_node__home_top(&$vars) {
-  $vars['content']['allow'] = _ellen_white_estate_preprocess_node__home($vars);
-}
-
-/**
- * Preprocesses variables for node--home-bottom.tpl.php.
- */
-function ellen_white_estate_preprocess_node__home_bottom(&$vars) {
   $vars['content']['allow'] = _ellen_white_estate_preprocess_node__home($vars);
 }
