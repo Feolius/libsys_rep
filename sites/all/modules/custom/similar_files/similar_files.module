@@ -1,0 +1,164 @@
+<?php
+
+
+
+/**
+ * Implements hook_block_info().
+ */
+function similar_files_block_info() {
+  $blocks = array();
+  $blocks['similar_files_block'] = array(
+    'info' => t('Similar Files'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+
+/**
+ * Implements hook_block_view().
+ */
+function similar_files_block_view($delta) {
+  $base_view_name = 'similar_files';
+  $view_displays = array(
+    'image' => array(
+      'block_title' => 'More Images',
+      'subblocks' => array(
+        array(
+          'field_name' => 'field_files_people_tags',
+          'subblock_title' => 'Same People',
+          'view_display_name' => 'same_people',
+        ),
+        array(
+          'field_name' => 'field_files_location_tags',
+          'subblock_title' => 'Same Location',
+          'view_display_name' => 'same_location',
+        ),
+        array(
+          'field_name' => 'field_files_event_tags',
+          'subblock_title' => 'Same Event',
+          'view_display_name' => 'same_event',
+        ),
+      ),
+    ),
+    'video' => array(
+      'block_title' => 'More Videos',
+      'subblocks' => array(
+        array(
+          'field_name' => 'field_files_people_tags',
+          'subblock_title' => 'Same People',
+          'view_display_name' => 'same_people',
+        ),
+        array(
+          'field_name' => 'field_files_location_tags',
+          'subblock_title' => 'Same Location',
+          'view_display_name' => 'same_location',
+        ),
+        array(
+          'field_name' => 'field_files_event_tags',
+          'subblock_title' => 'Same Event',
+          'view_display_name' => 'same_event',
+        ),
+      ),
+    ),
+    'audio' => array(
+      'block_title' => 'More Audio Files',
+      'subblocks' => array(
+        array(
+          'field_name' => 'field_files_people_tags',
+          'subblock_title' => 'Same Topic',
+          'view_display_name' => 'same_topic',
+        ),
+        array(
+          'field_name' => 'field_files_location_tags',
+          'subblock_title' => 'Same Artist',
+          'view_display_name' => 'same_artist',
+        ),
+      ),
+    ),
+    'document' => array(
+      'block_title' => 'More Videos',
+      'subblocks' => array(
+        array(
+          'field_name' => 'field_files_people_tags',
+          'subblock_title' => 'Same People',
+          'view_display_name' => 'same_people',
+        ),
+        array(
+          'field_name' => 'field_files_location_tags',
+          'subblock_title' => 'Same Location',
+          'view_display_name' => 'same_location',
+        ),
+        array(
+          'field_name' => 'field_files_event_tags',
+          'subblock_title' => 'Same Event',
+          'view_display_name' => 'same_event',
+        ),
+      ),
+    ),
+  );
+
+
+  $result = array(
+    'content' => NULL,
+  );
+
+  $node = menu_get_object();
+  if (is_object($node)
+    && property_exists($node, 'type')
+    && $node->type == 'files'
+  ) {
+    $primary_media = '';
+    $primary_media_field_items = field_get_items('node', $node, 'field_files_primary_media');
+    if (!empty($primary_media_field_items)) {
+      $primary_media = array_shift($primary_media_field_items);
+    }
+    if (!empty($primary_media) && isset($view_displays[$primary_media])) {
+      $primary_media_type_settings = $view_displays[$primary_media];
+      $content = '';
+      foreach ($primary_media_type_settings['subblocks'] as $subblock_settings) {
+        $field_ids = similar_files_collect_node_ids_from_field($node, $subblock_settings['field_name']);
+        if (!empty($field_ids)) {
+          $view_content = views_embed_view($base_view_name, $subblock_settings['view_display_name'], $field_ids);
+          if (!empty($view_content)) {
+            $subblock_title = '<h1 class ="subbloc_title">' . $subblock_settings['subblock_title'] . '</h1>';
+            $content .= $subblock_title . $view_content;
+          }
+        }
+      }
+      if (!empty($content)) {
+        $result = array(
+          'subject' => $primary_media_type_settings['block_title'],
+          'content' => $content,
+        );
+      }
+    }
+  }
+
+  return $result;
+}
+
+/**
+ * Collect the referenced nodes ids and implode them into the string with commas (usefull in
+ * the contextual filters for views)
+ *
+ * @param $node
+ * @param $field_name
+ * @return string
+ */
+function similar_files_collect_node_ids_from_field($node, $field_name) {
+  $result = '';
+  if (property_exists($node, $field_name)
+  ) {
+    $field_items = field_get_items('node', $node, $field_name);
+    if (!empty($field_items)) {
+      foreach ($field_items as $item) {
+        if (isset($item['target_id'])) {
+          $result = implode(',', array($result, $item['target_id']));
+        }
+      }
+    }
+  }
+  return $result;
+}

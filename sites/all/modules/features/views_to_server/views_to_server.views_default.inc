@@ -1234,25 +1234,25 @@ function views_to_server_views_default_views() {
   $export['node_view'] = $view;
 
   $view = new view();
-  $view->name = 'the_same_author_files';
-  $view->description = '';
+  $view->name = 'similar_files';
+  $view->description = 'View with custom displays for the blocks with similar files at the sidebar';
   $view->tag = 'default';
   $view->base_table = 'node';
-  $view->human_name = 'The Same Author Files';
+  $view->human_name = 'Similar Files';
   $view->core = 7;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
 
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
-  $handler->display->display_options['title'] = 'The Same Author Files';
+  $handler->display->display_options['title'] = 'Similar Files';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'perm';
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
-  $handler->display->display_options['pager']['type'] = 'full';
-  $handler->display->display_options['pager']['options']['items_per_page'] = '10';
+  $handler->display->display_options['pager']['type'] = 'some';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '4';
   $handler->display->display_options['style_plugin'] = 'default';
   $handler->display->display_options['row_plugin'] = 'fields';
   /* Field: Content: Title */
@@ -1267,14 +1267,22 @@ function views_to_server_views_default_views() {
   $handler->display->display_options['sorts']['created']['table'] = 'node';
   $handler->display->display_options['sorts']['created']['field'] = 'created';
   $handler->display->display_options['sorts']['created']['order'] = 'DESC';
-  /* Contextual filter: Content: Author (field_files_author) */
-  $handler->display->display_options['arguments']['field_files_author_target_id']['id'] = 'field_files_author_target_id';
-  $handler->display->display_options['arguments']['field_files_author_target_id']['table'] = 'field_data_field_files_author';
-  $handler->display->display_options['arguments']['field_files_author_target_id']['field'] = 'field_files_author_target_id';
-  $handler->display->display_options['arguments']['field_files_author_target_id']['default_argument_type'] = 'fixed';
-  $handler->display->display_options['arguments']['field_files_author_target_id']['summary']['number_of_records'] = '0';
-  $handler->display->display_options['arguments']['field_files_author_target_id']['summary']['format'] = 'default_summary';
-  $handler->display->display_options['arguments']['field_files_author_target_id']['summary_options']['items_per_page'] = '25';
+  /* Contextual filter: Content: Primary Media (field_files_primary_media) */
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['id'] = 'field_files_primary_media_value';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['table'] = 'field_data_field_files_primary_media';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['field'] = 'field_files_primary_media_value';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['default_action'] = 'empty';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['limit'] = '0';
+  /* Contextual filter: Content: Artist (field_files_artist) */
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['id'] = 'field_files_artist_target_id';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['table'] = 'field_data_field_files_artist';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['field'] = 'field_files_artist_target_id';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['summary']['format'] = 'default_summary';
   /* Filter criterion: Content: Published */
   $handler->display->display_options['filters']['status']['id'] = 'status';
   $handler->display->display_options['filters']['status']['table'] = 'node';
@@ -1290,29 +1298,147 @@ function views_to_server_views_default_views() {
     'files' => 'files',
   );
 
-  /* Display: Page */
-  $handler = $view->new_display('page', 'Page', 'default_display');
-  $handler->display->display_options['path'] = 'the-same-author-files';
-  $translatables['the_same_author_files'] = array(
+  /* Display:  Same People */
+  $handler = $view->new_display('page', ' Same People', 'same_people');
+  $handler->display->display_options['defaults']['arguments'] = FALSE;
+  /* Contextual filter: Content: Primary Media (field_files_primary_media) */
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['id'] = 'field_files_primary_media_value';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['table'] = 'field_data_field_files_primary_media';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['field'] = 'field_files_primary_media_value';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['default_action'] = 'empty';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['limit'] = '0';
+  /* Contextual filter: Content: People Tags (field_files_people_tags) */
+  $handler->display->display_options['arguments']['field_files_people_tags_target_id']['id'] = 'field_files_people_tags_target_id';
+  $handler->display->display_options['arguments']['field_files_people_tags_target_id']['table'] = 'field_data_field_files_people_tags';
+  $handler->display->display_options['arguments']['field_files_people_tags_target_id']['field'] = 'field_files_people_tags_target_id';
+  $handler->display->display_options['arguments']['field_files_people_tags_target_id']['default_action'] = 'empty';
+  $handler->display->display_options['arguments']['field_files_people_tags_target_id']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_files_people_tags_target_id']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_files_people_tags_target_id']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_files_people_tags_target_id']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_files_people_tags_target_id']['break_phrase'] = TRUE;
+  $handler->display->display_options['path'] = 'hide-same-people';
+
+  /* Display: Same Event */
+  $handler = $view->new_display('page', 'Same Event', 'same_event');
+  $handler->display->display_options['defaults']['arguments'] = FALSE;
+  /* Contextual filter: Content: Primary Media (field_files_primary_media) */
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['id'] = 'field_files_primary_media_value';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['table'] = 'field_data_field_files_primary_media';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['field'] = 'field_files_primary_media_value';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['default_action'] = 'empty';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['limit'] = '0';
+  /* Contextual filter: Content: Event Tags (field_files_event_tags) */
+  $handler->display->display_options['arguments']['field_files_event_tags_target_id']['id'] = 'field_files_event_tags_target_id';
+  $handler->display->display_options['arguments']['field_files_event_tags_target_id']['table'] = 'field_data_field_files_event_tags';
+  $handler->display->display_options['arguments']['field_files_event_tags_target_id']['field'] = 'field_files_event_tags_target_id';
+  $handler->display->display_options['arguments']['field_files_event_tags_target_id']['default_action'] = 'empty';
+  $handler->display->display_options['arguments']['field_files_event_tags_target_id']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_files_event_tags_target_id']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_files_event_tags_target_id']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_files_event_tags_target_id']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_files_event_tags_target_id']['break_phrase'] = TRUE;
+  $handler->display->display_options['path'] = 'hide-same-event';
+
+  /* Display: Same Location */
+  $handler = $view->new_display('page', 'Same Location', 'same_location');
+  $handler->display->display_options['defaults']['arguments'] = FALSE;
+  /* Contextual filter: Content: Primary Media (field_files_primary_media) */
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['id'] = 'field_files_primary_media_value';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['table'] = 'field_data_field_files_primary_media';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['field'] = 'field_files_primary_media_value';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['default_action'] = 'empty';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['limit'] = '0';
+  /* Contextual filter: Content: Location Tags (field_files_location_tags) */
+  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['id'] = 'field_files_location_tags_target_id';
+  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['table'] = 'field_data_field_files_location_tags';
+  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['field'] = 'field_files_location_tags_target_id';
+  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['default_action'] = 'empty';
+  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['break_phrase'] = TRUE;
+  $handler->display->display_options['path'] = 'hide-same-location';
+
+  /* Display: Same Topic */
+  $handler = $view->new_display('page', 'Same Topic', 'same_topic');
+  $handler->display->display_options['defaults']['arguments'] = FALSE;
+  /* Contextual filter: Content: Primary Media (field_files_primary_media) */
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['id'] = 'field_files_primary_media_value';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['table'] = 'field_data_field_files_primary_media';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['field'] = 'field_files_primary_media_value';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['default_action'] = 'empty';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['limit'] = '0';
+  /* Contextual filter: Content: Topic Tags (field_files_topic_tags) */
+  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['id'] = 'field_files_topic_tags_target_id';
+  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['table'] = 'field_data_field_files_topic_tags';
+  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['field'] = 'field_files_topic_tags_target_id';
+  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['default_action'] = 'empty';
+  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['break_phrase'] = TRUE;
+  $handler->display->display_options['path'] = 'hide-same-topic';
+
+  /* Display: Same Artist */
+  $handler = $view->new_display('page', 'Same Artist', 'same_artist');
+  $handler->display->display_options['defaults']['arguments'] = FALSE;
+  /* Contextual filter: Content: Primary Media (field_files_primary_media) */
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['id'] = 'field_files_primary_media_value';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['table'] = 'field_data_field_files_primary_media';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['field'] = 'field_files_primary_media_value';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['default_action'] = 'empty';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_files_primary_media_value']['limit'] = '0';
+  /* Contextual filter: Content: Artist (field_files_artist) */
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['id'] = 'field_files_artist_target_id';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['table'] = 'field_data_field_files_artist';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['field'] = 'field_files_artist_target_id';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['default_action'] = 'empty';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['break_phrase'] = TRUE;
+  $handler->display->display_options['path'] = 'hide-same-artist';
+  $translatables['similar_files'] = array(
     t('Master'),
-    t('The Same Author Files'),
+    t('Similar Files'),
     t('more'),
     t('Apply'),
     t('Reset'),
     t('Sort by'),
     t('Asc'),
     t('Desc'),
-    t('Items per page'),
-    t('- All -'),
-    t('Offset'),
-    t('« first'),
-    t('‹ previous'),
-    t('next ›'),
-    t('last »'),
     t('All'),
-    t('Page'),
+    t(' Same People'),
+    t('Same Event'),
+    t('Same Location'),
+    t('Same Topic'),
+    t('Same Artist'),
   );
-  $export['the_same_author_files'] = $view;
+  $export['similar_files'] = $view;
 
   $view = new view();
   $view->name = 'timeline_json_view';

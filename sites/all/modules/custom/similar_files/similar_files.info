@@ -1,0 +1,5 @@
+name = Similar Files
+description = Provide a possibility to display files nodes with the same author, event, location and etc in a special block
+package = Other
+dependencies[] = views
+core = 7.x
