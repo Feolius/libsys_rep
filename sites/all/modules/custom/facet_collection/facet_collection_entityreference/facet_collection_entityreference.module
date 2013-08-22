@@ -11,7 +11,7 @@ function facet_collection_entityreference_facet_collection_field_type_info() {
  * Implements hook_facet_collection_field_facet_groups()
  */
 function facet_collection_entityreference_facet_collection_field_facet_groups($field_info) {
-  $inner_facets = array();
+//  $inner_facets = array();
   $facets = array();
   if (isset($field_info['bundles']['node'])) {
     $bundle = $field_info['bundles']['node'][0];
@@ -27,44 +27,44 @@ function facet_collection_entityreference_facet_collection_field_facet_groups($f
   }
 
 
-  foreach ($field_info['settings']['handler_settings']['target_bundles'] as $content_type) {
-    $instances = field_info_instances('node', $content_type);
-    foreach ($instances as $inner_instance) {
-      $inner_field_info = field_info_field($inner_instance['field_name']);
-      if ($inner_field_info['type'] == 'taxonomy_term_reference' || $inner_field_info['type'] == 'entityreference') {
-        $inner_field_name = $inner_field_info['field_name'];
-        $inner_facet_name = 'inner_collection_' . $field_name . '_' . $inner_field_name;
-        $inner_label = $inner_instance['label'] . ' attached to ' . $inner_instance['bundle'];
-        if ($inner_field_info['type'] == 'taxonomy_term_reference') {
-          $inner_index_field_name = 'im_' . $field_name . '_' . $inner_field_name;
-          $inner_map_callback = 'facet_collection_entityreference_map_taxonomy_terms';
-          $inner_map_options = array();
-        } else {
-          $inner_index_field_name = 'sm_' . $field_name . '_' . $inner_field_name;
-          $inner_map_callback = 'facet_collection_entityreference_map_entityreference';
-          $inner_map_options = $field_info;
-        }
-        $inner_facets[$inner_facet_name] = array(
-            'name' => $inner_facet_name,
-            'label' => t($inner_label),
-            'description' => t('Automatically created facet for facet collection module'),
-            'field' => $inner_index_field_name,
-            'field alias' => $inner_index_field_name,
-            'field api name' => $inner_field_name,
-            'field api bundles' => array(),
-            'query types' => $query_types,
-            'default widget' => $default_widget,
-            'allowed operators' => array(FACETAPI_OPERATOR_AND => FALSE, FACETAPI_OPERATOR_OR => TRUE),
-            'facet mincount allowed' => TRUE,
-            'facet missing allowed' => TRUE,
-            'map callback' => $inner_map_callback,
-            'map options' => $inner_map_options,
-            'min callback' => FALSE,
-            'max callback' => FALSE,
-        );
-      }
-    }
-  }
+//  foreach ($field_info['settings']['handler_settings']['target_bundles'] as $content_type) {
+//    $instances = field_info_instances('node', $content_type);
+//    foreach ($instances as $inner_instance) {
+//      $inner_field_info = field_info_field($inner_instance['field_name']);
+//      if ($inner_field_info['type'] == 'taxonomy_term_reference' || $inner_field_info['type'] == 'entityreference') {
+//        $inner_field_name = $inner_field_info['field_name'];
+//        $inner_facet_name = 'inner_collection_' . $field_name . '_' . $inner_field_name;
+//        $inner_label = $inner_instance['label'] . ' attached to ' . $inner_instance['bundle'];
+//        if ($inner_field_info['type'] == 'taxonomy_term_reference') {
+//          $inner_index_field_name = 'im_' . $field_name . '_' . $inner_field_name;
+//          $inner_map_callback = 'facet_collection_entityreference_map_taxonomy_terms';
+//          $inner_map_options = array();
+//        } else {
+//          $inner_index_field_name = 'sm_' . $field_name . '_' . $inner_field_name;
+//          $inner_map_callback = 'facet_collection_entityreference_map_entityreference';
+//          $inner_map_options = $field_info;
+//        }
+//        $inner_facets[$inner_facet_name] = array(
+//            'name' => $inner_facet_name,
+//            'label' => t($inner_label),
+//            'description' => t('Automatically created facet for facet collection module'),
+//            'field' => $inner_index_field_name,
+//            'field alias' => $inner_index_field_name,
+//            'field api name' => $inner_field_name,
+//            'field api bundles' => array(),
+//            'query types' => $query_types,
+//            'default widget' => $default_widget,
+//            'allowed operators' => array(FACETAPI_OPERATOR_AND => FALSE, FACETAPI_OPERATOR_OR => TRUE),
+//            'facet mincount allowed' => TRUE,
+//            'facet missing allowed' => TRUE,
+//            'map callback' => $inner_map_callback,
+//            'map options' => $inner_map_options,
+//            'min callback' => FALSE,
+//            'max callback' => FALSE,
+//        );
+//      }
+//    }
+//  }
   $instance = field_info_instance('node', $field_name, $bundle);
   $facet_name = 'collection_' . $field_name;
   $index_field_name = 'sm_library_' . $field_name;
@@ -90,7 +90,7 @@ function facet_collection_entityreference_facet_collection_field_facet_groups($f
       'max callback' => FALSE,
   );
   $facet_groups['default'] = $facets;
-  $facet_groups['inner'] = $inner_facets;
+//  $facet_groups['inner'] = $inner_facets;
   return $facet_groups;
 }
 
