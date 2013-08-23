@@ -112,7 +112,8 @@ function similar_files_block_view($delta) {
     $primary_media = '';
     $primary_media_field_items = field_get_items('node', $node, 'field_files_primary_media');
     if (!empty($primary_media_field_items)) {
-      $primary_media = array_shift($primary_media_field_items);
+      $primary_media_item_value = array_shift($primary_media_field_items);
+      $primary_media = isset($primary_media_item_value['value']) ? $primary_media_item_value['value'] : '';
     }
     if (!empty($primary_media) && isset($view_displays[$primary_media])) {
       $primary_media_type_settings = $view_displays[$primary_media];
