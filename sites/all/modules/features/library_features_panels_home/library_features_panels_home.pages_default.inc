@@ -91,7 +91,7 @@ function library_features_panels_home_default_page_manager_pages() {
     $pane->access = array();
     $pane->configuration = array(
       'arguments' => array(
-        'title' => '',
+        'title' => 'Home Bottom',
       ),
     );
     $pane->cache = array();
@@ -113,7 +113,7 @@ function library_features_panels_home_default_page_manager_pages() {
     $pane->access = array();
     $pane->configuration = array(
       'arguments' => array(
-        'field_home_region_tid' => '',
+        'title' => 'Home Left',
       ),
     );
     $pane->cache = array();
@@ -135,7 +135,7 @@ function library_features_panels_home_default_page_manager_pages() {
     $pane->access = array();
     $pane->configuration = array(
       'arguments' => array(
-        'field_home_region_tid' => '',
+        'title' => 'Home Middle',
       ),
     );
     $pane->cache = array();
@@ -157,7 +157,7 @@ function library_features_panels_home_default_page_manager_pages() {
     $pane->access = array();
     $pane->configuration = array(
       'arguments' => array(
-        'field_home_region_tid' => '',
+        'title' => 'Home Right',
       ),
     );
     $pane->cache = array();
@@ -179,7 +179,7 @@ function library_features_panels_home_default_page_manager_pages() {
     $pane->access = array();
     $pane->configuration = array(
       'arguments' => array(
-        'title' => '',
+        'title' => 'Home Top',
       ),
     );
     $pane->cache = array();
