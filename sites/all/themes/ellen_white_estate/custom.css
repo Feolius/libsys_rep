@@ -404,3 +404,7 @@ ol.collection-search-results, ul.collection-search-results, .page-home .page ul,
   display: inline;
   margin: 0 10px 10px 0;
 }
+
+#edit-next-page-button:disabled {
+  border-radius: 100px;
+}
