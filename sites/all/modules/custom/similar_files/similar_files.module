@@ -78,7 +78,7 @@ function similar_files_block_view($delta) {
       ),
     ),
     'document' => array(
-      'block_title' => 'More Videos',
+      'block_title' => 'More Documents',
       'subblocks' => array(
         array(
           'field_name' => 'field_files_people_tags',
@@ -121,10 +121,11 @@ function similar_files_block_view($delta) {
       foreach ($primary_media_type_settings['subblocks'] as $subblock_settings) {
         $field_ids = similar_files_collect_node_ids_from_field($node, $subblock_settings['field_name']);
         if (!empty($field_ids)) {
-          $view_content = views_embed_view($base_view_name, $subblock_settings['view_display_name'], $field_ids);
+          $view_content = views_embed_view($base_view_name, $subblock_settings['view_display_name'], $primary_media, $field_ids);
           if (!empty($view_content)) {
-            $subblock_title = '<h1 class ="subbloc_title">' . $subblock_settings['subblock_title'] . '</h1>';
-            $content .= $subblock_title . $view_content;
+            $subblock_title = '<div class="subblock_title">' . $subblock_settings['subblock_title'] . '</div>';
+            $subblock_content = '<div class="subblock_content">' . $view_content . '</div>';
+            $content .= $subblock_title . $subblock_content;
           }
         }
       }
@@ -156,7 +157,7 @@ function similar_files_collect_node_ids_from_field($node, $field_name) {
     if (!empty($field_items)) {
       foreach ($field_items as $item) {
         if (isset($item['target_id'])) {
-          $result = implode(',', array($result, $item['target_id']));
+          $result = empty($result) ? $item['target_id'] : implode(',', array($result, $item['target_id']));
         }
       }
     }
