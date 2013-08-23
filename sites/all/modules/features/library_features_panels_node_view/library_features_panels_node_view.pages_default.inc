@@ -27,7 +27,16 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     'css_id' => '',
     'css' => '',
     'contexts' => array(),
-    'relationships' => array(),
+    'relationships' => array(
+      0 => array(
+        'identifier' => 'Node from Node (on Node: Author [field_files_author])',
+        'keyword' => 'file author',
+        'name' => 'entity_from_field:field_files_author-node-node',
+        'delta' => '0',
+        'context' => 'argument_entity_id:node_1',
+        'id' => 1,
+      ),
+    ),
     'access' => array(
       'logic' => 'and',
     ),
@@ -142,7 +151,7 @@ function library_features_panels_node_view_default_page_manager_handlers() {
     $pane->pid = 'new-5';
     $pane->panel = 'right_sidebar';
     $pane->type = 'block';
-    $pane->subtype = 'files_the_same_author_block-files_the_same_author_block';
+    $pane->subtype = 'similar_files-similar_files_block';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(

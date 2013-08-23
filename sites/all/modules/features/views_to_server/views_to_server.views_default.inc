@@ -1250,6 +1250,7 @@ function views_to_server_views_default_views() {
   $handler->display->display_options['access']['type'] = 'perm';
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['query']['options']['distinct'] = TRUE;
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['pager']['type'] = 'some';
   $handler->display->display_options['pager']['options']['items_per_page'] = '4';
@@ -1283,6 +1284,16 @@ function views_to_server_views_default_views() {
   $handler->display->display_options['arguments']['field_files_artist_target_id']['field'] = 'field_files_artist_target_id';
   $handler->display->display_options['arguments']['field_files_artist_target_id']['default_argument_type'] = 'fixed';
   $handler->display->display_options['arguments']['field_files_artist_target_id']['summary']['format'] = 'default_summary';
+  /* Contextual filter: Content: Nid */
+  $handler->display->display_options['arguments']['nid']['id'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['table'] = 'node';
+  $handler->display->display_options['arguments']['nid']['field'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['default_action'] = 'default';
+  $handler->display->display_options['arguments']['nid']['default_argument_type'] = 'node';
+  $handler->display->display_options['arguments']['nid']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['nid']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['nid']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['nid']['not'] = TRUE;
   /* Filter criterion: Content: Published */
   $handler->display->display_options['filters']['status']['id'] = 'status';
   $handler->display->display_options['filters']['status']['table'] = 'node';
@@ -1311,7 +1322,7 @@ function views_to_server_views_default_views() {
   $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_files_primary_media_value']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['field_files_primary_media_value']['limit'] = '0';
-  /* Contextual filter: Content: People Tags (field_files_people_tags) */
+  /* Contextual filter: Content: People (field_files_people_tags) */
   $handler->display->display_options['arguments']['field_files_people_tags_target_id']['id'] = 'field_files_people_tags_target_id';
   $handler->display->display_options['arguments']['field_files_people_tags_target_id']['table'] = 'field_data_field_files_people_tags';
   $handler->display->display_options['arguments']['field_files_people_tags_target_id']['field'] = 'field_files_people_tags_target_id';
@@ -1321,6 +1332,16 @@ function views_to_server_views_default_views() {
   $handler->display->display_options['arguments']['field_files_people_tags_target_id']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_files_people_tags_target_id']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['field_files_people_tags_target_id']['break_phrase'] = TRUE;
+  /* Contextual filter: Content: Nid */
+  $handler->display->display_options['arguments']['nid']['id'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['table'] = 'node';
+  $handler->display->display_options['arguments']['nid']['field'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['default_action'] = 'default';
+  $handler->display->display_options['arguments']['nid']['default_argument_type'] = 'node';
+  $handler->display->display_options['arguments']['nid']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['nid']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['nid']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['nid']['not'] = TRUE;
   $handler->display->display_options['path'] = 'hide-same-people';
 
   /* Display: Same Event */
@@ -1336,7 +1357,7 @@ function views_to_server_views_default_views() {
   $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_files_primary_media_value']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['field_files_primary_media_value']['limit'] = '0';
-  /* Contextual filter: Content: Event Tags (field_files_event_tags) */
+  /* Contextual filter: Content: Event (field_files_event_tags) */
   $handler->display->display_options['arguments']['field_files_event_tags_target_id']['id'] = 'field_files_event_tags_target_id';
   $handler->display->display_options['arguments']['field_files_event_tags_target_id']['table'] = 'field_data_field_files_event_tags';
   $handler->display->display_options['arguments']['field_files_event_tags_target_id']['field'] = 'field_files_event_tags_target_id';
@@ -1346,31 +1367,20 @@ function views_to_server_views_default_views() {
   $handler->display->display_options['arguments']['field_files_event_tags_target_id']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_files_event_tags_target_id']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['field_files_event_tags_target_id']['break_phrase'] = TRUE;
+  /* Contextual filter: Content: Nid */
+  $handler->display->display_options['arguments']['nid']['id'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['table'] = 'node';
+  $handler->display->display_options['arguments']['nid']['field'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['default_action'] = 'default';
+  $handler->display->display_options['arguments']['nid']['default_argument_type'] = 'node';
+  $handler->display->display_options['arguments']['nid']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['nid']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['nid']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['nid']['not'] = TRUE;
   $handler->display->display_options['path'] = 'hide-same-event';
 
   /* Display: Same Location */
   $handler = $view->new_display('page', 'Same Location', 'same_location');
-  $handler->display->display_options['defaults']['arguments'] = FALSE;
-  /* Contextual filter: Content: Primary Media (field_files_primary_media) */
-  $handler->display->display_options['arguments']['field_files_primary_media_value']['id'] = 'field_files_primary_media_value';
-  $handler->display->display_options['arguments']['field_files_primary_media_value']['table'] = 'field_data_field_files_primary_media';
-  $handler->display->display_options['arguments']['field_files_primary_media_value']['field'] = 'field_files_primary_media_value';
-  $handler->display->display_options['arguments']['field_files_primary_media_value']['default_action'] = 'empty';
-  $handler->display->display_options['arguments']['field_files_primary_media_value']['default_argument_type'] = 'fixed';
-  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['number_of_records'] = '0';
-  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['format'] = 'default_summary';
-  $handler->display->display_options['arguments']['field_files_primary_media_value']['summary_options']['items_per_page'] = '25';
-  $handler->display->display_options['arguments']['field_files_primary_media_value']['limit'] = '0';
-  /* Contextual filter: Content: Location Tags (field_files_location_tags) */
-  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['id'] = 'field_files_location_tags_target_id';
-  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['table'] = 'field_data_field_files_location_tags';
-  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['field'] = 'field_files_location_tags_target_id';
-  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['default_action'] = 'empty';
-  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['default_argument_type'] = 'fixed';
-  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['summary']['number_of_records'] = '0';
-  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['summary']['format'] = 'default_summary';
-  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['summary_options']['items_per_page'] = '25';
-  $handler->display->display_options['arguments']['field_files_location_tags_target_id']['break_phrase'] = TRUE;
   $handler->display->display_options['path'] = 'hide-same-location';
 
   /* Display: Same Topic */
@@ -1386,16 +1396,22 @@ function views_to_server_views_default_views() {
   $handler->display->display_options['arguments']['field_files_primary_media_value']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_files_primary_media_value']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['field_files_primary_media_value']['limit'] = '0';
-  /* Contextual filter: Content: Topic Tags (field_files_topic_tags) */
-  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['id'] = 'field_files_topic_tags_target_id';
-  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['table'] = 'field_data_field_files_topic_tags';
-  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['field'] = 'field_files_topic_tags_target_id';
-  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['default_action'] = 'empty';
-  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['default_argument_type'] = 'fixed';
-  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['summary']['number_of_records'] = '0';
-  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['summary']['format'] = 'default_summary';
-  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['summary_options']['items_per_page'] = '25';
-  $handler->display->display_options['arguments']['field_files_topic_tags_target_id']['break_phrase'] = TRUE;
+  /* Contextual filter: Content: Artist (field_files_artist) */
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['id'] = 'field_files_artist_target_id';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['table'] = 'field_data_field_files_artist';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['field'] = 'field_files_artist_target_id';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['field_files_artist_target_id']['summary']['format'] = 'default_summary';
+  /* Contextual filter: Content: Nid */
+  $handler->display->display_options['arguments']['nid']['id'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['table'] = 'node';
+  $handler->display->display_options['arguments']['nid']['field'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['default_action'] = 'default';
+  $handler->display->display_options['arguments']['nid']['default_argument_type'] = 'node';
+  $handler->display->display_options['arguments']['nid']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['nid']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['nid']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['nid']['not'] = TRUE;
   $handler->display->display_options['path'] = 'hide-same-topic';
 
   /* Display: Same Artist */
@@ -1421,6 +1437,16 @@ function views_to_server_views_default_views() {
   $handler->display->display_options['arguments']['field_files_artist_target_id']['summary']['format'] = 'default_summary';
   $handler->display->display_options['arguments']['field_files_artist_target_id']['summary_options']['items_per_page'] = '25';
   $handler->display->display_options['arguments']['field_files_artist_target_id']['break_phrase'] = TRUE;
+  /* Contextual filter: Content: Nid */
+  $handler->display->display_options['arguments']['nid']['id'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['table'] = 'node';
+  $handler->display->display_options['arguments']['nid']['field'] = 'nid';
+  $handler->display->display_options['arguments']['nid']['default_action'] = 'default';
+  $handler->display->display_options['arguments']['nid']['default_argument_type'] = 'node';
+  $handler->display->display_options['arguments']['nid']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['nid']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['nid']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['nid']['not'] = TRUE;
   $handler->display->display_options['path'] = 'hide-same-artist';
   $translatables['similar_files'] = array(
     t('Master'),
