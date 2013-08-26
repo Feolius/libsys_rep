@@ -83,7 +83,22 @@ function library_admin_settings_form() {
     '#type' => 'textfield',
     '#title' => t(''),
     '#description' => t('Space separated variants of possible numbers of results in library page. The first number will be used by default'),
-    '#default_value' => variable_get('facet_collection_rows_number_variants'),
+    '#default_value' => variable_get('facet_collection_rows_number_variants', '25 50 100'),
+  );
+
+  $form['collection_pager_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Settings for pager'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['collection_pager_settings']['collection_pager_entities_number_per_solr_query'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Preloaded entites number'),
+    '#description' => t('Set number of entities (nodes), which will be saved is session to avoid often queries to solr. This number
+     means, how much nodes will be retrieved per one solr query.'),
+    '#default_value' => variable_get('collection_pager_entities_number_per_solr_query', 5),
   );
 
   return system_settings_form($form);

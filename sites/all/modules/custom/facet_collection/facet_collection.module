@@ -57,21 +57,13 @@ function facet_collection_collection_teaser($nid) {
  * Page callback for collection
  */
 function facet_collection_page() {
-  $environment = apachesolr_default_environment();
-  $solr = apachesolr_get_solr($environment);
-  $params = facet_collection_get_default_params();
-  $query = apachesolr_drupal_query('apachesolr', $params, '', arg(0), $solr);
-  if ($query->getParam('q')) {
-    apachesolr_search_add_spellcheck_params($query);
-  }
-  $page = pager_find_page();
-  $query->page = $page;
-  list($final_query, $response) = apachesolr_do_query($query, $page);
-  //We should save all query params in session to allow another modules use it if needed.
-  //Solr query id in session
+  $query = facet_collection_build_solr_query($_GET);
+  list($final_query, $response) = apachesolr_do_query($query);
+  // We should save all get params in session to allow another modules use it if needed.
+  // Solr query id in session.
   $sqid = & drupal_static('faset_collection_solr_query_id');
   $sqid = mt_rand();
-  $_SESSION['facet_collection_solr_queries'][$sqid] = $final_query;
+  $_SESSION['facet_collection_get_params'][$sqid] = $_GET;
   $env_id = $query->solr('getId');
   apachesolr_has_searched($env_id, TRUE);
   $results = apachesolr_search_process_response($response, $final_query);
@@ -80,24 +72,42 @@ function facet_collection_page() {
 }
 
 /**
- * Get needed params to make solr query
+ * Build solr query by given get params. We pass get params as argument, because we want to use this function in another
+ * modules, where get params could be presented not explicitly.
  */
-function facet_collection_get_default_params() {
+function facet_collection_build_solr_query($get_params){
+  $environment = apachesolr_default_environment();
+  $solr = apachesolr_get_solr($environment);
+  $params = facet_collection_get_default_params($get_params);
+  $query_parts = explode('/', $get_params['q']);
+  $query = apachesolr_drupal_query('apachesolr', $params, '', $query_parts[0], $solr);
+  if ($query->getParam('q')) {
+    apachesolr_search_add_spellcheck_params($query);
+  }
+  $page = pager_find_page();
+  $query->page = $page;
+  return $query;
+}
+
+/**
+ * Get needed params to make solr query.
+ */
+function facet_collection_get_default_params($get_params) {
   require_once 'facet_collection_field_relevancy.inc';
-//The logic is next: if we have 's' parameter in the page query it means that we have complicated search based on usual search,
-//which goes from search block, and search from one or more search filters from facet collection filter block. Moreover, here can be such
-//situation when we don't have usual search, only search from filter block appears here. In this case 's' will be here too.
-//Anyway 's' goes from filters block. If 's' is here we need to present solr query as conjunction of solr subqueries, i.e.
-//q=_query_:"{!dismax qf=... }term1" AND _query_:"{!dismax qf=... }term2". If we have only usual search it will be solr query
-//based on dismax query parser q=term&qf='list of all searchable fields with their boosts'&defType=dismax
+// The logic is next: if we have 's' parameter in the page query it means that we have complicated search based on usual search,
+// which goes from search block, and search from one or more search filters from facet collection filter block. Moreover, here can be such
+// situation when we don't have usual search, only search from filter block appears here. In this case 's' will be here too.
+// Anyway 's' goes from filters block. If 's' is here we need to present solr query as conjunction of solr subqueries, i.e.
+// q=_query_:"{!dismax qf=... }term1" AND _query_:"{!dismax qf=... }term2". If we have only usual search it will be solr query
+// based on dismax query parser q=term&qf='list of all searchable fields with their boosts'&defType=dismax.
   $params = array();
   $chosen_content_type = facet_collection_get_filtered_content_type();
   $boosts = facet_collection_get_field_boosts($chosen_content_type);
   $params += apachesolr_search_basic_params();
   unset($params['hl.fl']);
   unset($params['rows']);
-  if (isset($_GET['rNum'])) {
-    $params['rows'] = $_GET['rNum'];
+  if (isset($get_params['rNum'])) {
+    $params['rows'] = $get_params['rNum'];
   }
   else {
     $facet_collection_rows_number_variants = variable_get('facet_collection_rows_number_variants', '25 50 100');
@@ -106,10 +116,16 @@ function facet_collection_get_default_params() {
   }
   $params['hl'] = 'true';
   $params['hl.fl'] = _facet_collection_build_hl_fl_parameter();
-  if (!isset($_GET['s'])) {
+  $query_parts = explode('/', $get_params['q']);
+  if(isset($query_parts[1])){
+    $search_query = $query_parts[1];
+  }else{
+    $search_query = FALSE;
+  }
+  if (!isset($get_params['s'])) {
     $params['defType'] = 'dismax';
-    if (arg(1)) {
-      $query = _facet_collection_replace_spacers_by_AND(arg(1));
+    if ($search_query) {
+      $query = _facet_collection_replace_spacers_by_AND($search_query);
       $params['q'] = $query;
     }
     //Build qf parameter
@@ -123,13 +139,13 @@ function facet_collection_get_default_params() {
   else {
     $params['defType'] = 'lucene';
     $q = '';
-    if (arg(1)) {
+    if ($search_query) {
       $base_qf = _facet_collection_build_qf_parameter($boosts);
-      $query = _facet_collection_replace_spacers_by_AND(arg(1));
+      $query = _facet_collection_replace_spacers_by_AND($search_query);
       $q[] = '_query_:"{!dismax ' . 'qf=\'' . $base_qf . '\'}' . $query . '"';
     }
     $searchable_fields_info = facet_collection_get_search_filters_info();
-    foreach ($_GET['s'] as $search_filter) {
+    foreach ($get_params['s'] as $search_filter) {
       $search_filter_parts = explode(':', $search_filter);
       $field_name = $search_filter_parts[0];
       $index_field_name = $searchable_fields_info[$field_name]['index_field_name'];
@@ -143,7 +159,7 @@ function facet_collection_get_default_params() {
 }
 
 /**
- * Replace spacsers in query by ' AND ' operator
+ * Replace spacers in query by ' AND ' operator
  */
 function _facet_collection_replace_spacers_by_AND($query) {
   $operators = array('AND', 'OR', '&&', 'NOT');
@@ -527,6 +543,7 @@ function facet_collection_apachesolr_process_results(&$results, DrupalSolrQueryI
       if (!empty($sqid)) {
         $get_params['sqid'] = $sqid;
       }
+      $get_params['f'][0] = 'bundle:files';
       $options = array(
         'query' => $get_params
       );

@@ -14,7 +14,7 @@ function collection_pager_block_block_info() {
  * Implements hook_block_view()
  */
 function collection_pager_block_block_view($delta) {
-  if (isset($_GET['sqid']) && isset($_SESSION['facet_collection_solr_queries'][$_GET['sqid']])) {
+  if (isset($_GET['sqid']) && isset($_SESSION['facet_collection_get_params'][$_GET['sqid']])) {
     $block['subject'] = t('Collection Pager');
     $block['content'] = drupal_get_form('collection_pager_block_form');
     drupal_add_css(drupal_get_path('module', 'collection_pager_block') . '/css/collection-pager-block-buttons.css');
@@ -80,30 +80,25 @@ function collection_pager_block_submit($form, &$form_state) {
       $number = $_GET['curr'] + 1;
       break;
   }
-  $query = $_SESSION['facet_collection_solr_queries'][$_GET['sqid']];
-  $query->replaceParam('hl', FALSE);
-  $query->replaceParam('start', $number);
-  $query->replaceParam('rows', 1);
-  // This code block from apachesolr_do_query() function.
-  $keys = $query->getParam('q');
-  if (strlen($keys) == 0 && ($filters = $query->getFilters())) {
-    $qalt = array();
-    foreach ($filters as $filter) {
-      // Move the fq param if it has no local params and is not negative.
-      if (!$filter['#exclude'] && !$filter['#local']) {
-        $qalt[] = '(' . $query->makeFilterQuery($filter) . ')';
-        $query->removeFilter($filter['#name'], $filter['#value'], $filter['#exclude']);
-      }
+  if(!isset($_SESSION['collection_pager_block'][$_GET['sqid']][$number])){
+    $nodes_number = (Integer) variable_get('collection_pager_entities_number_per_solr_query', 5);
+    $get_params = $_SESSION['facet_collection_get_params'][$_GET['sqid']];
+    $query = facet_collection_build_solr_query($get_params);
+    if(($number + 1)%$nodes_number == 0){
+      $page = ($number + 1)/$nodes_number - 1;
+    }else{
+      $page = floor(($number + 1)/$nodes_number);
     }
-    if ($qalt) {
-      $query->addParam('q.alt', implode(' ', $qalt));
+    $query->page = $page;
+    $query->replaceParam('rows', $nodes_number);
+    list($final_query, $response) = apachesolr_do_query($query);
+    $i = $page * $nodes_number;
+    foreach($response->response->docs as $doc){
+      $_SESSION['collection_pager_block'][$_GET['sqid']][$i] = $doc->entity_id;
+      $i++;
     }
   }
-  $keys = htmlspecialchars($keys, ENT_NOQUOTES, 'UTF-8');
-  $keys = str_replace("'", '&#039;', $keys);
-  $response = $query->search($keys);
-
-  $nid = $response->response->docs[0]->entity_id;
+  $nid =  $_SESSION['collection_pager_block'][$_GET['sqid']][$number];
   // Submit form with needed GET params.
   $get_params = $_GET;
   unset($get_params['q']);
@@ -111,7 +106,6 @@ function collection_pager_block_submit($form, &$form_state) {
   $options['query']['curr'] = $number;
   // Check numFound after each query, because it can be some situation, when user make
   // new search query and results will be changed.
-  $options['query']['numFound'] = $response->response->numFound;
   $path = 'node/' . $nid;
   $form_state['redirect'] = array(
     $path,
