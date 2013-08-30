@@ -21,6 +21,9 @@ function similar_files_block_info() {
  */
 function similar_files_block_view($delta) {
   $base_view_name = 'similar_files';
+  //Describe how much subblock would be for each type of primary media field
+  // and also describe the subblock content, i.e. the information field and
+  // the view display name
   $view_displays = array(
     'image' => array(
       'block_title' => 'More Images',
@@ -95,6 +98,11 @@ function similar_files_block_view($delta) {
           'subblock_title' => 'Same Event',
           'view_display_name' => 'same_event',
         ),
+        array(
+          'field_name' => 'field_files_author',
+          'subblock_title' => 'Same Author',
+          'view_display_name' => 'same_author',
+        ),
       ),
     ),
   );
@@ -116,15 +124,21 @@ function similar_files_block_view($delta) {
       $primary_media = isset($primary_media_item_value['value']) ? $primary_media_item_value['value'] : '';
     }
     if (!empty($primary_media) && isset($view_displays[$primary_media])) {
+      //Get the subblocks for current primary media type
       $primary_media_type_settings = $view_displays[$primary_media];
       $content = '';
       foreach ($primary_media_type_settings['subblocks'] as $subblock_settings) {
+        //For each subblock collect the specified field values, and cover them into
+        //suitable for views contextual filters form
         $field_ids = similar_files_collect_node_ids_from_field($node, $subblock_settings['field_name']);
         if (!empty($field_ids)) {
+          //Get the view output for precollected field values and specified display name
           $view_content = views_embed_view($base_view_name, $subblock_settings['view_display_name'], $primary_media, $field_ids);
-          if (!empty($view_content)) {
+          if (strpos($view_content, 'view-content') !== FALSE) {
+            // Cover the view output by html div blocks and also add the header of current subblock
             $subblock_title = '<div class="subblock_title">' . $subblock_settings['subblock_title'] . '</div>';
             $subblock_content = '<div class="subblock_content">' . $view_content . '</div>';
+            //Add subblock to the main block content
             $content .= $subblock_title . $subblock_content;
           }
         }
@@ -142,7 +156,7 @@ function similar_files_block_view($delta) {
 }
 
 /**
- * Collect the referenced nodes ids and implode them into the string with commas (usefull in
+ * Collect the referenced nodes ids and implode them into the string with commas (useful in
  * the contextual filters for views)
  *
  * @param $node
