@@ -158,7 +158,7 @@ function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
       '#access' => TRUE,
       '#label_display' => 'inline',
       '#prefix' => "<div class='field field-name-field-files-location-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
-      '#markup' => implode(', ', $peoples),
+      '#markup' => implode(', ', $locations),
       '#suffix' => '</div>',
     );
   }
@@ -177,7 +177,7 @@ function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
       '#access' => TRUE,
       '#label_display' => 'inline',
       '#prefix' => "<div class='field field-name-field-files-event-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
-      '#markup' => implode(', ', $peoples),
+      '#markup' => implode(', ', $events),
       '#suffix' => '</div>',
     );
     }
@@ -266,7 +266,7 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
       '#access' => TRUE,
       '#label_display' => 'inline',
       '#prefix' => "<div class='field field-name-field-files-location-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
-      '#markup' => implode(', ', $peoples),
+      '#markup' => implode(', ', $locations),
       '#suffix' => '</div>',
     );
   }
@@ -285,7 +285,7 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
       '#access' => TRUE,
       '#label_display' => 'inline',
       '#prefix' => "<div class='field field-name-field-files-event-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
-      '#markup' => implode(', ', $peoples),
+      '#markup' => implode(', ', $events),
       '#suffix' => '</div>',
     );
   }
@@ -423,7 +423,7 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
       '#access' => TRUE,
       '#label_display' => 'inline',
       '#prefix' => "<div class='field field-name-field-files-location-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
-      '#markup' => implode(', ', $peoples),
+      '#markup' => implode(', ', $locations),
       '#suffix' => '</div>',
     );
   }
@@ -442,7 +442,7 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
       '#access' => TRUE,
       '#label_display' => 'inline',
       '#prefix' => "<div class='field field-name-field-files-event-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
-      '#markup' => implode(', ', $peoples),
+      '#markup' => implode(', ', $events),
       '#suffix' => '</div>',
     );
   }
@@ -641,7 +641,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
       '#access' => TRUE,
       '#label_display' => 'inline',
       '#prefix' => "<div class='field field-name-field-files-location-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
-      '#markup' => implode(', ', $peoples),
+      '#markup' => implode(', ', $locations),
       '#suffix' => '</div>',
     );
 }
@@ -660,7 +660,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
       '#access' => TRUE,
       '#label_display' => 'inline',
       '#prefix' => "<div class='field field-name-field-files-event-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
-      '#markup' => implode(', ', $peoples),
+      '#markup' => implode(', ', $events),
       '#suffix' => '</div>',
     );
 }
