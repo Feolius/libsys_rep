@@ -106,6 +106,7 @@
                     min: leftLimitInMilliseconds,
                     max: rightValueInMilliseconds,
                     values: [minValueInMilliseconds, maxValueInMilliseconds],
+                    animate: 'fast',
                     slide: function (event, ui) {
 
                         //Change values in datepickers and values in form that will be passed to form submitter
