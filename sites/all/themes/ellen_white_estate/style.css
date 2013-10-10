@@ -941,6 +941,6 @@ Social
 
 }
 
-.facetapi-daterange-slider a {
+.facetapi-daterange-slider a, div {
   transition: all 0s ease-out 0s;
 }
