@@ -110,33 +110,36 @@
 
                         //Change values in datepickers and values in form that will be passed to form submitter
                         minValue = new Date(ui.values[0]);
-//                        $("#" + minDatepickerID).datepicker('setDate', minValue);
-//                        var minValueYear = minValue.getFullYear().toString();
-//                        var minValueMonth = (minValue.getMonth() + 1).toString();
-//                        var minValueDay = minValue.getDate().toString();
-//                        if (minValueMonth.length == 1) {
-//                            minValueMonth = '0' + minValueMonth;
-//                        }
-//                        if (minValueDay.length == 1) {
-//                            minValueDay = '0' + minValueDay;
-//                        }
-//                        minValue = minValueYear + '/' + minValueMonth + '/' + minValueDay;
-                        minValue = minValue.toLocaleFormat('%Y/%m/%d');
+
+                        var minValueYear = minValue.getFullYear().toString();
+                        var minValueMonth = (minValue.getMonth() + 1).toString();
+                        var minValueDay = minValue.getDate().toString();
+                        if (minValueMonth.length == 1) {
+                            minValueMonth = '0' + minValueMonth;
+                        }
+                        if (minValueDay.length == 1) {
+                            minValueDay = '0' + minValueDay;
+                        }
+                        minValue = minValueYear + '/' + minValueMonth + '/' + minValueDay;
                         maxValue = new Date(ui.values[1]);
-//                        $("#" + maxDatepickerID).datepicker('setDate', maxValue);
-//                        var maxValueYear = maxValue.getFullYear().toString();
-//                        var maxValueMonth = (maxValue.getMonth() + 1).toString();
-//                        var maxValueDay = maxValue.getDate().toString();
-//                        if (maxValueMonth.length == 1) {
-//                            maxValueMonth = '0' + maxValueMonth;
-//                        }
-//                        if (maxValueDay.length == 1) {
-//                            maxValueDay = '0' + maxValueDay;
-//                        }
-//                        maxValue = maxValueYear + '/' + maxValueMonth + '/' + maxValueDay;
-                        maxValue = maxValue.toLocaleFormat('%Y/%m/%d');
+                        var maxValueYear = maxValue.getFullYear().toString();
+                        var maxValueMonth = (maxValue.getMonth() + 1).toString();
+                        var maxValueDay = maxValue.getDate().toString();
+                        if (maxValueMonth.length == 1) {
+                            maxValueMonth = '0' + maxValueMonth;
+                        }
+                        if (maxValueDay.length == 1) {
+                            maxValueDay = '0' + maxValueDay;
+                        }
+                        maxValue = maxValueYear + '/' + maxValueMonth + '/' + maxValueDay;
                         $("#" + minValueId).val(minValue);
                         $("#" + maxValueId).val(maxValue);
+                    },
+                    stop: function (event, ui){
+                        minValue = new Date(ui.values[0]);
+                        $("#" + minDatepickerID).datepicker('setDate', minValue);
+                        maxValue = new Date(ui.values[1]);
+                        $("#" + maxDatepickerID).datepicker('setDate', maxValue);
                     }
                 });
 
