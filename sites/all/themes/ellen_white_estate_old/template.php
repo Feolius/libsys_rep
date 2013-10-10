@@ -19,18 +19,13 @@ function ellen_white_estate_old_js_alter(&$javascript) {
       foreach ($javascript as $key => $js_info) {
         $key_arr = explode('/', $key);
         if ($key_arr[count($key_arr) - 1] == 'jquery.min.js') {
-          $jquery_old_key = $key;
+          $javascript[$jquery_path] = $javascript[$key];
+          unset($javascript[$key]);
           break;
         }
       }
-      if (isset($jquery_old_key)) {
-        $javascript[$jquery_path] = $javascript[$jquery_old_key];
-        $javascript[$jquery_path] = $javascript[$jquery_old_key];
-        unset($javascript[$jquery_old_key]);
-      }
     }
     else {
-      $javascript[$jquery_path] = $javascript['misc/jquery.js'];
       $javascript[$jquery_path] = $javascript['misc/jquery.js'];
       unset($javascript['misc/jquery.js']);
     }

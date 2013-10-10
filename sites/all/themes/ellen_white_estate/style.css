@@ -940,3 +940,7 @@ Social
   .not-front .social a { display:inline-block;}
 
 }
+
+.facetapi-daterange-slider a {
+  transition: all 0s ease-out 0s;
+}

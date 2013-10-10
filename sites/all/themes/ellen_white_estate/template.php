@@ -95,7 +95,8 @@ function ellen_white_estate_preprocess_node__files_full(&$vars) {
           $vars['output'] = _ellen_white_estate_preprocess_node__files_primary_url($vars);
           break;
       }
-    } else {
+    }
+    else {
       $vars['output'] = $multiple_media;
     }
   }
@@ -128,20 +129,20 @@ function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
   // Peoples.
   if (!empty($node->field_files_people_tags)) {
     $items = field_get_items('node', $node, 'field_files_people_tags');
-      foreach ($items as $item) {
-        $peoples[] = l(
-          t($item['entity']->title),
-          "node/{$item['entity']->nid}"
-        );
-      }
-      $info = field_info_instance('node', 'field_files_people_tags', $node->type);
-      $output['peoples'] = array(
-        '#access' => TRUE,
-        '#label_display' => 'inline',
-        '#prefix' => "<div class='field field-name-field-files-people-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
-        '#markup' => implode(', ', $peoples),
-        '#suffix' => '</div>',
+    foreach ($items as $item) {
+      $peoples[] = l(
+        t($item['entity']->title),
+        "node/{$item['entity']->nid}"
       );
+    }
+    $info = field_info_instance('node', 'field_files_people_tags', $node->type);
+    $output['peoples'] = array(
+      '#access' => TRUE,
+      '#label_display' => 'inline',
+      '#prefix' => "<div class='field field-name-field-files-people-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+      '#markup' => implode(', ', $peoples),
+      '#suffix' => '</div>',
+    );
   }
 
   // Locations.
@@ -180,7 +181,7 @@ function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
       '#markup' => implode(', ', $events),
       '#suffix' => '</div>',
     );
-    }
+  }
 
   // Topics.
   if (!empty($node->field_files_topic_tags)) {
@@ -521,9 +522,9 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
     $first_tab = l(
       t('Flexipaper'),
       '#file-tabs-1',
-        array(
-          'external' => TRUE
-        )
+      array(
+        'external' => TRUE
+      )
     );
     $second_tab = l(
       t('Text'),
@@ -536,7 +537,8 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
       '#access' => TRUE,
       '#markup' => "<div id='file-tabs'><ul><li>{$first_tab}</li><li>{$second_tab}</li></ul>"
     );
-  } else {
+  }
+  else {
 
     if (isset($vars['content']['field_files_file'])) {
       $output['file'] = $vars['content']['field_files_file'];
@@ -551,10 +553,12 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
     $text = drupal_render($vars['content']['field_files_text']);
     $item_file = array(
       '#access' => TRUE,
-      '#markup' => "<div id='file-tabs-1'>$file</div>");
+      '#markup' => "<div id='file-tabs-1'>$file</div>"
+    );
     $item_text = array(
       '#access' => TRUE,
-      '#markup' => "<div id='file-tabs-2'>$text</div>");
+      '#markup' => "<div id='file-tabs-2'>$text</div>"
+    );
     $output['tabs'] = array(
       '#access' => TRUE,
       '#markup' => drupal_render($output['tabs_start']) . drupal_render($item_file) . drupal_render($item_text) . '</div>'
@@ -625,7 +629,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
       '#markup' => implode(', ', $peoples),
       '#suffix' => '</div>',
     );
-}
+  }
 
   // Locations.
   if (!empty($node->field_files_location_tags)) {
@@ -644,7 +648,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
       '#markup' => implode(', ', $locations),
       '#suffix' => '</div>',
     );
-}
+  }
 
   // Events.
   if (!empty($node->field_files_event_tags)) {
@@ -663,7 +667,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
       '#markup' => implode(', ', $events),
       '#suffix' => '</div>',
     );
-}
+  }
 
   // Topics.
   if (!empty($node->field_files_topic_tags)) {
@@ -692,7 +696,8 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
     || isset($vars['content']['field_files_source_volume'])
     || isset($vars['content']['field_files_source_number'])
     || isset($vars['content']['field_files_source_chapter'])
-    || isset($vars['content']['field_files_source_page'])) {
+    || isset($vars['content']['field_files_source_page'])
+  ) {
     $information = l(
       t('Show extended information'),
       '',
@@ -750,50 +755,52 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
 function _ellen_white_estate_preprocess_node__tabs_files($vars) {
   $output = array();
   $links = array(
-   'file' => '',
-   'audio' => '',
-   'video' => '',
-   'image' => ''
+    'file' => '',
+    'audio' => '',
+    'video' => '',
+    'image' => ''
   );
 
   if (isset($vars['content']['field_files_file'])) {
     $links['file'] = '<li>' . l(
       t('File'),
       '#ui-tabs-1',
-        array(
-          'external' => TRUE
-        )
+      array(
+        'external' => TRUE
+      )
     ) . '</li>';
   }
   if (isset($vars['content']['field_files_audio'])) {
     $links['audio'] = '<li>' . l(
       t('Audio'),
       '#ui-tabs-2',
-        array(
-          'external' => TRUE
-        )
+      array(
+        'external' => TRUE
+      )
     ) . '</li>';
   }
   if (isset($vars['content']['field_files_youtube_media'])) {
     $links['video'] = '<li>' . l(
       t('Video'),
       '#ui-tabs-3',
-        array(
-          'external' => TRUE
-        )
+      array(
+        'external' => TRUE
+      )
     ) . '</li>';
   }
   if (isset($vars['content']['field_files_image'])) {
     $links['image'] = '<li>' . l(
       t('Image'),
       '#ui-tabs-4',
-        array(
-          'external' => TRUE
-        )
+      array(
+        'external' => TRUE
+      )
     ) . '</li>';
   }
 
-  $sum = array_sum(array_map(function($link) {return empty($link) ? 0 : 1;}, $links));
+  $sum = array_sum(array_map(function ($link) {
+    return empty($link) ? 0 : 1;
+  }, $links));
 
   if ($sum > 1) {
     if (isset($vars['content']['field_files_subtitle'])) {
@@ -854,26 +861,22 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
  * Implements hook_js_alter() to override jquery.
  */
 function ellen_white_estate_js_alter(&$javascript) {
-  if(arg(0) != 'library') {
+  if (arg(0) != 'library') {
     $jquery_path = drupal_get_path('theme', 'ellen_white_estate_old') . '/js/jquery-1.8.3.min.js';
     if (module_exists('jquery_update')) {
       foreach ($javascript as $key => $js_info) {
         $key_arr = explode('/', $key);
         if ($key_arr[count($key_arr) - 1] == 'jquery.min.js') {
-          $jquery_old_key = $key;
+          $javascript[$jquery_path] = $javascript[$key];
+          unset($javascript[$key]);
           break;
         }
       }
-      if (isset($jquery_old_key)) {
-        $javascript[$jquery_path] = $javascript[$jquery_old_key];
-        $javascript[$jquery_path] = $javascript[$jquery_old_key];
-        unset($javascript[$jquery_old_key]);
-        }
-      } else {
-        $javascript[$jquery_path] = $javascript['misc/jquery.js'];
-        $javascript[$jquery_path] = $javascript['misc/jquery.js'];
-        unset($javascript['misc/jquery.js']);
-      }
+    }
+    else {
+      $javascript[$jquery_path] = $javascript['misc/jquery.js'];
+      unset($javascript['misc/jquery.js']);
+    }
     $javascript[$jquery_path]['version'] = '1.8.3';
     $javascript[$jquery_path]['data'] = $jquery_path;
   }
