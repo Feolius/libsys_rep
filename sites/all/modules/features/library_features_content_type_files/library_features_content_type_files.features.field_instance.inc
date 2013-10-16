@@ -10,6 +10,51 @@
 function library_features_content_type_files_field_default_field_instances() {
   $field_instances = array();
 
+  // Exported field_instance: 'comment-comment_node_files-field_files_rating'
+  $field_instances['comment-comment_node_files-field_files_rating'] = array(
+    'bundle' => 'comment_node_files',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'fivestar',
+        'settings' => array(
+          'expose' => TRUE,
+          'style' => 'user',
+          'text' => 'user',
+          'widget' => array(
+            'fivestar_widget' => 'default',
+          ),
+        ),
+        'type' => 'fivestar_formatter_default',
+        'weight' => 1,
+      ),
+    ),
+    'entity_type' => 'comment',
+    'field_name' => 'field_files_rating',
+    'label' => 'Rating',
+    'required' => 0,
+    'settings' => array(
+      'allow_clear' => 0,
+      'stars' => 5,
+      'target' => 'parent_node',
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'fivestar',
+      'settings' => array(
+        'widget' => array(
+          'fivestar_widget' => 'default',
+        ),
+      ),
+      'type' => 'stars',
+      'weight' => 2,
+    ),
+  );
+
   // Exported field_instance: 'node-files-field_audio_year'
   $field_instances['node-files-field_audio_year'] = array(
     'bundle' => 'files',
@@ -1184,9 +1229,12 @@ function library_features_content_type_files_field_default_field_instances() {
         'weight' => 41,
       ),
       'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(
+          'trim_length' => 90,
+        ),
+        'type' => 'text_trimmed',
         'weight' => 41,
       ),
       'home_middle' => array(
