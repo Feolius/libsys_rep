@@ -582,6 +582,8 @@ class LocationMigration extends LibraryMigration {
             ->select('adv_location_iso', 'p')
             ->fields('p', array('ID', 'locname', 'address', 'town', 'state', 'country',
         'zipcode', 'description', 'link', 'source'));
+    $query->join('adv_location_geocoding', 'lg', 'p.ID=lg.loc_id');
+    $query->fields('lg', array('data'));
     $this->map = new MigrateSQLMap($this->machineName, array(
         'ID' => array(
             'type' => 'int',
@@ -605,6 +607,7 @@ class LocationMigration extends LibraryMigration {
     $this->addFieldMapping(LOCATION_FIELD_21, 'location_field_21');
     $this->addFieldMapping(LOCATION_FIELD_22, 'location_field_22');
     $this->addFieldMapping(LOCATION_FIELD_17, 'location_field_17');
+    geophp_load();
   }
 
   public function prepareRow($row) {
@@ -685,9 +688,18 @@ class LocationMigration extends LibraryMigration {
         'organisation_name' => $row->locname
     );
     $node->field_location_address['und']['0'] = $addressfield_content;
-    $field_instance = field_info_instance('node', 'field_location_geofield', 'location');
-    if (($field_value = geocoder_widget_get_field_value('node', $field_instance, $node)) !== FALSE) {
-      $node->{$field_instance['field_name']} = $field_value;
+    if(!empty($row->data)){
+      $geocoder_data = $row->data;
+      $geocoder_data = drupal_json_decode($geocoder_data);
+      $geocoder_data = $geocoder_data['results'][0];
+      $geom = new Point($geocoder_data['geometry']['location']['lng'], $geocoder_data['geometry']['location']['lat']);
+      $geom->data = array();
+      $geom->data['geocoder_accuracy'] = $geocoder_data['geometry']['location_type'];
+      $geom->data['geocoder_formatted_address'] = $geocoder_data['formatted_address'];
+      $geom->data['geocoder_address_components'] = $geocoder_data['address_components'];
+      $values = geocoder_widget_resolve_deltas(array($geom), 'default', 'geofield');
+      $field_instance = field_info_instance('node', 'field_location_geofield', 'location');
+      $node->{$field_instance['field_name']} = array(LANGUAGE_NONE => $values);
     }
     //Add datefields
     $this->set_datefield_value(LOCATION_FIELD_18_DATE, $node, $row->ID, 'adv_location', 18);
