@@ -582,7 +582,7 @@ class LocationMigration extends LibraryMigration {
             ->select('adv_location_iso', 'p')
             ->fields('p', array('ID', 'locname', 'address', 'town', 'state', 'country',
         'zipcode', 'description', 'link', 'source'));
-    $query->join('adv_location_geocoding', 'lg', 'p.ID=lg.loc_id');
+    $query->leftJoin('adv_location_geocoding', 'lg', 'p.ID=lg.loc_id');
     $query->fields('lg', array('data'));
     $this->map = new MigrateSQLMap($this->machineName, array(
         'ID' => array(
