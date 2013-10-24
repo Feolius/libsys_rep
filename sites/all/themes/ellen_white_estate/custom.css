@@ -408,12 +408,3 @@ ol.collection-search-results, ul.collection-search-results, .page-home .page ul,
 #edit-next-page-button:disabled {
   border-radius: 100px;
 }
-
-#home-left .title-block h2,
-#home-middle .title-block h2,
-#home-right .title-block h2,
-#home-bottom .title-block h2 {
-  font-size: 20px;
-  text-transform: uppercase;
-  font-weight: 700;
-}
