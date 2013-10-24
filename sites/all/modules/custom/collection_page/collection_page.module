@@ -598,7 +598,6 @@ function collection_page_preprocess_breadcrumb(&$variables) {
       $exploded_filter = explode(':', $filter);
       if ($exploded_filter[0] == 'bundle') {
         $bundle = $exploded_filter[1];
-        kpr($bundle);
         $info = entity_get_info('node');
         $variables['breadcrumb'][2] = $info['bundles'][$bundle]['label'];
       }
