@@ -28,7 +28,9 @@
       <!-- Left. -->
         <div id="home-left">
           <?php if ($left_title = variable_get('library_admin_left_block_text')): ?>
-            <h2><?php print $left_title; ?></h2>
+            <div class="title-block">
+              <h2><?php print $left_title; ?></h2>
+            </div>
           <?php endif; ?>
           <?php print $content['left']; ?>
         </div>
@@ -39,7 +41,9 @@
       <!-- Middle. -->
         <div id="home-middle">
           <?php if ($middle_title = variable_get('library_admin_middle_block_text')): ?>
-            <h2><?php print $middle_title; ?></h2>
+            <div class="title-block">
+              <h2><?php print $middle_title; ?></h2>
+            </div>
           <?php endif; ?>
           <?php print $content['middle']; ?>
         </div>
@@ -50,7 +54,9 @@
       <!-- Right. -->
         <div id="home-right">
           <?php if ($right_title = variable_get('library_admin_right_block_text')): ?>
-            <h2><?php print $right_title; ?></h2>
+            <div class="title-block">
+              <h2><?php print $right_title; ?></h2>
+            </div>
           <?php endif; ?>
           <?php print $content['right']; ?>
         </div>
