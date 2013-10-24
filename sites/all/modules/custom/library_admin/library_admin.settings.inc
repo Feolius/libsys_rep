@@ -66,6 +66,28 @@ function library_admin_settings_form() {
     '#default_value' => variable_get('library_admin_welcome_text'),
   );
 
+  // Titles of the homepages blocks.
+  $form['home']['library_admin_left_block_text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title of the left block.'),
+    '#description' => t('Title of the left block on the homepage.'),
+    '#default_value' => variable_get('library_admin_left_block_text'),
+  );
+
+  $form['home']['library_admin_middle_block_text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title of the middle block.'),
+    '#description' => t('Title of the middle block on the homepage.'),
+    '#default_value' => variable_get('library_admin_middle_block_text'),
+  );
+
+  $form['home']['library_admin_right_block_text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Title of the right block.'),
+    '#description' => t('Title of the right block on the homepage.'),
+    '#default_value' => variable_get('library_admin_right_block_text'),
+  );
+
   $form['library_admin_clear_temp_folder'] = array(
     '#type' => 'submit',
     '#value' => t('Remove files in temp folder'),
