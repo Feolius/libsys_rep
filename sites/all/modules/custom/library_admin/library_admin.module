@@ -19,7 +19,8 @@ function library_admin_menu() {
     'dascription' => t('This page is contain all settings for site'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('library_admin_settings_form'),
-    'access callback' => TRUE,
+    'page callback' => 'system_admin_config_page',
+    'access arguments' => array('access administration pages'),
     'file' => 'library_admin.settings.inc',
     'type' => MENU_NORMAL_ITEM
   );

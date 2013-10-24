@@ -591,20 +591,21 @@ function collection_page_preprocess_breadcrumb(&$variables) {
     $back_to_library_html = l(t('Library'), $path, array('query' => $library_get_options));
     $variables['breadcrumb'][1] = $back_to_library_html;
   }
-  if (arg(0) == 'library') {
-    $variables['breadcrumb'][1] = t('Library');
 
-    // Get the label of the bundle.
-    if (isset($_GET['f'])) {
-      foreach ($_GET['f'] as $filter) {
-        $exploded_filter = explode(':', $filter);
-        if ($exploded_filter[0] == 'bundle') {
-          $bundle = $exploded_filter[1];
-          $info = entity_get_info('node');
-          $variables['breadcrumb'][2] = $info['bundles'][$bundle]['label'];
-        }
+  // Get the label of the bundle.
+  if (isset($_GET['f'])) {
+    foreach ($_GET['f'] as $filter) {
+      $exploded_filter = explode(':', $filter);
+      if ($exploded_filter[0] == 'bundle') {
+        $bundle = $exploded_filter[1];
+        $info = entity_get_info('node');
+        $variables['breadcrumb'][2] = $info['bundles'][$bundle]['label'];
       }
     }
+  }
+
+  if (arg(0) == 'library') {
+    $variables['breadcrumb'][1] = t('Library');
 
     // Add search word in breadcrumbs.
     if (isset($_GET['q'])) {
