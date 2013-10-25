@@ -296,46 +296,47 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
           //Write data to the collector field if settings changes were made after the node creation or
           // the data in collecting field was changed
           if ((property_exists($entity, "changed") && $entity->changed <= $field_settings_last_changes_time)
-            || ($collecting_field_items !== $original_collecting_field_items)
+            || ($collecting_field_items != $original_collecting_field_items)
           ) {
 
             $collecting_field_info = field_info_field($collecting_field_name);
 
-            $bundles_intersection = array_intersect(
-              $target_bundles,
-              $collecting_field_info['settings']['handler_settings']['target_bundles']
-            );
+            if (!empty($collecting_field_info['settings']['handler_settings']['target_bundles'])) {
+              $bundles_intersection = array_intersect(
+                $target_bundles,
+                $collecting_field_info['settings']['handler_settings']['target_bundles']
+              );
 
-            //If the collecting field have the same list of available bundles as list in the
-            //current collector field settings, we could just copy all target ids from this collecting field.
-            if ($collecting_field_info['settings']['handler_settings']['target_bundles'] == $target_bundles) {
-              $collecting_fields_could_have_needed_items = TRUE;
-              foreach ($collecting_field_items as $item) {
-                //Store only first 40 collected items in collector field
-                if (count($collector_field_field_items) < 40) {
-                  $collector_field_field_items[] = $item['target_id'];
-                }
-                else {
-                  break;
-                }
-              }
-            } //If these list are not the same, we need to filter the traget ids and choose only ids with
-            //needed bundles.
-            elseif (!empty($bundles_intersection)) {
-              $collecting_fields_could_have_needed_items = TRUE;
-              foreach ($collecting_field_items as $item) {
-                //Store only first 40 collected items in collector field
-                if (count($collector_field_field_items) < 40) {
-                  $target_node = node_load($item['target_id']);
-                  if (in_array($target_node->type, $target_bundles)) {
+              //If the collecting field have the same list of available bundles as list in the
+              //current collector field settings, we could just copy all target ids from this collecting field.
+              if ($collecting_field_info['settings']['handler_settings']['target_bundles'] == $target_bundles) {
+                $collecting_fields_could_have_needed_items = TRUE;
+                foreach ($collecting_field_items as $item) {
+                  //Store only first 40 collected items in collector field
+                  if (count($collector_field_field_items) < 40) {
                     $collector_field_field_items[] = $item['target_id'];
                   }
+                  else {
+                    break;
+                  }
                 }
-                else {
-                  break;
+              } //If these list are not the same, we need to filter the traget ids and choose only ids with
+              //needed bundles.
+              elseif (!empty($bundles_intersection)) {
+                $collecting_fields_could_have_needed_items = TRUE;
+                foreach ($collecting_field_items as $item) {
+                  //Store only first 40 collected items in collector field
+                  if (count($collector_field_field_items) < 40) {
+                    $target_node = node_load($item['target_id']);
+                    if (in_array($target_node->type, $target_bundles)) {
+                      $collector_field_field_items[] = $item['target_id'];
+                    }
+                  }
+                  else {
+                    break;
+                  }
                 }
               }
-
             }
           }
         }
@@ -668,9 +669,9 @@ function field_data_collector_field_formatter_settings_form($field, $instance, $
       else {
         $form['content_types_settings'][$target_bundle]['no_preset_message'] = array(
           '#markup' => '<div class="messages warning">' . t(
-            'No presets are available. You must to <a href="@create">create a preset</a> to proceed.',
-            array('@create' => url('admin/config/media/field-data-collector-presets/add'))
-          ) . '</div>',
+              'No presets are available. You must to <a href="@create">create a preset</a> to proceed.',
+              array('@create' => url('admin/config/media/field-data-collector-presets/add'))
+            ) . '</div>',
           '#tree' => TRUE,
         );
       }
@@ -687,19 +688,19 @@ function field_data_collector_field_formatter_settings_form($field, $instance, $
 
       $form['field_settings_is_empty'] = array(
         '#markup' => '<div class="messages warning">'
-        . t(
-          'The bundles did not set at the field settings. You need to set them on the <a href="@field_settings_page">field edit page</a> to proceed.',
-          array('@field_settings_page' => url($admin_path . '/fields/' . $field['field_name']))
-        ) . '</div>',
+          . t(
+            'The bundles did not set at the field settings. You need to set them on the <a href="@field_settings_page">field edit page</a> to proceed.',
+            array('@field_settings_page' => url($admin_path . '/fields/' . $field['field_name']))
+          ) . '</div>',
       );
     }
     else {
       $form['field_settings_is_empty'] = array(
         '#markup' => '<div class="messages warning">'
-        . t(
-          'The bundles did not set at the field settings. You need to set them on the field edit page to proceed.'
-        )
-        . '</div>',
+          . t(
+            'The bundles did not set at the field settings. You need to set them on the field edit page to proceed.'
+          )
+          . '</div>',
       );
     }
   }
