@@ -749,7 +749,7 @@ function collection_page_get_image_field($node) {
 /**
  * Return an image html for for the given node and given image field.
  * @param $variables
- * An associative array containing all parameters that theme_image() function can take.
+ * An associative array containing all parameters that theme_image_style() function can take.
  * @param $image_link
  * An associative array comtaining all parameters that l() function can take. It is an array with keys 'path' and 'options'.
  */
@@ -784,7 +784,7 @@ function collection_page_node_snippet_image($node, $image_field_name, $variables
       //For email display just an Email dummy image
       if ($term->name == 'E-Mail') {
         $uri = file_build_uri('collection_page_images/email.png');
-        $image = theme('image', array_merge($variables, array('path' => $uri)));
+        $image = theme('image_style', array_merge($variables, array('path' => $uri)));
       }
     }
     //For the document display thumbnail of pdf file
@@ -796,7 +796,7 @@ function collection_page_node_snippet_image($node, $image_field_name, $variables
             $file_thumb = file_load($item['fid_thumb']);
             if ($file_thumb) {
               $uri_thumb = $file_thumb->uri;
-              $image = theme('image', array_merge($variables, array('path' => $uri_thumb)));
+              $image = theme('image_style', array_merge($variables, array('path' => $uri_thumb)));
             }
           }
         }
@@ -810,7 +810,7 @@ function collection_page_node_snippet_image($node, $image_field_name, $variables
       $item = $items[0];
       if (isset($item['uri'])) {
         $uri = $item['uri'];
-        $image = theme('image', array_merge($variables, array('path' => $uri)));
+        $image = theme('image_style', array_merge($variables, array('path' => $uri)));
       }
     }
   }
