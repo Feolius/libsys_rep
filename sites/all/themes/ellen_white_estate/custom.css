@@ -96,7 +96,7 @@
 #home-top {
   width: 960px;
   margin: 0 auto;
-  padding-top: 235px;
+  padding-top: 165px;
 }
 
 #home-top div:first-child {
@@ -111,14 +111,14 @@
 }
 
 #home-top div.field-name-title-field a {
-  background: #14171b;
+  background: #191D22;
   color: #fff;
   font-size: 18px;
-  line-height: 24px;
-  padding: 12px 46px 12px 12px;
+  padding: 14px; /* 12px 46px 12px 12px */
   display: block;
-  height: 48px;
+  height: 67px;
   overflow: hidden;
+  text-transform: none;
 }
 
 #home-top div.field-name-title-field h2 {
@@ -133,7 +133,7 @@
 #home-top span.arrow-link a {
   display: block;
   width: 0;
-  height: 72px;
+  height: 87px;
   background: url(images/more_arrow.png) 0 center #0c7091 no-repeat;
 }
 
@@ -254,7 +254,7 @@ a.download {
   margin: 0 0 0 18px;
   padding: 0;
   position: relative;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
   -webkit-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.5);
 }
@@ -273,6 +273,15 @@ a.download {
 #home-middle,
 #home-right {
   margin: 0 0 0 18px;
+}
+
+#home-left h2,
+#home-middle h2,
+#home-right h2,
+#home-bottom h2 {
+  margin-bottom: 0;
+  text-transform: none;
+  font-size: 18px;
 }
 
 #header-inside-left {
@@ -338,7 +347,7 @@ img#collection-upper-thumbnail:hover {
  */
 div.olPopup img,
 div.olLayerDiv img.olTileImage {
-    max-width: none!important;
+  max-width: none!important;
 }
 
 #collection-standard-thumbnail-view-container {
