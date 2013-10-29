@@ -118,9 +118,37 @@ function library_admin_settings_form() {
   $form['collection_pager_settings']['collection_pager_entities_number_per_solr_query'] = array(
     '#type' => 'textfield',
     '#title' => t('Number of entities per solr query'),
-    '#description' => t('Set number of entities (nodes), which will be saved is session to avoid often queries to solr. This number
+    '#description' => t('Set number of entities (nodes), which will be saved in the session to avoid often queries to solr. This number
      means, how much nodes will be retrieved per one solr query.'),
     '#default_value' => variable_get('collection_pager_entities_number_per_solr_query', 5),
+  );
+
+  $form['book_field'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Settings for Book field'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['book_field']['library_pdf2swf_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('pdf2swf path'),
+    '#description' => t('Path to pdf2swf tool'),
+    '#default_value' => variable_get('library_pdf2swf_path', '/usr/local/bin/pdf2swf'),
+  );
+
+  $form['book_field']['library_swfrender_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('swfrender path'),
+    '#description' => t('Path to swfrender tool'),
+    '#default_value' => variable_get('library_swfrender_path', '/usr/local/bin/swfrender'),
+  );
+
+  $form['book_field']['library_pdf2json_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('pdf2json path'),
+    '#description' => t('Path to pdf2json tool'),
+    '#default_value' => variable_get('library_pdf2json_path', '/usr/local/bin/pdf2json'),
   );
 
   return system_settings_form($form);
