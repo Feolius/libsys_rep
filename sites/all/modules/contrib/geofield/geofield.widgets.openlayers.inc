@@ -111,7 +111,6 @@ function openlayers_field_widget_settings_form($field, $instance) {
     );
   }
   $form += $geocoder_form;
-
   return $form;
 }
  /**
@@ -162,8 +161,9 @@ function openlayers_field_widget_form(&$form, &$form_state, $field, $instance, $
   // Compress all the WKT elements into a single WKT object to pass to the map.
   // Essentially we compress all the elements into delta 0, then deconstruct them on the other side when it comes time to validate them
   $geoms = array();
+
   foreach ($items as $delta => $item) {
-    if (array_key_exists('geom', $item)) {
+    if (is_array($item) && array_key_exists('geom', $item)) {
       $geoms[] = geoPHP::load($item['geom']);
     }
     else {
@@ -171,19 +171,23 @@ function openlayers_field_widget_form(&$form, &$form_state, $field, $instance, $
     }
   }
   $combined_geom = geoPHP::geometryReduce($geoms);
-
-  // We want to force the combined_geom into a geometryCollection
-  $geom_type = $combined_geom->geometryType();
-  if ($geom_type == 'MultiPolygon' || $geom_type == 'MultiLineString' || $geom_type == 'MultiPoint') {
-    $combined_geom = new GeometryCollection($combined_geom->getComponents());
+  
+  if ($combined_geom) {
+    // We want to force the combined_geom into a geometryCollection
+    $geom_type = $combined_geom->geometryType();
+    if ($geom_type == 'MultiPolygon' || $geom_type == 'MultiLineString' || $geom_type == 'MultiPoint') {
+      $combined_geom = new GeometryCollection($combined_geom->getComponents());
+    }
+  
+    $combined_wkt = $combined_geom->out('wkt');
+    // A value of 'GEOMETRYCOLLECTION EMPTY' breaks OpenLayers JS later on down the line.
+    if ($combined_wkt == 'GEOMETRYCOLLECTION EMPTY') {
+      $combined_wkt = '';
+    }
   }
-
-  $combined_wkt = $combined_geom->out('wkt');
-  // A value of 'GEOMETRYCOLLECTION EMPTY' breaks OpenLayers JS later on down the line.
-  if ($combined_wkt == 'GEOMETRYCOLLECTION EMPTY') {
+  else {
     $combined_wkt = '';
   }
-  $items = array(array('wkt' => $combined_wkt));
 
   $element['geom'] = array(
     '#type' => 'hidden',
@@ -327,9 +331,8 @@ function openlayers_use_geocoder_submit($form, &$form_state) {
     $field_value[$langcode][$delta]['input_format'] = 'wkt';
     // Override the field's value in the 'input' array to substitute the new
     // field value for the one that was submitted.
-    drupal_array_set_nested_value($form_state, array_merge(array('input'), $parents, array($field_name)), $field_value);
+    drupal_array_set_nested_value($form_state, array_merge(array('values'), $parents, array($field_name)), $field_value);
   }
-  $form_state['rebuild'] = TRUE;
 }
 
 /**
@@ -339,12 +342,16 @@ function openlayers_use_geocoder_submit($form, &$form_state) {
  */
 function openlayers_widget_geocode($form, $form_state) {
   $button = $form_state['triggering_element'];
-  // Return the element (the field's delta). It will replace itself via the
-  // wrapper div ID set in the element's #prefix.
-  $parents = $button['#parents'];
-  // Remove the button itself from the parents.
-  array_pop($parents);
-  $element = drupal_array_get_nested_value($form, $parents);
+
+  // Go one level up in the form, to the widgets container.
+  $element = drupal_array_get_nested_value($form, array_slice($button['#array_parents'], 0, -1));
+  $field_name = $element['#field_name'];
+  $langcode = $element['#language'];
+  $delta = $element['#delta'];
+  $parents = $element['#field_parents'];
+
+  $value = drupal_array_get_nested_value($form_state, array_merge(array('values'), $parents, array($field_name)));
+  $element['geom']['#value'] = $value[$langcode][$delta]['geom'];
   // Return the map, but remove the '_weight' element inserted
   // by the field API.
   unset($element['_weight']);
@@ -397,7 +404,7 @@ function openlayers_geofield_widget_element_validate($element, &$form_state) {
     // Checks pass, lets load this up into deltas
     if ($container_delta['#widget_settings']['data_storage'] == 'collection') {
       //Assign values to the form state
-      form_set_value($element[0], $combined_geom->out('wkt'), $form_state);
+      form_set_value($element[0]['geom'], $combined_geom->out('wkt'), $form_state);
     }
 
     if ($container_delta['#widget_settings']['data_storage'] == 'single') {
@@ -409,7 +416,7 @@ function openlayers_geofield_widget_element_validate($element, &$form_state) {
         openlayers_geofield_override_element_delta($element, 0, $delta);
 
         // Assign the value in the form_state
-        form_set_value($element, $geom->out('wkt'), $form_state);
+        form_set_value($element['geom'], $geom->out('wkt'), $form_state);
       }
     }
   }

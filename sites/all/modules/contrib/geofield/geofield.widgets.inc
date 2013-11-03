@@ -33,7 +33,7 @@ define('GEOFIELD_INPUT_BOUNDS', 'bounds');
 // If we have the Openlayers module installed, include their widget code.
 
 if (module_exists('openlayers')) {
-  require_once(drupal_get_path('module', 'geofield') . '/geofield.widgets.openlayers.inc');
+  require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'geofield') . '/geofield.widgets.openlayers.inc';
 }
 
 /**
@@ -120,7 +120,7 @@ function geofield_field_widget_form(&$form, &$form_state, $field, $instance,
       $element['geom'] = array(
         '#type' => 'textarea',
         '#title' => check_plain($instance['label']),
-        '#description' => check_plain($instance['description']),
+        '#description' => t($instance['description']),
         '#default_value' => $default_value,
         '#required' => $instance['required'],
       );
@@ -138,7 +138,7 @@ function geofield_field_widget_form(&$form, &$form_state, $field, $instance,
       $element['geom'] = array(
         '#type' => 'textarea',
         '#title' => check_plain($instance['label']),
-        '#description' => check_plain($instance['description']),
+        '#description' => t($instance['description']),
         '#default_value' => $default_value,
         '#required' => $instance['required'],
       );
@@ -150,16 +150,16 @@ function geofield_field_widget_form(&$form, &$form_state, $field, $instance,
         'lat' => '',
         'lon' => '',
       );
-      if (isset($items[$delta]['geom']['lat'])) {
-        $latlon_value['lat'] = floatval($items[$delta]['geom']['lat']);
+      if (isset($items[$delta]['lat'])) {
+        $latlon_value['lat'] = floatval($items[$delta]['lat']);
       }
-      if (isset($items[$delta]['geom']['lon'])) {
-        $latlon_value['lon'] = floatval($items[$delta]['geom']['lon']);
+      if (isset($items[$delta]['lon'])) {
+        $latlon_value['lon'] = floatval($items[$delta]['lon']);
       }
       $element['geom'] = array(
         '#type' => 'geofield_latlon',
         '#title' => check_plain($instance['label']),
-        '#description' => check_plain($instance['description']),
+        '#description' => t($instance['description']),
         '#default_value' => $latlon_value,
         '#required' => $instance['required'],
         '#geolocation' => (!empty($instance['widget']['settings']['html5_geolocation'])) ? $instance['widget']['settings']['html5_geolocation'] : FALSE,
@@ -174,22 +174,22 @@ function geofield_field_widget_form(&$form, &$form_state, $field, $instance,
         'bottom' => '',
         'left' => '',
       );
-      if (isset($items[$delta]['geom']['top'])) {
-        $bounds_value['top'] = $items[$delta]['geom']['top'];
+      if (isset($items[$delta]['top'])) {
+        $bounds_value['top'] = floatval($items[$delta]['top']);
       }
-      if (isset($items[$delta]['geom']['right'])) {
-        $bounds_value['right'] = $items[$delta]['geom']['right'];
+      if (isset($items[$delta]['right'])) {
+        $bounds_value['right'] = floatval($items[$delta]['right']);
       }
-      if (isset($items[$delta]['geom']['bottom'])) {
-        $bounds_value['bottom'] = $items[$delta]['geom']['bottom'];
+      if (isset($items[$delta]['bottom'])) {
+        $bounds_value['bottom'] = floatval($items[$delta]['bottom']);
       }
-      if (isset($items[$delta]['geom']['left'])) {
-        $bounds_value['left'] = $items[$delta]['geom']['left'];
+      if (isset($items[$delta]['left'])) {
+        $bounds_value['left'] = floatval($items[$delta]['left']);
       }
       $element['geom'] = array(
         '#type' => 'geofield_bounds',
         '#title' => check_plain($instance['label']),
-        '#description' => check_plain($instance['description']),
+        '#description' => t($instance['description']),
         '#default_value' => $bounds_value,
         '#required' => $instance['required'],
       );

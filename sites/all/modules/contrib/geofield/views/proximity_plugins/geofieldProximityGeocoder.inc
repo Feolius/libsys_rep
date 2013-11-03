@@ -32,7 +32,7 @@ class geofieldProximityGeocoder extends geofieldProximityBase implements geofiel
       '#type' => 'select',
       '#title' => t('Geocoding Service'),
       '#options' => $geocoder_options,
-      '#default_value' => $this->options['geofield_proximity_geocoder_engine'],
+      '#default_value' => $views_plugin->options['geofield_proximity_geocoder_engine'],
       '#dependency' => array(
         'edit-options-source' => array('geocoder'),
       ),
@@ -48,15 +48,18 @@ class geofieldProximityGeocoder extends geofieldProximityBase implements geofiel
   public function getSourceValue($views_plugin) {
     $geocoder_engine = $views_plugin->options['geofield_proximity_geocoder_engine'];
     $location = (isset($views_plugin->value)) ? $views_plugin->value['origin'] : $views_plugin->options['geofield_proximity_geocoder'];
+    if ($location) {
+      $geocoded_data_raw = geocoder($geocoder_engine, $location);
 
-    $geocoded_data_raw = geocoder($geocoder_engine, $location);
-    if ($geocoded_data_raw) {
-      return array(
-        'latitude' => $geocoded_data_raw->getY(),
-        'longitude' => $geocoded_data_raw->getX(),
-      );
-    } else {
-      return FALSE;
+      if ($geocoded_data_raw) {
+        return array(
+          'latitude' => $geocoded_data_raw->getY(),
+          'longitude' => $geocoded_data_raw->getX(),
+        );
+      }
     }
+
+    return FALSE;
   }
+
 }
