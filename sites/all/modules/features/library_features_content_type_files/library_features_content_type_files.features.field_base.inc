@@ -1009,7 +1009,6 @@ function library_features_content_type_files_field_default_field_bases() {
         'image' => 'Image',
         'audio' => 'Audio',
         'video' => 'Video',
-        'url' => 'URL',
       ),
       'allowed_values_function' => '',
     ),
