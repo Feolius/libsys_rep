@@ -378,14 +378,9 @@ class FilesMigration extends LibraryMigration {
     else {
       return FALSE;
     }
-    switch ($cid) {
-      case 1:
-      case 2:
-      case 3:
-        $row->cid = $cid;
-        break;
-      default:
-        return FALSE;
+    // We need files only with collections id 1, 2, 3, 4.
+    if(!in_array($cid, array(1, 2, 3, 4))){
+      return FALSE;
     }
     $keywords = str_replace(' ', '', $row->keywords);
     $row->keywords = strip_tags($keywords);
@@ -429,13 +424,9 @@ class FilesMigration extends LibraryMigration {
       else {
         return FALSE;
       }
-      switch ($cid) {
-        case 1:
-        case 2:
-        case 3:
-          break;
-        default:
-          return FALSE;
+      // We need files only with collections id 1, 2, 3, 4.
+      if(!in_array($cid, array(1, 2, 3, 4))){
+        return FALSE;
       }
     }
     $node = new stdClass();
@@ -483,6 +474,7 @@ class FilesMigration extends LibraryMigration {
     $this->set_datefield_value('field_files_creation_date', $node, $row->ID, 'file', 4);
     $node->language = 'en';
     $node->field_files_description['und'][0] = 'filtered_html';
+    $node->field_files_text['und'][0] = 'full_html';
     $node->field_files_primary_media['und'][0]['value'] = 'document';
   }
 
@@ -493,7 +485,6 @@ class PeopleMigration extends LibraryMigration {
   public function __construct() {
     parent::__construct();
     $this->description = t('Migrate People content type from adv_people table');
-    //$this->dependencies = array('Location');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
       ->select('adv_people', 'p')
       ->fields('p', array(
@@ -1021,7 +1012,8 @@ class TopicsMigration extends LibraryMigration {
     $this->destination = new MigrateDestinationNode('topics');
     $this->addSimpleMappings(array('title'));
     $this->addFieldMapping('field_topics_body', 'description');
-    $this->addFieldMapping('field_topics_related_event', 'event');
+    $this->addFieldMapping('field_topics_related_event', 'event')
+      ->sourceMigration('Events');
     $this->addFieldMapping('field_topics_kind', 'kind')
       ->arguments(array('create_term' => TRUE));
   }
