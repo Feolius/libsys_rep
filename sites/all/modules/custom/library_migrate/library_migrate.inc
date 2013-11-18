@@ -367,8 +367,7 @@ class FilesMigration extends LibraryMigration {
   }
 
   public function prepareRow($row) {
-    //Check if this file from collection with id 1,2 or 3    
-    $row->text = strip_tags($row->text, '<QUESTION><ANSWER>');
+    //Check if this file from collection with id 1,2,3 or 4
     if (!(is_null($row->cid))) {
       $cid = $row->cid;
     }
@@ -404,7 +403,6 @@ class FilesMigration extends LibraryMigration {
   }
 
   protected function createStub($migration, $source_id) {
-    //Check if this stub from collection with id 1,2 or 3
     $query = Database::getConnection('default', 'ImportDatabaseKey')
       ->select('file', 'f');
     $query->condition('f.ID', $source_id[0]);
@@ -473,8 +471,8 @@ class FilesMigration extends LibraryMigration {
     }
     $this->set_datefield_value('field_files_creation_date', $node, $row->ID, 'file', 4);
     $node->language = 'en';
-    $node->field_files_description['und'][0] = 'filtered_html';
-    $node->field_files_text['und'][0] = 'full_html';
+    $node->field_files_description['und'][0]['format'] = 'filtered_html';
+    $node->field_files_text['und'][0]['format'] = 'full_html';
     $node->field_files_primary_media['und'][0]['value'] = 'document';
   }
 
@@ -640,7 +638,7 @@ class PeopleMigration extends LibraryMigration {
 
   public function prepare($node, $row) {
     $node->language = 'en';
-    $node->field_people_description['und'][0] = 'filtered_html';
+    $node->field_people_description['und'][0]['format'] = 'filtered_html';
     $this->set_datefield_value(PEOPLE_FIELD_17_DATE, $node, $row->ID, 'adv_people', 17);
     $this->set_datefield_value(PEOPLE_FIELD_18_DATE, $node, $row->ID, 'adv_people', 18);
   }

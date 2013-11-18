@@ -34,7 +34,7 @@ function library_import_form($form, &$form_state) {
  */
 function library_import_submit() {
   $other_database = array(
-      'database' => 'adventists',
+      'database' => 'adventists2',
       'username' => 'admin', // assuming this is necessary
       'password' => '1234', // assuming this is necessary
       'host' => 'localhost', // assumes localhost
@@ -42,29 +42,25 @@ function library_import_submit() {
   );
   Database::addConnectionInfo('ImportDatabaseKey', 'default', $other_database);
    $query = Database::getConnection('default', 'ImportDatabaseKey')
-            ->select('adv_location_geocoding', 'l');
-  $query->condition('l.loc_id', 1);
-  $query->fields('l', array('data'));
-//    $query->join('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
-//    $query->join('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id  AND l2.tb_name != l.tb_name');
-//    $query->join('adv_date_time', 'dt', 'dt.ID = l.tb_id');
-//    $query->addField('l', 'tb_name');
-//    $query->addField('l2', 'linker_entry_id');
-//    $query->addField('dt', 'ID');
-//    $query->condition('l2i.linkerinfo_id', 18, '=');
-//    $query->condition('l.tb_name', 'adv_location', '=');
-//    $query->condition('l2.tb_name', 'adv_people', '=');
-  //$query->condition('l.tb_name', 'adv_events', '=');
-    //$query->isNotNull('dt.end_year');
-   //$query->groupBy('l.tb_name');
-//    $query->range(0, 20);
+            ->select('adv_entities', 'l');
+    $query->join('egw_linker', 'l2', 'l2.tb_id = l.ID');
+  $query->join('egw_linker2info', 'l2i', 'l2i.linker_id = l2.linker_entry_id');
+//  $query->leftJoin('file_collection2file', 'c2f', 'c2f.file_id = l.ID');
+    $query->addField('l', 'ID');
+  $query->condition('l2i.linkerinfo_id', 25);
+  $query->condition('l2.tb_name', 'adv_entities');
+
+//    $query->condition('c2f.collection_id', 3);
+//  $query->condition('l.tb_name', 'adv_events', '=');
+//    $query->isNotNull('dt.end_year');
+//   $query->groupBy('l.tb_name');
+    $query->range(0, 20);
     $result = $query->execute();
 
     //$query->groupBy('l.file_extension');*$query = Database::getConnection('default', 'ImportDatabaseKey')
 
   while ($row = $result->fetchAssoc()) {
-    $data = drupal_json_decode($row['data']);
-         dpm($data);
+         dpm($row);
     }
   /*$node = node_load(12503);
   dpm($node);*/
