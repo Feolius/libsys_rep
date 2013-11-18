@@ -152,6 +152,7 @@ function facetapi_library_term_widget_filter_submit($form, &$form_state) {
   $options = $_SESSION['facetapi_libray_term_widget_options'][$field_alias];
   $items = $form_state['input']['items'];
   $items = drupal_json_decode($items);
+  $new_chosen_options = array();
   foreach ($items as $item) {
     if (isset($options[$item])) {
       $new_chosen_options[$item] = $options[$item];

@@ -7,7 +7,7 @@
                     var self = this;
                     var select = this.element.hide();
                     //Marker element which allow to decline chosen filters  
-                    var marker = '<a class="' + self.options.markerClass + '" href="">X</a>';
+                    var marker = '<a class="facetapi-term-marker ' + self.options.markerClass + '" href="">X</a>';
                     var markerClickHandler = function(event, object){
                         var parent = $(object).parent();
                         var value = parent.find('input').val();
