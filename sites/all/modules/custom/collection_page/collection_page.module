@@ -150,7 +150,7 @@ function theme_facet_collection_search_results__alter($variables) {
       $temp_timeline_results_array['title'] = $temp_result['title'];
       $temp_timeline_results_array['link'] = $temp_result['link'];
       $temp_timeline_results_array['bundle'] = $temp_result['bundle'];
-        //Get only first value of every date field for current bundle from apache solr results array
+      //Get only first value of every date field for current bundle from apache solr results array
       $solr_resutls_date_fields_for_bundle = array_map(
         $dm_prefix_function,
         _collection_page_get_date_fields_from_bundle($temp_result['bundle'])
@@ -266,8 +266,8 @@ function collection_page_timeline_frame_callback() {
   $options = new stdClass();
   $options->start_slide = 0;
   $options->timeline_lib_url = $GLOBALS['base_url'] . '/' . libraries_get_path(
-      'timeline'
-    ) . '/compiled/js/storyjs-embed.js';
+    'timeline'
+  ) . '/compiled/js/storyjs-embed.js';
   echo theme('timeline_json', array('options' => $options));
   exit;
 }
@@ -290,8 +290,8 @@ function collection_page_timeline_json_callback() {
         //If the node have more then one date fields, the earliest one would be chosen.
         if (isset($timeline_item->startDate)) {
           $timeline_item->startDate = (strtotime($timeline_item->startDate) > strtotime(
-              $item_date
-            )) ? $item_date : $timeline_item->startDate;
+            $item_date
+          )) ? $item_date : $timeline_item->startDate;
         }
         else {
           $timeline_item->startDate = $item_date;
@@ -481,7 +481,7 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
       $height = $effect['data']['height'];
     }
   }
-  $coeff = $popover_height/$height;
+  $coeff = $popover_height / $height;
   // These variables is used in image_style_theme() function.
   $attributes = array(
     'class' => array('collection-thumbnail'),
@@ -494,21 +494,23 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
   $results['collection_thumbnails'] = array();
   foreach ($results['results'] as $result) {
     $node = node_load($result['node']->entity_id);
-    $bundle = $node->type;
-    $image_fields = _collection_page_get_bundle_image_fields($bundle);
-    $thumbnail_content = array();
-    $thumbnail_content['node_link'] = $base_url . $result['link'];
-    $thumbnail_field = collection_page_get_image_field($node);
-    $thumbnail_content['image'] = collection_page_node_snippet_image($node, $thumbnail_field, $variables);
-    $thumbnail_view = node_view($node, 'collection_thumbnail');
-    // Exclude image fields.
-    foreach ($image_fields as $image_field) {
-      if (in_array($image_field, array_keys($thumbnail_view))) {
-        unset($thumbnail_view[$image_field]);
+    if ($node) {
+      $bundle = $node->type;
+      $image_fields = _collection_page_get_bundle_image_fields($bundle);
+      $thumbnail_content = array();
+      $thumbnail_content['node_link'] = $base_url . $result['link'];
+      $thumbnail_field = collection_page_get_image_field($node);
+      $thumbnail_content['image'] = collection_page_node_snippet_image($node, $thumbnail_field, $variables);
+      $thumbnail_view = node_view($node, 'collection_thumbnail');
+      // Exclude image fields.
+      foreach ($image_fields as $image_field) {
+        if (in_array($image_field, array_keys($thumbnail_view))) {
+          unset($thumbnail_view[$image_field]);
+        }
       }
+      $thumbnail_content['meta_info'] = render($thumbnail_view);
+      $results['collection_thumbnails'][] = $thumbnail_content;
     }
-    $thumbnail_content['meta_info'] = render($thumbnail_view);
-    $results['collection_thumbnails'][] = $thumbnail_content;
   }
   drupal_add_js(
     array(
@@ -681,29 +683,31 @@ function template_preprocess_collection_search_result(&$variables) {
     $variables['content_attributes_array']['xml:lang'] = $result['language'];
   }
   $node = node_load($result['node']->entity_id);
-  if ($variables['image_style']) {
-    $image_field_name = collection_page_get_image_field($node);
-    $image_link = array(
-      'path' => $variables['url'],
-      'options' => array(
-        'html' => TRUE,
-      ),
-    );
-    $image = collection_page_node_snippet_image(
-      $node,
-      $image_field_name,
-      array('style_name' => $variables['image_style']),
-      $image_link
-    );
-  }
-  else {
-    $image = FALSE;
-  }
-  $variables['image'] = $image;
+  if ($node) {
+    if ($variables['image_style']) {
+      $image_field_name = collection_page_get_image_field($node);
+      $image_link = array(
+        'path' => $variables['url'],
+        'options' => array(
+          'html' => TRUE,
+        ),
+      );
+      $image = collection_page_node_snippet_image(
+        $node,
+        $image_field_name,
+        array('style_name' => $variables['image_style']),
+        $image_link
+      );
+    }
+    else {
+      $image = FALSE;
+    }
+    $variables['image'] = $image;
 
-  $result_snippet_data = collection_page_node_snippet_data($result['node']->entity_id, $result['snippet']);
+    $result_snippet_data = collection_page_node_snippet_data($result['node']->entity_id, $result['snippet']);
 
-  $variables['snippet'] = empty($result_snippet_data) ? $result['snippet'] : $result_snippet_data;
+    $variables['snippet'] = empty($result_snippet_data) ? $result['snippet'] : $result_snippet_data;
+  }
 }
 
 /**
@@ -1092,7 +1096,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
 
       break;
     case
-    'topics':
+      'topics':
 
       $description = '';
       if ($snippet_contain_search_result) {

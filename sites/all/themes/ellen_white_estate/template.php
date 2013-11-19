@@ -4,7 +4,6 @@
  */
 function ellen_white_estate_preprocess_node(&$vars, $hook) {
   global $theme;
-kpr($vars);
   if ($vars["type"] == "files") {
     drupal_add_library('system', 'ui.tabs');
   }
