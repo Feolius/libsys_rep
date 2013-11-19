@@ -4,7 +4,7 @@
  */
 function ellen_white_estate_preprocess_node(&$vars, $hook) {
   global $theme;
-
+kpr($vars);
   if ($vars["type"] == "files") {
     drupal_add_library('system', 'ui.tabs');
   }
@@ -520,7 +520,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
   // Tabs.
   if (isset($vars['content']['field_files_file']) && isset($vars['content']['field_files_text'])) {
     $first_tab = l(
-      t('Flexipaper'),
+      t('Flexpaper'),
       '#file-tabs-1',
       array(
         'external' => TRUE

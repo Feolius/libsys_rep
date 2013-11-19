@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function library_background_menu() {
+  $items = array();
+  // Background images settings.
+  $items['admin/config/background'] = array(
+    'title' => t('Variations background images'),
+    'description' => t('This page is contain all settings for background images.'),
+    'position' => 'left',
+    'weight' => -5,
+    'page callback' => 'library_background_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file' => 'library_background.admin.inc',
+  );
+  $items['admin/config/background/settings'] = array(
+    'title' => t('Background images configuration page'),
+    'description' => t('This page is contain all settings for background images.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('library_background_settings_form'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'library_background.admin.inc',
+  );
+  return $items;
+}
+
+function library_background_form_alter(&$form, &$form_state, $form_id) {
+}

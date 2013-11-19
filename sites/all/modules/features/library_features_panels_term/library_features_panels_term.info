@@ -1,0 +1,7 @@
+name = Library features panels term
+description = library_features_panels_term
+core = 7.x
+package = Library
+version = 7.x-1.0
+project = library_features_panels_term
+features[features_api][] = api:1

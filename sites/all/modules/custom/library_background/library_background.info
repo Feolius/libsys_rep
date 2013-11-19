@@ -1,0 +1,4 @@
+name = Library various background images
+description = Provide settings for various background images.
+package = Library
+core = 7.x

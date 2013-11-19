@@ -426,3 +426,7 @@ ol.collection-search-results, ul.collection-search-results, .page-home .page ul,
   text-transform: uppercase;
   font-weight: 700;
 }
+
+li {
+  margin-left: 20px;
+}
