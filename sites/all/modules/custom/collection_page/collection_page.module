@@ -469,21 +469,27 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
   // in collection_thumbnail display settings, we should exclude it from render array, because only one
   // image should be shown. We will put it in static cache to avoid this repeating of this search.
   // Coefficient of scaling image.
-  $coeff = 1.2;
   global $base_url;
+  $popover_effects = image_style_effects(image_style_load('collection_popover_thumbnail'));
+  foreach ($popover_effects as $popover_effect) {
+    if ($popover_effect['name'] == 'image_scale') {
+      $popover_height = $popover_effect['data']['height'];
+    }
+  }
   $effects = image_style_effects(image_style_load('collection_thumbnail'));
   foreach ($effects as $effect) {
     if ($effect['name'] == 'image_scale') {
       $height = $effect['data']['height'];
     }
   }
-  // These variables is used in image_theme() function.
+  $coeff = $popover_height/$height;
+  // These variables is used in image_style_theme() function.
   $attributes = array(
     'class' => array('collection-thumbnail'),
     'style' => array("height:" . $height . "px"),
   );
   $variables = array(
-    'style_name' => 'origin',
+    'style_name' => 'collection_popover_thumbnail',
     'attributes' => $attributes,
   );
   $results['collection_thumbnails'] = array();
