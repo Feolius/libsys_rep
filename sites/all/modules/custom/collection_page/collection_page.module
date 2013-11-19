@@ -150,7 +150,6 @@ function theme_facet_collection_search_results__alter($variables) {
       $temp_timeline_results_array['title'] = $temp_result['title'];
       $temp_timeline_results_array['link'] = $temp_result['link'];
       $temp_timeline_results_array['bundle'] = $temp_result['bundle'];
-      $temp_timeline_results_array['date_fields'] =
         //Get only first value of every date field for current bundle from apache solr results array
       $solr_resutls_date_fields_for_bundle = array_map(
         $dm_prefix_function,

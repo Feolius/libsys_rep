@@ -1680,6 +1680,108 @@ function library_features_content_type_files_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-files-field_files_file_type'
+  $field_instances['node-files-field_files_file_type'] = array(
+    'bundle' => 'files',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 36,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'taxonomy',
+        'settings' => array(),
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 15,
+      ),
+      'home' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 35,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 37,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 37,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 37,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 36,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 37,
+      ),
+      'library_snippet' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'rendered_in_node' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'search_result' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_files_file_type',
+    'label' => 'File Type',
+    'required' => FALSE,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'options',
+      'settings' => array(),
+      'type' => 'options_select',
+      'weight' => 34,
+    ),
+  );
+
   // Exported field_instance: 'node-files-field_files_filed_date'
   $field_instances['node-files-field_files_filed_date'] = array(
     'bundle' => 'files',
@@ -2116,12 +2218,8 @@ function library_features_content_type_files_field_default_field_instances() {
       ),
       'collection_thumbnail' => array(
         'label' => 'hidden',
-        'module' => 'image',
-        'settings' => array(
-          'image_link' => '',
-          'image_style' => 'origin',
-        ),
-        'type' => 'image',
+        'settings' => array(),
+        'type' => 'hidden',
         'weight' => 0,
       ),
       'default' => array(
@@ -2343,7 +2441,7 @@ function library_features_content_type_files_field_default_field_instances() {
   // Exported field_instance: 'node-files-field_files_keywords'
   $field_instances['node-files-field_files_keywords'] = array(
     'bundle' => 'files',
-    'default_value' => NULL,
+    'default_value' => array(),
     'deleted' => 0,
     'description' => '',
     'display' => array(
@@ -4268,9 +4366,8 @@ function library_features_content_type_files_field_default_field_instances() {
       ),
       'collection_thumbnail' => array(
         'label' => 'hidden',
-        'module' => 'text',
         'settings' => array(),
-        'type' => 'text_default',
+        'type' => 'hidden',
         'weight' => 1,
       ),
       'default' => array(
@@ -5163,9 +5260,10 @@ function library_features_content_type_files_field_default_field_instances() {
         'weight' => 0,
       ),
       'collection_thumbnail' => array(
-        'label' => 'above',
+        'label' => 'hidden',
+        'module' => 'text',
         'settings' => array(),
-        'type' => 'hidden',
+        'type' => 'text_default',
         'weight' => 0,
       ),
       'default' => array(
@@ -5329,6 +5427,7 @@ function library_features_content_type_files_field_default_field_instances() {
   t('Event');
   t('Extended_summary');
   t('File');
+  t('File Type');
   t('Filed date');
   t('Folder');
   t('Galleries');
