@@ -1,5 +1,7 @@
 <?php
 /**
  * @file
- * Drupal needs this blank file.
+ * Code for the Library features panels term feature.
  */
+
+include_once 'library_features_panels_term.features.inc';
