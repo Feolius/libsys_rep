@@ -430,3 +430,7 @@ ol.collection-search-results, ul.collection-search-results, .page-home .page ul,
 li {
   margin-left: 20px;
 }
+
+#sidebar .library-leaf-events a.library-content-type-filter-link {
+  background-position: 10px 10px;
+}

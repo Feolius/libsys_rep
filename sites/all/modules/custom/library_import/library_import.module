@@ -42,13 +42,19 @@ function library_import_submit() {
   );
   Database::addConnectionInfo('ImportDatabaseKey', 'default', $other_database);
    $query = Database::getConnection('default', 'ImportDatabaseKey')
-            ->select('adv_entities', 'l');
-    $query->join('egw_linker', 'l2', 'l2.tb_id = l.ID');
-  $query->join('egw_linker2info', 'l2i', 'l2i.linker_id = l2.linker_entry_id');
-//  $query->leftJoin('file_collection2file', 'c2f', 'c2f.file_id = l.ID');
-    $query->addField('l', 'ID');
-  $query->condition('l2i.linkerinfo_id', 25);
-  $query->condition('l2.tb_name', 'adv_entities');
+            ->select('file', 'f');
+//  $query->leftJoin('file_collection2file', 'c2f', 'c2f.file_id = f.ID');
+  $query->leftJoin('file_file2folder', 'f2f', 'f2f.file_id = f.ID');
+  $query->leftJoin('file_folder', 'ff', 'ff.ID = f2f.folder_id');
+  $query->condition('f2f.folder_id', 2922);
+  $query->condition('ff.collection_id', array(1, 2, 3, 4), 'IN');
+  $query->addField('f', 'ID');
+//    $query->join('egw_linker', 'l2', 'l2.tb_id = l.ID');
+//  $query->join('egw_linker2info', 'l2i', 'l2i.linker_id = l2.linker_entry_id');
+////  $query->leftJoin('file_collection2file', 'c2f', 'c2f.file_id = l.ID');
+//    $query->addField('l', 'ID');
+//  $query->condition('l2i.linkerinfo_id', 25);
+//  $query->condition('l2.tb_name', 'adv_entities');
 
 //    $query->condition('c2f.collection_id', 3);
 //  $query->condition('l.tb_name', 'adv_events', '=');

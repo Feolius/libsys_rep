@@ -4,7 +4,6 @@
  */
 function ellen_white_estate_preprocess_node(&$vars, $hook) {
   global $theme;
-kpr($vars);
   if ($vars["type"] == "files") {
     drupal_add_library('system', 'ui.tabs');
   }
@@ -862,7 +861,7 @@ function _ellen_white_estate_preprocess_node__tabs_files($vars) {
  */
 function ellen_white_estate_js_alter(&$javascript) {
   if (arg(0) != 'library') {
-    $jquery_path = drupal_get_path('theme', 'ellen_white_estate_old') . '/js/jquery-1.8.3.min.js';
+    $jquery_path = drupal_get_path('theme', 'ellen_white_estate') . '/js/jquery-1.8.3.min.js';
     if (module_exists('jquery_update')) {
       foreach ($javascript as $key => $js_info) {
         $key_arr = explode('/', $key);

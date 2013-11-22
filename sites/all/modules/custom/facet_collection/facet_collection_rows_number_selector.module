@@ -71,7 +71,7 @@ function facet_collection_rows_number_selector_form_submit($form, &$form_state) 
   $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
   $redirect_path = $_GET['q'];
   $get_params = array_diff_key($_GET, array('q' => 1, 'page' => 1, 'solrsort' => 1, 'retain-filters' => 1));
-  $get_params['rNum'] = $facet_collection_rows_number_variants[$form_state['input']['radios']['value']];
+  $get_params['rNum'] = $facet_collection_rows_number_variants[$form_state['input']['radios']];
   $form_state['redirect'] = array(
     $redirect_path,
     array('query' => $get_params),

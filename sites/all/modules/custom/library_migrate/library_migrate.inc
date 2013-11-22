@@ -373,6 +373,7 @@ class FilesMigration extends LibraryMigration {
     }
     elseif (!(is_null($row->cid2))) {
       $cid = $row->cid2;
+      $row->cid = $cid;
     }
     else {
       return FALSE;

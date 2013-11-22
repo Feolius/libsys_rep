@@ -884,25 +884,7 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
           $extension = _book_field_get_file_extension($file);
           $pdf_path = $base_url . '/' . $relative_path . '/' . $file_name . '.' . $extension;
           $module_path = drupal_get_path('module', 'book_field');
-          if (isset($_GET['view_mode'])) {
-            $view_mode = $_GET['view_mode'];
-          }
-          else {
-            $view_mode = 'default';
-          }
-          switch ($view_mode) {
-            case 'html5':
-              $rendering_order = 'html5,html';
-              break;
-            case 'flash':
-              $rendering_order = 'flash,html';
-              break;
-            case 'html':
-              $rendering_order = 'html,html';
-              break;
-            default:
-              $rendering_order = 'html5,flash,html';
-          }
+          $rendering_order = 'html5,flash,html';
           $settings = array(
             'swfPaths' => array(urldecode($swf_path)),
             'pngPaths' => array(urldecode($png_path)),
@@ -1192,16 +1174,7 @@ function theme_book_field_google_doc_view($variables) {
  * Theme function for the flexpaper formatter.
  */
 function theme_book_field_flexpaper_view($variables) {
-  $query = array_diff_key($_GET, array('q' => 1));
-  $link_html5 = url($_GET['q'], array('query' => array_merge($query, array('view_mode' => 'html5'))));
-  $link_html = url($_GET['q'], array('query' => array_merge($query, array('view_mode' => 'html'))));
-  $link_flash = url($_GET['q'], array('query' => array_merge($query, array('view_mode' => 'flash'))));
-  $out = theme('flexpaper_mode_switcher', array(
-    'link_html5' => $link_html5,
-    'link_flash' => $link_flash,
-    'link_html' => $link_html
-  ));
-  $out = $out . theme('flexpaper_container');
+  $out = theme('flexpaper_container');
   //@TODO Maybe we could add thumbnail here
   return $out;
 }

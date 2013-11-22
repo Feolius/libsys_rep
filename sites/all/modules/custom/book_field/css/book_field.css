@@ -14,3 +14,6 @@
     padding: 0 1em;
     text-decoration: none;
 }
+input[type="text"].flexpaper_tbtextinput {
+    padding: 3px;
+}
