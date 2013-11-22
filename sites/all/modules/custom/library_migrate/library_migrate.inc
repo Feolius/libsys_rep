@@ -485,6 +485,11 @@ class FilesMigration extends LibraryMigration {
     } else {
       $node->field_files_text = array();
     }
+    if(!is_null($row->keypoints)){
+      $node->field_files_key_points['und'][0]['format'] = 'full_html';
+    } else {
+      $node->field_files_key_points = array();
+    }
     $node->field_files_primary_media['und'][0]['value'] = 'document';
   }
 
