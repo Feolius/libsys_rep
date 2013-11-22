@@ -472,12 +472,18 @@ class FilesMigration extends LibraryMigration {
     $node->language = 'en';
     if(!is_null($row->description)){
       $node->field_files_description['und'][0]['format'] = 'full_html';
+    } else {
+      $node->field_files_description = array();
     }
     if(!is_null($row->extended_summary)){
       $node->field_files_extended_summary['und'][0]['format'] = 'full_html';
+    } else {
+      $node->field_files_extended_summary = array();
     }
     if(!is_null($row->text)){
       $node->field_files_text['und'][0]['format'] = 'full_html';
+    } else {
+      $node->field_files_text = array();
     }
     $node->field_files_primary_media['und'][0]['value'] = 'document';
   }
@@ -646,6 +652,8 @@ class PeopleMigration extends LibraryMigration {
     $node->language = 'en';
     if(!is_null($row->description)){
       $node->field_people_description['und'][0]['format'] = 'full_html';
+    } else {
+      $node->field_people_description = array();
     }
     $this->set_datefield_value(PEOPLE_FIELD_17_DATE, $node, $row->ID, 'adv_people', 17);
     $this->set_datefield_value(PEOPLE_FIELD_18_DATE, $node, $row->ID, 'adv_people', 18);
@@ -771,6 +779,8 @@ class LocationMigration extends LibraryMigration {
     $node->language = 'en';
     if(!is_null($row->description)) {
       $node->field_location_description['und'][0]['format'] = 'full_html';
+    } else {
+      $node->field_location_description = array();
     }
     require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'library_migrate') . '/library_migrate_state_info.inc';
     $country = $row->country;
@@ -885,6 +895,8 @@ class EventsMigration extends LibraryMigration {
     $node->language = 'en';
     if (!is_null($row->description)) {
       $node->field_events_description['und'][0]['format'] = 'full_html';
+    } else {
+      $node->field_events_description = array();
     }
     //Add dates
     $this->set_datefield_value(EVENT_FIELD_13_DATE, $node, $row->events_id, 'adv_events', 13);
@@ -1072,6 +1084,8 @@ class TopicsMigration extends LibraryMigration {
     $node->language = 'en';
     if (!is_null($row->description)) {
       $node->field_topics_body['und'][0]['format'] = 'full_html';
+    } else {
+      $node->field_topics_body = array();
     }
   }
 
