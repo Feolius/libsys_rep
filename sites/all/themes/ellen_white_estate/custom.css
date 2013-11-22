@@ -434,3 +434,7 @@ li {
 #sidebar .library-leaf-events a.library-content-type-filter-link {
   background-position: 10px 10px;
 }
+
+html.CSS1Compat {
+  background: white;
+}
