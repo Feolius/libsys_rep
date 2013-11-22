@@ -64,8 +64,7 @@ abstract class LibraryMigration extends DynamicMigration {
           ->lookupDestinationID(array($sid));
         if (!empty($destids['destid1'])) {
           $results[] = $destids['destid1'];
-        }
-        else {
+        } else {
           //We should create a stub here
           $node = new stdClass();
           $node->title = t('Stub for') . $sid;
@@ -112,43 +111,54 @@ abstract class LibraryMigration extends DynamicMigration {
         if (isset($record['start_year'])) {
           $start_year = $record['start_year'];
           $rounding = 1;
-          if (isset($record['end_year'])) {
-            $end_year = $record['end_year'];
-          }
-          else {
-            $end_year = $start_year;
-          }
-          $rounding2 = 1;
           if (isset($record['start_month'])) {
             $start_month = $record['start_month'];
-
             $rounding++;
             if (isset($record['start_day'])) {
               $start_day = $record['start_day'];
               $rounding++;
-            }
-            else {
+            } else {
               $start_day = '01';
             }
-          }
-          else {
+          } else {
             $start_month = '01';
             $start_day = '01';
           }
-          if (isset($record['end_month'])) {
-            $rounding2++;
-            $end_month = $record['end_month'];
-            if (isset($record['end_day'])) {
+          if (isset($record['end_year'])) {
+            $end_year = $record['end_year'];
+            $rounding2 = 1;
+            if (isset($record['end_month'])) {
               $rounding2++;
-              $end_day = $record['end_day'];
+              $end_month = $record['end_month'];
+              if (isset($record['end_day'])) {
+                $rounding2++;
+                $end_day = $record['end_day'];
+              } else {
+                $end_day = date_days_in_month($end_year, $end_month);
+              }
+            } else {
+              $end_month = '12';
+              $end_day = '31';
             }
-            else {
-              $end_day = date_days_in_month($end_year, $end_month);
+          } else {
+            switch ($rounding) {
+              case 1:
+                $end_year = $start_year;
+                $end_month = '12';
+                $end_day = '31';
+                break;
+              case 2:
+                $end_year = $start_year;
+                $end_month = $start_month;
+                $end_day = date_days_in_month($end_year, $end_month);
+                $rounding2 = 2;
+                break;
+              case 3:
+                $rounding2 = 3;
+                $end_year = $start_year;
+                $end_month = $start_month;
+                $end_day = $start_day;
             }
-          }
-          else {
-            $end_month = '12';
-            $end_day = '31';
           }
           if (checkdate($start_month, $start_day, $start_year)) {
             $node->{$field_name}['und'][$i]['value'] = $start_year . '-' . $start_month . '-' . $start_day . ' 00:00:00';
@@ -158,8 +168,7 @@ abstract class LibraryMigration extends DynamicMigration {
             $node->{$field_name}['und'][$i]['rounding2'] = $rounding2;
             $node->{$field_name}['und'][$i]['value2'] = $end_year . '-' . $end_month . '-' . $end_day . ' 00:00:00';
             $i++;
-          }
-          else {
+          } else {
             continue;
           }
         }
@@ -177,8 +186,7 @@ abstract class LibraryMigration extends DynamicMigration {
       foreach ($sids as $sid) {
         $condition = $condition->condition('l.sourceid1', $sid);
       }
-    }
-    else {
+    } else {
       return array();
     }
     $query->condition($condition);
@@ -370,16 +378,14 @@ class FilesMigration extends LibraryMigration {
     //Check if this file from collection with id 1,2,3 or 4
     if (!(is_null($row->cid))) {
       $cid = $row->cid;
-    }
-    elseif (!(is_null($row->cid2))) {
+    } elseif (!(is_null($row->cid2))) {
       $cid = $row->cid2;
       $row->cid = $cid;
-    }
-    else {
+    } else {
       return FALSE;
     }
     // We need files only with collections id 1, 2, 3, 4.
-    if(!in_array($cid, array(1, 2, 3, 4))){
+    if (!in_array($cid, array(1, 2, 3, 4))) {
       return FALSE;
     }
     $keywords = str_replace(' ', '', $row->keywords);
@@ -414,15 +420,13 @@ class FilesMigration extends LibraryMigration {
     if ($record = $result->fetchAssoc()) {
       if (!is_null($record['cid'])) {
         $cid = $record['cid'];
-      }
-      elseif (!is_null($record['cid2'])) {
+      } elseif (!is_null($record['cid2'])) {
         $cid = $record['cid2'];
-      }
-      else {
+      } else {
         return FALSE;
       }
       // We need files only with collections id 1, 2, 3, 4.
-      if(!in_array($cid, array(1, 2, 3, 4))){
+      if (!in_array($cid, array(1, 2, 3, 4))) {
         return FALSE;
       }
     }
@@ -435,8 +439,7 @@ class FilesMigration extends LibraryMigration {
     node_save($node);
     if (isset($node->nid)) {
       return array($node->nid);
-    }
-    else {
+    } else {
       return FALSE;
     }
   }
@@ -470,22 +473,22 @@ class FilesMigration extends LibraryMigration {
     }
     $this->set_datefield_value('field_files_creation_date', $node, $row->ID, 'file', 4);
     $node->language = 'en';
-    if(!is_null($row->description)){
+    if (!is_null($row->description)) {
       $node->field_files_description['und'][0]['format'] = 'full_html';
     } else {
       $node->field_files_description = array();
     }
-    if(!is_null($row->extended_summary)){
+    if (!is_null($row->extended_summary)) {
       $node->field_files_extended_summary['und'][0]['format'] = 'full_html';
     } else {
       $node->field_files_extended_summary = array();
     }
-    if(!is_null($row->text)){
+    if (!is_null($row->text)) {
       $node->field_files_text['und'][0]['format'] = 'full_html';
     } else {
       $node->field_files_text = array();
     }
-    if(!is_null($row->keypoints)){
+    if (!is_null($row->keypoints)) {
       $node->field_files_key_points['und'][0]['format'] = 'full_html';
     } else {
       $node->field_files_key_points = array();
@@ -560,11 +563,9 @@ class PeopleMigration extends LibraryMigration {
     $email = $row->email;
     if ($first_name || $last_name) {
       $real_title = $first_name . ' ' . $last_name;
-    }
-    elseif ($email) {
+    } elseif ($email) {
       $real_title = $email;
-    }
-    else {
+    } else {
       return FALSE;
     }
     if (strlen($real_title) >= 255) {
@@ -643,19 +644,17 @@ class PeopleMigration extends LibraryMigration {
       node_save($node);
       if (isset($node->nid)) {
         return array($node->nid);
-      }
-      else {
+      } else {
         return FALSE;
       }
-    }
-    else {
+    } else {
       return FALSE;
     }
   }
 
   public function prepare($node, $row) {
     $node->language = 'en';
-    if(!is_null($row->description)){
+    if (!is_null($row->description)) {
       $node->field_people_description['und'][0]['format'] = 'full_html';
     } else {
       $node->field_people_description = array();
@@ -731,12 +730,10 @@ class LocationMigration extends LibraryMigration {
     if ($locname != 'Unknown' && !empty($locname)) {
       if (!empty($title)) {
         $title = $locname . ' (' . $title . ')';
-      }
-      else {
+      } else {
         $title = $locname;
       }
-    }
-    elseif (empty($title)) {
+    } elseif (empty($title)) {
       return FALSE;
     }
     if (strlen($title) >= 255) {
@@ -782,7 +779,7 @@ class LocationMigration extends LibraryMigration {
 
   public function prepare($node, $row) {
     $node->language = 'en';
-    if(!is_null($row->description)) {
+    if (!is_null($row->description)) {
       $node->field_location_description['und'][0]['format'] = 'full_html';
     } else {
       $node->field_location_description = array();
@@ -949,16 +946,14 @@ class EventsMigration extends LibraryMigration {
         //Build hierarchy for parent and get plid
         $parent_node = node_load($parent_nid);
         $plid = $this->buildHierarchy($parent_node, $parent_id);
-      }
-      else {
+      } else {
         //If we already have this node in Drupal it means that we need to check if we already have mlid for it
         $parent_nid = $parent_did[0];
         //@TODO maybe it would be better to add condition for menu name to be certanly sure that we have needed plid
         $plid = _nodehierarchy_get_node_mlids($parent_nid);
         if (!empty($plid)) {
           $plid = $plid[0];
-        }
-        else {
+        } else {
           //Build hierarchy for parent and get plid
           $parent_node = node_load($parent_nid);
           $plid = $this->buildHierarchy($parent_node, $parent_id);
@@ -972,8 +967,7 @@ class EventsMigration extends LibraryMigration {
       $mlid = menu_link_save($menu_link);
       _nodehierarchy_create_nodehierarchy_menu_link_reference($menu_link);
       return $mlid;
-    }
-    else {
+    } else {
       //If parent doesn't exist, it means that this is a first parent
       $menu_link = _nodehierarchy_default_menu_link($node->nid);
       $menu_link['hidden'] = 0;
@@ -1007,8 +1001,7 @@ class EventsMigration extends LibraryMigration {
     if (($record = $result->fetchAssoc())) {
       if (!is_null($record['pos'])) {
         $info['pos'] = $record['pos'];
-      }
-      else {
+      } else {
         $info['pos'] = 0;
       }
       $info['parent_id'] = $record['parent_event_id'];
@@ -1079,8 +1072,7 @@ class TopicsMigration extends LibraryMigration {
     node_save($node);
     if (isset($node->nid)) {
       return array($node->nid);
-    }
-    else {
+    } else {
       return FALSE;
     }
   }
