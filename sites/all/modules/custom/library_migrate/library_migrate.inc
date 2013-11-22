@@ -387,8 +387,6 @@ class FilesMigration extends LibraryMigration {
     if (strlen($row->topic) >= 255) {
       $row->topic = substr($row->topic, 0, 255);
     }
-    $row->description = strip_tags($row->description);
-    $row->extended_summary = strip_tags($row->extended_summary);
     //Add author field to the row
     $data = $this->getRelatedSids($row->ID, 'file', array('adv_people'), 1);
     $row->author = $data['adv_people'];
@@ -472,8 +470,15 @@ class FilesMigration extends LibraryMigration {
     }
     $this->set_datefield_value('field_files_creation_date', $node, $row->ID, 'file', 4);
     $node->language = 'en';
-    $node->field_files_description['und'][0]['format'] = 'filtered_html';
-    $node->field_files_text['und'][0]['format'] = 'full_html';
+    if(!is_null($row->description)){
+      $node->field_files_description['und'][0]['format'] = 'full_html';
+    }
+    if(!is_null($row->extended_summary)){
+      $node->field_files_extended_summary['und'][0]['format'] = 'full_html';
+    }
+    if(!is_null($row->text)){
+      $node->field_files_text['und'][0]['format'] = 'full_html';
+    }
     $node->field_files_primary_media['und'][0]['value'] = 'document';
   }
 
@@ -639,7 +644,9 @@ class PeopleMigration extends LibraryMigration {
 
   public function prepare($node, $row) {
     $node->language = 'en';
-    $node->field_people_description['und'][0]['format'] = 'filtered_html';
+    if(!is_null($row->description)){
+      $node->field_people_description['und'][0]['format'] = 'full_html';
+    }
     $this->set_datefield_value(PEOPLE_FIELD_17_DATE, $node, $row->ID, 'adv_people', 17);
     $this->set_datefield_value(PEOPLE_FIELD_18_DATE, $node, $row->ID, 'adv_people', 18);
   }
@@ -762,7 +769,9 @@ class LocationMigration extends LibraryMigration {
 
   public function prepare($node, $row) {
     $node->language = 'en';
-    $node->field_location_description['und'][0]['format'] = 'filtered_html';
+    if(!is_null($row->description)) {
+      $node->field_location_description['und'][0]['format'] = 'full_html';
+    }
     require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'library_migrate') . '/library_migrate_state_info.inc';
     $country = $row->country;
     $state = library_migrate_state_ISO($country, $row->state);
@@ -874,7 +883,9 @@ class EventsMigration extends LibraryMigration {
 
   public function prepare($node, $row) {
     $node->language = 'en';
-    $node->field_events_description['und'][0]['format'] = 'filtered_html';
+    if (!is_null($row->description)) {
+      $node->field_events_description['und'][0]['format'] = 'full_html';
+    }
     //Add dates
     $this->set_datefield_value(EVENT_FIELD_13_DATE, $node, $row->events_id, 'adv_events', 13);
     //@see comment in library_migrate_field_names
@@ -1059,7 +1070,9 @@ class TopicsMigration extends LibraryMigration {
 
   public function prepare($node, $row) {
     $node->language = 'en';
-    $node->field_topics_body['und'][0]['format'] = 'filtered_html';
+    if (!is_null($row->description)) {
+      $node->field_topics_body['und'][0]['format'] = 'full_html';
+    }
   }
 
 }

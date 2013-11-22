@@ -34,7 +34,7 @@ function library_import_form($form, &$form_state) {
  */
 function library_import_submit() {
   $other_database = array(
-      'database' => 'adventists2',
+      'database' => 'adventists',
       'username' => 'admin', // assuming this is necessary
       'password' => '1234', // assuming this is necessary
       'host' => 'localhost', // assumes localhost
@@ -66,7 +66,7 @@ function library_import_submit() {
     //$query->groupBy('l.file_extension');*$query = Database::getConnection('default', 'ImportDatabaseKey')
 
   while ($row = $result->fetchAssoc()) {
-         dpm($row);
+         dpm($row['ID']);
     }
   /*$node = node_load(12503);
   dpm($node);*/
