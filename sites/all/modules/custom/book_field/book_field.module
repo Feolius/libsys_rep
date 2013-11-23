@@ -1117,22 +1117,6 @@ function _book_field_file_move($file, $folder) {
  */
 function book_field_theme() {
   return array(
-    'flexpaper_mode_switcher' => array(
-      'template' => 'theme/flexpaper-mode-switcher',
-      'variables' => array(
-        'link_html5' => NULL,
-        'link_flash' => NULL,
-        'link_html' => NULL
-      )
-    ),
-    'flexpaper_desktop_toolbar' => array(
-      'template' => 'theme/flexpaper-desktop-toolbar',
-      'variables' => array('viewer_id' => NULL, 'image_path' => NULL)
-    ),
-    'flexpaper_mobile_toolbar' => array(
-      'template' => 'theme/flexpaper-mobile-toolbar',
-      'variables' => array('viewer_id' => NULL, 'image_path' => NULL)
-    ),
     'flexpaper_container' => array(
       'template' => 'theme/flexpaper-container',
     ),
