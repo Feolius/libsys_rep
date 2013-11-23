@@ -44,46 +44,40 @@
                     var pngPath = pngPaths[i];
                     var jsonPath = jsonPaths[i];
                     var pdfPath = pdfPaths[i];
-                    jQuery.get((!window.isTouchScreen)?desktopHTMLPath:mobileHTMLPath,
-                        function(toolbarData) {
-                            $('#' + id ).FlexPaperViewer(
-                                { config : {
-                                    SwfFile : swfPath,
-                                    JSONFile : jsonPath,
-                                    IMGFiles : pngPath,
-                                    PDFFile : pdfPath,
-                                    Scale : 0.6,
-                                    ZoomTransition : 'easeOut',
-                                    ZoomTime : 0.5,
-                                    ZoomInterval : 0.2,
-                                    FitPageOnLoad : true,
-                                    FitWidthOnLoad : true,
-                                    FullScreenAsMaxWindow : false,
-                                    ProgressiveLoading : false,
-                                    MinZoomSize : 0.2,
-                                    MaxZoomSize : 5,
-                                    SearchMatchAll : true,
-                                    InitViewMode : 'Portrait',
-                                    RenderingOrder : renderingOrder,
-                                    jsDirectory : jsDirectory,
-                                    cssDirectory : cssDirectory,
-                                    localeDirectory: localeDirectory,
-                                    Toolbar         : toolbarData,
+                    $('#' + id).FlexPaperViewer(
+                        { config : {
+                            SwfFile : swfPath,
+                            JSONFile : jsonPath,
+                            IMGFiles : pngPath,
+                            PDFFile : pdfPath,
+                            Scale : 0.6,
+                            ZoomTransition : 'easeOut',
+                            ZoomTime : 0.5,
+                            ZoomInterval : 0.2,
+                            FitPageOnLoad : false,
+                            FitWidthOnLoad : true,
+                            FullScreenAsMaxWindow : false,
+                            ProgressiveLoading : false,
+                            MinZoomSize : 0.2,
+                            MaxZoomSize : 5,
+                            SearchMatchAll : true,
+                            InitViewMode : 'Portrait',
+                            RenderingOrder : renderingOrder,
+                            jsDirectory : jsDirectory,
+                            cssDirectory : cssDirectory,
+                            localeDirectory: localeDirectory,
 
-                                    key : '$47ee5411a2cb791b9eb',
+                            key : '$47ee5411a2cb791b9eb',
 
-                                    ViewModeToolsVisible : true,
-                                    ZoomToolsVisible : true,
-                                    NavToolsVisible : true,
-                                    CursorToolsVisible : true,
-                                    SearchToolsVisible : true,
+                            ViewModeToolsVisible : true,
+                            ZoomToolsVisible : true,
+                            NavToolsVisible : true,
+                            CursorToolsVisible : true,
+                            SearchToolsVisible : true,
 
-                                    localeChain: 'en_US'
-                                }}
-                            );
-
-
-                        });
+                            localeChain: 'en_US'
+                        }}
+                    );
                 }
                 var url = document.URL;
                 var pathArray = url.split( '/' );
@@ -129,15 +123,3 @@
     }
 
 })(jQuery);
-//Implements higlighting search term after documents being load
-function onDocumentLoaded(totalPages){
-    var searchTerm = Drupal.settings.book_field.search;
-    if (searchTerm != undefined){
-        var instance = window.FlexPaperViewer_Instance;
-        var api = instance.getApi();
-        api.searchText(searchTerm);
-    }
-}
-function onDocumentLoadedError(errMessage){
-    $('#viewerPlaceHolder').html("Error displaying document. Make sure the conversion tool is installed and that correct user permissions are applied to the SWF Path directory");
-}

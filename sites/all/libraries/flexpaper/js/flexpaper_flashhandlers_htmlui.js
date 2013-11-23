@@ -20,32 +20,12 @@ FLEXPAPER.bindFlashEventHandlers = FLEXPAPER.flashEventHandlers = (function(el){
                     $FlexPaper(instance).sliderChange(5 * value);
                 },
                 animation_callback: function(value){
-                    if (slider) {
-                        if(value==0){value=parseFloat(getFlashParam("MinZoomSize"))/5;}
+                    if (value > 0) {
                         $FlexPaper(instance).sliderChange(5 * value);
                     }
                 }
             });
-            slider.initialized = false;
         }
-    }
-
-    function getFlashParam(name){
-        var retval = "";
-        var childs = jQuery($FlexPaper('documentViewer')).children();
-        childs.each(function(c){
-            if(jQuery(childs[c]).attr("name")=="flashvars"){
-                var flashvars = (childs[c].value).split('&');
-                for(var i=0;i<flashvars.length;i++){
-                    var valuepair = flashvars[i].split('=');
-                    if(valuepair[0]==name){
-                        retval = valuepair[1];
-                    }
-                }
-            }
-        });
-
-        return retval;
     }
 
     function getButton(evt,bttnname){
@@ -278,6 +258,7 @@ FLEXPAPER.bindFlashEventHandlers = FLEXPAPER.flashEventHandlers = (function(el){
      * @param boolean val
      */
     function setFullScreen(val){
+        console.log(val);
         if(val){
             jQuery("#bttnFullScreen").addClass("flexpaper_tbbutton_fullscreen_selected");
             window.FlexPaperFullScreen = true;

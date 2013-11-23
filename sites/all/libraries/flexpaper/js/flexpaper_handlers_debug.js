@@ -29,8 +29,7 @@ $(function() {
      */
     jQuery('#documentViewer').bind('onExternalLinkClicked',function(e,link){
         jQuery("#txt_eventlog").val('onExternalLinkClicked:' + link + '\n' + jQuery("#txt_eventlog").val());
-
-        //window.location.href = link; //uncomment to let viewer navigate
+        window.open(link,'_flexpaper_exturl');
     });
 
     /**

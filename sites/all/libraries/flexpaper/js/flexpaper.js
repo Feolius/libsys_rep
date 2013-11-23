@@ -3,18 +3,6 @@
 
  This file is part of FlexPaper.
 
- FlexPaper is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, version 3 of the License.
-
- FlexPaper is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with FlexPaper.  If not, see <http://www.gnu.org/licenses/>.
-
  For more information on FlexPaper please see the FlexPaper project
  home page: http://flexpaper.devaldi.com
  */
@@ -57,23 +45,28 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
         mac:/mac/.test(userAgent),
         touchdevice : (function(){try {return 'ontouchstart' in document.documentElement;} catch (e) {return false;} })(),
         android : (userAgent.indexOf("android") > -1),
-        ios : ((userAgent.match(/iphone/i)) || (userAgent.match(/ipod/i)) || (userAgent.match(/ipad/i)))
+        ios : ((userAgent.match(/iphone/i)) || (userAgent.match(/ipod/i)) || (userAgent.match(/ipad/i))),
+        winphone : userAgent.match(/Windows Phone/i),
+        blackberry : userAgent.match(/BlackBerry/i),
+        webos : userAgent.match(/webOS/i)
     };
 
+    platform.touchonlydevice = platform.touchdevice && (platform.android || platform.ios || platform.winphone || platform.blackberry || platform.webos);
+
     var config = args.config;
-    var _SWFFile,_PDFFile,_IMGFiles,_SVGFiles,_IMGFiles_thumbs="",_IMGFiles_highres="",_JSONFile  = "",_jsDirectory="",_cssDirectory="",_localeDirectory="";_WMode = (config.WMode!=null||config.wmmode!=null?config.wmmode||config.WMode:"direct");
+    var _SWFFile,_PDFFile,_IMGFiles,_SVGFiles,_IMGFiles_thumbs="",_IMGFiles_highres="",_JSONFile  = "",_jsDirectory="",_cssDirectory="",_localeDirectory="";_WMode = (config.WMode!=null||config.wmode!=null?config.wmode||config.WMode:"direct");
     var _uDoc = ((config.DOC !=null)?unescape(config.DOC):null);
     var instance = "FlexPaperViewer_Instance"+((id==="undefined")?"":id);
     var _JSONDataType = (config.JSONDataType!=null)?config.JSONDataType:"json";
 
     if (_uDoc != null) {
-        _SWFFile 	        = translateUrlByFormat(_uDoc,"swf");
-        _PDFFile 	        = translateUrlByFormat(_uDoc,"pdf");
-        _JSONFile 	        = translateUrlByFormat(_uDoc,_JSONDataType);
-        _IMGFiles 	        = translateUrlByFormat(_uDoc,"jpg");
-        _SVGFiles           = translateUrlByFormat(_uDoc,"svg");
-        _IMGFiles_thumbs    = translateUrlByFormat(_uDoc,"jpg");
-        _IMGFiles_highres   = translateUrlByFormat(_uDoc,"jpgpageslice");
+        _SWFFile 	        = FLEXPAPER.translateUrlByFormat(_uDoc,"swf");
+        _PDFFile 	        = FLEXPAPER.translateUrlByFormat(_uDoc,"pdf");
+        _JSONFile 	        = FLEXPAPER.translateUrlByFormat(_uDoc,_JSONDataType);
+        _IMGFiles 	        = FLEXPAPER.translateUrlByFormat(_uDoc,"jpg");
+        _SVGFiles           = FLEXPAPER.translateUrlByFormat(_uDoc,"svg");
+        _IMGFiles_thumbs    = FLEXPAPER.translateUrlByFormat(_uDoc,"jpg");
+        _IMGFiles_highres   = FLEXPAPER.translateUrlByFormat(_uDoc,"jpgpageslice");
     }
 
     _SWFFile  			= (config.SwfFile!=null?config.SwfFile:_SWFFile);
@@ -85,14 +78,21 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
     _IMGFiles_thumbs    = (config.ThumbIMGFiles!=null?config.ThumbIMGFiles:_IMGFiles_thumbs);
     _IMGFiles_highres   = (config.HighResIMGFiles!=null?config.HighResIMGFiles:_IMGFiles_highres);
     _JSONFile 			= (config.JSONFile!=null?config.JSONFile:_JSONFile);
-    _jsDirectory 		= (config.jsDirectory!=null?config.jsDirectory:detectjsdir());
-    _cssDirectory 		= (config.cssDirectory!=null?config.cssDirectory:detectcssdir());
+    _jsDirectory 		= (config.jsDirectory!=null?config.jsDirectory:FLEXPAPER.detectjsdir());
+    _cssDirectory 		= (config.cssDirectory!=null?config.cssDirectory:FLEXPAPER.detectcssdir());
     _localeDirectory 	= (config.localeDirectory!=null?config.localeDirectory:"locale/");
     if(_SWFFile!=null && _SWFFile.indexOf("{" )==0 && _SWFFile.indexOf("[*," ) > 0 && _SWFFile.indexOf("]" ) > 0){_SWFFile = escape(_SWFFile);} // split file fix
 
+    if(config.StartAtPage==null && FLEXPAPER.getLocationHashParameter){
+        var pageFromHash = FLEXPAPER.getLocationHashParameter('page');
+        if(pageFromHash!=null){
+            config.StartAtPage = pageFromHash;
+        }
+    }
+
     window[instance] = flashembed(id, {
         src						    : _jsDirectory+"../FlexPaperViewer.swf",
-        version					    : [10, 0],
+        version					    : [11, 0],
         expressInstall			    : "js/expressinstall.swf",
         wmode					    : _WMode
     },{
@@ -120,9 +120,11 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
         SearchMatchAll 			: (config.SearchMatchAll!=null)?config.SearchMatchAll:false,
         SearchServiceUrl 		: config.SearchServiceUrl,
         InitViewMode 			: config.InitViewMode,
+        PreviewMode             : config.PreviewMode,
+        MixedMode               : config.MixedMode,
         BitmapBasedRendering 	: (config.BitmapBasedRendering!=null)?config.BitmapBasedRendering:false,
         StartAtPage 			: (config.StartAtPage!=null&&config.StartAtPage.toString().length>0&&!isNaN(config.StartAtPage))?config.StartAtPage:1,
-        PrintPaperAsBitmap		: (config.PrintPaperAsBitmap!=null)?config.PrintPaperAsBitmap:((browser.safari)?true:false),
+        PrintPaperAsBitmap		: (config.PrintPaperAsBitmap!=null)?config.PrintPaperAsBitmap:((browser.safari||browser.mozilla)?true:false),
         AutoAdjustPrintSize		: (config.AutoAdjustPrintSize!=null)?config.AutoAdjustPrintSize:true,
 
         EnableCornerDragging 	: ((config.EnableCornerDragging!=null)?config.EnableCornerDragging:true), // FlexPaper Zine parameter
@@ -145,58 +147,151 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
 
         RenderingOrder 			: config.RenderingOrder,
 
+        TrackingNumber          : config.TrackingNumber,
         localeChain 			: (config.localeChain!=null)?config.localeChain:"en_US",
         jsDirectory 			: _jsDirectory,
         cssDirectory 			: _cssDirectory,
         localeDirectory			: _localeDirectory,
+        signature               : config.signature,
         key 					: config.key
     });
+
+    // add TrackingNumber to the data collection for easier use in events later
+    if(config.TrackingNumber && config.TrackingNumber.length>0){
+
+        jQuery('#'+id).data('TrackingDocument',(_PDFFile || _SWFFile?(unescape(_SWFFile).replace(/\{/g,"")):null || _JSONFile?(unescape(_JSONFile).replace(/\{/g,"")):null));
+        jQuery('#'+id).data('TrackingNumber',config.TrackingNumber);
+    }
 };
 
-function detectjsdir(){
-    if(jQuery('script[src$="flexpaper.js"]').length>0){
-        return jQuery('script[src$="flexpaper.js"]').attr('src').replace('flexpaper.js','');
-    }else{
-        return "js/"
-    }
-}
+(function() {
+    if(!window.FLEXPAPER){window.FLEXPAPER = {};}
 
-function detectcssdir(){
-    if(jQuery('script[src$="flexpaper.css"]').length>0){
-        return jQuery('link[href="flexpaper.css"]').href('src').replace('flexpaper.css','');
-    }else{
-        return "css/"
-    }
-}
-
-function translateUrlByDocument(url,document){
-	return (url!=null && url.indexOf('{doc}') > 0 ? url.replace("{doc}", document):null);	
-}
-
-function translateUrlByFormat(url,format){
-	if(url.indexOf("{") == 0 && format != "swf"){ // loading in split file mode
-		url = url.substring(1,url.lastIndexOf(","));
-
-        if(format!="pdf"){
-            url = url.replace("[*,0]","{page}")
+    FLEXPAPER.detectjsdir = function(){
+        if(jQuery('script[src$="flexpaper.js"]').length>0){
+            return jQuery('script[src$="flexpaper.js"]').attr('src').replace('flexpaper.js','');
+        }else{
+            return "js/"
         }
-	}
+    };
 
-    if(format =="jpgpageslice"){
-        url = url + "&sector={sector}";
-    }
+    FLEXPAPER.detectcssdir= function(){
+        if(jQuery('link[href$="flexpaper.css"]').length>0){
+            return jQuery('link[href$="flexpaper.css"]').attr('href').replace('flexpaper_zine.css','');
+        }else{
+            return "css/"
+        }
+    };
 
-    return (url!=null && url.indexOf('{format}') > 0 ? url.replace("{format}", format):null);
-}
+    FLEXPAPER.getLocationHashParameter = function(param){
+        var hash = location.hash.substr(1);
 
-/** 
+        if(hash.indexOf(param+'=')>=0){
+            var value = hash.substr(hash.indexOf(param+'='))
+                .split('&')[0]
+                .split('=')[1];
+
+            return value;
+        }
+
+        return null;
+    };
+
+    FLEXPAPER.translateUrlByFormat = function(url,format){
+        if(url.indexOf("{") == 0 && format != "swf"){ // loading in split file mode
+            url = url.substring(1,url.lastIndexOf(","));
+
+            if(format!="pdf"){
+                url = url.replace("[*,0]","{page}")
+                url = url.replace("[*,2]","{page}")
+            }
+        }else if(format == "swf" && url.indexOf("{") != 0){
+            url = url.replace("{page}", "");
+            url = url.replace(/&/g, '%26');
+            url = url.replace(/ /g, '%20');
+        }
+
+        if(format =="jpgpageslice"){
+            url = url + "&sector={sector}";
+        }
+
+        url = (url!=null && url.indexOf('{format}') > 0 ? url.replace("{format}", format):null);
+        return url;
+    };
+
+    FLEXPAPER.translateUrlByDocument = function(url,document){
+        return (url!=null && url.indexOf('{doc}') > 0 ? url.replace("{doc}", document):null);
+    };
+
+    FLEXPAPER.animateDenyEffect = function(obj,margin,time,cycles,dir) {
+        window.setTimeout(function(){
+            var speed = time / ((2*cycles)+1);
+            var margRat = 1 + (60/(cycles*cycles)); $(obj).stop(true,true);
+            for (var i=0; i<=cycles; i++) {
+                for (var j=-1; j<=1; j+=2)
+                    $(obj).animate({marginLeft: (i!=cycles)*j*margin},{duration:speed, queue:true});
+
+                margin/=margRat;
+            }
+        },500);
+    };
+
+    FLEXPAPER.initLoginForm = function initLoginForm(IMGFiles,animate){
+        jQuery(document.body).css('background-color','#dedede');
+
+        var img = new Image();
+        jQuery(img).bind('load',function(){
+            jQuery(document.body).append(
+                    "<div id='loginForm'>"+
+                    "<form class='flexpaper_htmldialog' method='POST' style='display:none;top:100px;margin:"+((jQuery(window).height()>500)?"50px auto":"0px auto")+"'>"+
+                    "<div class='flexpaper_publications flexpaper_publication_csstransforms3d' style='overflow-y:hidden;overflow-x:hidden;text-align:center;background: #f7f7f7;margin: -25px -25px 0px;padding: 15px 25px 0px 25px;'>"+
+                    "<div class='flexpaper_publication flexpaper_publication_csstransforms3d' id='flexpaper_publication1'>"+
+                    "<img src='"+(IMGFiles.replace("{page}",1))+"' />"+
+                    "</div>"+
+
+                    "<h1 class='flexpaper_htmldialog-title'>password protected publication</h1>"+
+                    "<input type='password' id='txt_flexpaper_password' name='txt_flexpaper_password' class='flexpaper_htmldialog-input' placeholder='Enter password'>"+
+                    "<input type='submit' value='Submit' class='flexpaper_htmldialog-button'>"+
+                    "</div>"+
+                    "</form>"+
+                    "</div>"
+            );
+
+            var anim_duration = animate?1000:0;
+            var anim_height_dur = animate?anim_duration/3:0;
+            var theight = 400;
+
+            jQuery('.flexpaper_htmldialog').css({height : '0px', display : 'block'});
+            jQuery('.flexpaper_htmldialog').animate({'height': theight+'px','top':'0px'},{duration: anim_height_dur, complete: function(){
+                jQuery('.flexpaper_htmldialog').css({'height' : ''}); // remove height attribute to fit publication
+
+                jQuery('.flexpaper_publication').animate({opacity:1},{
+                    step : function(now,fx){
+                        var target = -7;var opacityfrom = -40;var diff = opacityfrom - target;var rotate = (diff * now);
+
+                        jQuery('.flexpaper_publication').css({
+                            '-webkit-transform' : 'perspective(300) rotateY('+(opacityfrom - rotate)+'deg)',
+                            '-moz-transform' : 'rotateY('+(opacityfrom - rotate)+'deg)',
+                            'box-shadow' : '5px 5px 20px rgba(51, 51, 51, '+now+')'
+                        });
+                    },
+                    duration:anim_duration
+                });
+
+            }});
+
+        });
+        img.src = (IMGFiles.replace("{page}",1));
+    };
+})();
+
+/**
  * 
  * FlexPaper embedding functionality. Based on FlashEmbed
  *
  */
 
 (function() {
-
 	var  IE = document.all,
 		 URL = 'http://www.adobe.com/go/getflashplayer',
 		 JQUERY = typeof jQuery == 'function', 
@@ -260,11 +355,11 @@ function translateUrlByFormat(url,format){
 	}
 
 	window.flashembed = function(root, opts, conf) {
-		// root must be found / loaded	
+		// root must be found / loaded
 		if (typeof root == 'string') {
 			root = document.getElementById(root.replace("#", ""));
 		}
-		
+
 		// not found
 		if (!root) { return; }
 		
@@ -418,15 +513,28 @@ function translateUrlByFormat(url,format){
             (browser.safari) ||
             (browser.opera);
 
+        var supportsCanvasDrawing 	= 	(browser.mozilla && browser.version.split(".")[0] >= 4) ||
+            (browser.chrome && browser.version.split(".") >= 535) ||
+            (browser.msie && browser.version.split(".")[0] >= 10) ||
+            (browser.safari && browser.version.split(".")[0] >= 534 /*&& !platform.ios*/);
+
         // Default to a rendering mode if its not set
         if(!conf.RenderingOrder && conf.SwfFile !=  null){conf.RenderingOrder = "flash";}
         if(!conf.RenderingOrder && conf.JSONFile !=  null && conf.JSONFile){conf.RenderingOrder = "html";}
         if(!conf.RenderingOrder && conf.PdfFile !=  null){conf.RenderingOrder = "html5";}
 
+        // mobile preview removes flash from the rendering order
+        if(FLEXPAPER.getLocationHashParameter && FLEXPAPER.getLocationHashParameter('mobilepreview')){
+            conf.RenderingOrder = conf.RenderingOrder.replace(/flash/g, 'html');
+        }
+
+        var viewerId = jQuery(root).attr('id');
+        var instance = "FlexPaperViewer_Instance"+((viewerId==="undefined")?"":viewerId);
+
         // version is ok
-		if ((conf.RenderingOrder.indexOf('flash') == 0 || (conf.RenderingOrder.indexOf('flash')>0 &&!supportsHTML4)) && f.isSupported(opts.version)) {
+		if ((conf.RenderingOrder.indexOf('flash') == 0 || (conf.RenderingOrder.indexOf('flash')>0 &&!supportsHTML4) || (conf.RenderingOrder.indexOf('flash')>0 && conf.RenderingOrder.indexOf('html5')>=0 && !supportsCanvasDrawing)) && f.isSupported(opts.version)) {
             if(conf.Toolbar){
-                var wrapper = jQuery(root).wrap("<div style='"+jQuery(root).attr('style')+"'></div>").parent();
+                var wrapper = jQuery(root).wrap("<div class='flexpaper_toolbar_wrapper' style='"+jQuery(root).attr('style')+"'></div>").parent();
                 jQuery(root).css({
                     left : '0px',
                     top: '0px',
@@ -453,13 +561,21 @@ function translateUrlByFormat(url,format){
                     FLEXPAPER.bindFlashEventHandlers(root);
                 });
             }
-			
+
+            root.firstChild["dispose"] = function(){
+                if(conf.Toolbar){
+                    jQuery($FlexPaper('documentViewer')).parent().parent().remove();
+                }else{
+                    $FlexPaper(viewerId).remove();
+                }
+            }
+
 		// express install
 		} else if ((conf.RenderingOrder.indexOf('flash') == 0) && opts.expressInstall && f.isSupported([6, 65])) {
 			window['ViewerMode'] = 'flash';
 
             if(conf.Toolbar){
-                var wrapper = jQuery(root).wrap("<div style='"+jQuery(root).attr('style')+"'></div>").parent();
+                var wrapper = jQuery(root).wrap("<div class='flexpaper_toolbar_wrapper' style='"+jQuery(root).attr('style')+"'></div>").parent();
                 jQuery(root).css({
                     left : '0px',
                     top: '0px',
@@ -490,6 +606,14 @@ function translateUrlByFormat(url,format){
                 });
             }
 
+            root.firstChild["dispose"] = function(){
+                if(conf.Toolbar){
+                    jQuery($FlexPaper('documentViewer')).parent().parent().remove();
+                }else{
+                    $FlexPaper(viewerId).remove();
+                }
+            }
+
 		} else { //use html viewer or die
 			window['ViewerMode'] = 'html';
 			//jQuery.noConflict();
@@ -497,13 +621,12 @@ function translateUrlByFormat(url,format){
 				jQuery(document).ready(function() {
                     if(conf.Toolbar){jQuery.fn.showFullScreen = function(){$FlexPaper(jQuery(this).attr('id')).openFullScreen();}}
 
-					jQuery.getScript(conf.jsDirectory+'FlexPaperViewer.js', function() {
-						var viewerId = jQuery(root).attr('id');
-						var supportsPDFJS 	= 	(browser.mozilla && browser.version.split(".")[0] >= 4) ||
-												(browser.chrome && browser.version.split(".") >= 535) ||
-												(browser.msie && browser.version.split(".")[0] >= 10) ||
-												(browser.safari && browser.version.split(".")[0] >= 534 /*&& !platform.ios*/);
+                    // Enable cache of scripts. You can disable this if you want to force FlexPaper to use a non-cached version every time.
+                    jQuery.ajaxSetup({
+                        cache: true
+                    });
 
+					jQuery.getScript(conf.jsDirectory+'FlexPaperViewer.js', function() {
                         // If rendering order isnt set but the formats are supplied then assume the rendering order.
                         if(!conf.RenderingOrder){
                             conf.RenderingOrder = "";
@@ -512,7 +635,7 @@ function translateUrlByFormat(url,format){
                         }
 
                         // add fallback for html if not specified
-                        if(conf.JSONFile!=null){
+                        if(conf.JSONFile!=null && conf.JSONFile.length>0 && conf.IMGFiles!=null && conf.IMGFiles.length>0){
                             if(platform.ios || platform.android){ // ios should use html as preferred rendering mode if available.
                                 conf.RenderingOrder = "html" + (conf.RenderingOrder.length>0?",":"") + conf.RenderingOrder;
                             }else{
@@ -524,39 +647,42 @@ function translateUrlByFormat(url,format){
 						var pageRenderer 	= null;
 
                         // if PDFJS isn't supported and the html formats are supplied, then use these as primary format
-                        if(oRenderingList && oRenderingList.length==1 && conf.JSONFile!=null && conf.JSONFile.length>0 && conf.IMGFiles!=null && conf.IMGFiles.length>0 && !supportsPDFJS){
+                        if(oRenderingList && oRenderingList.length==1 && conf.JSONFile!=null && conf.JSONFile.length>0 && conf.IMGFiles!=null && conf.IMGFiles.length>0 && !supportsCanvasDrawing){
                             oRenderingList[1] = conf.RenderingOrder[0];
                             oRenderingList[0] = 'html';
                         }
 
-                        if(conf.PdfFile!=null && conf.PdfFile.length>0 && conf.RenderingOrder.split(",").length>=1 && supportsPDFJS && (oRenderingList[0] == 'html5' || (oRenderingList.length > 1 && oRenderingList[0] == 'flash' && oRenderingList[1] == 'html5')) && !(platform.touchdevice && oRenderingList.length > 1 && oRenderingList[1] == 'html')){
+                        if(conf.PdfFile!=null && conf.PdfFile.length>0 && conf.RenderingOrder.split(",").length>=1 && supportsCanvasDrawing && (oRenderingList[0] == 'html5' || (oRenderingList.length > 1 && oRenderingList[0] == 'flash' && oRenderingList[1] == 'html5')) && !(platform.touchonlydevice && oRenderingList.length > 1 && oRenderingList[1] == 'html')){
 							pageRenderer = new CanvasPageRenderer(viewerId,conf.PdfFile,conf.jsDirectory,
                                 {
-                                    jsonfile : conf.JSONFile,
-                                    pageImagePattern : conf.IMGFiles,
-                                    pageThumbImagePattern : conf.ThumbIMGFiles,
-                                    compressedJSONFormat : !conf.useCustomJSONFormat,
-                                    JSONPageDataFormat : conf.JSONPageDataFormat,
-                                    JSONDataType : conf.JSONDataType
+                                    jsonfile                : conf.JSONFile,
+                                    pageImagePattern        : conf.IMGFiles,
+                                    pageThumbImagePattern   : conf.ThumbIMGFiles,
+                                    compressedJSONFormat    : !conf.useCustomJSONFormat,
+                                    JSONPageDataFormat      : conf.JSONPageDataFormat,
+                                    JSONDataType            : conf.JSONDataType,
+                                    MixedMode               : conf.MixedMode,
+                                    signature               : conf.signature
                                 });
 						}else{
 							pageRenderer = new ImagePageRenderer(
 							viewerId,
 							{
-				   			jsonfile : conf.JSONFile,
-							pageImagePattern : conf.IMGFiles,
-                            pageThumbImagePattern : conf.ThumbIMGFiles,
+				   			jsonfile                : conf.JSONFile,
+							pageImagePattern        : conf.IMGFiles,
+                            pageThumbImagePattern   : conf.ThumbIMGFiles,
                             pageHighResImagePattern : conf.HighResIMGFiles,
-                            pageSVGImagePattern : conf.SVGFiles,
-							compressedJSONFormat : !conf.useCustomJSONFormat,
-							JSONPageDataFormat : conf.JSONPageDataFormat,
-							JSONDataType : conf.JSONDataType,
-                            SVGMode : conf.RenderingOrder.toLowerCase().indexOf('svg')>=0
+                            pageSVGImagePattern     : conf.SVGFiles,
+							compressedJSONFormat    : !conf.useCustomJSONFormat,
+							JSONPageDataFormat      : conf.JSONPageDataFormat,
+							JSONDataType            : conf.JSONDataType,
+                            SVGMode                 : conf.RenderingOrder.toLowerCase().indexOf('svg')>=0,
+                            MixedMode               : conf.MixedMode,
+                            signature               : conf.signature
 							},
                             conf.jsDirectory);
 						}					
 
-						var instance = "FlexPaperViewer_Instance"+((viewerId==="undefined")?"":viewerId);
 						window[instance] = new FlexPaperViewer_HTML({
 							rootid 		    : viewerId,
                             Toolbar 	    : ((conf.Toolbar!=null)?conf.Toolbar:null),
@@ -575,6 +701,8 @@ function translateUrlByFormat(url,format){
 								MaxZoomSize 			: conf.MaxZoomSize,
 								SearchMatchAll 			: conf.SearchMatchAll,
 								InitViewMode 			: conf.InitViewMode,
+                                PreviewMode             : conf.PreviewMode,
+                                MixedMode               : conf.MixedMode,
 								StartAtPage 			: conf.StartAtPage,
 								RenderingOrder 			: conf.RenderingOrder,
 								useCustomJSONFormat 	: conf.useCustomJSONFormat,
@@ -624,6 +752,10 @@ function translateUrlByFormat(url,format){
 						window[instance]['searchText'] = window[instance].searchText;
                         window[instance]['resize'] = window[instance].resize;
                         window[instance]['rotate'] = window[instance].rotate;
+                        window[instance]['addLink'] = window[instance].addLink;
+                        window[instance]['addImage'] = window[instance].addImage;
+                        window[instance]['addVideo'] = window[instance].addVideo;
+
 						//window[instance]['nextSearchMatch'] = window[instance].nextSearchMatch; //TBD
 						//window[instance]['prevSearchMatch'] = window[instance].nextSearchMatch; //TBD
 						window[instance]['switchMode'] = window[instance].switchMode;
@@ -640,8 +772,18 @@ function translateUrlByFormat(url,format){
 							  window[instance].show();
 
                               jQuery(root).trigger('onDocumentLoaded',pageRenderer.getNumPages());
-						});					
-					});
+						},{
+                              StartAtPage : conf.StartAtPage,
+                              MixedMode : conf.MixedMode
+                        });
+					}).fail(function(){
+                            if(arguments[0].readyState==0){
+                                console.log("failed to load FlexPaperViewer.js. Check your resources");
+                            }else{
+                                //script loaded but failed to parse
+                                console.log(arguments[2].toString());
+                            }
+                        });
 				});
 			}else{
 				// fail #2.1 custom content inside container
@@ -669,6 +811,12 @@ function translateUrlByFormat(url,format){
 				}		
 			}	
 		}
+
+        // bind a listener to the hash change event and change page if the user changes the page hash parameter
+        jQuery(window).bind('hashchange',(function() {
+            var page = FLEXPAPER.getLocationHashParameter('page');
+            $FlexPaper(viewerId).gotoPage(page);
+        }));
 		
 		// http://flowplayer.org/forum/8/18186#post-18593
 		if (IE) {
@@ -732,7 +880,7 @@ function getIEversion()
 }
 
 
-window.unsupportedPDFJSieversion = getIEversion()>0 && getIEversion()<9;
+window.unsupportedPDFJSieversion = getIEversion()>0 && getIEversion()<=9;
 // Checking if the typed arrays are supported
 (function checkTypedArrayCompatibility() {
   if (typeof Uint8Array !== 'undefined') {
@@ -901,6 +1049,8 @@ window.unsupportedPDFJSieversion = getIEversion()>0 && getIEversion()<9;
 
 // No XMLHttpRequest.response ?
 (function checkXMLHttpRequestResponseCompatibility() {
+  if(window.unsupportedPDFJSieversion){return;}
+
   var xhrPrototype = XMLHttpRequest.prototype;
   if (!('overrideMimeType' in xhrPrototype)) {
     // IE10 might have response, but not overrideMimeType
