@@ -25,7 +25,7 @@ function library_features_view_home_views_default_views() {
   $handler->display->display_options['css_class'] = 'node-view-home';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'perm';
-  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['cache']['type'] = 'time';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['pager']['type'] = 'some';
@@ -109,14 +109,13 @@ function library_features_view_home_views_default_views() {
     'publications' => 'publications',
     'topics' => 'topics',
   );
-  /* Filter criterion: Content: Home region (field_home_region) */
+  /* Filter criterion: Broken/missing handler */
   $handler->display->display_options['filters']['field_home_region_tid']['id'] = 'field_home_region_tid';
   $handler->display->display_options['filters']['field_home_region_tid']['table'] = 'field_data_field_home_region';
   $handler->display->display_options['filters']['field_home_region_tid']['field'] = 'field_home_region_tid';
   $handler->display->display_options['filters']['field_home_region_tid']['value'] = array(
     0 => '5793',
   );
-  $handler->display->display_options['filters']['field_home_region_tid']['vocabulary'] = 'home_region';
 
   /* Display: Home top */
   $handler = $view->new_display('panel_pane', 'Home top', 'home_top');
@@ -159,14 +158,6 @@ function library_features_view_home_views_default_views() {
     'publications' => 'publications',
     'topics' => 'topics',
   );
-  /* Filter criterion: Content: Home region (field_home_region) */
-  $handler->display->display_options['filters']['field_home_region_tid']['id'] = 'field_home_region_tid';
-  $handler->display->display_options['filters']['field_home_region_tid']['table'] = 'field_data_field_home_region';
-  $handler->display->display_options['filters']['field_home_region_tid']['field'] = 'field_home_region_tid';
-  $handler->display->display_options['filters']['field_home_region_tid']['value'] = array(
-    0 => '10',
-  );
-  $handler->display->display_options['filters']['field_home_region_tid']['vocabulary'] = 'home_region';
   $handler->display->display_options['argument_input'] = array(
     'title' => array(
       'type' => 'user',
@@ -219,14 +210,6 @@ function library_features_view_home_views_default_views() {
     'publications' => 'publications',
     'topics' => 'topics',
   );
-  /* Filter criterion: Content: Home region (field_home_region) */
-  $handler->display->display_options['filters']['field_home_region_tid']['id'] = 'field_home_region_tid';
-  $handler->display->display_options['filters']['field_home_region_tid']['table'] = 'field_data_field_home_region';
-  $handler->display->display_options['filters']['field_home_region_tid']['field'] = 'field_home_region_tid';
-  $handler->display->display_options['filters']['field_home_region_tid']['value'] = array(
-    0 => '6',
-  );
-  $handler->display->display_options['filters']['field_home_region_tid']['vocabulary'] = 'home_region';
   $handler->display->display_options['argument_input'] = array(
     'title' => array(
       'type' => 'user',
@@ -279,14 +262,6 @@ function library_features_view_home_views_default_views() {
     'publications' => 'publications',
     'topics' => 'topics',
   );
-  /* Filter criterion: Content: Home region (field_home_region) */
-  $handler->display->display_options['filters']['field_home_region_tid']['id'] = 'field_home_region_tid';
-  $handler->display->display_options['filters']['field_home_region_tid']['table'] = 'field_data_field_home_region';
-  $handler->display->display_options['filters']['field_home_region_tid']['field'] = 'field_home_region_tid';
-  $handler->display->display_options['filters']['field_home_region_tid']['value'] = array(
-    0 => '8',
-  );
-  $handler->display->display_options['filters']['field_home_region_tid']['vocabulary'] = 'home_region';
   $handler->display->display_options['argument_input'] = array(
     'title' => array(
       'type' => 'user',
@@ -339,14 +314,6 @@ function library_features_view_home_views_default_views() {
     'publications' => 'publications',
     'topics' => 'topics',
   );
-  /* Filter criterion: Content: Home region (field_home_region) */
-  $handler->display->display_options['filters']['field_home_region_tid']['id'] = 'field_home_region_tid';
-  $handler->display->display_options['filters']['field_home_region_tid']['table'] = 'field_data_field_home_region';
-  $handler->display->display_options['filters']['field_home_region_tid']['field'] = 'field_home_region_tid';
-  $handler->display->display_options['filters']['field_home_region_tid']['value'] = array(
-    0 => '9',
-  );
-  $handler->display->display_options['filters']['field_home_region_tid']['vocabulary'] = 'home_region';
   $handler->display->display_options['argument_input'] = array(
     'title' => array(
       'type' => 'user',
@@ -399,14 +366,6 @@ function library_features_view_home_views_default_views() {
     'publications' => 'publications',
     'topics' => 'topics',
   );
-  /* Filter criterion: Content: Home region (field_home_region) */
-  $handler->display->display_options['filters']['field_home_region_tid']['id'] = 'field_home_region_tid';
-  $handler->display->display_options['filters']['field_home_region_tid']['table'] = 'field_data_field_home_region';
-  $handler->display->display_options['filters']['field_home_region_tid']['field'] = 'field_home_region_tid';
-  $handler->display->display_options['filters']['field_home_region_tid']['value'] = array(
-    0 => '11',
-  );
-  $handler->display->display_options['filters']['field_home_region_tid']['vocabulary'] = 'home_region';
   $handler->display->display_options['argument_input'] = array(
     'title' => array(
       'type' => 'user',
