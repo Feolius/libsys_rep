@@ -266,8 +266,8 @@ function collection_page_timeline_frame_callback() {
   $options = new stdClass();
   $options->start_slide = 0;
   $options->timeline_lib_url = $GLOBALS['base_url'] . '/' . libraries_get_path(
-    'timeline'
-  ) . '/compiled/js/storyjs-embed.js';
+      'timeline'
+    ) . '/compiled/js/storyjs-embed.js';
   echo theme('timeline_json', array('options' => $options));
   exit;
 }
@@ -279,6 +279,11 @@ function collection_page_timeline_json_callback() {
   $date = array();
 
   $results = $_SESSION['collection_page_apache_solr_results'];
+  $node_ids = array();
+  foreach ($results as $result) {
+    $node_ids[] = $result['node_id'];
+  }
+  $result_nodes = node_load_multiple($node_ids);
 
   foreach ($results as $result) {
     $asset = new stdClass();
@@ -290,8 +295,8 @@ function collection_page_timeline_json_callback() {
         //If the node have more then one date fields, the earliest one would be chosen.
         if (isset($timeline_item->startDate)) {
           $timeline_item->startDate = (strtotime($timeline_item->startDate) > strtotime(
-            $item_date
-          )) ? $item_date : $timeline_item->startDate;
+              $item_date
+            )) ? $item_date : $timeline_item->startDate;
         }
         else {
           $timeline_item->startDate = $item_date;
@@ -312,7 +317,7 @@ function collection_page_timeline_json_callback() {
     //For each node, which was filtered by apache_solr using chosen filters
     //get image,as media content, and date for time line.
     //There would taken the last image field in node and the last date field in node.
-    $node = node_load($result['node_id']);
+    $node = $result_nodes[$result['node_id']];
     $instances = field_info_instances('node', $node->type);
     foreach ($instances as $field_name => $instance) {
       $field_info = field_info_field($field_name);
@@ -1096,7 +1101,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
 
       break;
     case
-      'topics':
+    'topics':
 
       $description = '';
       if ($snippet_contain_search_result) {
