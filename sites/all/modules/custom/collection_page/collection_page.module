@@ -107,6 +107,13 @@ function theme_facet_collection_search_results__alter($variables) {
   $disabled_tabs = array();
 
   $results = $variables['results'];
+
+  $node_ids = array();
+  foreach ($results as $result) {
+    $node_ids[] = $result['node']->entity_id;
+  }
+  node_load_multiple($node_ids);
+
   $content_tabs['#standard-default']['#content'] = array(
     theme(
       'collection_standard_default_view',
@@ -563,13 +570,37 @@ function _collection_page_get_bundle_image_fields($bundle) {
  * Preprocess function for collection_standard_default_view.
  */
 function template_preprocess_collection_standard_default_view(&$variables) {
+  $variables['search_results'] = '';
   $results = $variables['results'];
-  $variables['results'] = theme(
-    'collection_search_results',
-    array(
-      'results' => $results,
-    )
-  );
+  drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_search_result.css');
+  //Number of rows in page
+  if (isset($_GET['rNum'])) {
+    $r_num = $_GET['rNum'];
+  }
+  else {
+    $facet_collection_rows_number_variants = variable_get('facet_collection_rows_number_variants', '25 50 100');
+    $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
+    $r_num = $facet_collection_rows_number_variants[0];
+  }
+  $page = pager_find_page();
+  $result_number_in_page = 1;
+  $style = 'library_page_thumbnail';
+  $styles = image_styles();
+  if (!in_array($style, array_keys($styles))) {
+    $style = FALSE;
+  }
+  foreach ($results as $result) {
+    $result['title'] = ($page * $r_num + $result_number_in_page) . '. ' . $result['title'];
+    $variables['search_results'] .= theme(
+      'collection_search_result',
+      array(
+        'result' => $result,
+        'image_style' => $style
+      )
+    );
+    $result_number_in_page++;
+  }
+  $variables['pager'] = theme('pager', array('tags' => NULL));
 }
 
 /**
@@ -644,43 +675,6 @@ function collection_page_preprocess_breadcrumb(&$variables) {
 }
 
 /**
- * Preprocess function for collection_search_results
- */
-function template_preprocess_collection_search_results(&$variables) {
-  $variables['search_results'] = '';
-  $results = $variables['results'];
-  drupal_add_css(drupal_get_path('module', 'collection_page') . '/css/collection_page_search_result.css');
-  //Number of rows in page
-  if (isset($_GET['rNum'])) {
-    $r_num = $_GET['rNum'];
-  }
-  else {
-    $facet_collection_rows_number_variants = variable_get('facet_collection_rows_number_variants', '25 50 100');
-    $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
-    $r_num = $facet_collection_rows_number_variants[0];
-  }
-  $page = pager_find_page();
-  $result_number_in_page = 1;
-  $style = 'library_page_thumbnail';
-  $styles = image_styles();
-  if (!in_array($style, array_keys($styles))) {
-    $style = FALSE;
-  }
-  foreach ($results as $result) {
-    $result['title'] = ($page * $r_num + $result_number_in_page) . '. ' . $result['title'];
-    $variables['search_results'] .= theme(
-      'collection_search_result',
-      array(
-        'result' => $result,
-        'image_style' => $style
-      )
-    );
-    $result_number_in_page++;
-  }
-  $variables['pager'] = theme('pager', array('tags' => NULL));
-}
-
-/**
  * Preprocess function for collection_search_result
  */
 function template_preprocess_collection_search_result(&$variables) {
@@ -713,24 +707,10 @@ function template_preprocess_collection_search_result(&$variables) {
     }
     else {
       $image = FALSE;
-      $image = FALSE;
     }
     $variables['image'] = $image;
 
-    if (empty($result['snippet']) || $result['snippet'] == ' ...') {
-      $cache = cache_get('collection_page:node_snippet:' . $result['node']->entity_id);
-      if (!empty($cache->data)) {
-        $result_snippet_data = $cache->data;
-      }
-      else {
-        $result_snippet_data = collection_page_node_snippet_data($result['node']->entity_id, $result['snippet']);
-        cache_set('collection_page:node_snippet:' . $result['node']->entity_id, $result_snippet_data);
-      }
-    }
-    else {
-      $result_snippet_data = collection_page_node_snippet_data($result['node']->entity_id, $result['snippet']);
-    }
-
+    $result_snippet_data = collection_page_node_snippet_data($result['node']->entity_id, $result['snippet']);
 
     $variables['snippet'] = empty($result_snippet_data) ? $result['snippet'] : $result_snippet_data;
   }
@@ -786,7 +766,7 @@ function collection_page_get_image_field($node) {
  * @param $variables
  * An associative array containing all parameters that theme_image_style() function can take.
  * @param $image_link
- * An associative array comtaining all parameters that l() function can take. It is an array with keys 'path' and 'options'.
+ * An associative array containing all parameters that l() function can take. It is an array with keys 'path' and 'options'.
  */
 function collection_page_node_snippet_image($node, $image_field_name, $variables, $image_link = NULL) {
   $image = FALSE;
@@ -802,7 +782,6 @@ function collection_page_node_snippet_image($node, $image_field_name, $variables
                 'video_id' => $item['video_id'],
                 'image_variables' => $variables,
               )
-
             );
             break;
           }
@@ -1606,16 +1585,6 @@ function collection_page_files_node_snippet_data(
       break;
     }
   }
-  return $snippet_data;
-}
 
-/**
- * Implementation of hook_node_presave().
- * @param $node
- */
-function collection_page_node_presave($node) {
-  $cache = cache_get('collection_page:node_snippet:' . $node->nid);
-  if (!empty($cache->data)) {
-    cache_set('collection_page:node_snippet:' . $node->nid, array());
-  }
+  return $snippet_data;
 }
