@@ -497,8 +497,15 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
     'attributes' => $attributes,
   );
   $results['collection_thumbnails'] = array();
+
+  $node_ids = array();
   foreach ($results['results'] as $result) {
-    $node = node_load($result['node']->entity_id);
+    $node_ids[] = $result['node']->entity_id;
+  }
+  $result_nodes = node_load_multiple($node_ids);
+
+  foreach ($results['results'] as $result) {
+    $node = $result_nodes[$result['node']->entity_id];
     if ($node) {
       $bundle = $node->type;
       $image_fields = _collection_page_get_bundle_image_fields($bundle);
@@ -709,7 +716,20 @@ function template_preprocess_collection_search_result(&$variables) {
     }
     $variables['image'] = $image;
 
-    $result_snippet_data = collection_page_node_snippet_data($result['node']->entity_id, $result['snippet']);
+    if (empty($result['snippet'])) {
+      $cache = cache_get('collection_page:node_snippet:' . $result['node']->entity_id);
+      if (!empty($cache->data)) {
+        $result_snippet_data = $cache->data;
+      }
+      else {
+        $result_snippet_data = collection_page_node_snippet_data($result['node']->entity_id, $result['snippet']);
+        cache_set('collection_page:node_snippet:' . $result['node']->entity_id, $result_snippet_data);
+      }
+    }
+    else {
+      $result_snippet_data = collection_page_node_snippet_data($result['node']->entity_id, $result['snippet']);
+    }
+
 
     $variables['snippet'] = empty($result_snippet_data) ? $result['snippet'] : $result_snippet_data;
   }
@@ -781,7 +801,9 @@ function collection_page_node_snippet_image($node, $image_field_name, $variables
                 'video_id' => $item['video_id'],
                 'image_variables' => $variables,
               )
+
             );
+            break;
           }
         }
       }
@@ -811,6 +833,7 @@ function collection_page_node_snippet_image($node, $image_field_name, $variables
             if ($file_thumb) {
               $uri_thumb = $file_thumb->uri;
               $image = theme('image_style', array_merge($variables, array('path' => $uri_thumb)));
+              break;
             }
           }
         }
@@ -953,13 +976,13 @@ function collection_page_node_snippet_data($nid, $snippet) {
       break;
     case 'location':
 
-      //Snippet data for Location content type consict of Desctription and Address
+      //Snippet data for Location content type consist of Description and Address
       $description = '';
       $address = '';
 
       //Fetch the description
       if ($snippet_contain_search_result) {
-        //If the user search some word or frase, we nned to show the snippet from apache solr
+        //If the user search some word or phrase, we need to show the snippet from apache solr
         //with highlighted found text.
         $description = $snippet;
       }
@@ -1247,7 +1270,6 @@ function collection_page_files_node_snippet_data(
           if (isset($node->created)) {
             $date = date('d F Y', $node->created);
           }
-
 
           //Cut the people to get the result line without wrap
           $tmp_people = array();
@@ -1546,6 +1568,16 @@ function collection_page_files_node_snippet_data(
       break;
     }
   }
-
   return $snippet_data;
+}
+
+/**
+ * Implementation of hook_node_presave().
+ * @param $node
+ */
+function collection_page_node_presave($node) {
+  $cache = cache_get('collection_page:node_snippet:' . $node->nid);
+  if (!empty($cache->data)) {
+    cache_set('collection_page:node_snippet:' . $node->nid, array());
+  }
 }
