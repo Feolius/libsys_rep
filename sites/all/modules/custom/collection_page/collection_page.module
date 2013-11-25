@@ -713,10 +713,11 @@ function template_preprocess_collection_search_result(&$variables) {
     }
     else {
       $image = FALSE;
+      $image = FALSE;
     }
     $variables['image'] = $image;
 
-    if (empty($result['snippet'])) {
+    if (empty($result['snippet']) || $result['snippet'] == ' ...') {
       $cache = cache_get('collection_page:node_snippet:' . $result['node']->entity_id);
       if (!empty($cache->data)) {
         $result_snippet_data = $cache->data;
@@ -1097,8 +1098,17 @@ function collection_page_node_snippet_data($nid, $snippet) {
       }
 
       //Fetch the date
-      if (isset($node->created)) {
-        $date = date('d F Y', $node->created);
+      $date_items = field_get_items('node', $node, 'field_files_creation_date');
+      if (!empty($date_items)) {
+        foreach ($date_items as $item) {
+          //Change the format of date
+          if (isset($item['value'])) {
+            $date = date('d F Y', strtotime($item['value']));
+          }
+          //We need only one date from the date field
+          //If the field have more then one date we take the first one.
+          break;
+        }
       }
 
       $snippet_data = theme(
@@ -1267,8 +1277,17 @@ function collection_page_files_node_snippet_data(
           }
 
           //Fetch the date
-          if (isset($node->created)) {
-            $date = date('d F Y', $node->created);
+          $date_items = field_get_items('node', $node, 'field_files_creation_date');
+          if (!empty($date_items)) {
+            foreach ($date_items as $item) {
+              //Change the format of date
+              if (isset($item['value'])) {
+                $date = date('d F Y', strtotime($item['value']));
+              }
+              //We need only one date from the date field
+              //If the field have more then one date we take the first one.
+              break;
+            }
           }
 
           //Cut the people to get the result line without wrap
@@ -1453,8 +1472,18 @@ function collection_page_files_node_snippet_data(
                   //with highlighted found text.
                   $search_snippet = $snippet_contain_search_result ? $snippet : FALSE;
                   $date = '';
-                  if (isset($node->created)) {
-                    $date = date('d F Y', $node->created);
+                  //Fetch the date
+                  $date_items = field_get_items('node', $node, 'field_files_creation_date');
+                  if (!empty($date_items)) {
+                    foreach ($date_items as $item) {
+                      //Change the format of date
+                      if (isset($item['value'])) {
+                        $date = date('d F Y', strtotime($item['value']));
+                      }
+                      //We need only one date from the date field
+                      //If the field have more then one date we take the first one.
+                      break;
+                    }
                   }
 
                   $snippet_data = theme(
@@ -1533,8 +1562,17 @@ function collection_page_files_node_snippet_data(
             }
 
             //Fetch the date
-            if (isset($node->created)) {
-              $date = date('d F Y', $node->created);
+            $date_items = field_get_items('node', $node, 'field_files_creation_date');
+            if (!empty($date_items)) {
+              foreach ($date_items as $item) {
+                //Change the format of date
+                if (isset($item['value'])) {
+                  $date = date('d F Y', strtotime($item['value']));
+                }
+                //We need only one date from the date field
+                //If the field have more then one date we take the first one.
+                break;
+              }
             }
 
             $snippet_data = theme(
