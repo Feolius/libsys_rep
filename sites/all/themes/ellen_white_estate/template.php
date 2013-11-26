@@ -620,14 +620,16 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
         "node/{$item['entity']->nid}"
       );
     }
-    $info = field_info_instance('node', 'field_files_people_tags', $node->type);
-    $output['peoples'] = array(
-      '#access' => TRUE,
-      '#label_display' => 'inline',
-      '#prefix' => "<div class='field field-name-field-files-people-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
-      '#markup' => implode(', ', $peoples),
-      '#suffix' => '</div>',
-    );
+    if (!empty($peoples)) {
+      $info = field_info_instance('node', 'field_files_people_tags', $node->type);
+      $output['peoples'] = array(
+        '#access' => TRUE,
+        '#label_display' => 'inline',
+        '#prefix' => "<div class='field field-name-field-files-people-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+        '#markup' => implode(', ', $peoples),
+        '#suffix' => '</div>',
+      );
+    }
   }
 
   // Locations.
@@ -639,14 +641,16 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
         "node/{$item['entity']->nid}"
       );
     }
-    $info = field_info_instance('node', 'field_files_location_tags', $node->type);
-    $output['locations'] = array(
-      '#access' => TRUE,
-      '#label_display' => 'inline',
-      '#prefix' => "<div class='field field-name-field-files-location-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
-      '#markup' => implode(', ', $locations),
-      '#suffix' => '</div>',
-    );
+    if (!empty($locations)) {
+      $info = field_info_instance('node', 'field_files_location_tags', $node->type);
+      $output['locations'] = array(
+        '#access' => TRUE,
+        '#label_display' => 'inline',
+        '#prefix' => "<div class='field field-name-field-files-location-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+        '#markup' => implode(', ', $locations),
+        '#suffix' => '</div>',
+      );
+    }
   }
 
   // Events.
@@ -658,14 +662,16 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
         "node/{$item['entity']->nid}"
       );
     }
-    $info = field_info_instance('node', 'field_files_event_tags', $node->type);
-    $output['events'] = array(
-      '#access' => TRUE,
-      '#label_display' => 'inline',
-      '#prefix' => "<div class='field field-name-field-files-event-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
-      '#markup' => implode(', ', $events),
-      '#suffix' => '</div>',
-    );
+    if (!empty($events)) {
+      $info = field_info_instance('node', 'field_files_event_tags', $node->type);
+      $output['events'] = array(
+        '#access' => TRUE,
+        '#label_display' => 'inline',
+        '#prefix' => "<div class='field field-name-field-files-event-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+        '#markup' => implode(', ', $events),
+        '#suffix' => '</div>',
+      );
+    }
   }
 
   // Topics.
@@ -677,14 +683,16 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
         "node/{$item['entity']->nid}"
       );
     }
-    $info = field_info_instance('node', 'field_files_topic_tags', $node->type);
-    $output['topics'] = array(
-      '#access' => TRUE,
-      '#label_display' => 'inline',
-      '#prefix' => "<div class='field field-name-field-files-topic-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
-      '#markup' => implode(', ', $topics),
-      '#suffix' => '</div>',
-    );
+    if (!empty($topics)) {
+      $info = field_info_instance('node', 'field_files_topic_tags', $node->type);
+      $output['topics'] = array(
+        '#access' => TRUE,
+        '#label_display' => 'inline',
+        '#prefix' => "<div class='field field-name-field-files-topic-tags'><span class='field-label'>{$info['label']}:&nbsp;</span>",
+        '#markup' => implode(', ', $topics),
+        '#suffix' => '</div>',
+      );
+    }
   }
 
   // Additional information.
