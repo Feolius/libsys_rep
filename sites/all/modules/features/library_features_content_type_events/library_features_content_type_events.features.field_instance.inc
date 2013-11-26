@@ -1241,7 +1241,7 @@ function library_features_content_type_events_field_default_field_instances() {
     ),
     'entity_type' => 'node',
     'field_name' => 'field_events_tab_map',
-    'label' => 'Map',
+    'label' => 'Location',
     'required' => 0,
     'settings' => array(
       'user_register_form' => FALSE,
@@ -1698,8 +1698,8 @@ function library_features_content_type_events_field_default_field_instances() {
   t('Documents');
   t('Image');
   t('Images');
+  t('Location');
   t('Main character');
-  t('Map');
   t('Original place');
   t('Place nodes');
   t('Receiver');
