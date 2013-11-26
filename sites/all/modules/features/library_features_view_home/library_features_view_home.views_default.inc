@@ -25,7 +25,7 @@ function library_features_view_home_views_default_views() {
   $handler->display->display_options['css_class'] = 'node-view-home';
   $handler->display->display_options['use_more_always'] = FALSE;
   $handler->display->display_options['access']['type'] = 'perm';
-  $handler->display->display_options['cache']['type'] = 'time';
+  $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['exposed_form']['type'] = 'basic';
   $handler->display->display_options['pager']['type'] = 'some';
@@ -41,10 +41,6 @@ function library_features_view_home_views_default_views() {
   $handler->display->display_options['relationships']['nodequeue_rel']['field'] = 'nodequeue_rel';
   $handler->display->display_options['relationships']['nodequeue_rel']['required'] = TRUE;
   $handler->display->display_options['relationships']['nodequeue_rel']['limit'] = 0;
-  $handler->display->display_options['relationships']['nodequeue_rel']['names'] = array(
-    'qwertye' => 0,
-    'www' => 0,
-  );
   /* Field: Content: field_home_top_image */
   $handler->display->display_options['fields']['field_field_home_top_image']['id'] = 'field_field_home_top_image';
   $handler->display->display_options['fields']['field_field_home_top_image']['table'] = 'field_data_field_field_home_top_image';
