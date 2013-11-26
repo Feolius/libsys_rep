@@ -561,14 +561,12 @@ function library_features_content_type_events_field_default_field_bases() {
     'module' => 'field_data_collector',
     'settings' => array(
       'collecting_fields' => array(
-        'field_events_home' => 'field_events_home',
         'field_events_original_place' => 'field_events_original_place',
         'field_events_place_nodes' => 'field_events_place_nodes',
         'field_events_route_start' => 'field_events_route_start',
         'field_events_route_to' => 'field_events_route_to',
-        'field_events_visit_nodes' => 'field_events_visit_nodes',
       ),
-      'last_changes_time' => 1372071214,
+      'last_changes_time' => 1385444643,
       'target_bundles' => array(
         'location' => 'location',
       ),
