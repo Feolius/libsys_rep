@@ -92,11 +92,12 @@ function theme_facet_collection_search_results__alter($variables) {
       '#title' => 'Standard View (Thumbnail)',
       '#class' => 'thumbnail',
     ),
-    '#timeline' => array(
-      '#id' => 'timeline-view',
-      '#title' => t('Timeline View'),
-      '#class' => 'timeline',
-    ),
+    //@TODO uncomment it when timeline tab will be available
+//    '#timeline' => array(
+//      '#id' => 'timeline-view',
+//      '#title' => t('Timeline View'),
+//      '#class' => 'timeline',
+//    ),
     //@TODO uncomment it when location tab will be available
 //    '#location' => array(
 //      '#id' => 'location-view',
@@ -140,50 +141,50 @@ function theme_facet_collection_search_results__alter($variables) {
 
   // Set page title.
   drupal_set_title('Library');
-
-  $timeline_library = libraries_get_path('timeline');
-  $is_bundle_date_fields_not_empty = _collection_page_is_date_fields_not_empty($results);
-  if (!empty($timeline_library) && $is_bundle_date_fields_not_empty) {
-    //Put apache_solr request results into SESSION for process those in timeline data callback
-    $timeline_results_info = array();
-    $dm_prefix_function = function ($array_item) {
-      return "dm_facet_collection_" . $array_item;
-    };
-    $only_first_array_item_function = function ($array_item) {
-      return isset($array_item[0]) ? $array_item[0] : $array_item;
-    };
-
-    foreach ($results as $temp_result) {
-      $temp_timeline_results_array['title'] = $temp_result['title'];
-      $temp_timeline_results_array['link'] = $temp_result['link'];
-      $temp_timeline_results_array['bundle'] = $temp_result['bundle'];
-      //Get only first value of every date field for current bundle from apache solr results array
-      $solr_resutls_date_fields_for_bundle = array_map(
-        $dm_prefix_function,
-        _collection_page_get_date_fields_from_bundle($temp_result['bundle'])
-      );
-      $temp_timeline_results_array['date_fields'] = array_map(
-        $only_first_array_item_function,
-        //Get date fields for current bundle from apache solr results array
-        array_intersect_key(
-          $temp_result['fields'],
-          array_flip($solr_resutls_date_fields_for_bundle)
-        )
-      );
-      $temp_timeline_results_array['node_id'] = $temp_result['node']->entity_id;
-      $timeline_results_info[] = $temp_timeline_results_array;
-
-    }
-    $_SESSION['collection_page_apache_solr_results'] = $timeline_results_info;
-
-    $content_tabs['#timeline']['#content'] = array(
-      '#view' => theme('timeline_iframe'),
-      '#pager' => theme('pager', array('tags' => NULL)),
-    );
-  }
-  else {
-    $disabled_tabs[] = '#timeline';
-  }
+//@TODO uncomment it when timeline tab will be available
+//  $timeline_library = libraries_get_path('timeline');
+//  $is_bundle_date_fields_not_empty = _collection_page_is_date_fields_not_empty($results);
+//  if (!empty($timeline_library) && $is_bundle_date_fields_not_empty) {
+//    //Put apache_solr request results into SESSION for process those in timeline data callback
+//    $timeline_results_info = array();
+//    $dm_prefix_function = function ($array_item) {
+//      return "dm_facet_collection_" . $array_item;
+//    };
+//    $only_first_array_item_function = function ($array_item) {
+//      return isset($array_item[0]) ? $array_item[0] : $array_item;
+//    };
+//
+//    foreach ($results as $temp_result) {
+//      $temp_timeline_results_array['title'] = $temp_result['title'];
+//      $temp_timeline_results_array['link'] = $temp_result['link'];
+//      $temp_timeline_results_array['bundle'] = $temp_result['bundle'];
+//      //Get only first value of every date field for current bundle from apache solr results array
+//      $solr_resutls_date_fields_for_bundle = array_map(
+//        $dm_prefix_function,
+//        _collection_page_get_date_fields_from_bundle($temp_result['bundle'])
+//      );
+//      $temp_timeline_results_array['date_fields'] = array_map(
+//        $only_first_array_item_function,
+//        //Get date fields for current bundle from apache solr results array
+//        array_intersect_key(
+//          $temp_result['fields'],
+//          array_flip($solr_resutls_date_fields_for_bundle)
+//        )
+//      );
+//      $temp_timeline_results_array['node_id'] = $temp_result['node']->entity_id;
+//      $timeline_results_info[] = $temp_timeline_results_array;
+//
+//    }
+//    $_SESSION['collection_page_apache_solr_results'] = $timeline_results_info;
+//
+//    $content_tabs['#timeline']['#content'] = array(
+//      '#view' => theme('timeline_iframe'),
+//      '#pager' => theme('pager', array('tags' => NULL)),
+//    );
+//  }
+//  else {
+//    $disabled_tabs[] = '#timeline';
+//  }
 //@TODO uncomment it when location tab will be available
 //  $node_ids = '';
 //  foreach ($results as $result) {
@@ -227,7 +228,8 @@ function theme_facet_collection_search_results__alter($variables) {
   switch ($bundle) {
     case 'people':
     case 'events':
-      $default_tab = array_search('#timeline', $tabs);
+      //$default_tab = array_search('#timeline', $tabs);
+      $default_tab = array_search('#standard_default', $tabs);
       break;
     case 'location':
       //@TODO change it to #location when location tab will be available
