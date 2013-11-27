@@ -339,7 +339,7 @@ function library_features_content_type_files_field_default_field_bases() {
   // Exported field_base: 'field_files_collection'
   $field_bases['field_files_collection'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_files_collection',
@@ -624,7 +624,7 @@ function library_features_content_type_files_field_default_field_bases() {
   // Exported field_base: 'field_files_folder'
   $field_bases['field_files_folder'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_files_folder',

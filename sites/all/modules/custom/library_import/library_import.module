@@ -41,14 +41,14 @@ function library_import_submit() {
       'driver' => 'mysql', // replace with your database driver
   );
   Database::addConnectionInfo('ImportDatabaseKey', 'default', $other_database);
-   $query = Database::getConnection('default', 'ImportDatabaseKey')
-            ->select('file', 'f');
-//  $query->leftJoin('file_collection2file', 'c2f', 'c2f.file_id = f.ID');
-  $query->leftJoin('file_file2folder', 'f2f', 'f2f.file_id = f.ID');
-  $query->leftJoin('file_folder', 'ff', 'ff.ID = f2f.folder_id');
-  $query->condition('f2f.folder_id', 2922);
-  $query->condition('ff.collection_id', array(1, 2, 3, 4), 'IN');
-  $query->addField('f', 'ID');
+//   $query = Database::getConnection('default', 'ImportDatabaseKey')
+//            ->select('file', 'f');
+////  $query->leftJoin('file_collection2file', 'c2f', 'c2f.file_id = f.ID');
+//  $query->leftJoin('file_file2folder', 'f2f', 'f2f.file_id = f.ID');
+//  $query->leftJoin('file_folder', 'ff', 'ff.ID = f2f.folder_id');
+//  $query->condition('f2f.folder_id', 2922);
+//  $query->condition('ff.collection_id', array(1, 2, 3, 4), 'IN');
+//  $query->addField('f', 'ID');
 //    $query->join('egw_linker', 'l2', 'l2.tb_id = l.ID');
 //  $query->join('egw_linker2info', 'l2i', 'l2i.linker_id = l2.linker_entry_id');
 ////  $query->leftJoin('file_collection2file', 'c2f', 'c2f.file_id = l.ID');
@@ -60,13 +60,23 @@ function library_import_submit() {
 //  $query->condition('l.tb_name', 'adv_events', '=');
 //    $query->isNotNull('dt.end_year');
 //   $query->groupBy('l.tb_name');
+
+  $query = Database::getConnection('default', 'ImportDatabaseKey')
+    ->select('file_file2folder', 'f');
+  $query->join('file_file2folder', 'f2', 'f.file_id = f2.file_id');
+  $query->join('file_folder', 'ff', 'f.folder_id=ff.ID');
+  $query->join('file_folder', 'ff2', 'f.folder_id=ff.ID AND ff.collection_id!=ff2.collection_id');
+  $query->fields('ff', array('collection_id'));
+  $query->fields('ff2', array('collection_id'));
+  $query->fields('f', array('file_id'));
+  $query->fields('f2', array('file_id'));
     $query->range(0, 20);
     $result = $query->execute();
 
     //$query->groupBy('l.file_extension');*$query = Database::getConnection('default', 'ImportDatabaseKey')
 
   while ($row = $result->fetchAssoc()) {
-         dpm($row['ID']);
+         dpm($row);
     }
   /*$node = node_load(12503);
   dpm($node);*/
