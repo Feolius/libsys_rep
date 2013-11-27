@@ -319,12 +319,6 @@ class FilesMigration extends LibraryMigration {
         'letterhead',
         'remarks'
       ));
-    $query->leftJoin('file_collection2file', 'c2f', 'c2f.file_id = f.ID');
-    $query->addField('c2f', 'collection_id', 'cid');
-    $query->leftJoin('file_file2folder', 'f2f', 'f2f.file_id = f.ID');
-    $query->leftJoin('file_folder', 'ff', 'ff.ID = f2f.folder_id');
-    $query->addField('ff', 'collection_id', 'cid2');
-    $query->addField('f2f', 'folder_id', 'fid');
     $this->map = new MigrateSQLMap($this->machineName, array(
         'ID' => array(
           'type' => 'int',
@@ -375,18 +369,27 @@ class FilesMigration extends LibraryMigration {
   }
 
   public function prepareRow($row) {
-    //Check if this file from collection with id 1,2,3 or 4
-    if (!(is_null($row->cid))) {
-      $cid = $row->cid;
-    } elseif (!(is_null($row->cid2))) {
-      $cid = $row->cid2;
-      $row->cid = $cid;
-    } else {
+    //Check if this file from collection with id 1,2,3 or 4    
+    if ($row->ID != 1051) {
       return FALSE;
     }
-    // We need files only with collections id 1, 2, 3, 4.
-    if (!in_array($cid, array(1, 2, 3, 4))) {
+    $taxonomy = $this->prepareTaxonomy($row->ID);
+    $collection_ids = $taxonomy['collection_ids'];
+    $folder_ids = $taxonomy['folder_ids'];
+    // Check if at least one collection id belongs to 1,2,3 or 4.
+    $collection_check = FALSE;
+    foreach ($collection_ids as $collection_id) {
+      if (in_array($collection_id, array(1, 2, 3, 4))) {
+        $collection_check = TRUE;
+        break;
+      }
+    }
+    if (!$collection_check) {
       return FALSE;
+    }
+    $row->cid = $collection_ids;
+    if (!empty($folder_ids)) {
+      $row->fid = $folder_ids;
     }
     $keywords = str_replace(' ', '', $row->keywords);
     $row->keywords = strip_tags($keywords);
@@ -408,27 +411,18 @@ class FilesMigration extends LibraryMigration {
   }
 
   protected function createStub($migration, $source_id) {
-    $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('file', 'f');
-    $query->condition('f.ID', $source_id[0]);
-    $query->leftJoin('file_collection2file', 'c2f', 'c2f.file_id = f.ID');
-    $query->addField('c2f', 'collection_id', 'cid');
-    $query->leftJoin('file_file2folder', 'f2f', 'f2f.file_id = f.ID');
-    $query->leftJoin('file_folder', 'ff', 'ff.ID = f2f.folder_id');
-    $query->addField('ff', 'collection_id', 'cid2');
-    $result = $query->execute();
-    if ($record = $result->fetchAssoc()) {
-      if (!is_null($record['cid'])) {
-        $cid = $record['cid'];
-      } elseif (!is_null($record['cid2'])) {
-        $cid = $record['cid2'];
-      } else {
-        return FALSE;
+    $taxonomy = $this->prepareTaxonomy($row->ID);
+    $collection_ids = $taxonomy['collection_ids'];
+    // Check if at least one collection id belongs to 1,2,3 or 4.
+    $collection_check = FALSE;
+    foreach ($collection_ids as $collection_id) {
+      if (in_array($collection_id, array(1, 2, 3, 4))) {
+        $collection_check = TRUE;
+        break;
       }
-      // We need files only with collections id 1, 2, 3, 4.
-      if (!in_array($cid, array(1, 2, 3, 4))) {
-        return FALSE;
-      }
+    }
+    if (!$collection_check) {
+      return FALSE;
     }
     $node = new stdClass();
     $node->title = t('Stub for') . $source_id[0];
@@ -494,6 +488,40 @@ class FilesMigration extends LibraryMigration {
       $node->field_files_key_points = array();
     }
     $node->field_files_primary_media['und'][0]['value'] = 'document';
+  }
+
+  // Return array with collection ids and folder ids for the given file id. 
+  public function prepareTaxonomy($ID) {
+    // Get collections
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+      ->select('file_collection2file', 'c2f')
+      ->condition('c2f.file_id', $ID)
+      ->fields('c2f', array('collection_id'));
+    $result = $query->execute();
+    $collection_ids = array();
+    while ($row_res = $result->fetchAssoc()) {
+      $collection_ids[] = $row_res['collection_id'];
+    }
+    // Get folders.
+    $query = Database::getConnection('default', 'ImportDatabaseKey')
+      ->select('file_file2folder', 'f2f')
+      ->condition('f2f.file_id', $ID)
+      ->fields('f2f', array('folder_id'));
+    $query->join('file_folder', 'ff', 'ff.ID = f2f.folder_id');
+    $query->addField('ff', 'collection_id');
+    $query->addField('f2f', 'folder_id');
+    $result = $query->execute();
+    $folder_ids = array();
+    while ($row_res = $result->fetchAssoc()) {
+      $folder_ids[] = $row_res['folder_id'];
+      $collection_ids[] = $row_res['collection_id'];
+    }
+    $collection_ids = array_unique($collection_ids);
+    $folder_ids = array_unique($folder_ids);
+    return array(
+      'collection_ids' => $collection_ids,
+      'folder_ids' => $folder_ids,
+    );
   }
 
 }
