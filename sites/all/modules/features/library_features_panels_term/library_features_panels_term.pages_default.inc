@@ -111,7 +111,7 @@ function library_features_panels_term_default_page_manager_handlers() {
     $pane->locks = array();
     $display->content['new-3'] = $pane;
     $display->panels['content'][1] = 'new-3';
-  $display->hide_title = PANELS_TITLE_NONE;
+  $display->hide_title = PANELS_TITLE_PANE;
   $display->title_pane = 'new-1';
   $handler->conf['display'] = $display;
   $export['term_view_panel_context'] = $handler;

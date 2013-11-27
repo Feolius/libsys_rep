@@ -57,10 +57,11 @@ function library_features_panels_library_default_page_manager_pages() {
       'breadcrumb' => NULL,
       'content' => NULL,
       'right_sidebar' => NULL,
+      'bottom' => NULL,
     ),
   );
   $display->cache = array();
-  $display->title = '';
+  $display->title = 'Library';
   $display->content = array();
   $display->panels = array();
     $pane = new stdClass();
@@ -107,8 +108,8 @@ function library_features_panels_library_default_page_manager_pages() {
     $pane = new stdClass();
     $pane->pid = 'new-3';
     $pane->panel = 'content';
-    $pane->type = 'facet_collection_page';
-    $pane->subtype = 'facet_collection_page';
+    $pane->type = 'pane_messages';
+    $pane->subtype = 'pane_messages';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array();
@@ -124,6 +125,24 @@ function library_features_panels_library_default_page_manager_pages() {
     $display->panels['content'][0] = 'new-3';
     $pane = new stdClass();
     $pane->pid = 'new-4';
+    $pane->panel = 'content';
+    $pane->type = 'facet_collection_page';
+    $pane->subtype = 'facet_collection_page';
+    $pane->shown = TRUE;
+    $pane->access = array();
+    $pane->configuration = array();
+    $pane->cache = array();
+    $pane->style = array(
+      'settings' => NULL,
+    );
+    $pane->css = array();
+    $pane->extras = array();
+    $pane->position = 1;
+    $pane->locks = array();
+    $display->content['new-4'] = $pane;
+    $display->panels['content'][1] = 'new-4';
+    $pane = new stdClass();
+    $pane->pid = 'new-5';
     $pane->panel = 'right_sidebar';
     $pane->type = 'block';
     $pane->subtype = 'audio_album-audio_album_block';
@@ -141,29 +160,8 @@ function library_features_panels_library_default_page_manager_pages() {
     $pane->extras = array();
     $pane->position = 0;
     $pane->locks = array();
-    $display->content['new-4'] = $pane;
-    $display->panels['right_sidebar'][0] = 'new-4';
-    $pane = new stdClass();
-    $pane->pid = 'new-5';
-    $pane->panel = 'right_sidebar';
-    $pane->type = 'block';
-    $pane->subtype = 'facetapi-GiIy4zr9Gu0ZSa0bumw1Y9qIIpIDf1wu';
-    $pane->shown = TRUE;
-    $pane->access = array();
-    $pane->configuration = array(
-      'override_title' => 0,
-      'override_title_text' => '',
-    );
-    $pane->cache = array();
-    $pane->style = array(
-      'settings' => NULL,
-    );
-    $pane->css = array();
-    $pane->extras = array();
-    $pane->position = 1;
-    $pane->locks = array();
     $display->content['new-5'] = $pane;
-    $display->panels['right_sidebar'][1] = 'new-5';
+    $display->panels['right_sidebar'][0] = 'new-5';
     $pane = new stdClass();
     $pane->pid = 'new-6';
     $pane->panel = 'right_sidebar';
@@ -181,10 +179,10 @@ function library_features_panels_library_default_page_manager_pages() {
     );
     $pane->css = array();
     $pane->extras = array();
-    $pane->position = 2;
+    $pane->position = 1;
     $pane->locks = array();
     $display->content['new-6'] = $pane;
-    $display->panels['right_sidebar'][2] = 'new-6';
+    $display->panels['right_sidebar'][1] = 'new-6';
     $pane = new stdClass();
     $pane->pid = 'new-7';
     $pane->panel = 'right_sidebar';
@@ -202,10 +200,10 @@ function library_features_panels_library_default_page_manager_pages() {
     );
     $pane->css = array();
     $pane->extras = array();
-    $pane->position = 3;
+    $pane->position = 2;
     $pane->locks = array();
     $display->content['new-7'] = $pane;
-    $display->panels['right_sidebar'][3] = 'new-7';
+    $display->panels['right_sidebar'][2] = 'new-7';
     $pane = new stdClass();
     $pane->pid = 'new-8';
     $pane->panel = 'right_sidebar';
@@ -223,11 +221,11 @@ function library_features_panels_library_default_page_manager_pages() {
     );
     $pane->css = array();
     $pane->extras = array();
-    $pane->position = 4;
+    $pane->position = 3;
     $pane->locks = array();
     $display->content['new-8'] = $pane;
-    $display->panels['right_sidebar'][4] = 'new-8';
-  $display->hide_title = PANELS_TITLE_NONE;
+    $display->panels['right_sidebar'][3] = 'new-8';
+  $display->hide_title = PANELS_TITLE_FIXED;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
   $page->default_handlers[$handler->name] = $handler;
