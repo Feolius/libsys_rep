@@ -306,7 +306,6 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
                 $target_bundles,
                 $collecting_field_info['settings']['handler_settings']['target_bundles']
               );
-
               //If the collecting field have the same list of available bundles as list in the
               //current collector field settings, we could just copy all target ids from this collecting field.
               if ($collecting_field_info['settings']['handler_settings']['target_bundles'] == $target_bundles) {
@@ -317,21 +316,21 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
                     $collector_field_field_items[] = $item['target_id'];
                   }
                   else {
+
                     break;
                   }
                 }
-              } //If these list are not the same, we need to filter the traget ids and choose only ids with
+              } //If these list are not the same, we need to filter the target ids and choose only ids with
               //needed bundles.
               elseif (!empty($bundles_intersection)) {
                 $collecting_fields_could_have_needed_items = TRUE;
                 foreach ($collecting_field_items as $item) {
                   //Store only first 40 collected items in collector field
-                  if (count($collector_field_field_items) < 40) {
-                    $target_node = node_load($item['target_id']);
-                    if (in_array($target_node->type, $target_bundles)) {
-                      $collector_field_field_items[] = $item['target_id'];
-                    }
-                  }
+//                  if (count($collector_field_field_items) < 40) {
+                  $target_node = node_load($item['target_id']);
+                  if (in_array($target_node->type, $target_bundles)) {
+                    $collector_field_field_items[] = $item['target_id'];
+                  } //                  }
                   else {
                     break;
                   }
@@ -390,6 +389,12 @@ function field_data_collector_field_formatter_view(
         $settings[$bundle] = $preset['settings'];
       }
     }
+
+    if (count($items) > variable_get('library_field_data_collector_items_number', '50')) {
+      array_pop($items);
+      $items[] = array('more_than_limit_items' => variable_get('library_field_data_collector_more_items_text', 'Not everything shown'));
+    }
+
     // Look for all items
     foreach ($items as $delta => $item) {
       $target_entity = isset($item['entity']) ? $item['entity'] : NULL;
@@ -514,8 +519,18 @@ function field_data_collector_field_formatter_view(
           }
         }
       }
+      elseif (isset($item['more_than_limit_items'])) {
+        $element[$delta][] = array(
+          '#markup' => $item['more_than_limit_items'],
+          '#prefix' => '<div class="more-than-limit-items">',
+          '#suffix' => '</div>',
+        );
+      }
     }
+
+
   }
+
   if ($display['type'] == 'field_data_collector_default_formatter') {
     //Display field content like a list of node titles, with links on nodes
     //where it's possible
@@ -587,13 +602,21 @@ function field_data_collector_field_formatter_prepare_view(
 
     //Userialize and collect the items from field_data_collector field for preparing
     foreach ($items[$id] as $delta => $item) {
-      if (isset($item['value'])) {
-        $tmp_items = unserialize($item['value']);
-        $unserialized_items[$id] = array_merge($unserialized_items[$id], $tmp_items);
-        $target_ids = array_merge($target_ids, $tmp_items);
+      //Show only first 50 collected items from collector field
+      if (count($target_ids) <= variable_get('library_field_data_collector_items_number', '50')) {
+        if (isset($item['value'])) {
+          $tmp_items = unserialize($item['value']);
+          $unserialized_items[$id] = array_merge($unserialized_items[$id], $tmp_items);
+          $target_ids = array_merge($target_ids, $tmp_items);
+        }
+      }
+      else {
+        break;
       }
     }
   }
+
+
   //Prepare the items for the main formatter view function
   if ($target_ids) {
     $target_entities = entity_load($field['settings']['target_type'], $target_ids);
@@ -612,7 +635,6 @@ function field_data_collector_field_formatter_prepare_view(
       }
     }
   }
-
 }
 
 /**

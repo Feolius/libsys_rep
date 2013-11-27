@@ -151,6 +151,28 @@ function library_admin_settings_form() {
     '#default_value' => variable_get('library_pdf2json_path', '/usr/local/bin/pdf2json'),
   );
 
+
+  $form['field_data_collector'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Settings for Field Data Collector tabs'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['field_data_collector']['library_field_data_collector_items_number'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Items number'),
+    '#description' => t('The number of items in each tab'),
+    '#default_value' => variable_get('library_field_data_collector_items_number', '50'),
+  );
+
+  $form['field_data_collector']['library_field_data_collector_more_items_text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('More items text'),
+    '#description' => t('The text will displayed when the number of items more than limit above'),
+    '#default_value' => variable_get('library_field_data_collector_more_items_text', 'Not everything shown'),
+  );
+
   return system_settings_form($form);
 }
 
