@@ -907,3 +907,10 @@ function _ellen_white_estate_preprocess_node__home(&$vars) {
 function ellen_white_estate_preprocess_node__home_top(&$vars) {
   $vars['content']['allow'] = _ellen_white_estate_preprocess_node__home($vars);
 }
+
+/**
+ * Clean up the panel pane variables for the template.
+ */
+function ellen_white_estate_preprocess_panels_pane(&$vars) {
+  $vars['title'] = '';
+}
