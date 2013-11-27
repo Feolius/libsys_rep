@@ -369,10 +369,7 @@ class FilesMigration extends LibraryMigration {
   }
 
   public function prepareRow($row) {
-    //Check if this file from collection with id 1,2,3 or 4    
-    if ($row->ID != 1051) {
-      return FALSE;
-    }
+    //Check if this file from collection with id 1,2,3 or 4
     $taxonomy = $this->prepareTaxonomy($row->ID);
     $collection_ids = $taxonomy['collection_ids'];
     $folder_ids = $taxonomy['folder_ids'];
