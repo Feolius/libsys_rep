@@ -73,6 +73,7 @@ function library_features_panels_faq_default_page_manager_pages() {
       'footer_right' => NULL,
       'breadcrumb' => NULL,
       'right_sidebar' => NULL,
+      'bottom' => NULL,
     ),
   );
   $display->cache = array();
@@ -137,7 +138,7 @@ function library_features_panels_faq_default_page_manager_pages() {
     $pane->locks = array();
     $display->content['new-3'] = $pane;
     $display->panels['content'][1] = 'new-3';
-  $display->hide_title = PANELS_TITLE_NONE;
+  $display->hide_title = PANELS_TITLE_FIXED;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
   $page->default_handlers[$handler->name] = $handler;
