@@ -48,6 +48,32 @@ function library_features_panels_comment_reply_default_page_manager_handlers() {
   $display->title = '';
   $display->content = array();
   $display->panels = array();
+    $pane = new stdClass();
+    $pane->pid = 'new-1';
+    $pane->panel = 'content';
+    $pane->type = 'comment_reply_form';
+    $pane->subtype = 'comment_reply_form';
+    $pane->shown = TRUE;
+    $pane->access = array();
+    $pane->configuration = array(
+      'anon_links' => FALSE,
+      'context' => array(
+        0 => 'argument_entity_id:node_2',
+        1 => 'argument_entity_id:comment_3',
+      ),
+      'override_title' => 0,
+      'override_title_text' => '',
+    );
+    $pane->cache = array();
+    $pane->style = array(
+      'settings' => NULL,
+    );
+    $pane->css = array();
+    $pane->extras = array();
+    $pane->position = 0;
+    $pane->locks = array();
+    $display->content['new-1'] = $pane;
+    $display->panels['content'][0] = 'new-1';
   $display->hide_title = PANELS_TITLE_FIXED;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
