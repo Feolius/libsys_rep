@@ -3663,7 +3663,7 @@ function library_features_content_type_files_field_default_field_instances() {
   // Exported field_instance: 'node-files-field_files_rating'
   $field_instances['node-files-field_files_rating'] = array(
     'bundle' => 'files',
-    'default_value' => NULL,
+    'default_value' => array(),
     'deleted' => 0,
     'description' => '',
     'display' => array(
@@ -3683,7 +3683,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'label' => 'hidden',
         'module' => 'fivestar',
         'settings' => array(
-          'expose' => 1,
+          'expose' => 0,
           'style' => 'average',
           'text' => 'none',
           'widget' => array(
@@ -3755,7 +3755,11 @@ function library_features_content_type_files_field_default_field_instances() {
     'widget' => array(
       'active' => 1,
       'module' => 'fivestar',
-      'settings' => array(),
+      'settings' => array(
+        'widget' => array(
+          'fivestar_widget' => 'default',
+        ),
+      ),
       'type' => 'exposed',
       'weight' => 75,
     ),
