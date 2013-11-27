@@ -512,26 +512,30 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
     $node_ids[] = $result['node']->entity_id;
   }
   $result_nodes = node_load_multiple($node_ids);
-
   foreach ($results['results'] as $result) {
+//    $node = $result_nodes[$result['node']->entity_id];
+//    if ($node) {
+//      $bundle = $node->type;
+//      $image_fields = _collection_page_get_bundle_image_fields($bundle);
+//      $thumbnail_content = array();
+//      $thumbnail_content['node_link'] = $base_url . $result['link'];
+//
+//      $thumbnail_view = node_view($node, 'collection_thumbnail');
+//      // Exclude image fields.
+//      foreach ($image_fields as $image_field) {
+//        if (in_array($image_field, array_keys($thumbnail_view))) {
+//          unset($thumbnail_view[$image_field]);
+//        }
+//      }
+//      $thumbnail_content['meta_info'] = render($thumbnail_view);
+//      $results['collection_thumbnails'][] = $thumbnail_content;
+//    }
+    $thumbnail_content['node_link'] = $base_url . $result['link'];
     $node = $result_nodes[$result['node']->entity_id];
-    if ($node) {
-      $bundle = $node->type;
-      $image_fields = _collection_page_get_bundle_image_fields($bundle);
-      $thumbnail_content = array();
-      $thumbnail_content['node_link'] = $base_url . $result['link'];
-      $thumbnail_field = collection_page_get_image_field($node);
-      $thumbnail_content['image'] = collection_page_node_snippet_image($node, $thumbnail_field, $variables);
-      $thumbnail_view = node_view($node, 'collection_thumbnail');
-      // Exclude image fields.
-      foreach ($image_fields as $image_field) {
-        if (in_array($image_field, array_keys($thumbnail_view))) {
-          unset($thumbnail_view[$image_field]);
-        }
-      }
-      $thumbnail_content['meta_info'] = render($thumbnail_view);
-      $results['collection_thumbnails'][] = $thumbnail_content;
-    }
+    $thumbnail_field = collection_page_get_image_field($node);
+    $thumbnail_content['image'] = collection_page_node_snippet_image($node, $thumbnail_field, $variables);
+    $thumbnail_content['meta_info'] = '<h3>' . $node->title . '</h3>';
+    $results['collection_thumbnails'][] = $thumbnail_content;
   }
   drupal_add_js(
     array(
@@ -564,7 +568,6 @@ function _collection_page_get_bundle_image_fields($bundle) {
   else {
     $image_fields[$bundle] = $image_cache->data[$bundle];
   }
-
   return $image_fields[$bundle];
 }
 
