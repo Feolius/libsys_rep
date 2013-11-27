@@ -277,11 +277,18 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
     foreach ($instances as $instance) {
       $field = field_info_field($instance['field_name']);
       if ($field['type'] == 'field_data_collector') {
+        //If the collector field already store something we could use it to avoid regenerating
+        //target_ids for non-changed fields
+        $tmp_collector_field_field_items = field_get_items($entity_type, $entity, $field['field_name']);
         $collector_field_field_items = array();
+        if ($tmp_collector_field_field_items && isset($tmp_collector_field_field_items[0]['value'])) {
+          $collector_field_field_items = unserialize($tmp_collector_field_field_items[0]['value']);
+        }
         $collecting_fields_could_have_needed_items = FALSE;
         $target_bundles = $field['settings']['target_bundles'];
         $collecting_fields = $field['settings']['collecting_fields'];
         $field_settings_last_changes_time = $field['settings']['last_changes_time'];
+
 
         //Look through the settings and collect the data from fields which exist in
         // the settings for current collector field
@@ -298,7 +305,6 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
           if ((property_exists($entity, "changed") && $entity->changed <= $field_settings_last_changes_time)
             || ($collecting_field_items != $original_collecting_field_items)
           ) {
-
             $collecting_field_info = field_info_field($collecting_field_name);
 
             if (!empty($collecting_field_info['settings']['handler_settings']['target_bundles'])) {
@@ -310,30 +316,44 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
               //current collector field settings, we could just copy all target ids from this collecting field.
               if ($collecting_field_info['settings']['handler_settings']['target_bundles'] == $target_bundles) {
                 $collecting_fields_could_have_needed_items = TRUE;
+                $target_ids = array();
                 foreach ($collecting_field_items as $item) {
-                  //Store only first 40 collected items in collector field
-                  if (count($collector_field_field_items) < 40) {
-                    $collector_field_field_items[] = $item['target_id'];
-                  }
-                  else {
-
-                    break;
-                  }
+                  $target_ids[] = $item['target_id'];
                 }
-              } //If these list are not the same, we need to filter the target ids and choose only ids with
+                $collector_field_field_items[$collecting_field_name] = $target_ids;
+              }
+              //If these list are not the same, we need to filter the target ids and choose only ids with
               //needed bundles.
               elseif (!empty($bundles_intersection)) {
-                $collecting_fields_could_have_needed_items = TRUE;
+                $node_ids = array();
+                $target_nodes = array();
                 foreach ($collecting_field_items as $item) {
-                  //Store only first 40 collected items in collector field
-//                  if (count($collector_field_field_items) < 40) {
-                  $target_node = node_load($item['target_id']);
-                  if (in_array($target_node->type, $target_bundles)) {
-                    $collector_field_field_items[] = $item['target_id'];
-                  } //                  }
-                  else {
-                    break;
+                  $node_ids[] = $item['target_id'];
+                }
+
+                if (!empty($node_ids)) {
+                  $query = new EntityFieldQuery();
+                  $target_nodes = $query->entityCondition('entity_type', 'node')
+                    ->entityCondition('entity_id', $node_ids, 'IN')
+                    ->entityCondition('bundle', $target_bundles, 'IN')
+                    ->execute();
+                }
+
+                if (isset($target_nodes['node']) && !empty($target_nodes['node'])) {
+                  $collecting_fields_could_have_needed_items = TRUE;
+                  $target_ids = array();
+                  foreach ($target_nodes['node'] as $node) {
+                    $target_ids[] = $node->nid;
                   }
+                  $collector_field_field_items[$collecting_field_name] = $target_ids;
+                }
+                //If collector field have already store some ids for current field but now the field don't we should
+                //update the collector field data
+                elseif (isset($collector_field_field_items[$collecting_field_name])
+                  && !empty($collector_field_field_items[$collecting_field_name])
+                ) {
+                  $collecting_fields_could_have_needed_items = TRUE;
+                  unset($collector_field_field_items[$collecting_field_name]);
                 }
               }
             }
@@ -341,6 +361,12 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
         }
         //If the data of field was added or updated we need to write it into the collector field
         if ($collecting_fields_could_have_needed_items) {
+          $collector_field_field_items = array_intersect_key($collector_field_field_items, $collecting_fields);
+          $collector_field_target_ids = array();
+          foreach ($collector_field_field_items as $field_ids) {
+            $collector_field_target_ids = array_merge($collector_field_target_ids, $field_ids);
+          }
+          $collector_field_field_items['target_ids'] = $collector_field_target_ids;
           $entity->{$instance['field_name']} = array(
             LANGUAGE_NONE => array(
               0 => array(
@@ -359,7 +385,6 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
  */
 function field_data_collector_field_is_empty($item, $field) {
   $empty = !isset($item['value']) || empty($item['value']);
-
   return $empty;
 }
 
@@ -606,8 +631,10 @@ function field_data_collector_field_formatter_prepare_view(
       if (count($target_ids) <= variable_get('library_field_data_collector_items_number', '50')) {
         if (isset($item['value'])) {
           $tmp_items = unserialize($item['value']);
-          $unserialized_items[$id] = array_merge($unserialized_items[$id], $tmp_items);
-          $target_ids = array_merge($target_ids, $tmp_items);
+          if (isset($tmp_items['target_ids'])) {
+            $unserialized_items[$id] = array_merge($unserialized_items[$id], $tmp_items['target_ids']);
+            $target_ids = array_merge($target_ids, $tmp_items['target_ids']);
+          }
         }
       }
       else {
