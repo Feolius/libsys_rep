@@ -33,7 +33,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'label' => 'hidden',
         'module' => 'fivestar',
         'settings' => array(
-          'expose' => 1,
+          'expose' => 0,
           'style' => 'average',
           'text' => 'none',
           'widget' => array(
@@ -1378,7 +1378,6 @@ function library_features_content_type_topics_field_default_field_instances() {
   t('Body');
   t('Documents');
   t('Events');
-  t('Home region');
   t('Image');
   t('Images');
   t('Kind');

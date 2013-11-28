@@ -229,6 +229,35 @@ function library_features_content_type_people_field_default_field_bases() {
     'type' => 'text',
   );
 
+  // Exported field_base: 'field_people_favorite_food'
+  $field_bases['field_people_favorite_food'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_favorite_food',
+    'foreign keys' => array(
+      'format' => array(
+        'columns' => array(
+          'format' => 'format',
+        ),
+        'table' => 'filter_format',
+      ),
+    ),
+    'indexes' => array(
+      'format' => array(
+        0 => 'format',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'text',
+    'settings' => array(
+      'max_length' => 255,
+    ),
+    'translatable' => 0,
+    'type' => 'text',
+  );
+
   // Exported field_base: 'field_people_first_name'
   $field_bases['field_people_first_name'] = array(
     'active' => 1,
@@ -781,6 +810,35 @@ function library_features_content_type_people_field_default_field_bases() {
     'type' => 'entityreference',
   );
 
+  // Exported field_base: 'field_people_source'
+  $field_bases['field_people_source'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_source',
+    'foreign keys' => array(
+      'format' => array(
+        'columns' => array(
+          'format' => 'format',
+        ),
+        'table' => 'filter_format',
+      ),
+    ),
+    'indexes' => array(
+      'format' => array(
+        0 => 'format',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'text',
+    'settings' => array(
+      'max_length' => 255,
+    ),
+    'translatable' => 0,
+    'type' => 'text',
+  );
+
   // Exported field_base: 'field_people_tab_events'
   $field_bases['field_people_tab_events'] = array(
     'active' => 1,
@@ -852,7 +910,7 @@ function library_features_content_type_people_field_default_field_bases() {
         'field_people_place' => 'field_people_place',
         'field_people_visit_nodes' => 'field_people_visit_nodes',
       ),
-      'last_changes_time' => 1372072570,
+      'last_changes_time' => 1385444583,
       'target_bundles' => array(
         'location' => 'location',
       ),
@@ -935,6 +993,40 @@ function library_features_content_type_people_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'field_data_collector',
+  );
+
+  // Exported field_base: 'field_people_tags'
+  $field_bases['field_people_tags'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_people_tags',
+    'foreign keys' => array(
+      'tid' => array(
+        'columns' => array(
+          'tid' => 'tid',
+        ),
+        'table' => 'taxonomy_term_data',
+      ),
+    ),
+    'indexes' => array(
+      'tid' => array(
+        0 => 'tid',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'taxonomy',
+    'settings' => array(
+      'allowed_values' => array(
+        0 => array(
+          'vocabulary' => 'tags',
+          'parent' => 0,
+        ),
+      ),
+    ),
+    'translatable' => 0,
+    'type' => 'taxonomy_term_reference',
   );
 
   // Exported field_base: 'field_people_title'
