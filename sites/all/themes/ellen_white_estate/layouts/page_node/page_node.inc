@@ -12,6 +12,7 @@ $plugin = array(
     'breadcrumb' => t('Breadcrumb'),
     'content' => t('Content'),
     'right_sidebar' => t('Right sidebar'),
+    'tabs' => t('Tabs'),
     'bottom' => t('Bottom'),
   ),
 );
