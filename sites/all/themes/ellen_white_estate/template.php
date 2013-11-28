@@ -620,7 +620,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
         "node/{$item['entity']->nid}"
       );
     }
-    //if (!empty($peoples)) {
+    if (!empty($peoples)) {
       $info = field_info_instance('node', 'field_files_people_tags', $node->type);
       $output['peoples'] = array(
         '#access' => TRUE,
@@ -629,7 +629,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
         '#markup' => implode(', ', $peoples),
         '#suffix' => '</div>',
       );
-    //}
+    }
   }
 
   // Locations.
@@ -641,7 +641,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
         "node/{$item['entity']->nid}"
       );
     }
-    //if (!empty($locations)) {
+    if (!empty($locations)) {
       $info = field_info_instance('node', 'field_files_location_tags', $node->type);
       $output['locations'] = array(
         '#access' => TRUE,
@@ -650,7 +650,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
         '#markup' => implode(', ', $locations),
         '#suffix' => '</div>',
       );
-    //}
+    }
   }
 
   // Events.
@@ -662,7 +662,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
         "node/{$item['entity']->nid}"
       );
     }
-    //if (!empty($events)) {
+    if (!empty($events)) {
       $info = field_info_instance('node', 'field_files_event_tags', $node->type);
       $output['events'] = array(
         '#access' => TRUE,
@@ -671,7 +671,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
         '#markup' => implode(', ', $events),
         '#suffix' => '</div>',
       );
-    //}
+    }
   }
 
   // Topics.
@@ -683,7 +683,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
         "node/{$item['entity']->nid}"
       );
     }
-    //if (!empty($topics)) {
+    if (!empty($topics)) {
       $info = field_info_instance('node', 'field_files_topic_tags', $node->type);
       $output['topics'] = array(
         '#access' => TRUE,
@@ -692,7 +692,7 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
         '#markup' => implode(', ', $topics),
         '#suffix' => '</div>',
       );
-    //}
+    }
   }
 
   // Additional information.
