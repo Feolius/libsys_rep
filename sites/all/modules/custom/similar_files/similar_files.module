@@ -1,7 +1,5 @@
 <?php
 
-
-
 /**
  * Implements hook_block_info().
  */
@@ -14,7 +12,6 @@ function similar_files_block_info() {
 
   return $blocks;
 }
-
 
 /**
  * Implements hook_block_view().
@@ -69,12 +66,12 @@ function similar_files_block_view($delta) {
       'block_title' => 'More Audio Files',
       'subblocks' => array(
         array(
-          'field_name' => 'field_files_people_tags',
+          'field_name' => 'field_files_topic_tags',
           'subblock_title' => 'Same Topic',
           'view_display_name' => 'same_topic',
         ),
         array(
-          'field_name' => 'field_files_location_tags',
+          'field_name' => 'field_files_artist',
           'subblock_title' => 'Same Artist',
           'view_display_name' => 'same_artist',
         ),
