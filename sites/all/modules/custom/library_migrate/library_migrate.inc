@@ -408,7 +408,7 @@ class FilesMigration extends LibraryMigration {
   }
 
   protected function createStub($migration, $source_id) {
-    $taxonomy = $this->prepareTaxonomy($source_id);
+    $taxonomy = FilesMigration::prepareTaxonomy($source_id);
     $collection_ids = $taxonomy['collection_ids'];
     // Check if at least one collection id belongs to 1,2,3 or 4.
     $collection_check = FALSE;
