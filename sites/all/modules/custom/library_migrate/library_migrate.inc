@@ -146,6 +146,7 @@ abstract class LibraryMigration extends DynamicMigration {
                 $end_year = $start_year;
                 $end_month = '12';
                 $end_day = '31';
+                $rounding2 = 1;
                 break;
               case 2:
                 $end_year = $start_year;

@@ -10,6 +10,39 @@
 function library_features_content_type_files_field_default_field_instances() {
   $field_instances = array();
 
+  // Exported field_instance: 'comment-comment_node_files-comment_body'
+  $field_instances['comment-comment_node_files-comment_body'] = array(
+    'bundle' => 'comment_node_files',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'comment',
+    'field_name' => 'comment_body',
+    'label' => 'Comment',
+    'required' => TRUE,
+    'settings' => array(
+      'text_processing' => 1,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 0,
+    ),
+  );
+
   // Exported field_instance: 'comment-comment_node_files-field_files_rating'
   $field_instances['comment-comment_node_files-field_files_rating'] = array(
     'bundle' => 'comment_node_files',
@@ -3663,7 +3696,7 @@ function library_features_content_type_files_field_default_field_instances() {
   // Exported field_instance: 'node-files-field_files_rating'
   $field_instances['node-files-field_files_rating'] = array(
     'bundle' => 'files',
-    'default_value' => NULL,
+    'default_value' => array(),
     'deleted' => 0,
     'description' => '',
     'display' => array(
@@ -3683,7 +3716,7 @@ function library_features_content_type_files_field_default_field_instances() {
         'label' => 'hidden',
         'module' => 'fivestar',
         'settings' => array(
-          'expose' => 1,
+          'expose' => 0,
           'style' => 'average',
           'text' => 'none',
           'widget' => array(
@@ -3755,7 +3788,11 @@ function library_features_content_type_files_field_default_field_instances() {
     'widget' => array(
       'active' => 1,
       'module' => 'fivestar',
-      'settings' => array(),
+      'settings' => array(
+        'widget' => array(
+          'fivestar_widget' => 'default',
+        ),
+      ),
       'type' => 'exposed',
       'weight' => 75,
     ),
@@ -5422,6 +5459,7 @@ function library_features_content_type_files_field_default_field_instances() {
   t('Category');
   t('Chapter');
   t('Collection');
+  t('Comment');
   t('Date taken');
   t('Description');
   t('Event');

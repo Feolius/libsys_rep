@@ -346,6 +346,24 @@ function library_features_content_type_location_field_default_field_bases() {
     'type' => 'entityreference',
   );
 
+  // Exported field_base: 'field_location_rating'
+  $field_bases['field_location_rating'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_location_rating',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'fivestar',
+    'settings' => array(
+      'axis' => 'vote',
+    ),
+    'translatable' => 0,
+    'type' => 'fivestar',
+  );
+
   // Exported field_base: 'field_location_received_files'
   $field_bases['field_location_received_files'] = array(
     'active' => 1,

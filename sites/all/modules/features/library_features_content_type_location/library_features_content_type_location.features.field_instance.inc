@@ -10,6 +10,84 @@
 function library_features_content_type_location_field_default_field_instances() {
   $field_instances = array();
 
+  // Exported field_instance: 'comment-comment_node_location-comment_body'
+  $field_instances['comment-comment_node_location-comment_body'] = array(
+    'bundle' => 'comment_node_location',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'comment',
+    'field_name' => 'comment_body',
+    'label' => 'Comment',
+    'required' => TRUE,
+    'settings' => array(
+      'text_processing' => 1,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 0,
+    ),
+  );
+
+  // Exported field_instance: 'comment-comment_node_location-field_location_rating'
+  $field_instances['comment-comment_node_location-field_location_rating'] = array(
+    'bundle' => 'comment_node_location',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'fivestar',
+        'settings' => array(
+          'expose' => TRUE,
+          'style' => 'user',
+          'text' => 'user',
+          'widget' => array(
+            'fivestar_widget' => 'default',
+          ),
+        ),
+        'type' => 'fivestar_formatter_default',
+        'weight' => 1,
+      ),
+    ),
+    'entity_type' => 'comment',
+    'field_name' => 'field_location_rating',
+    'label' => 'Rating',
+    'required' => 0,
+    'settings' => array(
+      'allow_clear' => 0,
+      'stars' => 5,
+      'target' => 'parent_node',
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'fivestar',
+      'settings' => array(
+        'widget' => array(
+          'fivestar_widget' => 'default',
+        ),
+      ),
+      'type' => 'stars',
+      'weight' => 2,
+    ),
+  );
+
   // Exported field_instance: 'node-location-field_location_address'
   $field_instances['node-location-field_location_address'] = array(
     'bundle' => 'location',
@@ -33,7 +111,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 3,
+        'weight' => 8,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -126,7 +204,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 20,
+        'weight' => 21,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -210,7 +288,7 @@ function library_features_content_type_location_field_default_field_instances() 
           'trim_length' => 600,
         ),
         'type' => 'text_summary_or_trimmed',
-        'weight' => 2,
+        'weight' => 3,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -303,7 +381,7 @@ function library_features_content_type_location_field_default_field_instances() 
           'map_preset' => 'geofield_formatter_map',
         ),
         'type' => 'geofield_openlayers',
-        'weight' => 1,
+        'weight' => 2,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -415,7 +493,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'module' => 'library_date_field',
         'settings' => array(),
         'type' => 'library_date_field_default',
-        'weight' => 29,
+        'weight' => 7,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -508,7 +586,7 @@ function library_features_content_type_location_field_default_field_instances() 
           'link' => FALSE,
         ),
         'type' => 'entityreference_label',
-        'weight' => 28,
+        'weight' => 6,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -589,7 +667,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 25,
+        'weight' => 26,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -678,7 +756,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 19,
+        'weight' => 20,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -760,7 +838,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 6,
+        'weight' => 11,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -841,7 +919,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 12,
+        'weight' => 16,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -900,6 +978,95 @@ function library_features_content_type_location_field_default_field_instances() 
     ),
   );
 
+  // Exported field_instance: 'node-location-field_location_rating'
+  $field_instances['node-location-field_location_rating'] = array(
+    'bundle' => 'location',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'hidden',
+        'module' => 'fivestar',
+        'settings' => array(
+          'expose' => 0,
+          'style' => 'average',
+          'text' => 'none',
+          'widget' => array(
+            'fivestar_widget' => 'default',
+          ),
+        ),
+        'type' => 'fivestar_formatter_default',
+        'weight' => 0,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_location_rating',
+    'label' => 'Rating',
+    'required' => 0,
+    'settings' => array(
+      'allow_clear' => 0,
+      'stars' => 5,
+      'target' => 'none',
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'fivestar',
+      'settings' => array(),
+      'type' => 'exposed',
+      'weight' => 58,
+    ),
+  );
+
   // Exported field_instance: 'node-location-field_location_received_files'
   $field_instances['node-location-field_location_received_files'] = array(
     'bundle' => 'location',
@@ -923,7 +1090,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 5,
+        'weight' => 10,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1011,7 +1178,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 8,
+        'weight' => 13,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1093,7 +1260,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 11,
+        'weight' => 15,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1175,7 +1342,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 10,
+        'weight' => 14,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1257,7 +1424,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 7,
+        'weight' => 12,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1318,7 +1485,7 @@ function library_features_content_type_location_field_default_field_instances() 
   // Exported field_instance: 'node-location-field_location_tab_events'
   $field_instances['node-location-field_location_tab_events'] = array(
     'bundle' => 'location',
-    'default_value' => array(),
+    'default_value' => NULL,
     'deleted' => 0,
     'description' => '',
     'display' => array(
@@ -1338,7 +1505,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 18,
+        'weight' => 19,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1416,7 +1583,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 23,
+        'weight' => 24,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1494,7 +1661,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 16,
+        'weight' => 17,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1572,7 +1739,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 17,
+        'weight' => 18,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1650,7 +1817,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 22,
+        'weight' => 23,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1728,7 +1895,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 21,
+        'weight' => 22,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1809,7 +1976,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 24,
+        'weight' => 25,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1892,7 +2059,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'module' => 'library_date_field',
         'settings' => array(),
         'type' => 'library_date_field_default',
-        'weight' => 27,
+        'weight' => 5,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1985,7 +2152,7 @@ function library_features_content_type_location_field_default_field_instances() 
           'link' => FALSE,
         ),
         'type' => 'entityreference_label',
-        'weight' => 26,
+        'weight' => 4,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -2067,7 +2234,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 4,
+        'weight' => 9,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -2160,7 +2327,7 @@ function library_features_content_type_location_field_default_field_instances() 
           'title_style' => '',
         ),
         'type' => 'title_linked',
-        'weight' => 0,
+        'weight' => 1,
       ),
       'home_bottom' => array(
         'label' => 'hidden',
@@ -2249,6 +2416,7 @@ function library_features_content_type_location_field_default_field_instances() 
   // Translatables
   // Included for use with string extractors like potx.
   t('Address');
+  t('Comment');
   t('County');
   t('Description');
   t('Events');
@@ -2259,6 +2427,7 @@ function library_features_content_type_location_field_default_field_instances() 
   t('Images');
   t('Link');
   t('Placed event');
+  t('Rating');
   t('Received Documents');
   t('Received Files');
   t('Related entities');

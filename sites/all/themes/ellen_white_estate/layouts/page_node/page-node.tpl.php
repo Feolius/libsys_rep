@@ -21,11 +21,16 @@
       <?php if (!empty($content['content'])): ?>
         <div class="main_inside">
           <?php print $content['content']; ?>
+          <?php if (!empty($content['tabs'])): ?>
+            <div class="node-tabs">
+              <?php print $content['tabs']; ?>
+            </div>
+          <?php endif; ?>
           <?php if (!empty($content['bottom'])): ?>
             <div class="node-bottom">
               <?php print $content['bottom']; ?>
             </div>
-            <?php endif; ?>
+          <?php endif; ?>
         </div>
       <?php endif; ?>
     </div>
