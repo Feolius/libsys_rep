@@ -304,6 +304,7 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
           // the data in collecting field was changed
           if ((property_exists($entity, "changed") && $entity->changed <= $field_settings_last_changes_time)
             || ($collecting_field_items != $original_collecting_field_items)
+            || (empty($collector_field_field_items[$collecting_field_name]) && $collecting_field_items != FALSE)
           ) {
             $collecting_field_info = field_info_field($collecting_field_name);
 
