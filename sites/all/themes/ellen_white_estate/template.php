@@ -914,6 +914,7 @@ function ellen_white_estate_js_alter(&$javascript) {
     }
     $javascript[$jquery_path]['version'] = '1.8.3';
     $javascript[$jquery_path]['data'] = $jquery_path;
+    $javascript[$jquery_path]['scope'] = 'header';
   }
 }
 
