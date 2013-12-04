@@ -523,6 +523,8 @@ function facet_collection_get_filter_settings() {
 function facet_collection_apachesolr_process_results(&$results, DrupalSolrQueryInterface $query) {
   if (arg(0) == 'library') {
     global $base_url;
+    // Find curr content type.
+    $filter_content_type = facet_collection_get_filtered_content_type();
     $searcher = $query->getSearcher();
     $response = apachesolr_static_response_cache($searcher);
     $numfound = $response->response->numFound;
@@ -543,7 +545,9 @@ function facet_collection_apachesolr_process_results(&$results, DrupalSolrQueryI
       if (!empty($sqid)) {
         $get_params['sqid'] = $sqid;
       }
-      $get_params['f'][0] = 'bundle:files';
+      if($filter_content_type) {
+        $get_params['f'][0] = 'bundle:' . $filter_content_type;
+      }
       $options = array(
         'query' => $get_params
       );
