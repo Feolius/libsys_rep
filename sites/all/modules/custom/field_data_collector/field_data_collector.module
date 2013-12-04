@@ -644,6 +644,7 @@ function field_data_collector_field_formatter_prepare_view(
     }
   }
 
+  $target_ids = array_slice($target_ids, 0, variable_get('library_field_data_collector_items_number', '50') + 1);
 
   //Prepare the items for the main formatter view function
   if ($target_ids) {
