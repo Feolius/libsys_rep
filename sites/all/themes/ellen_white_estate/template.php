@@ -914,14 +914,6 @@ function ellen_white_estate_js_alter(&$javascript) {
     }
     $javascript[$jquery_path]['version'] = '1.8.3';
     $javascript[$jquery_path]['data'] = $jquery_path;
-	$javascript[$jquery_path]['scope'] = 'header';
-	$javascript[$jquery_path]['group'] = '0';
-	$javascript[$jquery_path]['type'] = 'file';
-	$javascript[$jquery_path]['weight'] = '100';
-	$javascript[$jquery_path]['cache'] = TRUE;
-	$javascript[$jquery_path]['every_page'] = FALSE;
-	$javascript[$jquery_path]['preprocess'] = TRUE;
-	$javascript[$jquery_path]['defer'] = FALSE;
  }
 }
 
