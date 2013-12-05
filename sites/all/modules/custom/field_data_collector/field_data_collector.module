@@ -318,18 +318,21 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
               if ($collecting_field_info['settings']['handler_settings']['target_bundles'] == $target_bundles) {
                 $collecting_fields_could_have_needed_items = TRUE;
                 $target_ids = array();
-                foreach ($collecting_field_items as $item) {
-                  $target_ids[] = $item['target_id'];
+                if ($collecting_field_items) {
+                  foreach ($collecting_field_items as $item) {
+                    $target_ids[] = $item['target_id'];
+                  }
                 }
                 $collector_field_field_items[$collecting_field_name] = $target_ids;
-              }
-              //If these list are not the same, we need to filter the target ids and choose only ids with
+              } //If these list are not the same, we need to filter the target ids and choose only ids with
               //needed bundles.
               elseif (!empty($bundles_intersection)) {
                 $node_ids = array();
                 $target_nodes = array();
-                foreach ($collecting_field_items as $item) {
-                  $node_ids[] = $item['target_id'];
+                if ($collecting_field_items) {
+                  foreach ($collecting_field_items as $item) {
+                    $node_ids[] = $item['target_id'];
+                  }
                 }
 
                 if (!empty($node_ids)) {
@@ -347,8 +350,7 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
                     $target_ids[] = $node->nid;
                   }
                   $collector_field_field_items[$collecting_field_name] = $target_ids;
-                }
-                //If collector field have already store some ids for current field but now the field don't we should
+                } //If collector field have already store some ids for current field but now the field don't we should
                 //update the collector field data
                 elseif (isset($collector_field_field_items[$collecting_field_name])
                   && !empty($collector_field_field_items[$collecting_field_name])
@@ -386,6 +388,7 @@ function field_data_collector_field_attach_presave($entity_type, $entity) {
  */
 function field_data_collector_field_is_empty($item, $field) {
   $empty = !isset($item['value']) || empty($item['value']);
+
   return $empty;
 }
 
@@ -418,7 +421,12 @@ function field_data_collector_field_formatter_view(
 
     if (count($items) > variable_get('library_field_data_collector_items_number', '50')) {
       array_pop($items);
-      $items[] = array('more_than_limit_items' => variable_get('library_field_data_collector_more_items_text', 'Not everything shown'));
+      $items[] = array(
+        'more_than_limit_items' => variable_get(
+          'library_field_data_collector_more_items_text',
+          'Not everything shown'
+        )
+      );
     }
 
     // Look for all items
