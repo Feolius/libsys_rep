@@ -107,7 +107,7 @@ abstract class LibraryMigration extends DynamicMigration {
         ));
         $result = $query->execute();
         $i = 0;
-        $record = $result->fetchAssoc();
+        $record = $result->fetchAssoc();        
         if (isset($record['start_year'])) {
           $start_year = $record['start_year'];
           $rounding = 1;
@@ -369,22 +369,29 @@ class FilesMigration extends LibraryMigration {
       ->sourceMigration('Location');
   }
 
-  public function prepareRow($row) {
+  public function prepareRow($row) {    
     //Check if this file from collection with id 1,2,3 or 4
     $taxonomy = $this->prepareTaxonomy($row->ID);
     $collection_ids = $taxonomy['collection_ids'];
     $folder_ids = $taxonomy['folder_ids'];
     // Check if at least one collection id belongs to 1,2,3 or 4.
     $collection_check = FALSE;
-    foreach ($collection_ids as $collection_id) {
+    foreach ($collection_ids as $key => $collection_id) {
       if (in_array($collection_id, array(1, 2, 3, 4))) {
-        $collection_check = TRUE;
-        break;
+        $collection_check = TRUE;        
+      } else {
+        unset($collection_ids[$key]);
       }
     }
     if (!$collection_check) {
       return FALSE;
-    }
+    }    
+    if(count($collection_ids) == 1 && $collection_ids[0] == 1) {
+      $dir_arr = scandir(file_default_scheme() . '://books/');      
+      if(!in_array($row->ID, $dir_arr)) {
+        return FALSE;
+      }
+    }    
     $row->cid = $collection_ids;
     if (!empty($folder_ids)) {
       $row->fid = $folder_ids;
@@ -409,7 +416,7 @@ class FilesMigration extends LibraryMigration {
   }
 
   protected function createStub($migration, $source_id) {
-    $taxonomy = FilesMigration::prepareTaxonomy($source_id);
+    $taxonomy = FilesMigration::prepareTaxonomy($source_id[0]);
     $collection_ids = $taxonomy['collection_ids'];
     // Check if at least one collection id belongs to 1,2,3 or 4.
     $collection_check = FALSE;
@@ -421,6 +428,12 @@ class FilesMigration extends LibraryMigration {
     }
     if (!$collection_check) {
       return FALSE;
+    }
+    if(count($collection_ids) == 1 && $collection_ids[0] == 1) {
+      $dir_arr = scandir(file_default_scheme() . '://books/');      
+      if(!in_array($source_id[0], $dir_arr)) {
+        return FALSE;
+      }
     }
     $node = new stdClass();
     $node->title = t('Stub for') . $source_id[0];
@@ -935,7 +948,7 @@ class EventsMigration extends LibraryMigration {
     $this->buildHierarchy($node, $row->events_id);
   }
 
-  //Save node and its parents recursively in drupal. Return mlid.
+  //Save node and its parents recursively. Return mlid.
   public function buildHierarchy($node, $events_id) {
     //We should check if corresponding link exists and, if not, create link for it
     $mlid = _nodehierarchy_get_node_mlids($node->nid);
@@ -952,8 +965,7 @@ class EventsMigration extends LibraryMigration {
         //If drupal doesn't have corresponding node, we should create a stub for it
         $source_migration = Migration::getInstance('Events');
         $parent_node = new stdClass();
-        $parent_node->title = $this->getEventTitle($parent_id);
-        ;
+        $parent_node->title = $this->getEventTitle($parent_id);        
         $parent_node->body = t('Stub body');
         $parent_node->type = $source_migration->destination->getBundle();
         $parent_node->uid = 1;
