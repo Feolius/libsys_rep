@@ -32,9 +32,11 @@
       $('a.download').once(function() {
         $(this).each(function( index, value ) {
           $(value).click(function(event) {
-            event.preventDefault();
-            var url = $(value).attr('href');
-            downloadFile(url);
+			event.preventDefault();
+			if (window.confirm('The digital photographs in this gallery are provided free as a service by their owner - the Ellen G. White Estate. We ask that any usage be credited as Courtesy of the Ellen G. White Estate, Inc. We also invite and greatly appreciate donations to assist with further digitization projects. If your usage is in a for-profit publication/website/video production, etc., a project-appropriate donation is welcomed.')) {
+				var url = $(value).attr('href');
+				downloadFile(url);
+			}
           });
         });
       })

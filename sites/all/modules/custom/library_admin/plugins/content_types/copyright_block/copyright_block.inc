@@ -24,8 +24,9 @@ function library_admin_copyright_block_ctools_content_types() {
  */
 function library_admin_copyright_block_content_type_render($subtype, $conf, $panel_args, $context) {
   $output = '';
-  if ($copyright = variable_get('library_admin_copyright')) {
-    $output .= theme('copyright_block', array('copyright' => $copyright));
+  if ($copyright_text = variable_get('library_admin_text_to_copyright')) {
+	$copyright_path = variable_get('library_admin_path_to_copyright');
+    $output .= theme('copyright_block', array('copyright_text' => $copyright_text, 'copyright_path' => $copyright_path));
   }
 
   $block = new stdClass();

@@ -72,5 +72,7 @@ function facet_collection_get_field_boosts($chosen_content_type){
   //Topics
  // $boosts['topics_title'] = TOPICS_TITLE_BOOST;
   $boosts['field_topics_body_boost'] = FIELD_TOPICS_BODY_BOOST;
+  //Events
+  $boosts['field_events_description'] = FIELD_EVENTS_DESCRIPTION_BOOST;
   return $boosts;
 }

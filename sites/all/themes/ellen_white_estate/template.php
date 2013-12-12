@@ -54,10 +54,10 @@ function ellen_white_estate_preprocess_node__people_full(&$vars) {
   if (!empty($vars['field_people_last_name'])) {
     $vars['full_name_people'] .= "{$vars['field_people_last_name'][0]['safe_value']} ";
   }
-  if (!empty($vars['field_people_maiden_name'])) {
+  if (!empty($vars['field_people_maiden_name']) AND isset($vars['field_people_maiden_name'][0]) AND strlen($vars['field_people_maiden_name'][0]['value']) > 0) {
     $vars['full_name_people'] .= "({$vars['field_people_maiden_name'][0]['safe_value']})";
   }
-  if (!empty($vars['field_people_degree'])) {
+  if (!empty($vars['field_people_degree']) AND isset($vars['field_people_degree'][0]) AND strlen($vars['field_people_degree'][0]['value']) > 0) {
     $vars['full_name_people'] .= ", {$vars['field_people_degree'][0]['safe_value']} ";
   }
 }
@@ -213,6 +213,7 @@ function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
   }
 
   // Copiright.
+  /*
   if (module_exists('library_admin') && $copiright = library_admin_return_copiright()) {
     $output['copiright'] = array(
       '#access' => TRUE,
@@ -221,6 +222,7 @@ function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
       '#suffix' => '</div>',
     );
   }
+  */
 
   return $output;
 }
@@ -349,6 +351,7 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
   }
 
   // Copiright.
+  /*
   if (module_exists('library_admin') && $copiright = library_admin_return_copiright()) {
     $output['copiright'] = array(
       '#access' => TRUE,
@@ -357,6 +360,7 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
       '#suffix' => '</div>',
     );
   }
+  */
 
   return $output;
 }
@@ -513,6 +517,7 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
   }
 
   // Copiright.
+  /*
   if (module_exists('library_admin') && $copiright = library_admin_return_copiright()) {
     $output['copiright'] = array(
       '#access' => TRUE,
@@ -521,6 +526,7 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
       '#suffix' => '</div>',
     );
   }
+  */
 
   return $output;
 }
