@@ -11,7 +11,7 @@
       <a class="addthis_button_twitter icon twitter"></a>
       <a class="icon gplus"></a>
       <a class="addthis_button_email icon email"></a>
-	  <a class="addthis_button_print icon print"></a>
+	    <a class="addthis_button_print icon print"></a>
       <a class="addthis_button_compact icon addthis"></a>
      </div>
   </div>
