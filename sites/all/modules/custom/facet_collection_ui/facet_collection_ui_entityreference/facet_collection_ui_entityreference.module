@@ -132,7 +132,9 @@ function _facet_collection_ui_entityreference_get_referenced_filterable_fields($
     'datestamp'
   ));
 
-  if ($field['type'] == 'entityreference' && $field['settings']['target_type'] == 'node') {
+  if ($field['type'] == 'entityreference' && $field['settings']['target_type'] == 'node'
+    && isset($field['settings']['handler_settings']['target_bundles'])
+  ) {
     foreach ($field['settings']['handler_settings']['target_bundles'] as $ref_type) {
       $ref_instances = field_info_instances('node', $ref_type);
       $filters_list = array();
