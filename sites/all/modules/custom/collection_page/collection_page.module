@@ -838,8 +838,13 @@ function collection_page_node_snippet_image($node, $image_field_name, $variables
   }
   // If we still have no image, we should get default image.
   if (!$image) {
-    $uri = file_build_uri('collection_page_images/default.png');
+    $uri = file_build_uri('collection_page_images/default_images/' . $node->type . '-default.png');
+    if (!file_exists($uri)) {
+      $uri = file_build_uri('collection_page_images/default_images/default.png');
+    }
     $image = theme('image', array_merge($variables, array('path' => $uri)));
+
+
   }
   if ($image_link != NULL) {
     $url_path = $image_link['path'];
