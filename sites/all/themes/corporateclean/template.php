@@ -17,6 +17,12 @@ function corporateclean_breadcrumb($variables) {
     array_shift($breadcrumb);
   }
   if (!empty($breadcrumb)) {
+    if (arg(0) == 'node' && arg(1)) {
+      $node = node_load(arg(1));
+      $info = entity_get_info('node');
+      $bundle_name = $info['bundles'][$node->type]['label'];
+      $breadcrumb[] = $bundle_name;
+    }
     if (arg(0) != 'library') {
       $breadcrumb[] = drupal_get_title();
     }
