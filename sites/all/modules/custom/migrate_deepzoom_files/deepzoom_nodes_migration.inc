@@ -67,4 +67,8 @@ class DeepzoomNodesMigration extends Migration {
     $row->galleries = trim($row->galleries);
     $row->title = $title;
   }
+
+  public function prepare($node, $row) {
+    $node->language = 'en';
+  }
 }
