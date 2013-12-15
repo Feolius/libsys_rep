@@ -37,16 +37,6 @@ function book_field_menu() {
     'theme callback' => 'ajax_base_page_theme',
     'type' => MENU_CALLBACK
   );
-  $items['flexpaper/desktop_toolbar'] = array(
-    'page callback' => 'book_field_desktop_toolbar',
-    'access arguments' => array('access content'),
-    'type' => MENU_CALLBACK
-  );
-  $items['flexpaper/mobile_toolbar'] = array(
-    'page callback' => 'book_field_mobile_toolbar',
-    'access arguments' => array('access content'),
-    'type' => MENU_CALLBACK
-  );
   $items['book_field/highlight'] = array(
     'page callback' => 'book_field_highlight',
     'access arguments' => array('access content'),
@@ -70,7 +60,8 @@ function book_field_highlight() {
       $terms = _book_field_get_highlighting_terms($get_params);
       if (!empty($terms)) {
         $terms = _book_field_get_highlighting_terms($get_params);
-        $json_path = $_POST['jsonPath'];
+        $json_path = urlencode($_POST['jsonPath']);
+        $json_path = file_default_scheme() . '://books/05d - Mongolen_0/05d - Mongolen_0.js';
         $json = file_get_contents($json_path);
         $terms = _book_field_get_terms_from_json($terms, $json);
       }
@@ -118,7 +109,7 @@ function _book_field_get_terms_from_json($terms, $json) {
             $string = strtolower($json_arr[$i]['text'][$j][5]);
             $entire_text .= $string;
             $current_string++;
-            if (strpos($string, $term)) {
+            if (strpos($string, $term) !== FALSE) {
               $found_terms[] = $term;
               continue 3;
             }
@@ -129,36 +120,6 @@ function _book_field_get_terms_from_json($terms, $json) {
     }
   }
   return $found_terms;
-}
-
-/**
- * Menu callback for flexpaper desktop toolbar. Return desktop version of html toolbar.
- */
-function book_field_desktop_toolbar($viewer_id) {
-  global $base_url;
-  $lib_path = libraries_get_path('flexpaper');
-  $image_path = url($lib_path . '/images/');
-  $out = theme('flexpaper_desktop_toolbar', array(
-    'viewer_id' => $viewer_id,
-    'image_path' => $image_path
-  ));
-  print $out;
-  exit;
-}
-
-/**
- * Menu callback for flexpaper mobile toolbar. Return desktop version of html toolbar.
- */
-function book_field_mobile_toolbar($viewer_id) {
-  global $base_url;
-  $lib_path = libraries_get_path('flexpaper');
-  $image_path = url($lib_path . '/images/');
-  $out = theme('flexpaper_mobile_toolbar', array(
-    'viewer_id' => $viewer_id,
-    'image_path' => $image_path
-  ));
-  print $out;
-  exit;
 }
 
 /**
@@ -881,6 +842,8 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
             $png_path = $base_url . '/' . $relative_path . '/' . $file_name . '_{page}.png';
           }
           $json_path = $base_url . '/' . $relative_path . '/' . $file_name . '.js';
+          // This is for highlighting. $json_path doesn't work because of problem with spaces in url. urlencode() doesn't help.
+          $json_uri = $swf_directory . '/' . $file_name . '.js';
           $extension = _book_field_get_file_extension($file);
           $pdf_path = $base_url . '/' . $relative_path . '/' . $file_name . '.' . $extension;
           $module_path = drupal_get_path('module', 'book_field');
@@ -889,6 +852,7 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
             'swfPaths' => array(urldecode($swf_path)),
             'pngPaths' => array(urldecode($png_path)),
             'jsonPaths' => array(urldecode($json_path)),
+            'jsonUris' => array($json_uri),
             'pdfPaths' => array(urldecode($pdf_path)),
             'FlexPaperViewerPath' => $FlexPaperViewerPath,
             'desktopHTMLPath' => $flexpaper_desktop_html_path,

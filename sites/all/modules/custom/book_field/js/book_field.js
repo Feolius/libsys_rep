@@ -6,6 +6,7 @@
       var swfPaths = Drupal.settings.book_field.swfPaths;
       var pngPaths = Drupal.settings.book_field.pngPaths;
       var jsonPaths = Drupal.settings.book_field.jsonPaths;
+      var jsonUris = Drupal.settings.book_field.jsonUris;
       var pdfPaths = Drupal.settings.book_field.pdfPaths;
       var desktopHTMLPath = Drupal.settings.book_field.desktopHTMLPath;
       var mobileHTMLPath = Drupal.settings.book_field.mobileHTMLPath;
@@ -80,7 +81,7 @@
           );
         }
         $('#' + id ).once('flexpaper').bind('onDocumentLoaded', function (e, totalPages) {
-          $('.flexpaper-viewer-container').before('<button class="flexpaper-fullscreen-view-btn">Full Screen View</button>');
+          $('#toolbar_documentViewer').before('<button class="flexpaper-fullscreen-view-btn">Full Screen View</button>');
           $('.flexpaper-fullscreen-view-btn').click(function(){
             $('.flexpaper_bttnFullScreen').click();
           });
@@ -90,6 +91,7 @@
         var protocol = pathArray[0];
         var host = pathArray[2];
         var baseUrl = protocol + '//' + host;
+        var jsonUri = jsonUris[i];
         $.ajax({
           url: baseUrl + '/book_field/highlight',
           type: 'POST',
@@ -97,7 +99,7 @@
           data: {
             ajax: true,
             url: url,
-            jsonPath: jsonPath
+            jsonPath: jsonUri
           },
           success: function (data, status) {
             if (data.length > 0) {
