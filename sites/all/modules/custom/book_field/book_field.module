@@ -60,8 +60,7 @@ function book_field_highlight() {
       $terms = _book_field_get_highlighting_terms($get_params);
       if (!empty($terms)) {
         $terms = _book_field_get_highlighting_terms($get_params);
-        $json_path = urlencode($_POST['jsonPath']);
-        $json_path = file_default_scheme() . '://books/05d - Mongolen_0/05d - Mongolen_0.js';
+        $json_path = $_POST['jsonPath'];
         $json = file_get_contents($json_path);
         $terms = _book_field_get_terms_from_json($terms, $json);
       }
