@@ -17,7 +17,7 @@ function corporateclean_breadcrumb($variables) {
     array_shift($breadcrumb);
   }
   if (!empty($breadcrumb)) {
-    if (arg(0) == 'node' && arg(1)) {
+    if (arg(0) == 'node' && arg(1) && !isset($_GET['collection'])) {
       $node = node_load(arg(1));
       $info = entity_get_info('node');
       $bundle_name = $info['bundles'][$node->type]['label'];
