@@ -53,9 +53,6 @@
         var dialog = $(this);
         var myDialogY = $(window).height() / 2 - 245;
         var myDialogX = $(window).width() / 2 - 240;
-        console.log(myDialogY);
-        console.log($('.ui-dialog').height());
-        console.log(myDialogX);
         $(dialog).dialog({
           modal: true,
           autoOpen: false,
