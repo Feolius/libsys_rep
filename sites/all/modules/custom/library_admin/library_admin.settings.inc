@@ -94,6 +94,7 @@ function library_admin_settings_form() {
     '#submit' => array('library_admin_clear_temp_folder_submit')
   );
 
+  // Facet collection row number.
   $form['facet_collection_rows_number_selector'] = array(
     '#type' => 'fieldset',
     '#title' => t('Rows number selector settings'),
@@ -108,6 +109,7 @@ function library_admin_settings_form() {
     '#default_value' => variable_get('facet_collection_rows_number_variants', '25 50 100'),
   );
 
+  // Collection pager settings.
   $form['collection_pager_settings'] = array(
     '#type' => 'fieldset',
     '#title' => t('Settings for pager'),
@@ -123,6 +125,7 @@ function library_admin_settings_form() {
     '#default_value' => variable_get('collection_pager_entities_number_per_solr_query', 5),
   );
 
+  // Book field.
   $form['book_field'] = array(
     '#type' => 'fieldset',
     '#title' => t('Settings for Book field'),
@@ -151,7 +154,7 @@ function library_admin_settings_form() {
     '#default_value' => variable_get('library_pdf2json_path', '/usr/local/bin/pdf2json'),
   );
 
-
+  // Data collector.
   $form['field_data_collector'] = array(
     '#type' => 'fieldset',
     '#title' => t('Settings for Field Data Collector tabs'),
@@ -171,6 +174,21 @@ function library_admin_settings_form() {
     '#title' => t('More items text'),
     '#description' => t('The text will displayed when the number of items more than limit above'),
     '#default_value' => variable_get('library_field_data_collector_more_items_text', 'Not everything shown'),
+  );
+
+  // Copyright information for images.
+  $form['copyright_information'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Settings for Copyright information for images'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['copyright_information']['library_field_copyright_information'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Text'),
+    '#description' => t('The text will displayed when we will click on the download button for downloading file'),
+    '#default_value' => variable_get('library_field_copyright_information', ''),
   );
 
   return system_settings_form($form);

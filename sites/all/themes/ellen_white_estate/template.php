@@ -6,6 +6,7 @@ function ellen_white_estate_preprocess_node(&$vars, $hook) {
   global $theme;
   if ($vars["type"] == "files") {
     drupal_add_library('system', 'ui.tabs');
+    drupal_add_library('system', 'ui.dialog');
   }
 
   $view_mode = str_replace('-', '_', $vars['view_mode']);
@@ -343,6 +344,13 @@ function _ellen_white_estate_preprocess_node__files_primary_image($vars) {
         )
       )
     );
+    $copiright_dialog = variable_get('library_field_copyright_information', '');
+    $output['download_dialog'] = array(
+      '#prefix' => '<div id="download-dialog">',
+      '#access' => TRUE,
+      '#markup' => $copiright_dialog,
+      '#suffix' => '</div>',
+    );
     $output['download'] = array(
       '#access' => TRUE,
       '#markup' => $link,
@@ -509,6 +517,13 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
         )
       )
     );
+    $copiright_dialog = variable_get('library_field_copyright_information', '');
+    $output['download_dialog'] = array(
+      '#prefix' => '<div id="download-dialog">',
+      '#access' => TRUE,
+      '#markup' => $copiright_dialog,
+      '#suffix' => '</div>',
+    );
     $output['download'] = array(
       '#access' => TRUE,
       '#markup' => $link,
@@ -610,6 +625,13 @@ function _ellen_white_estate_preprocess_node__files_primary_document($vars) {
             'target' => '_blank'
           )
         )
+      );
+      $copiright_dialog = variable_get('library_field_copyright_informationt', '');
+      $output['download_dialog'] = array(
+        '#prefix' => '<div id="download-dialog">',
+        '#access' => TRUE,
+        '#markup' => $copiright_dialog,
+        '#suffix' => '</div>',
       );
       $output['download'] = array(
         '#access' => TRUE,

@@ -438,3 +438,27 @@ li {
 html.CSS1Compat {
   background: white;
 }
+
+.node-tabs {
+  clear: both;
+}
+
+.ui-dialog.ui-corner-all {
+  -moz-border-radius: 0px;
+  -webkit-border-radius: 0px;
+  border-radius: 0px;
+}
+
+.ui-dialog-titlebar-close {
+  display: none;
+}
+
+#download-dialog a {
+  color: #007ca3;
+  text-decoration: underline;
+}
+
+.ui-dialog {
+  position: absolute;
+  top: 50%;
+}

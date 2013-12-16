@@ -30,14 +30,55 @@
   Drupal.behaviors.libraryDownloadFile = {
     attach: function(context, settings) {
       $('a.download').once(function() {
-        $(this).each(function( index, value ) {
+        $(this).each(function(index, value) {
           $(value).click(function(event) {
 			event.preventDefault();
-			if (window.confirm('The digital photographs in this gallery are provided free as a service by their owner - the Ellen G. White Estate. We ask that any usage be credited as Courtesy of the Ellen G. White Estate, Inc. We also invite and greatly appreciate donations to assist with further digitization projects. If your usage is in a for-profit publication/website/video production, etc., a project-appropriate donation is welcomed.')) {
-				var url = $(value).attr('href');
-				downloadFile(url);
-			}
+              $(value).addClass('current');
+              $("#download-dialog").dialog("open");
           });
+        });
+      })
+    }
+  }
+
+  Drupal.behaviors.libraryDialogOptions = {
+    attach: function(context, settings) {
+      $('#download-dialog').once(function() {
+      //This code fixed error with position.
+        if(! $.isFunction($.fn.curCSS)) {
+          $.curCSS = $.css;
+          $.fn.curCSS = $.fn.css;
+          var mouseY, lastY = 0;
+        }
+        var dialog = $(this);
+        var myDialogY = $(window).height() / 2 - 245;
+        var myDialogX = $(window).width() / 2 - 240;
+        console.log(myDialogY);
+        console.log($('.ui-dialog').height());
+        console.log(myDialogX);
+        $(dialog).dialog({
+          modal: true,
+          autoOpen: false,
+          position: [myDialogX, myDialogY],
+          draggable: false,
+          closeOnEscape: false,
+          resizable: false,
+          width: '490px',
+          buttons: {
+            OK: function() {
+              $(dialog).dialog("close");
+            }
+          },
+          close: function( event, ui ) {
+            $('a.download').each(function(index, value) {
+              if ($(value).hasClass('current')) {
+                $(value).removeClass('current');
+                $(dialog).dialog("close");
+                var url = $(value).attr('href');
+                downloadFile(url);
+              }
+            });
+          }
         });
       })
     }
