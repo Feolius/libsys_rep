@@ -462,3 +462,9 @@ html.CSS1Compat {
   position: absolute;
   top: 50%;
 }
+
+.ui-widget-overlay {
+  opacity: 0.7;
+  filter: Alpha(Opacity=30);
+  background: rgb(29, 28, 28);
+}
