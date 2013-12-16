@@ -59,7 +59,6 @@ function book_field_highlight() {
       parse_str($url_arr['query'], $get_params);
       $terms = _book_field_get_highlighting_terms($get_params);
       if (!empty($terms)) {
-        $terms = _book_field_get_highlighting_terms($get_params);
         $json_path = $_POST['jsonPath'];
         $json = file_get_contents($json_path);
         $terms = _book_field_get_terms_from_json($terms, $json);
