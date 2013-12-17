@@ -2324,7 +2324,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'settings' => array(
           'title_class' => '',
           'title_link' => '',
-          'title_style' => '',
+          'title_style' => 'h2',
         ),
         'type' => 'title_linked',
         'weight' => 1,
