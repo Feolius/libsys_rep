@@ -935,37 +935,23 @@ function _book_field_get_highlighting_terms($get_params) {
 function _book_field_extract_terms_from_query($query) {
   //@TODO We don't perform full query parsing here.
   $terms = array();
-  //Remove word that don't need to be in search
-  $query = str_replace('-', 'NOT ', $query);
-  $query = str_replace('NOT ', ' NOT ', $query);
-  $query_parts = explode(' NOT ', $query);
-  if (count($query_parts) > 1) {
-    $new_query_parts[0] = $query_parts[0];
-    for ($i = 1; $i < count($query_parts); $i++) {
-      $query_spacer_parts = explode(' ', $query_parts[$i]);
-      unset($query_spacer_parts[0]);
-      $new_query_parts[] = implode(' ', $query_spacer_parts);
-    }
-    $query = implode(' ', $new_query_parts);
-  }
-  //Remove all other operators
-  $query = str_replace(array(' AND ', ' && ', ' || ', ' OR '), ' ', $query);
-  $query = str_replace(array('(', ')', '+'), '', $query);
-  //Search for expressions in quotes
-  $query_parts = explode('"', $query);
-  $parts_number = count($query_parts);
-  for ($i = 1; $i < $parts_number; $i = $i + 2) {
-    $terms[] = $query_parts[$i];
-  }
-  foreach ($terms as $term) {
-    $query = str_replace('"' . $term . '"', '', $query);
-  }
-  $query_parts = explode(' ', $query);
-  foreach ($query_parts as $query_part) {
-    if (!empty($query_part)) {
-      $terms[] = $query_part;
-    }
-  }
+  // Get rid of unused words, replace - with NOT
+  $query = str_replace(array('AND', 'OR', '&&', '||', '-'), array('', '', '', '', 'NOT '), $query);
+
+// Get rid of NOTs
+  $query = preg_replace('/NOT\s*?(\".*?\"|\(.*?\)|\w+)/', '', $query);
+
+// Get rid of paranthesis (but keep contents)
+  $query = str_replace(array('(', ')'), '', $query);
+
+// Capture contents of quotes and remove from $query
+  $query = preg_replace_callback('/\"(.*?)\"/', function($matches) { global $terms; $terms[] = $matches[1]; return ''; }, $query);
+
+// Split remaining terms
+  $terms = array_merge($terms, preg_split('/\s+/', $query, -1, PREG_SPLIT_NO_EMPTY));
+
+// Sort
+  sort($terms);
   return $terms;
 }
 
