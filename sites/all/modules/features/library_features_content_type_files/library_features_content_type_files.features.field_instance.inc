@@ -1607,8 +1607,8 @@ function library_features_content_type_files_field_default_field_instances() {
     'default_value' => array(
       0 => array(
         'fids' => array(
-          'PNG_CONVERSION_IDENTIFIER' => 902564939,
-          'SWF_CONVERSION_IDENTIFIER' => 27696853,
+          'PNG_CONVERSION_IDENTIFIER' => 1563997428,
+          'SWF_CONVERSION_IDENTIFIER' => 1805998074,
           'UPLOAD_IDENTIFIER' => 0,
           'fid' => 0,
           'fid_thumb' => 0,
@@ -1701,7 +1701,7 @@ function library_features_content_type_files_field_default_field_instances() {
     'label' => 'File',
     'required' => 0,
     'settings' => array(
-      'file_extensions' => 'pdf',
+      'file_extensions' => 'pdf doc docx',
       'user_register_form' => FALSE,
     ),
     'widget' => array(

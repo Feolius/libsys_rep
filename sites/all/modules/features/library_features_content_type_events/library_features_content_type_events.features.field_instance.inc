@@ -114,7 +114,7 @@ function library_features_content_type_events_field_default_field_instances() {
           'link' => FALSE,
         ),
         'type' => 'entityreference_label',
-        'weight' => 3,
+        'weight' => 4,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -197,7 +197,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'module' => 'text',
         'settings' => array(),
         'type' => 'text_default',
-        'weight' => 2,
+        'weight' => 3,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -365,7 +365,7 @@ function library_features_content_type_events_field_default_field_instances() {
           'image_style' => 'events-image-full',
         ),
         'type' => 'image',
-        'weight' => 1,
+        'weight' => 2,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -544,7 +544,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'hidden',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 9,
+        'weight' => 10,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -630,7 +630,7 @@ function library_features_content_type_events_field_default_field_instances() {
           'view_mode' => '',
         ),
         'type' => 'entityreference_entity_view',
-        'weight' => 4,
+        'weight' => 5,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -712,7 +712,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'hidden',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 8,
+        'weight' => 9,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -802,7 +802,7 @@ function library_features_content_type_events_field_default_field_instances() {
           ),
         ),
         'type' => 'fivestar_formatter_default',
-        'weight' => 0,
+        'weight' => 1,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -883,7 +883,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'hidden',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 7,
+        'weight' => 8,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -965,7 +965,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'hidden',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 12,
+        'weight' => 13,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1047,7 +1047,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'hidden',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 11,
+        'weight' => 12,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1129,7 +1129,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'hidden',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 10,
+        'weight' => 11,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1446,7 +1446,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'module' => 'field_data_collector',
         'settings' => array(),
         'type' => 'field_data_collector_default_formatter',
-        'weight' => 6,
+        'weight' => 7,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1606,7 +1606,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'module' => 'library_date_field',
         'settings' => array(),
         'type' => 'library_date_field_default',
-        'weight' => 5,
+        'weight' => 6,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1774,10 +1774,15 @@ function library_features_content_type_events_field_default_field_instances() {
         'weight' => 0,
       ),
       'default' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 13,
+        'label' => 'hidden',
+        'module' => 'title',
+        'settings' => array(
+          'title_class' => '',
+          'title_link' => '',
+          'title_style' => 'h2',
+        ),
+        'type' => 'title_linked',
+        'weight' => 0,
       ),
       'home_bottom' => array(
         'label' => 'hidden',

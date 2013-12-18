@@ -969,7 +969,7 @@ function ellen_white_estate_preprocess_node__home_top(&$vars) {
  * Clean up the panel pane variables for the template.
  */
 function ellen_white_estate_preprocess_panels_pane(&$vars) {
-  if ($vars['pane']->type == 'page_content') {
+  if ($vars['pane']->type == 'page_content' || arg(0) == 'node') {
     $vars['title'] = '';
   }
 }
