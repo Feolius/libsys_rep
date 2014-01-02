@@ -860,11 +860,7 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
           $json_uri = $swf_directory . '/' . $file_name . '.js';
           // If text is not searchable, we shouldn't show search tools.
           //@TODO will not work with multivalue fields
-          $t1 = microtime(1);
           $is_text_searchable = book_field_is_text_searchable($json_uri);
-          $t2 = microtime(1);
-          $t = $t2 - $t1;
-          kpr($t);
           if ($is_text_searchable) {
             $show_search_tools = TRUE;
           } else {
