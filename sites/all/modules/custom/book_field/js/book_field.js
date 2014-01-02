@@ -14,6 +14,7 @@
       var cssDirectory = Drupal.settings.book_field.cssDirectory;
       var localeDirectory = Drupal.settings.book_field.localeDirectory;
       var renderingOrder = Drupal.settings.book_field.renderingOrder;
+      var showSearchTools = Drupal.settings.book_field.showSearchTools;
       //Get path of FlexPaperViewer.swf file
       var FlexPaperViewerPath = Drupal.settings.book_field.FlexPaperViewerPath;
 
@@ -74,15 +75,15 @@
               ZoomToolsVisible: true,
               NavToolsVisible: true,
               CursorToolsVisible: true,
-              SearchToolsVisible: true,
+              SearchToolsVisible: showSearchTools,
 
               localeChain: 'en_US'
             }}
           );
         }
-        $('#' + id ).once('flexpaper').bind('onDocumentLoaded', function (e, totalPages) {
+        $('#' + id).once('flexpaper').bind('onDocumentLoaded', function (e, totalPages) {
           $('#toolbar_documentViewer').before('<button class="flexpaper-fullscreen-view-btn">Full Screen View</button>');
-          $('.flexpaper-fullscreen-view-btn').click(function(){
+          $('.flexpaper-fullscreen-view-btn').click(function () {
             $('.flexpaper_bttnFullScreen').click();
           });
         });
@@ -92,6 +93,7 @@
         var host = pathArray[2];
         var baseUrl = protocol + '//' + host;
         var jsonUri = jsonUris[i];
+        // Get search buttons.
         $.ajax({
           url: baseUrl + '/book_field/highlight',
           type: 'POST',

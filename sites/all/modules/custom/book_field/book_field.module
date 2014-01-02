@@ -42,8 +42,37 @@ function book_field_menu() {
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK
   );
+  $items['book_field/searchable_text'] = array(
+    'page callback' => 'book_field_is_text_searchable',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK
+  );
 
   return $items;
+}
+
+/**
+ * Menu callback for ajax request, which returns info about if text in pdf searchable or not
+ */
+function book_field_is_text_searchable($json_uri) {
+  // Trying to extract text from pdf.
+  $json = file_get_contents($json_uri);
+  $json_arr = drupal_json_decode($json);
+  //We save last checked page and string
+  $pages_number = count($json_arr);
+  $string_numbers = array();
+  for ($i = 0; $i < $pages_number; $i++) {
+    $string_numbers[$i] = count($json_arr[$i]['text']);
+    for ($j = 0; $j < $string_numbers[$i]; $j++) {
+      $string = strtolower($json_arr[$i]['text'][$j][5]);
+      if (!empty($string)) {
+        // It means that our json contents text.
+        return TRUE;
+      }
+    }
+  }
+  return FALSE;
+
 }
 
 /**
@@ -829,6 +858,18 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
           $json_path = $base_url . '/' . $relative_path . '/' . $file_name . '.js';
           // This is for highlighting. $json_path doesn't work because of problem with spaces in url. urlencode() doesn't help.
           $json_uri = $swf_directory . '/' . $file_name . '.js';
+          // If text is not searchable, we shouldn't show search tools.
+          //@TODO will not work with multivalue fields
+          $t1 = microtime(1);
+          $is_text_searchable = book_field_is_text_searchable($json_uri);
+          $t2 = microtime(1);
+          $t = $t2 - $t1;
+          kpr($t);
+          if ($is_text_searchable) {
+            $show_search_tools = TRUE;
+          } else {
+            $show_search_tools = FALSE;
+          }
           $extension = _book_field_get_file_extension($file);
           $pdf_path = $base_url . '/' . $relative_path . '/' . $file_name . '.' . $extension;
           $module_path = drupal_get_path('module', 'book_field');
@@ -845,7 +886,8 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
             'jsDirectory' => $base_url . '/' . $lib_js_path,
             'cssDirectory' => $base_url . '/' . $lib_css_path,
             'localeDirectory' => $base_url . '/' . $lib_locale_path,
-            'renderingOrder' => $rendering_order
+            'renderingOrder' => $rendering_order,
+            'showSearchTools' => $show_search_tools,
           );
           drupal_add_js(array('book_field' => $settings), 'setting');
           $element[$delta] = array(
