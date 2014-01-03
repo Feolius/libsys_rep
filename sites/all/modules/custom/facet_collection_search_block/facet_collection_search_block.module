@@ -3,7 +3,6 @@
 /*
  * Implements hook_block_info()
  */
-
 function facet_collection_search_block_block_info() {
   $blocks['facet_collection_search_block'] = array(
     'info' => t('Search block for collection')
@@ -88,7 +87,7 @@ function facet_collection_search_block_form_submit($form, &$form_state) {
   if ($form_state['values'][$form_id] == '') {
     form_set_error('keys', t('Please enter some keywords.'));
   }
-  $search_query = $form_state['values'][$form_id];
+  $search_query = trim($form_state['values'][$form_id]);
   $get = json_decode($form_state['values']['get'], TRUE);
   //Check if we have filters. If not, then we should set filter by content type files, because it means that we go from another page
   if (!isset($get['f'])) {
