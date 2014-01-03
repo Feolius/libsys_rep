@@ -100,7 +100,7 @@ function book_field_highlight() {
 }
 
 /**
- * Return that terms which json file contains
+ * Return that terms from given array of the terms, which json file contains
  */
 function _book_field_get_terms_from_json($terms, $json) {
   $found_terms = array();
@@ -127,6 +127,11 @@ function _book_field_get_terms_from_json($terms, $json) {
         $found_terms[] = $term;
         continue;
       } else {
+        // Term could be complicated, if it goes from quotes and consist on few words.
+        // Assume that words are separated only by spaces.
+        $term_arr = explode(' ', $term);
+        $words_number = count($term_arr);
+        $words_found = 0;
         for ($i = $current_page; $i < $pages_number; $i++) {
           if (!isset($string_numbers[$i])) {
             $string_numbers[$i] = count($json_arr[$i]['text']);
@@ -135,9 +140,15 @@ function _book_field_get_terms_from_json($terms, $json) {
             $string = strtolower($json_arr[$i]['text'][$j][5]);
             $entire_text .= $string;
             $current_string++;
-            if (strpos($string, $term) !== FALSE) {
-              $found_terms[] = $term;
-              continue 3;
+            if (strpos($string, $term_arr[$words_found]) !== FALSE) {
+              $words_found++;
+              if ($words_number == $words_found) {
+                $found_terms[] = $term;
+                continue 3;
+              }
+            } elseif ($words_found > 1 && !empty($string)) {
+              // Drop counter. The whole phrase was not found.
+              $words_found = 0;
             }
           }
           $current_page++;
@@ -971,7 +982,7 @@ function _book_field_extract_terms_from_query($query) {
 // Capture contents of quotes and remove from $query
   $query = preg_replace_callback('/\"(.*?)\"/', function ($matches) {
     global $terms;
-    $terms = array_merge($terms, preg_split('/\s+/', $matches[1], -1, PREG_SPLIT_NO_EMPTY));
+    $terms[] = $matches[1];
     return '';
   }, $query);
 
