@@ -55,6 +55,19 @@ class FacetapiWidgetLibraryCheckbox extends FacetapiWidget {
           $variants[$allowed_value] = $label;
         }
         break;
+      case 'taxonomy_term_reference':
+        // Get vocabularies and terms from them.
+        $vocabularies = array();
+        foreach ($field_info['settings']['allowed_values'] as $settings) {
+          $vocabulary = taxonomy_vocabulary_machine_name_load($settings['vocabulary']);
+          $vocabularies[] = $vocabulary->vid;
+        }
+        foreach ($vocabularies as $vid) {
+          $taxonomy_tree = taxonomy_get_tree($vid);
+          foreach ($taxonomy_tree as $term_info) {
+            $variants[$term_info->tid] = $term_info->name;
+          }
+        }
     }
     $args = array(
       'search path' => $search_path,
