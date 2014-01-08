@@ -695,23 +695,23 @@ function template_preprocess_collection_search_result(&$variables) {
   }
   $node = node_load($result['node']->entity_id);
   if ($node) {
+    $image = FALSE;
     if ($variables['image_style']) {
       $image_field_name = collection_page_get_image_field($node);
-      $image_link = array(
-        'path' => $variables['url'],
-        'options' => array(
-          'html' => TRUE,
-        ),
-      );
-      $image = collection_page_node_snippet_image(
-        $node,
-        $image_field_name,
-        array('style_name' => $variables['image_style']),
-        $image_link
-      );
-    }
-    else {
-      $image = FALSE;
+      if ($image_field_name) {
+        $image_link = array(
+          'path' => $variables['url'],
+          'options' => array(
+            'html' => TRUE,
+          ),
+        );
+        $image = collection_page_node_snippet_image(
+          $node,
+          $image_field_name,
+          array('style_name' => $variables['image_style']),
+          $image_link
+        );
+      }
     }
     $variables['image'] = $image;
 
@@ -728,6 +728,7 @@ function collection_page_get_image_field($node) {
   //Depending on node type the snippet image will be takes from different fields.
   //If the such field is image field, we need only name of this field, and the image
   // will be takes downwards.
+  $image_field_name = FALSE;
   switch ($node->type) {
     case 'files':
       $items = field_get_items('node', $node, 'field_files_primary_media');
