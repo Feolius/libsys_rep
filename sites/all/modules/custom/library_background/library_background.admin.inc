@@ -32,8 +32,6 @@ function library_background_menu_block_page() {
  */
 function library_background_settings_form() {
   $form = array();
-  $form['#tree'] = TRUE;
-  $id = 0;
 
   // Homepage.
   $form['homepage'] = array(
@@ -43,83 +41,219 @@ function library_background_settings_form() {
     '#collapsed' => TRUE,
   );
 
-  if (empty($form_state['homepage']['library_background_homepage_num_images'])) {
-    $form_state['homepage']['library_background_homepage_num_images'] = 1;
-  }
+  $form['homepage']['library_background_homepage_css_repeat'] = array(
+    '#type' => 'radios',
+    '#title' => t('Repeat'),
+    '#default_value' => variable_get('library_background_homepage_css_repeat') ? variable_get('library_background_homepage_css_repeat') : 'repeat',
+    '#options' => array(
+      'repeat' => t('Repeat'),
+      'repeat-x' => t('Repeat Horizontally'),
+      'repeat-y' => t('Repeat Vertically'),
+      'no-repeat' => t('No Repeat')
+    ),
+    '#required' => TRUE,
+  );
 
-  for ($i = 0; $i < $form_state['homepage']['library_background_homepage_num_images']; $i++) {
-    $id = $i;
-    $form['homepage']['library_background_homepage_image'][$i] = array(
-      '#type' => 'managed_file',
-      '#id' => $id,
-      '#title' => t('Background image'),
-      '#upload_location' => 'public://',
-      '#default_value' => variable_get('library_background_homepage_image'),
-    );
-  }
+  $form['homepage']['library_background_homepage_css_h_position'] = array(
+    '#type' => 'radios',
+    '#title' => t('Horizontal Position'),
+    '#default_value' => variable_get('library_background_homepage_css_h_position') ? variable_get('library_background_homepage_css_h_position') : 'center',
+    '#options' => array(
+      'left' => t('Left'),
+      'center' => t('Center'),
+      'right' => t('Right'),
+      'other' => t('Other')
+    ),
+    '#required' => TRUE,
+  );
 
-  $form['homepage']['library_background_add_image_field'] = array(
-    '#type' => 'submit',
-    '#value' => t('Add another image'),
-    '#submit' => array('library_background_add_more_add_one'),
-    // See the examples in ajax_example.module for more details on the
-    // properties of #ajax.
-    '#ajax' => array(
-      'callback' => 'field_add_more_js',
-      'wrapper' => 'background_image' . $id,
-      'effect' => 'fade',
+  $form['homepage']['library_background_homepage_css_h_position_other'] = array(
+    '#type' => 'textfield',
+    '#default_value' => variable_get('library_background_homepage_css_h_position_other', ''),
+    '#required' => TRUE,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="library_background_homepage_css_h_position"]' => array('value' => 'other'),
+      ),
     ),
   );
-  $form['homepage']['library_background_remove_image_field'] = array(
-    '#type' => 'submit',
-    '#value' => t('Remove image'),
-    '#submit' => array('library_background_add_more_remove_one'),
-    // See the examples in ajax_example.module for more details on the
-    // properties of #ajax.
-    '#ajax' => array(
-      'callback' => 'library_background_more_callback',
-      'wrapper' => 'homepage-fieldset-wrapper',
+
+  $form['homepage']['library_background_homepage_css_v_position'] = array(
+    '#type' => 'radios',
+    '#title' => t('Vertical Position'),
+    '#default_value' => variable_get('library_background_homepage_css_v_position') ? variable_get('library_background_homepage_css_v_position') : 'center',
+    '#options' => array(
+      'top' => t('Top'),
+      'center' => t('Center'),
+      'bottom' => t('Bottom'),
+      'other' => t('Other')
     ),
+    '#required' => TRUE,
+  );
+
+  $form['homepage']['library_background_homepage_css_v_position_other'] = array(
+    '#type' => 'textfield',
+    '#default_value' => variable_get('library_background_homepage_css_v_position_other', ''),
+    '#required' => TRUE,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="library_background_homepage_css_v_position"]' => array('value' => 'other'),
+      ),
+    ),
+  );
+
+  $form['homepage']['library_background_homepage_css_attachment'] = array(
+    '#type' => 'radios',
+    '#title' => t('Attachment'),
+    '#default_value' => variable_get('library_background_homepage_css_attachment') ? variable_get('library_background_homepage_css_attachment') : 'fixed',
+    '#options' => array(
+      'scroll' => t('Scroll'),
+      'fixed' => t('Fixed'),
+    ),
+    '#required' => TRUE,
+  );
+
+  $form['homepage']['library_background_homepage_css_important'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('!important'),
+    '#default_value' => variable_get('library_background_homepage_css_important') != FALSE ? variable_get('library_background_homepage_css_important') : '',
+  );
+
+  $form['homepage']['library_background_homepage_uploaded_images'] = array(
+    '#markup' => library_background_load_files(),
+  );
+
+  $form['homepage']['library_background_homepage_deleted_image'] = array('#type' => 'hidden', '#value' => 'd');
+
+  $form['homepage']['library_background_homepage_image'] = array(
+    '#type' => 'plupload',
+    '#title' => t('Background image'),
+    '#autosubmit' => FALSE,
+    '#default_value' => variable_get('library_background_homepage_image', ''),
+    '#upload_validators' => array(
+      'file_validate_extensions' => array('jpg jpeg gif png txt doc xls pdf ppt pps odt ods odp'),
+    ),
+  );
+
+  $form['homepage']['library_background_homepage_deleted_image'] = array(
+    '#type' => 'textfield',
+    '#default_value' => '',
+    '#required' => FALSE,
+    '#attributes' => array('class' => array('hide-me'))
   );
 
   // Other pages.
   $form['simple_pages'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Another pages'),
+    '#title' => t('Onothers pages'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
 
+  $form['simple_pages']['library_background_simple_css_repeat'] = array(
+    '#type' => 'radios',
+    '#title' => t('Repeat'),
+    '#default_value' => variable_get('library_background_simple_css_repeat') ? variable_get('library_background_simple_css_repeat') : 'repeat',
+    '#options' => array(
+      'repeat' => t('Repeat'),
+      'repeat-x' => t('Repeat Horizontally'),
+      'repeat-y' => t('Repeat Vertically'),
+      'no-repeat' => t('No Repeat')
+    ),
+    '#required' => TRUE,
+  );
+
+  $form['simple_pages']['library_background_simple_css_h_position'] = array(
+    '#type' => 'radios',
+    '#title' => t('Horizontal Position'),
+    '#default_value' => variable_get('library_background_simple_css_h_position') ? variable_get('library_background_simple_css_h_position') : 'center',
+    '#options' => array(
+      'left' => t('Left'),
+      'center' => t('Center'),
+      'right' => t('Right'),
+      'other' => t('Other')
+    ),
+    '#required' => TRUE,
+  );
+
+  $form['simple_pages']['library_background_simple_css_h_position_other'] = array(
+    '#type' => 'textfield',
+    '#default_value' => variable_get('library_background_simple_css_h_position_other', ''),
+    '#required' => TRUE,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="library_background_simple_css_h_position"]' => array('value' => 'other'),
+      ),
+    ),
+  );
+
+  $form['simple_pages']['library_background_simple_css_v_position'] = array(
+    '#type' => 'radios',
+    '#title' => t('Vertical Position'),
+    '#default_value' => variable_get('library_background_simple_css_v_position') ? variable_get('library_background_simple_css_v_position') : 'center',
+    '#options' => array(
+      'top' => t('Top'),
+      'center' => t('Center'),
+      'bottom' => t('Bottom'),
+      'other' => t('Other')
+    ),
+    '#required' => TRUE,
+  );
+
+  $form['simple_pages']['library_background_simple_css_v_position_other'] = array(
+    '#type' => 'textfield',
+    '#default_value' => variable_get('library_background_simple_css_v_position_other', ''),
+    '#required' => TRUE,
+    '#states' => array(
+      'visible' => array(
+        ':input[name="library_background_simple_css_v_position"]' => array('value' => 'other'),
+      ),
+    ),
+  );
+
+  $form['simple_pages']['library_background_simple_css_attachment'] = array(
+    '#type' => 'radios',
+    '#title' => t('Attachment'),
+    '#default_value' => variable_get('library_background_simple_css_attachment') ? variable_get('library_background_simple_css_attachment') : 'fixed',
+    '#options' => array(
+      'scroll' => t('Scroll'),
+      'fixed' => t('Fixed'),
+    ),
+    '#required' => TRUE,
+  );
+
+  $form['simple_pages']['library_background_simple_css_important'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('!important'),
+    '#default_value' => variable_get('library_background_simple_css_important') != FALSE ? variable_get('library_background_simple_css_important') : '',
+  );
+
+  $form['simple_pages']['library_background_simple_uploaded_images'] = array(
+    '#markup' => library_background_load_files(),
+  );
+
+  $form['simple_pages']['library_background_simple_deleted_image'] = array('#type' => 'hidden', '#value' => 'd');
+
+  $form['simple_pages']['library_background_simple_image'] = array(
+    '#type' => 'plupload',
+    '#title' => t('Background image'),
+    '#autosubmit' => FALSE,
+    '#default_value' => variable_get('library_background_simple_image', ''),
+    '#upload_validators' => array(
+      'file_validate_extensions' => array('jpg jpeg gif png txt doc xls pdf ppt pps odt ods odp'),
+    ),
+  );
+
+  $form['simple_pages']['library_background_simple_deleted_image'] = array(
+    '#type' => 'textfield',
+    '#default_value' => '',
+    '#required' => FALSE,
+    '#attributes' => array('class' => array('hide-me'))
+  );
+
+  // Callbacks.
+  $form['#submit'][] = 'library_background_homepage_image_submit';
+  $form['#submit'][] = 'library_background_homepage_uploaded_images_remove_callback';
+
   return system_settings_form($form);
-}
-
-/**
- * Callback for library_background_add_image_field.
- */
-function library_background_more_callback($form, $form_state) {
-  return $form['homepage'];
-}
-
-/**
- * Submit handler for the "add-one-more" button.
- *
- * Increments the max counter and causes a rebuild.
- */
-function library_background_add_more_add_one(&$form, &$form_state) {
-  dpm($form_state);die;
-  $button = $form_state['triggering_element'];
-  $form_state['homepage']['library_background_homepage_num_images']++;
-  $form_state['rebuild'] = TRUE;
-}
-
-/**
- * Submit handler for the "remove one" button.
- *
- * Decrements the max counter and causes a form rebuild.
- */
-function library_background_add_more_remove_one(&$form, &$form_state) {
-  if ($form_state['library_background_homepage_num_images'] > 1) {
-    $form_state['library_background_homepage_num_images']--;
-  }
-  $form_state['rebuild'] = TRUE;
 }

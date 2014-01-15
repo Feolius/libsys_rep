@@ -1,0 +1,16 @@
+.hide-me {
+  display: none;
+}
+
+#edit-homepage img.uploaded-image {
+  margin-right: 10px;
+  border: 2px solid #ffffff;
+}
+
+#edit-homepage img.uploaded-image:hover {
+  cursor: pointer;
+  color: #737373;
+  background: url(images/delete.gif) no-repeat 0 center;
+  border: 2px solid darkred;
+}
+

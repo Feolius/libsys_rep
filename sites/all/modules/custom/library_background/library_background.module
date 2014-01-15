@@ -26,5 +26,176 @@ function library_background_menu() {
   return $items;
 }
 
-function library_background_form_alter(&$form, &$form_state, $form_id) {
+/**
+ * Implements hook_init().
+ */
+function library_background_init() {
+  drupal_add_js(drupal_get_path('module', 'library_background') . '/library_background.js');
+  drupal_add_css(drupal_get_path('module', 'library_background') . '/library_background.css');
+}
+
+/**
+ * Helping function for get random background image by id.
+ */
+function library_background_get_css() {
+  $image = array();
+  $image['url'] = library_background_get_file_random();
+  $importand = variable_get('library_background_homepage_css_important');
+  $image['css_repeat'] = variable_get('library_background_homepage_css_repeat');
+  $css_hp = variable_get('library_background_homepage_css_h_position', '');
+  $image['css_h_position'] = $css_hp == 'other'
+    ? variable_get('library_background_homepage_css_h_position_other') . 'px '
+    : $css_hp;
+  $css_vp = variable_get('library_background_homepage_css_v_position');
+  $image['css_v_position'] = $css_vp == 'other'
+    ? variable_get('library_background_homepage_css_v_position_other') . 'px '
+    : $css_vp;
+  $image['css_attachment'] = variable_get('library_background_homepage_css_attachment');
+  $image['important'] = isset($importand) && $importand != FALSE ? '!important' : '';
+  return $image;
+}
+
+/**
+ * Process variables for html.tpl.php.
+ *
+ * @see html.tpl.php
+ */
+function library_background_preprocess_html(&$variables) {
+  if ($variables['is_front'] == TRUE) {
+    $file = library_background_get_css();
+    $css = 'body' . ' { background: url("' . $file['url'] . '") !important;
+    background-repeat: ' . $file['css_repeat'] . $file['important'] . ';
+    background-position: ' . $file['css_h_position'] . ' ' . $file['css_v_position'] . $file['important'] . ';
+    background-attachment: ' . $file['css_attachment'] . $file['important'] . '}';
+    $options = array(
+      'type' => 'inline',
+      'group' => CSS_DEFAULT,
+    );
+    drupal_add_css($css, $options);
+  }
+}
+
+/**
+ * This is helper function that will build the thumb folder
+ * for the background images.
+ *
+ * @param unknown_type $file
+ */
+function library_background_get_thumbnail($file) {
+  $image = theme_image_style(
+    array(
+      'style_name' => 'thumbnail',
+      'path' => $file->uri,
+      'width' => '50px',
+      'height' => '50px',
+      'alt' => $file->filename,
+      'title' => $file->filename,
+      'attributes' => array(
+        'class' => array('uploaded-image'),
+        'id' => $file->fid,
+      )
+    )
+  );
+  return $image;
+}
+
+function library_background_load_files() {
+  $output = '';
+  $files = library_background_images_list(TRUE);
+  foreach ($files as $uploaded_file) {
+    $thumb = library_background_get_thumbnail($uploaded_file);
+    $output .= $thumb;
+  }
+  return $output;
+}
+
+/**
+ * Callback for the submit of admin form.
+ */
+function library_background_homepage_image_submit($form, $form_state) {
+  $saved_files = array();
+  $images = variable_get('library_background_homepage_images');
+  if (!empty($images)) {
+    $ids = library_background_check_files(explode(',', $images));
+  } else {
+    $ids = array();
+  }
+  if ($images = $form_state['values']['library_background_homepage_image']) {
+    $scheme = variable_get('file_default_scheme', 'public') . '://';
+    if (!is_dir('sites/default/files/lb')) {
+      drupal_mkdir('sites/default/files/lb');
+    }
+    $scheme .= 'lb/';
+    foreach ($images as $uploaded_file) {
+      if ($uploaded_file['status'] == 'done') {
+        $source = $uploaded_file['tmppath'];
+        $destination = file_stream_wrapper_uri_normalize($scheme . $uploaded_file['name']);
+        $destination = file_unmanaged_move($source, $destination, FILE_EXISTS_RENAME);
+        $file = plupload_file_uri_to_object($destination);
+        file_save($file);
+        drupal_write_record('files', $file);
+        if (file_exists('sites/default/files/lb/' . $file->name) == TRUE) {
+          $ids[] = $file->fid;
+          $saved_files[] = $file;
+        }
+      }
+      else {
+        form_set_error('pud', "Upload of {$uploaded_file['name']} failed");
+      }
+    }
+    $fids = implode(',', $ids);
+    variable_set('library_background_homepage_images', $fids);
+  }
+}
+
+/**
+ * Helper function for checking the files.
+ */
+function library_background_check_files($fids) {
+  $files = file_load_multiple($fids);
+  return array_map(function ($file) {
+    if (file_exists('sites/default/files/lb/' . $file->filename) == TRUE) {
+      return $images[] = $file->fid;
+    }
+  }, $files);
+}
+
+/**
+ * Helper function for create list of images.
+ */
+function library_background_images_list($full = FALSE) {
+  $images_ids = variable_get('library_background_homepage_images');
+  if (!empty($images_ids)) {
+    $fids = explode(',', $images_ids);
+    $files = file_load_multiple($fids);
+    if ($full == FALSE) {
+      return array_map(function ($file) {
+        return $images[] = file_create_url($file->uri);
+      }, $files);
+    } else {
+      return $files;
+    }
+  }
+}
+
+/**
+ * Helper function for getting random image.
+ */
+function library_background_get_file_random() {
+  $bgs = library_background_images_list();
+  $img = array_rand($bgs);
+  return $bgs[$img];
+}
+
+/**
+ * Callback for deleting images from list of uploaded images.
+ */
+function library_background_homepage_uploaded_images_remove_callback($form, &$form_state) {
+  if ($need_deleted  = $form_state['input']['library_background_homepage_deleted_image']) {
+    $fids = explode(', ', $need_deleted);
+    $files = file_load_multiple($fids);
+    foreach ($files as $file) {
+      file_delete($file);
+    }
+  }
 }

@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Library background module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function library_background_install() {
+  if (!is_dir('sites/default/files/lb')) {
+    drupal_mkdir('sites/default/files/lb');
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function library_background_uninstall() {
+  if (is_dir('sites/default/files/lb')) {
+    drupal_rmdir('sites/default/files/lb');
+  }
+}
