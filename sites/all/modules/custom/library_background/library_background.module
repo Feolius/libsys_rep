@@ -352,9 +352,3 @@ function library_background_homepage_uploaded_images_remove_callback($form, &$fo
     }
   }
 }
-
-function library_background_form_alter($form, $form_state, $form_id) {
-  if ($form_id == 'library_background_pages_settings_form') {
-    unset($form['#submit'][2]);
-  }
-}

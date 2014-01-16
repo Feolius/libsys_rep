@@ -97,7 +97,7 @@ function library_background_pages_settings_form () {
 
   $form['library_background_simple_deleted_image'] = array('#type' => 'hidden', '#value' => '');
 
- /* $form['library_background_simple_image'] = array(
+  $form['library_background_simple_image'] = array(
     '#type' => 'plupload',
     '#title' => t('Background image'),
     '#autosubmit' => FALSE,
@@ -105,7 +105,7 @@ function library_background_pages_settings_form () {
     '#upload_validators' => array(
       'file_validate_extensions' => array('jpg jpeg gif png txt doc xls pdf ppt pps odt ods odp'),
     ),
-  );*/
+  );
 
   $form['library_background_simple_deleted_image'] = array(
     '#type' => 'textfield',
