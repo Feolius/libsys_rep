@@ -70,7 +70,7 @@ function library_background_menu_block_page() {
 /**
  * Settings form for library background settings.
  */
-function library_background_homepage_bgs_form() {
+function library_background_homepage_bgs_form($form, &$form_state) {
   $form = array();
 
   $form['library_background_homepage_css_repeat'] = array(
@@ -175,15 +175,13 @@ function library_background_homepage_bgs_form() {
     );
 
     // Callbacks.
-    $form['actions']['#type'] = 'actions';
-    $form['actions']['submit'] = array(
+    //$form['actions']['#type'] = 'actions';
+    $form['submit'] = array(
         '#type' => 'submit',
         '#value' => t('Save'),
-        '#submit' => array(
-          'library_background_homepage_uploaded_images_remove_callback',
-          'library_background_homepage_bgs_form_submit')
+        '#submit' => array('library_background_homepage_bgs_form_submit')
     );
-
+//'library_background_homepage_uploaded_images_remove_callback'
     if (!empty($_POST) && form_get_errors()) {
       drupal_set_message(t('The settings have not been saved because of the errors.'), 'error');
     }
