@@ -33,15 +33,7 @@ function library_background_menu_block_page() {
 function library_background_settings_form() {
   $form = array();
 
-  // Homepage.
-  $form['homepage'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Homepage images'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
-
-  $form['homepage']['library_background_homepage_css_repeat'] = array(
+  $form['library_background_homepage_css_repeat'] = array(
     '#type' => 'radios',
     '#title' => t('Repeat'),
     '#default_value' => variable_get('library_background_homepage_css_repeat') ? variable_get('library_background_homepage_css_repeat') : 'repeat',
@@ -54,7 +46,7 @@ function library_background_settings_form() {
     '#required' => TRUE,
   );
 
-  $form['homepage']['library_background_homepage_css_h_position'] = array(
+  $form['library_background_homepage_css_h_position'] = array(
     '#type' => 'radios',
     '#title' => t('Horizontal Position'),
     '#default_value' => variable_get('library_background_homepage_css_h_position') ? variable_get('library_background_homepage_css_h_position') : 'center',
@@ -67,7 +59,7 @@ function library_background_settings_form() {
     '#required' => TRUE,
   );
 
-  $form['homepage']['library_background_homepage_css_h_position_other'] = array(
+  $form['library_background_homepage_css_h_position_other'] = array(
     '#type' => 'textfield',
     '#default_value' => variable_get('library_background_homepage_css_h_position_other', ''),
     '#required' => TRUE,
@@ -78,7 +70,7 @@ function library_background_settings_form() {
     ),
   );
 
-  $form['homepage']['library_background_homepage_css_v_position'] = array(
+  $form['library_background_homepage_css_v_position'] = array(
     '#type' => 'radios',
     '#title' => t('Vertical Position'),
     '#default_value' => variable_get('library_background_homepage_css_v_position') ? variable_get('library_background_homepage_css_v_position') : 'center',
@@ -91,7 +83,7 @@ function library_background_settings_form() {
     '#required' => TRUE,
   );
 
-  $form['homepage']['library_background_homepage_css_v_position_other'] = array(
+  $form['library_background_homepage_css_v_position_other'] = array(
     '#type' => 'textfield',
     '#default_value' => variable_get('library_background_homepage_css_v_position_other', ''),
     '#required' => TRUE,
@@ -102,7 +94,7 @@ function library_background_settings_form() {
     ),
   );
 
-  $form['homepage']['library_background_homepage_css_attachment'] = array(
+  $form['library_background_homepage_css_attachment'] = array(
     '#type' => 'radios',
     '#title' => t('Attachment'),
     '#default_value' => variable_get('library_background_homepage_css_attachment') ? variable_get('library_background_homepage_css_attachment') : 'fixed',
@@ -113,19 +105,19 @@ function library_background_settings_form() {
     '#required' => TRUE,
   );
 
-  $form['homepage']['library_background_homepage_css_important'] = array(
+  $form['library_background_homepage_css_important'] = array(
     '#type' => 'checkbox',
     '#title' => t('!important'),
     '#default_value' => variable_get('library_background_homepage_css_important') != FALSE ? variable_get('library_background_homepage_css_important') : '',
   );
 
-  $form['homepage']['library_background_homepage_uploaded_images'] = array(
+  $form['library_background_homepage_uploaded_images'] = array(
     '#markup' => library_background_load_files(),
   );
 
-  $form['homepage']['library_background_homepage_deleted_image'] = array('#type' => 'hidden', '#value' => 'd');
+  $form['library_background_homepage_deleted_image'] = array('#type' => 'hidden', '#value' => '');
 
-  $form['homepage']['library_background_homepage_image'] = array(
+  $form['library_background_homepage_image'] = array(
     '#type' => 'plupload',
     '#title' => t('Background image'),
     '#autosubmit' => FALSE,
@@ -135,116 +127,7 @@ function library_background_settings_form() {
     ),
   );
 
-  $form['homepage']['library_background_homepage_deleted_image'] = array(
-    '#type' => 'textfield',
-    '#default_value' => '',
-    '#required' => FALSE,
-    '#attributes' => array('class' => array('hide-me'))
-  );
-
-  // Other pages.
-  $form['simple_pages'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Onothers pages'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
-
-  $form['simple_pages']['library_background_simple_css_repeat'] = array(
-    '#type' => 'radios',
-    '#title' => t('Repeat'),
-    '#default_value' => variable_get('library_background_simple_css_repeat') ? variable_get('library_background_simple_css_repeat') : 'repeat',
-    '#options' => array(
-      'repeat' => t('Repeat'),
-      'repeat-x' => t('Repeat Horizontally'),
-      'repeat-y' => t('Repeat Vertically'),
-      'no-repeat' => t('No Repeat')
-    ),
-    '#required' => TRUE,
-  );
-
-  $form['simple_pages']['library_background_simple_css_h_position'] = array(
-    '#type' => 'radios',
-    '#title' => t('Horizontal Position'),
-    '#default_value' => variable_get('library_background_simple_css_h_position') ? variable_get('library_background_simple_css_h_position') : 'center',
-    '#options' => array(
-      'left' => t('Left'),
-      'center' => t('Center'),
-      'right' => t('Right'),
-      'other' => t('Other')
-    ),
-    '#required' => TRUE,
-  );
-
-  $form['simple_pages']['library_background_simple_css_h_position_other'] = array(
-    '#type' => 'textfield',
-    '#default_value' => variable_get('library_background_simple_css_h_position_other', ''),
-    '#required' => TRUE,
-    '#states' => array(
-      'visible' => array(
-        ':input[name="library_background_simple_css_h_position"]' => array('value' => 'other'),
-      ),
-    ),
-  );
-
-  $form['simple_pages']['library_background_simple_css_v_position'] = array(
-    '#type' => 'radios',
-    '#title' => t('Vertical Position'),
-    '#default_value' => variable_get('library_background_simple_css_v_position') ? variable_get('library_background_simple_css_v_position') : 'center',
-    '#options' => array(
-      'top' => t('Top'),
-      'center' => t('Center'),
-      'bottom' => t('Bottom'),
-      'other' => t('Other')
-    ),
-    '#required' => TRUE,
-  );
-
-  $form['simple_pages']['library_background_simple_css_v_position_other'] = array(
-    '#type' => 'textfield',
-    '#default_value' => variable_get('library_background_simple_css_v_position_other', ''),
-    '#required' => TRUE,
-    '#states' => array(
-      'visible' => array(
-        ':input[name="library_background_simple_css_v_position"]' => array('value' => 'other'),
-      ),
-    ),
-  );
-
-  $form['simple_pages']['library_background_simple_css_attachment'] = array(
-    '#type' => 'radios',
-    '#title' => t('Attachment'),
-    '#default_value' => variable_get('library_background_simple_css_attachment') ? variable_get('library_background_simple_css_attachment') : 'fixed',
-    '#options' => array(
-      'scroll' => t('Scroll'),
-      'fixed' => t('Fixed'),
-    ),
-    '#required' => TRUE,
-  );
-
-  $form['simple_pages']['library_background_simple_css_important'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('!important'),
-    '#default_value' => variable_get('library_background_simple_css_important') != FALSE ? variable_get('library_background_simple_css_important') : '',
-  );
-
-  $form['simple_pages']['library_background_simple_uploaded_images'] = array(
-    '#markup' => library_background_load_files(),
-  );
-
-  $form['simple_pages']['library_background_simple_deleted_image'] = array('#type' => 'hidden', '#value' => 'd');
-
-  $form['simple_pages']['library_background_simple_image'] = array(
-    '#type' => 'plupload',
-    '#title' => t('Background image'),
-    '#autosubmit' => FALSE,
-    '#default_value' => variable_get('library_background_simple_image', ''),
-    '#upload_validators' => array(
-      'file_validate_extensions' => array('jpg jpeg gif png txt doc xls pdf ppt pps odt ods odp'),
-    ),
-  );
-
-  $form['simple_pages']['library_background_simple_deleted_image'] = array(
+  $form['library_background_homepage_deleted_image'] = array(
     '#type' => 'textfield',
     '#default_value' => '',
     '#required' => FALSE,
