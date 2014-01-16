@@ -185,11 +185,11 @@ function library_background_homepage_bgs_form() {
     );
 
     if (!empty($_POST) && form_get_errors()) {
-        drupal_set_message(t('The settings have not been saved because of the errors.'), 'error');
+      drupal_set_message(t('The settings have not been saved because of the errors.'), 'error');
     }
     // By default, render the form using theme_system_settings_form().
     if (!isset($form['#theme'])) {
-        $form['#theme'] = 'system_settings_form';
+      $form['#theme'] = 'system_settings_form';
     }
     return $form;
 }
@@ -197,8 +197,7 @@ function library_background_homepage_bgs_form() {
 /**
  * Callback for the submit of admin form for homepage fieldset.
  */
-function library_background_hp_images_submit($form, $form_state) {
-    die('ff');
+function library_background_hp_images_submit($form, &$form_state) {
     $saved_files = array();
     $images = variable_get('library_background_homepage_images');
     if (!empty($images)) {
