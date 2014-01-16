@@ -178,7 +178,7 @@ function library_background_homepage_bgs_form() {
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = array(
         '#type' => 'submit',
-        '#value' => t('Save configuration'),
+        '#value' => t('Save'),
         '#submit' => array(
           'library_background_homepage_uploaded_images_remove_callback',
           'library_background_hp_images_submit')
