@@ -22,14 +22,14 @@ function library_background_menu() {
     'access arguments' => array('administer site configuration'),
     'file' => 'library_background.admin.inc',
   );
-  $items['admin/config/background/pages-settings'] = array(
-    'title' => t('Background images others pages configuration page'),
-    'description' => t('This page is contain all settings for others pages.'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('library_background_pages_settings_form'),
-    'access arguments' => array('administer site configuration'),
-    'file' => 'library_background_pages.admin.inc',
-  );
+//  $items['admin/config/background/pages-settings'] = array(
+//    'title' => t('Background images others pages configuration page'),
+//    'description' => t('This page is contain all settings for others pages.'),
+//    'page callback' => 'drupal_get_form',
+//    'page arguments' => array('library_background_pages_settings_form'),
+//    'access arguments' => array('administer site configuration'),
+//    'file' => 'library_background_pages.admin.inc',
+//  );
   return $items;
 }
 
