@@ -135,7 +135,8 @@ function library_background_settings_form() {
   );
 
   // Callbacks.
-  $form['submit'] = array(
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save configuration'),
     '#submit' => array(
@@ -145,4 +146,45 @@ function library_background_settings_form() {
   );
 
   return $form;
+}
+
+/**
+ * Callback for the submit of admin form for homepage fieldset.
+ */
+function library_background_hp_images_submit($form, $form_state) {
+    die('ff');
+    $saved_files = array();
+    $images = variable_get('library_background_homepage_images');
+    if (!empty($images)) {
+        $ids = library_background_check_files(explode(',', $images));
+    } else {
+        $ids = array();
+    }
+    if ($images = $form_state['values']['library_background_homepage_image']) {
+        $scheme = variable_get('file_default_scheme', 'public') . '://';
+        if (!is_dir('sites/default/files/hp/')) {
+            drupal_mkdir('sites/default/files/hp/');
+        }
+        $scheme .= 'hp/';
+        foreach ($images as $uploaded_file) {
+            if ($uploaded_file['status'] == 'done') {
+                $source = $uploaded_file['tmppath'];
+                $destination = file_stream_wrapper_uri_normalize($scheme . $uploaded_file['name']);
+                $destination = file_unmanaged_move($source, $destination, FILE_EXISTS_RENAME);
+                $file = plupload_file_uri_to_object($destination);
+                file_save($file);
+                drupal_write_record('files', $file);
+                if (file_exists('sites/default/files/hp/' . $file->name) == TRUE) {
+                    $ids[] = $file->fid;
+                    $saved_files[] = $file;
+                }
+            }
+            else {
+                form_set_error('pud', "Upload of {$uploaded_file['name']} failed");
+            }
+        }
+        $fids = implode(',', $ids);
+        variable_set('library_background_homepage_images', $fids);
+        cache_clear_all();
+    }
 }
