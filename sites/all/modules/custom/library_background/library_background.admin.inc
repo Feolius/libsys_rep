@@ -135,8 +135,7 @@ function library_background_settings_form() {
   );
 
   // Callbacks.
-  $form['actions']['#type'] = 'actions';
-  $form['actions']['submit'] = array(
+  $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save configuration'),
     '#submit' => array(
