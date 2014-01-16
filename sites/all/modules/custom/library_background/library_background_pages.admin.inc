@@ -115,8 +115,8 @@ function library_background_pages_settings_form () {
   );
 
   // Callbacks.
-  $form['#submit'][] = 'library_background_others_image_submit';
-  $form['#submit'][] = 'library_background_homepage_uploaded_images_remove_callback';
+  //$form['#submit'][] = 'library_background_others_image_submit';
+  //$form['#submit'][] = 'library_background_homepage_uploaded_images_remove_callback';
 
-  return system_settings_form($form);
+  return $form;
 }
