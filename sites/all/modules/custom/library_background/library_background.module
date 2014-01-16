@@ -479,6 +479,7 @@ function library_background_simple_get_file_random() {
  * Callback for deleting images from list of uploaded images.
  */
 function library_background_homepage_uploaded_images_remove_callback($form, &$form_state) {
+  die('ff');
   if ($need_deleted  = $form_state['input']['library_background_homepage_deleted_image']) {
     $fids = explode(', ', $need_deleted);
     $files = file_load_multiple($fids);
