@@ -135,7 +135,15 @@ function library_background_settings_form() {
   );
 
   // Callbacks.
-  $form['#submit'][] = 'library_background_homepage_uploaded_images_remove_callback';
-  $form['#submit'][] = 'library_background_hp_images_submit';
-  return system_settings_form($form);
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+    '#submit' => array(
+      'library_background_homepage_uploaded_images_remove_callback',
+      'library_background_hp_images_submit'
+    )
+  );
+
+  return $form;
 }
