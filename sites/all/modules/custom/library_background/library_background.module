@@ -155,7 +155,7 @@ function library_background_load_files($homepage = TRUE) {
 /**
  * Callback for the submit of admin form for homepage fieldset.
  */
-function library_background_homepage_image_submit($form, $form_state) {
+function library_background_hp_images_submit($form, $form_state) {
   $saved_files = array();
   $images = variable_get('library_background_homepage_images');
   if (!empty($images)) {
