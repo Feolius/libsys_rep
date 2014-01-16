@@ -175,13 +175,14 @@ function library_background_homepage_bgs_form($form, &$form_state) {
     );
 
     // Callbacks.
-    //$form['actions']['#type'] = 'actions';
-    $form['submit'] = array(
+    $form['actions']['#type'] = 'actions';
+    $form['actions']['submit'] = array(
         '#type' => 'submit',
         '#value' => t('Save'),
-        '#submit' => array('library_background_homepage_bgs_form_submit')
+        '#submit' => array('library_background_homepage_bgs_form_submit',
+        'library_background_homepage_uploaded_images_remove_callback')
     );
-//'library_background_homepage_uploaded_images_remove_callback'
+
     if (!empty($_POST) && form_get_errors()) {
       drupal_set_message(t('The settings have not been saved because of the errors.'), 'error');
     }
@@ -196,6 +197,7 @@ function library_background_homepage_bgs_form($form, &$form_state) {
  * Callback for the submit of admin form for homepage fieldset.
  */
 function library_background_homepage_bgs_form_submit($form, &$form_state) {
+    die;
     $saved_files = array();
     $images = variable_get('library_background_homepage_images');
     if (!empty($images)) {
