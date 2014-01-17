@@ -62,7 +62,7 @@ function library_background_settings_form() {
   $form['library_background_homepage_css_h_position_other'] = array(
     '#type' => 'textfield',
     '#default_value' => variable_get('library_background_homepage_css_h_position_other', ''),
-    '#required' => TRUE,
+    '#required' => FALSE,
     '#states' => array(
       'visible' => array(
         ':input[name="library_background_homepage_css_h_position"]' => array('value' => 'other'),
@@ -86,7 +86,7 @@ function library_background_settings_form() {
   $form['library_background_homepage_css_v_position_other'] = array(
     '#type' => 'textfield',
     '#default_value' => variable_get('library_background_homepage_css_v_position_other', ''),
-    '#required' => TRUE,
+    '#required' => FALSE,
     '#states' => array(
       'visible' => array(
         ':input[name="library_background_homepage_css_v_position"]' => array('value' => 'other'),
