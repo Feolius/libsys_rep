@@ -75,7 +75,7 @@ function library_background_simple_get_css() {
     : $css_hp;
   $css_vp = variable_get('library_background_pages_css_v_position');
   $image['css_v_position'] = $css_vp == 'other'
-    ? variable_get('library_background_pages_v_position_other') . 'px '
+    ? variable_get('library_background_pages_css_v_position_other') . 'px '
     : $css_vp;
   $image['css_attachment'] = variable_get('library_background_pages_css_attachment');
   $image['important'] = isset($importand) && $importand != FALSE ? '!important' : '';
