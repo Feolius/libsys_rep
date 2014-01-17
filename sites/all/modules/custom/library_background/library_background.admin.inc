@@ -111,6 +111,12 @@ function library_background_settings_form() {
     '#default_value' => variable_get('library_background_homepage_css_important') != FALSE ? variable_get('library_background_homepage_css_important') : '',
   );
 
+  $form['library_background_exclude_main_background'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Exclude main background'),
+    '#default_value' => variable_get('library_background_exclude_main_background') != FALSE ? variable_get('library_background_exclude_main_background') : '',
+  );
+
   $form['library_background_homepage_uploaded_images'] = array(
     '#markup' => library_background_load_files(),
   );

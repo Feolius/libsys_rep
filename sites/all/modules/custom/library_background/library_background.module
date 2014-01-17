@@ -39,6 +39,9 @@ function library_background_menu() {
 function library_background_init() {
   drupal_add_js(drupal_get_path('module', 'library_background') . '/library_background.js');
   drupal_add_css(drupal_get_path('module', 'library_background') . '/library_background.css');
+  if (!variable_get('library_background_exclude_main_background')) {
+    drupal_add_css(drupal_get_path('module', 'library_background') . '/bg.css');
+  }
 }
 
 /**
@@ -79,6 +82,7 @@ function library_background_simple_get_css() {
     : $css_vp;
   $image['css_attachment'] = variable_get('library_background_pages_css_attachment');
   $image['important'] = isset($importand) && $importand != FALSE ? '!important' : '';
+  $image['exclude'] = variable_get('library_background_exclude_main_background');
   return $image;
 }
 
