@@ -79,7 +79,7 @@ a:active, img:active{-webkit-transition: all 0.05s ease-out; -moz-transition: al
 
 #console{ display:block;}
 
-html{ color: #606060; background: url(images/main_bg.jpg) #181b20; }
+html{ color: #606060; }
 
 body { font: 0.8em/165% "Open Sans",Helvetica,Arial,sans-serif; margin:0; padding:0; outline:0 none; vertical-align:baseline;  min-width:960px; }
 
