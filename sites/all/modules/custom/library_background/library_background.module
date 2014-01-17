@@ -67,17 +67,17 @@ function library_background_homepage_get_css() {
  */
 function library_background_simple_get_css() {
   $image['url'] = library_background_simple_get_file_random();
-  $importand = variable_get('library_background_simple_css_important');
-  $image['css_repeat'] = variable_get('library_background_simple_css_repeat');
-  $css_hp = variable_get('library_background_simple_css_h_position', '');
+  $importand = variable_get('library_background_pages_css_important');
+  $image['css_repeat'] = variable_get('library_background_pages_css_repeat');
+  $css_hp = variable_get('library_background_pages_h_position', '');
   $image['css_h_position'] = $css_hp == 'other'
-    ? variable_get('library_background_simple_css_h_position_other') . 'px '
+    ? variable_get('library_background_pages_css_h_position_other') . 'px '
     : $css_hp;
-  $css_vp = variable_get('library_background_simple_css_v_position');
+  $css_vp = variable_get('library_background_pages_css_v_position');
   $image['css_v_position'] = $css_vp == 'other'
-    ? variable_get('library_background_simple_css_v_position_other') . 'px '
+    ? variable_get('library_background_pages_v_position_other') . 'px '
     : $css_vp;
-  $image['css_attachment'] = variable_get('library_background_simple_css_attachment');
+  $image['css_attachment'] = variable_get('library_background_pages_css_attachment');
   $image['important'] = isset($importand) && $importand != FALSE ? '!important' : '';
   return $image;
 }
