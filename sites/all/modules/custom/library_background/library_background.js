@@ -10,12 +10,12 @@
         $(this).click(function(event) {
           $(this).remove();
           $(this).addClass('removed');
-          var deleted_images = $('#edit-library-background-homepage-deleted-image').val();
+          var deleted_images = $('#edit-library-background-deleted-image').val();
           var id = $(this).attr('id');
           if (deleted_images) {
-            $('#edit-library-background-homepage-deleted-image').val(deleted_images + ', ' + id);
+            $('#edit-library-background-deleted-image').val(deleted_images + ', ' + id);
           } else {
-            $('#edit-library-background-homepage-deleted-image').val(id);
+            $('#edit-library-background-deleted-image').val(id);
           }
         })
       })

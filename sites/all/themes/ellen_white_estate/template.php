@@ -11,7 +11,7 @@ function ellen_white_estate_preprocess_node(&$vars, $hook) {
 
   $view_mode = str_replace('-', '_', $vars['view_mode']);
   $type = $vars['node']->type;
-  unset($vars['title']);
+
   $preprocesses[] = "{$theme}_preprocess_node__$type";
   $preprocesses[] = "{$theme}_preprocess_node__$view_mode";
   $preprocesses[] = "{$theme}_preprocess_node__{$type}_$view_mode";
@@ -115,16 +115,13 @@ function _ellen_white_estate_preprocess_node__files_primary_url($vars) {
 function _ellen_white_estate_preprocess_node__files_primary_video($vars) {
   $output = array();
   $node = $vars['node'];
-  if (isset($vars['content']['field_files_subtitle'])
-    && !empty($vars['content']['field_files_subtitle'][0]['#markup'])) {
+  if (isset($vars['content']['field_files_subtitle'])) {
     $output['subtitle'] = $vars['content']['field_files_subtitle'];
   }
-  if (isset($vars['content']['field_files_youtube_media'])
-    && !empty($vars['content']['field_files_youtube_media'][0]['#markup'])) {
+  if (isset($vars['content']['field_files_youtube_media'])) {
     $output['video'] = $vars['content']['field_files_youtube_media'];
   }
-  if (isset($vars['content']['field_files_description'])
-    && !empty($vars['content']['field_files_description'][0]['#markup'])) {
+  if (isset($vars['content']['field_files_description'])) {
     $output['description'] = $vars['content']['field_files_description'];
   }
 
@@ -992,7 +989,8 @@ function ellen_white_estate_preprocess_node__home_top(&$vars) {
  * Clean up the panel pane variables for the template.
  */
 function ellen_white_estate_preprocess_panels_pane(&$vars) {
-  if ($vars['pane']->type == 'page_content' || arg(0) == 'node') {
+  if ($vars['pane']->type == 'page_content'
+    || ($vars['pane']->type == 'node_content' && ($vars['content']['#node']->type !== 'files'))) {
     $vars['title'] = '';
   }
 }

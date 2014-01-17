@@ -12,20 +12,23 @@ function library_background_menu() {
     'weight' => -5,
     'page callback' => 'library_background_menu_block_page',
     'access arguments' => array('access administration pages'),
+    'file' => 'library_background.admin.inc',
   );
   $items['admin/config/background/homepage-settings'] = array(
     'title' => t('Background images homepage configuration page'),
     'description' => t('This page is contain all settings for the homepage.'),
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('library_background_homepage_bgs_form'),
+    'page arguments' => array('library_background_settings_form'),
     'access arguments' => array('administer site configuration'),
+    'file' => 'library_background.admin.inc',
   );
   $items['admin/config/background/pages-settings'] = array(
     'title' => t('Background images others pages configuration page'),
     'description' => t('This page is contain all settings for others pages.'),
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('library_background_pages_bgs_form'),
+    'page arguments' => array('library_background_pages_settings_form'),
     'access arguments' => array('administer site configuration'),
+    'file' => 'library_background_pages.admin.inc',
   );
   return $items;
 }
@@ -37,322 +40,6 @@ function library_background_init() {
   drupal_add_js(drupal_get_path('module', 'library_background') . '/library_background.js');
   drupal_add_css(drupal_get_path('module', 'library_background') . '/library_background.css');
 }
-
-/**
- * @file
- * Menu callbacks and helpers for admin part.
- */
-
-/**
- * Provide a single block from the administration menu as a page.
- *
- * This function is often a destination for these blocks.
- * For example, 'admin/structure/types' needs to have a destination to be valid
- * in the Drupal menu system, but too much information there might be
- * hidden, so we supply the contents of the block.
- *
- * @return
- *   The output HTML.
- */
-function library_background_menu_block_page() {
-  $item = menu_get_item();
-  if ($content = system_admin_menu_block($item)) {
-    $output = theme('admin_block_content', array('content' => $content));
-  }
-  else {
-    $output = t('You do not have any administrative items.');
-  }
-  return $output;
-}
-
-/**
- * Settings form for library background settings.
- */
-function library_background_homepage_bgs_form($form, &$form_state) {
-  $form = array();
-
-  $form['library_background_homepage_css_repeat'] = array(
-        '#type' => 'radios',
-        '#title' => t('Repeat'),
-        '#default_value' => variable_get('library_background_homepage_css_repeat') ? variable_get('library_background_homepage_css_repeat') : 'repeat',
-        '#options' => array(
-            'repeat' => t('Repeat'),
-            'repeat-x' => t('Repeat Horizontally'),
-            'repeat-y' => t('Repeat Vertically'),
-            'no-repeat' => t('No Repeat')
-        ),
-        '#required' => TRUE,
-    );
-
-    $form['library_background_homepage_css_h_position'] = array(
-        '#type' => 'radios',
-        '#title' => t('Horizontal Position'),
-        '#default_value' => variable_get('library_background_homepage_css_h_position') ? variable_get('library_background_homepage_css_h_position') : 'center',
-        '#options' => array(
-            'left' => t('Left'),
-            'center' => t('Center'),
-            'right' => t('Right'),
-            'other' => t('Other')
-        ),
-        '#required' => TRUE,
-    );
-
-    $form['library_background_homepage_css_h_position_other'] = array(
-        '#type' => 'textfield',
-        '#default_value' => variable_get('library_background_homepage_css_h_position_other', ''),
-        '#required' => TRUE,
-        '#states' => array(
-            'visible' => array(
-                ':input[name="library_background_homepage_css_h_position"]' => array('value' => 'other'),
-            ),
-        ),
-    );
-
-    $form['library_background_homepage_css_v_position'] = array(
-        '#type' => 'radios',
-        '#title' => t('Vertical Position'),
-        '#default_value' => variable_get('library_background_homepage_css_v_position') ? variable_get('library_background_homepage_css_v_position') : 'center',
-        '#options' => array(
-            'top' => t('Top'),
-            'center' => t('Center'),
-            'bottom' => t('Bottom'),
-            'other' => t('Other')
-        ),
-        '#required' => TRUE,
-    );
-
-    $form['library_background_homepage_css_v_position_other'] = array(
-        '#type' => 'textfield',
-        '#default_value' => variable_get('library_background_homepage_css_v_position_other', ''),
-        '#required' => TRUE,
-        '#states' => array(
-            'visible' => array(
-                ':input[name="library_background_homepage_css_v_position"]' => array('value' => 'other'),
-            ),
-        ),
-    );
-
-    $form['library_background_homepage_css_attachment'] = array(
-        '#type' => 'radios',
-        '#title' => t('Attachment'),
-        '#default_value' => variable_get('library_background_homepage_css_attachment') ? variable_get('library_background_homepage_css_attachment') : 'fixed',
-        '#options' => array(
-            'scroll' => t('Scroll'),
-            'fixed' => t('Fixed'),
-        ),
-        '#required' => TRUE,
-    );
-
-    $form['library_background_homepage_css_important'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('!important'),
-        '#default_value' => variable_get('library_background_homepage_css_important') != FALSE ? variable_get('library_background_homepage_css_important') : '',
-    );
-
-    $form['library_background_homepage_uploaded_images'] = array(
-        '#markup' => library_background_load_files(),
-    );
-
-    $form['library_background_homepage_deleted_image'] = array('#type' => 'hidden', '#value' => '');
-
-    $form['library_background_homepage_image'] = array(
-        '#type' => 'plupload',
-        '#title' => t('Background image'),
-        '#autosubmit' => FALSE,
-        '#default_value' => variable_get('library_background_homepage_image', ''),
-        '#upload_validators' => array(
-            'file_validate_extensions' => array('jpg jpeg gif png txt doc xls pdf ppt pps odt ods odp'),
-        ),
-    );
-
-    $form['library_background_homepage_deleted_image'] = array(
-        '#type' => 'textfield',
-        '#default_value' => '',
-        '#required' => FALSE,
-        '#attributes' => array('class' => array('hide-me'))
-    );
-
-    // Callbacks.
-    $form['actions'] = array('#type' => 'actions');
-    $form['actions']['submit'] = array(
-        '#type' => 'submit',
-        '#value' => t('Save'),
-        '#submit' => array('library_background_homepage_bgs_form_submit',
-        'library_background_homepage_uploaded_images_remove_callback')
-    );
-
-    if (!empty($_POST) && form_get_errors()) {
-      drupal_set_message(t('The settings have not been saved because of the errors.'), 'error');
-    }
-    // By default, render the form using theme_system_settings_form().
-    if (!isset($form['#theme'])) {
-      $form['#theme'] = 'system_settings_form';
-    }
-    return $form;
-}
-
-/**
- * Callback for the submit of admin form for homepage fieldset.
- */
-function library_background_homepage_bgs_form_submit($form, &$form_state) {
-    $saved_files = array();
-    $images = variable_get('library_background_homepage_images');
-    if (!empty($images)) {
-        $ids = library_background_check_files(explode(',', $images));
-    } else {
-        $ids = array();
-    }
-    if ($images = $form_state['values']['library_background_homepage_image']) {
-        $scheme = variable_get('file_default_scheme', 'public') . '://';
-        if (!is_dir('sites/default/files/hp/')) {
-            drupal_mkdir('sites/default/files/hp/');
-        }
-        $scheme .= 'hp/';
-        foreach ($images as $uploaded_file) {
-            if ($uploaded_file['status'] == 'done') {
-                $source = $uploaded_file['tmppath'];
-                $destination = file_stream_wrapper_uri_normalize($scheme . $uploaded_file['name']);
-                $destination = file_unmanaged_move($source, $destination, FILE_EXISTS_RENAME);
-                $file = plupload_file_uri_to_object($destination);
-                file_save($file);
-                drupal_write_record('files', $file);
-                if (file_exists('sites/default/files/hp/' . $file->name) == TRUE) {
-                    $ids[] = $file->fid;
-                    $saved_files[] = $file;
-                }
-            }
-            else {
-                form_set_error('pud', "Upload of {$uploaded_file['name']} failed");
-            }
-        }
-        $fids = implode(',', $ids);
-        variable_set('library_background_homepage_images', $fids);
-        cache_clear_all();
-    }
-}
-
-/**
- * Provide a single block from the administration menu as a page.
- *
- * This function is often a destination for these blocks.
- * For example, 'admin/structure/types' needs to have a destination to be valid
- * in the Drupal menu system, but too much information there might be
- * hidden, so we supply the contents of the block.
- *
- * @return
- *   The output HTML.
- */
-function library_background_pages_settings_form () {
-    $form = array();
-
-    $form['library_background_simple_css_repeat'] = array(
-        '#type' => 'radios',
-        '#title' => t('Repeat'),
-        '#default_value' => variable_get('library_background_simple_css_repeat') ? variable_get('library_background_simple_css_repeat') : 'repeat',
-        '#options' => array(
-            'repeat' => t('Repeat'),
-            'repeat-x' => t('Repeat Horizontally'),
-            'repeat-y' => t('Repeat Vertically'),
-            'no-repeat' => t('No Repeat')
-        ),
-        '#required' => TRUE,
-    );
-
-    $form['library_background_simple_css_h_position'] = array(
-        '#type' => 'radios',
-        '#title' => t('Horizontal Position'),
-        '#default_value' => variable_get('library_background_simple_css_h_position') ? variable_get('library_background_simple_css_h_position') : 'center',
-        '#options' => array(
-            'left' => t('Left'),
-            'center' => t('Center'),
-            'right' => t('Right'),
-            'other' => t('Other')
-        ),
-        '#required' => TRUE,
-    );
-
-    $form['library_background_simple_css_h_position_other'] = array(
-        '#type' => 'textfield',
-        '#default_value' => variable_get('library_background_simple_css_h_position_other', ''),
-        '#required' => TRUE,
-        '#states' => array(
-            'visible' => array(
-                ':input[name="library_background_simple_css_h_position"]' => array('value' => 'other'),
-            ),
-        ),
-    );
-
-    $form['library_background_simple_css_v_position'] = array(
-        '#type' => 'radios',
-        '#title' => t('Vertical Position'),
-        '#default_value' => variable_get('library_background_simple_css_v_position') ? variable_get('library_background_simple_css_v_position') : 'center',
-        '#options' => array(
-            'top' => t('Top'),
-            'center' => t('Center'),
-            'bottom' => t('Bottom'),
-            'other' => t('Other')
-        ),
-        '#required' => TRUE,
-    );
-
-    $form['library_background_simple_css_v_position_other'] = array(
-        '#type' => 'textfield',
-        '#default_value' => variable_get('library_background_simple_css_v_position_other', ''),
-        '#required' => TRUE,
-        '#states' => array(
-            'visible' => array(
-                ':input[name="library_background_simple_css_v_position"]' => array('value' => 'other'),
-            ),
-        ),
-    );
-
-    $form['library_background_simple_css_attachment'] = array(
-        '#type' => 'radios',
-        '#title' => t('Attachment'),
-        '#default_value' => variable_get('library_background_simple_css_attachment') ? variable_get('library_background_simple_css_attachment') : 'fixed',
-        '#options' => array(
-            'scroll' => t('Scroll'),
-            'fixed' => t('Fixed'),
-        ),
-        '#required' => TRUE,
-    );
-
-    $form['library_background_simple_css_important'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('!important'),
-        '#default_value' => variable_get('library_background_simple_css_important') != FALSE ? variable_get('library_background_simple_css_important') : '',
-    );
-
-    $form['library_background_simple_uploaded_images'] = array(
-        '#markup' => library_background_load_files(FALSE),
-    );
-
-    $form['library_background_simple_deleted_image'] = array('#type' => 'hidden', '#value' => '');
-
-    $form['library_background_simple_image'] = array(
-        '#type' => 'plupload',
-        '#title' => t('Background image'),
-        '#autosubmit' => FALSE,
-        '#default_value' => variable_get('library_background_simple_image', ''),
-        '#upload_validators' => array(
-            'file_validate_extensions' => array('jpg jpeg gif png txt doc xls pdf ppt pps odt ods odp'),
-        ),
-    );
-
-    $form['library_background_simple_deleted_image'] = array(
-        '#type' => 'textfield',
-        '#default_value' => '',
-        '#required' => FALSE,
-        '#attributes' => array('class' => array('hide-me'))
-    );
-
-    // Callbacks.
-    //$form['#submit'][] = 'library_background_others_image_submit';
-    //$form['#submit'][] = 'library_background_homepage_uploaded_images_remove_callback';
-
-    return $form;
-}
-
 
 /**
  * Helping function for get random background image by id.
@@ -466,17 +153,57 @@ function library_background_load_files($homepage = TRUE) {
 }
 
 /**
- * Callback for the submit of admin form for others pages fieldset.
+ * Callback for the submit of admin form for homepage fieldset.
  */
-function library_background_simple_image_submit($form, $form_state) {
+function library_background_homepage_image_submit($form, &$form_state) {
   $saved_files = array();
-  $images = variable_get('library_background_simple_images');
-  if (!empty($images)) {
-    $ids = library_background_check_files(explode(',', $images), FALSE);
+  $files = variable_get('library_background_homepage_images');
+  if (!empty($files)) {
+    $ids = library_background_check_hp_files(explode(',', $files));
   } else {
     $ids = array();
   }
-  if ($images = $form_state['values']['library_background_simple_image']) {
+  if ($images = $form_state['values']['library_background_homepage_image']) {
+    $scheme = variable_get('file_default_scheme', 'public') . '://';
+    if (!is_dir('sites/default/files/hp/')) {
+      drupal_mkdir('sites/default/files/hp/');
+    }
+    $scheme .= 'hp/';
+    foreach ($images as $uploaded_file) {
+      if ($uploaded_file['status'] == 'done') {
+        $source = $uploaded_file['tmppath'];
+        $destination = file_stream_wrapper_uri_normalize($scheme . $uploaded_file['name']);
+        $destination = file_unmanaged_move($source, $destination, FILE_EXISTS_RENAME);
+        $file = plupload_file_uri_to_object($destination);
+        file_save($file);
+        drupal_write_record('files', $file);
+        if (file_exists('sites/default/files/hp/' . $file->name)) {
+          $ids[] = $file->fid;
+          $saved_files[] = $file;
+        }
+      }
+      else {
+        form_set_error('pud', "Upload of {$uploaded_file['name']} failed");
+      }
+    }
+    $fids = implode(',', $ids);
+    variable_set('library_background_homepage_images', $fids);
+    cache_clear_all();
+  }
+}
+
+/**
+ * Callback for the submit of admin form for others pages fieldset.
+ */
+function library_background_others_pages_bgs_form_submit($form, $form_state) {
+  $saved_files = array();
+  $images = variable_get('library_background_simple_images');
+  if (!empty($images)) {
+    $ids = library_background_check_oth_files(explode(',', $images));
+  } else {
+    $ids = array();
+  }
+  if ($images = $form_state['values']['library_background_pages_image']) {
     $scheme = variable_get('file_default_scheme', 'public') . '://';
     if (!is_dir('sites/default/files/oth/')) {
       drupal_mkdir('sites/default/files/oth/');
@@ -490,7 +217,7 @@ function library_background_simple_image_submit($form, $form_state) {
         $file = plupload_file_uri_to_object($destination);
         file_save($file);
         drupal_write_record('files', $file);
-        if (file_exists('sites/default/files/oth/' . $file->name) == TRUE) {
+        if (file_exists('sites/default/files/oth/' . $file->name)) {
           $ids[] = $file->fid;
           $saved_files[] = $file;
         }
@@ -506,18 +233,29 @@ function library_background_simple_image_submit($form, $form_state) {
 }
 
 /**
- * Helper function for checking the files.
+ * Helper function for checking the files for homepage.
  */
-function library_background_check_files($fids, $homepage = TRUE) {
-  $images = array();
+function library_background_check_hp_files($fids) {
   $files = file_load_multiple($fids);
-  $dir = $homepage == TRUE ? 'sites/default/files/lb/hp/' : 'sites/default/files/lb/oth/';
-  foreach ($files as $file) {
-    if (file_exists($dir . $file->filename) == TRUE) {
-      $images[] = $file->fid;
+  return array_map(function ($file) {
+    $images = array();
+    if (file_exists('sites/default/files/hp/' . $file->filename)) {
+      return $images[] = $file->fid;
     }
-  }
-  return $images;
+  }, $files);
+}
+
+/**
+ * Helper function for checking the files for others pages.
+ */
+function library_background_check_oth_files($fids) {
+  $files = file_load_multiple($fids);
+  return array_map(function ($file) {
+    $images = array();
+    if (file_exists('sites/default/files/oth/'. $file->filename)) {
+      return $images[] = $file->fid;
+    }
+  }, $files);
 }
 
 /**
@@ -610,14 +348,7 @@ function library_background_simple_get_file_random() {
  * Callback for deleting images from list of uploaded images.
  */
 function library_background_homepage_uploaded_images_remove_callback($form, &$form_state) {
-  if ($need_deleted  = $form_state['input']['library_background_homepage_deleted_image']) {
-    $fids = explode(', ', $need_deleted);
-    $files = file_load_multiple($fids);
-    foreach ($files as $file) {
-      file_delete($file);
-    }
-  }
-  if ($need_deleted  = $form_state['input']['library_background_simple_deleted_image']) {
+  if ($need_deleted  = $form_state['input']['library_background_deleted_image']) {
     $fids = explode(', ', $need_deleted);
     $files = file_load_multiple($fids);
     foreach ($files as $file) {
@@ -626,9 +357,12 @@ function library_background_homepage_uploaded_images_remove_callback($form, &$fo
   }
 }
 
-function library_background_form_alter($form, $form_state, $form_id) {
-  kpr($form);
-  if ($form_id == 'library_background_pages_settings_form') {
-
+function library_background_others_pages_uploaded_images_remove_callback($form, &$form_state) {
+  if ($need_deleted  = $form_state['input']['library_background_deleted_image']) {
+    $fids = explode(', ', $need_deleted);
+    $files = file_load_multiple($fids);
+    foreach ($files as $file) {
+      file_delete($file);
+    }
   }
 }
