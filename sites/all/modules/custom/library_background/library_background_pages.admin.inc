@@ -85,34 +85,34 @@ function library_background_pages_settings_form () {
     '#required' => TRUE,
   );
 
-    $form['library_background_pages_css_important'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('!important'),
-      '#default_value' => variable_get('library_background_pages_css_important') != FALSE ? variable_get('library_background_pages_css_important') : '',
-    );
+  $form['library_background_pages_css_important'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('!important'),
+    '#default_value' => variable_get('library_background_pages_css_important') != FALSE ? variable_get('library_background_pages_css_important') : '',
+  );
 
-    $form['library_background_pages_uploaded_images'] = array(
-      '#markup' => library_background_load_files(FALSE),
-    );
+  $form['library_background_pages_uploaded_images'] = array(
+    '#markup' => library_background_load_files(FALSE),
+  );
 
-    $form['library_background_pages_deleted_image'] = array('#type' => 'hidden', '#value' => '');
+  $form['library_background_pages_deleted_image'] = array('#type' => 'hidden', '#value' => '');
 
-    $form['library_background_pages_image'] = array(
-      '#type' => 'plupload',
-      '#title' => t('Background image'),
-      '#autosubmit' => FALSE,
-      '#default_value' => variable_get('library_background_pages', ''),
-      '#upload_validators' => array(
-        'file_validate_extensions' => array('jpg jpeg gif png txt doc xls pdf ppt pps odt ods odp'),
-      ),
-    );
+  $form['library_background_pages_image'] = array(
+    '#type' => 'plupload',
+    '#title' => t('Background image'),
+    '#autosubmit' => FALSE,
+    '#default_value' => variable_get('library_background_pages', ''),
+    '#upload_validators' => array(
+      'file_validate_extensions' => array('jpg jpeg gif png txt doc xls pdf ppt pps odt ods odp'),
+    ),
+  );
 
-    $form['library_background_deleted_image'] = array(
-      '#type' => 'textfield',
-      '#default_value' => '',
-      '#required' => FALSE,
-      '#attributes' => array('class' => array('hide-me'))
-    );
+  $form['library_background_deleted_image'] = array(
+    '#type' => 'textfield',
+    '#default_value' => '',
+    '#required' => FALSE,
+    '#attributes' => array('class' => array('hide-me'))
+  );
 
   // Callbacks.
   $form['actions']['#type'] = 'actions';
