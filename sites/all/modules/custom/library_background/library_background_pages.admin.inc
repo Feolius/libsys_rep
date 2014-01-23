@@ -39,7 +39,6 @@ function library_background_pages_settings_form () {
     '#required' => TRUE,
   );
 
-
   $form['library_background_pages_css_h_position_other'] = array(
     '#type' => 'textfield',
     '#default_value' => variable_get('library_background_pages_css_h_position_other', ''),
@@ -63,6 +62,7 @@ function library_background_pages_settings_form () {
     ),
     '#required' => TRUE,
   );
+
   $form['library_background_pages_css_v_position_other'] = array(
     '#type' => 'textfield',
     '#default_value' => variable_get('library_background_pages_css_v_position_other', ''),
