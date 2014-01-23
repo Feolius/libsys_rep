@@ -72,7 +72,7 @@ function library_background_simple_get_css() {
   $image['url'] = library_background_simple_get_file_random();
   $importand = variable_get('library_background_pages_css_important');
   $image['css_repeat'] = variable_get('library_background_pages_css_repeat');
-  $css_hp = variable_get('library_background_pages_h_position', '');
+  $css_hp = variable_get('library_background_pages_css_h_position', '');
   $image['css_h_position'] = $css_hp == 'other'
     ? variable_get('library_background_pages_css_h_position_other') . 'px '
     : $css_hp;
