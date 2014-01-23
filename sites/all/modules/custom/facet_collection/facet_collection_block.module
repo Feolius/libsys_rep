@@ -99,7 +99,9 @@ function facet_collection_block_block_view($delta) {
       $link = l($text, $path, $options);
       $content = $content . '<div class="library-leaf library-leaf-' . $bundle . '">' . $link . '</div>';
     }else{
-      $content = $content . '<div class="library-leaf library-leaf-' . $bundle . ' active">' . $entity_info['bundles'][$bundle]['label'] . '</div>';
+      $text = $entity_info['bundles'][$bundle]['label'];
+      $link = l($text, 'library');
+      $content = $content . '<div class="library-leaf library-leaf-' . $bundle . ' active">' . $link . '</div>';
       $form = drupal_get_form('facet_collection_block_form');
       $form = drupal_render($form);
       $content = $content . '<div class="library-filter-content">' . $form . '</div>';

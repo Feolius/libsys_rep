@@ -49,10 +49,23 @@ define('FIELD_EVENTS_DESCRIPTION_BOOST', '1.0');
  * It's hardcoded function. Return an array with keys are machine field names and values are boost values. This fields will be used in default search.
  * Need to be replaced by admin settings.
  */
-function facet_collection_get_field_boosts($chosen_content_type){
+function facet_collection_get_field_boosts(){
   $boosts = array();
+  // Determine boosts for title fields.
   $constants = get_defined_constants();
-  $boosts['title'] = $constants[strtoupper($chosen_content_type . '_title_boost')];
+  $environment = apachesolr_default_environment();
+  $content_types = apachesolr_get_index_bundles($environment, 'node');
+  foreach($content_types as $content_type) {
+    $constant_name = strtoupper($content_type . '_title_boost');
+    if (isset($constants[$constant_name])) {
+      $boosts['title_' . $content_type] = $constants[$constant_name];
+    } else {
+      $boosts['title_' . $content_type] = '1.0';
+    }
+  }
+  // However, we also need default title boost in case, when no content type is chosen.
+  // It can be value for files content type title, for instance.
+  $boosts['title'] = FILES_TITLE_BOOST;
   //Files
   //$boosts['files_title'] = FILES_TITLE_BOOST;
   $boosts['field_files_description'] = FIELD_FILES_DESCRIPTION_BOOST;

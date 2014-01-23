@@ -89,10 +89,6 @@ function facet_collection_search_block_form_submit($form, &$form_state) {
   }
   $search_query = trim($form_state['values'][$form_id]);
   $get = json_decode($form_state['values']['get'], TRUE);
-  //Check if we have filters. If not, then we should set filter by content type files, because it means that we go from another page
-  if (!isset($get['f'])) {
-    $get['f'][] = 'bundle:files';
-  }
   if (!empty($search_query)) {
     $redirect_path = 'library/' . $search_query;
   }else{

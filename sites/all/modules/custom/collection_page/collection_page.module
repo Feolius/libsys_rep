@@ -612,15 +612,13 @@ function template_preprocess_collection_standard_default_view(&$variables) {
  * Preprocess function for collection_page.
  */
 function template_preprocess_collection_page(&$variables) {
-  foreach ($_GET['f'] as $filter) {
-    $arr = explode(':', $filter);
-    if ((count($arr) != 1) && ($arr[0] == 'bundle')) {
-      $bundle = $arr[1];
-    }
+  $bundle = facet_collection_get_filtered_content_type();
+  $variables['bundle'] = FALSE;
+  if (!empty($bundle)) {
+    $bundle_list = node_type_get_types();
+    $bundle_name = $bundle_list[$bundle]->name;
+    $variables['bundle'] = $bundle_name;
   }
-  $bundle_list = node_type_get_types();
-  $bundle_name = $bundle_list[$bundle]->name;
-  $variables['bundle'] = $bundle_name;
 }
 
 function collection_page_preprocess_breadcrumb(&$variables) {

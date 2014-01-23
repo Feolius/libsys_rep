@@ -3,23 +3,23 @@
 /**
  * Implements hook_init()
  */
-function facet_collection_init() {
-  //We will check if get parameters is good, and redirect it to default state of library page, if not
-  if (arg(0) == 'library') {
-    //Check if we have right filtered content type
-    $filtered_content_type = facet_collection_get_filtered_content_type();
-    if ($filtered_content_type) {
-      $environment = apachesolr_default_environment();
-      $indexed_bundles = apachesolr_get_index_bundles($environment, 'node');
-      if (in_array($filtered_content_type, $indexed_bundles)) {
-        return;
-      }
-    }
-    //Something is wrong with filtered content type. Redirect to default library page state
-    $query['f'][0] = 'bundle:files';
-    drupal_goto('library', array('query' => $query));
-  }
-}
+//function facet_collection_init() {
+//  //We will check if get parameters is good, and redirect it to default state of library page, if not
+//  if (arg(0) == 'library') {
+//    //Check if we have right filtered content type
+//    $filtered_content_type = facet_collection_get_filtered_content_type();
+//    if ($filtered_content_type) {
+//      $environment = apachesolr_default_environment();
+//      $indexed_bundles = apachesolr_get_index_bundles($environment, 'node');
+//      if (in_array($filtered_content_type, $indexed_bundles)) {
+//        return;
+//      }
+//    }
+//    //Something is wrong with filtered content type. Redirect to default library page state
+//    $query['f'][0] = 'bundle:files';
+//    drupal_goto('library', array('query' => $query));
+//  }
+//}
 
 /**
  * Implements hook_menu()
@@ -75,7 +75,7 @@ function facet_collection_page() {
  * Build solr query by given get params. We pass get params as argument, because we want to use this function in another
  * modules, where get params could be presented not explicitly.
  */
-function facet_collection_build_solr_query($get_params){
+function facet_collection_build_solr_query($get_params) {
   $environment = apachesolr_default_environment();
   $solr = apachesolr_get_solr($environment);
   $params = facet_collection_get_default_params($get_params);
@@ -101,25 +101,23 @@ function facet_collection_get_default_params($get_params) {
 // q=_query_:"{!dismax qf=... }term1" AND _query_:"{!dismax qf=... }term2". If we have only usual search it will be solr query
 // based on dismax query parser q=term&qf='list of all searchable fields with their boosts'&defType=dismax.
   $params = array();
-  $chosen_content_type = facet_collection_get_filtered_content_type();
-  $boosts = facet_collection_get_field_boosts($chosen_content_type);
   $params += apachesolr_search_basic_params();
   unset($params['hl.fl']);
   unset($params['rows']);
   if (isset($get_params['rNum'])) {
     $params['rows'] = $get_params['rNum'];
-  }
-  else {
+  } else {
     $facet_collection_rows_number_variants = variable_get('facet_collection_rows_number_variants', '25 50 100');
     $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
     $params['rows'] = $facet_collection_rows_number_variants[0];
   }
   $params['hl'] = 'true';
   $params['hl.fl'] = _facet_collection_build_hl_fl_parameter();
+  $boosts = facet_collection_get_field_boosts();
   $query_parts = explode('/', $get_params['q']);
-  if(isset($query_parts[1])){
+  if (isset($query_parts[1])) {
     $search_query = $query_parts[1];
-  }else{
+  } else {
     $search_query = FALSE;
   }
   if (!isset($get_params['s'])) {
@@ -135,8 +133,7 @@ function facet_collection_get_default_params($get_params) {
       $params['qf'] = $qf;
     }
     //Highlighting should be only in that fields which included in qf parameter
-  }
-  else {
+  } else {
     $params['defType'] = 'lucene';
     $q = '';
     if ($search_query) {
@@ -172,12 +169,10 @@ function _facet_collection_replace_spacers_by_AND($query) {
     if (!$quote_found) {
       if (in_array($query_arr[$n], $operators)) {
         continue;
-      }
-      elseif (isset($query_arr[$n + 1])) {
+      } elseif (isset($query_arr[$n + 1])) {
         if (in_array($query_arr[$n + 1], $operators)) {
           $n++;
-        }
-        else {
+        } else {
           $query_arr[$n] .= ' AND';
         }
       }
@@ -195,8 +190,16 @@ function _facet_collection_build_qf_parameter($boosts) {
   $chosen_content_type = facet_collection_get_filtered_content_type();
   $field_type_list = variable_get('facet_collection:field_type_search_list');
   $searchable_fields = facet_collection_get_searchable_fields(array_keys($field_type_list));
-  $needed_fields = $searchable_fields[$chosen_content_type];
-  $qf = $qf . 'label^' . $boosts['title'] . ' ';
+  if (!empty($chosen_content_type)) {
+    $needed_fields = $searchable_fields[$chosen_content_type];
+    $qf = $qf . 'label^' . $boosts['title_' . $chosen_content_type] . ' ';
+  } else {
+    $qf = $qf . 'label^' . $boosts['title'] . ' ';
+    $needed_fields = array();
+    foreach ($searchable_fields as $fields) {
+      $needed_fields = array_merge($needed_fields, $fields);
+    }
+  }
   foreach ($needed_fields as $field_name) {
     $field_info = field_info_field($field_name);
     $module = $field_type_list[$field_info['type']];
@@ -216,7 +219,14 @@ function _facet_collection_build_hl_fl_parameter() {
   $chosen_content_type = facet_collection_get_filtered_content_type();
   $field_type_list = variable_get('facet_collection:field_type_search_list');
   $searchable_fields = facet_collection_get_searchable_fields(array_keys($field_type_list));
-  $needed_fields = $searchable_fields[$chosen_content_type];
+  if (!empty($chosen_content_type)) {
+    $needed_fields = $searchable_fields[$chosen_content_type];
+  } else {
+    $needed_fields = array();
+    foreach ($searchable_fields as $fields) {
+      $needed_fields = array_merge($needed_fields, $fields);
+    }
+  }
   $hl_fl[] = 'label';
   foreach ($needed_fields as $field_name) {
     $field_info = field_info_field($field_name);
@@ -289,8 +299,7 @@ function facet_collection_get_searchable_fields($field_types) {
       }
     }
     cache_set('facet_collection:field_search_field_names', $searchable_fields, 'cache', CACHE_TEMPORARY);
-  }
-  else {
+  } else {
     $searchable_fields = cache_get('facet_collection:field_search_field_names')->data;
   }
   return $searchable_fields;
@@ -397,6 +406,7 @@ function facet_collection_get_available_facets() {
 function facet_collection_get_filtered_content_type() {
   $content_type = & drupal_static(__FUNCTION__);
   if (empty($content_type)) {
+    $content_type = '';
     if (isset($_GET['f'])) {
 //Check if there are some filters and if it's true check if this filter is content type filter.
       $filters = $_GET['f'];
@@ -404,15 +414,11 @@ function facet_collection_get_filtered_content_type() {
         $arr = explode(':', $filter);
         if ($arr[0] == 'bundle') {
           $content_type = $arr[1];
-          return $content_type;
         }
       }
     }
   }
-  else {
-    return $content_type;
-  }
-  return FALSE;
+  return $content_type;
 }
 
 /**
@@ -455,8 +461,7 @@ function facet_collection_facetapi_facet_info($searcher_info) {
         foreach ($field_type_array as $field_type) {
           $field_type_facet_list[$field_type] = $module;
         }
-      }
-      elseif ($filter_type == 'search') {
+      } elseif ($filter_type == 'search') {
         foreach ($field_type_array as $field_type) {
           $field_type_search_list[$field_type] = $module;
         }
@@ -547,7 +552,7 @@ function facet_collection_apachesolr_process_results(&$results, DrupalSolrQueryI
       }
       // We also need to save facet filters in url.
       if (isset($_GET['f'])) {
-         $get_params['f'] = $_GET['f'];
+        $get_params['f'] = $_GET['f'];
       }
       $options = array(
         'query' => $get_params
