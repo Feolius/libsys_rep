@@ -948,7 +948,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
           'snippet_data' => array(
             'description' => array(
               '#label' => FALSE,
-              '#data' => $description,
+              '#data' => strip_tags($description, '<strong>'),
             ),
             'birth_date' => array(
               '#label' => 'Birth Date',
@@ -1020,7 +1020,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
           'snippet_data' => array(
             'description' => array(
               '#label' => FALSE,
-              '#data' => $description,
+              '#data' => strip_tags($description, '<strong>'),
             ),
             'address' => array(
               '#label' => 'Address',
@@ -1106,7 +1106,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
           'snippet_data' => array(
             'description' => array(
               '#label' => FALSE,
-              '#data' => $description,
+              '#data' => strip_tags($description, '<strong>'),
             ),
             'location' => array(
               '#label' => 'Location',
@@ -1152,7 +1152,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
           'snippet_data' => array(
             'description' => array(
               '#label' => FALSE,
-              '#data' => $description,
+              '#data' => strip_tags($description, '<strong>'),
             ),
           ),
         )
@@ -1313,7 +1313,7 @@ function collection_page_files_node_snippet_data(
               'snippet_data' => array(
                 'search_snippet' => array(
                   '#label' => FALSE,
-                  '#data' => $search_snippet,
+                  '#data' => strip_tags($search_snippet, '<strong>'),
                 ),
                 'people' => array(
                   '#label' => 'People',
@@ -1379,7 +1379,7 @@ function collection_page_files_node_snippet_data(
               'snippet_data' => array(
                 'description' => array(
                   '#label' => FALSE,
-                  '#data' => $description,
+                  '#data' => strip_tags($description, '<strong>'),
                 ),
                 'length' => array(
                   '#label' => 'Length',
@@ -1435,7 +1435,7 @@ function collection_page_files_node_snippet_data(
               'snippet_data' => array(
                 'description' => array(
                   '#label' => FALSE,
-                  '#data' => $description,
+                  '#data' => strip_tags($description, '<strong>'),
                 ),
                 'length' => array(
                   '#label' => 'Length',
@@ -1481,7 +1481,7 @@ function collection_page_files_node_snippet_data(
                       'snippet_data' => array(
                         'search_snippet' => array(
                           '#label' => FALSE,
-                          '#data' => $search_snippet,
+                          '#data' => strip_tags($search_snippet, '<strong>'),
                         ),
                         'date' => array(
                           '#label' => 'Date',
@@ -1574,7 +1574,7 @@ function collection_page_files_node_snippet_data(
                   ),
                   'search_snippet' => array(
                     '#label' => FALSE,
-                    '#data' => $search_snippet,
+                    '#data' => strip_tags($search_snippet, '<strong>'),
                   ),
                   'author' => array(
                     '#label' => 'Author',

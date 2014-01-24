@@ -112,7 +112,7 @@ function library_admin_settings_form() {
   // Collection pager settings.
   $form['collection_pager_settings'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Settings for pager'),
+    '#title' => t('Settings for library pager'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
@@ -123,6 +123,27 @@ function library_admin_settings_form() {
     '#description' => t('Set number of entities (nodes), which will be saved in the session to avoid often queries to solr. This number
      means, how much nodes will be retrieved per one solr query.'),
     '#default_value' => variable_get('collection_pager_entities_number_per_solr_query', 5),
+  );
+
+  // Library page content types
+  $form['library_page_content_types_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Library page content types'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $content_types = node_type_get_types();
+  $available_content_types = array();
+  foreach($content_types as $content_type_name => $content_type) {
+    $available_content_types[$content_type_name] = $content_type->name;
+  }
+
+  $form['library_page_content_types_settings']['library_page_content_types'] = array(
+    '#type' => 'checkboxes',
+    '#options' => $available_content_types,
+    '#default_value' => variable_get('library_page_content_types', array()),
+    '#description' => t('Choose content types, which will be available in the filter block.'),
   );
 
   // Book field.

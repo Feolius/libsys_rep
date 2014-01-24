@@ -85,22 +85,21 @@ function facet_collection_block_block_view($delta) {
   //Check if our response contain any search results
   $entity_info = entity_get_info('node');
   $environment = apachesolr_default_environment();
-  $indexed_bundles = apachesolr_get_index_bundles($environment, 'node');
+  $available_content_types = array_filter(variable_get('library_page_content_types', array()));
   $filtered_content_type = facet_collection_get_filtered_content_type();
   $variables['items'] = array();
   $variables['type'] = 'ul';
   $content = '';
   $options['attributes']['class'] = array('library-content-type-filter-link');
-  foreach ($indexed_bundles as $bundle) {
+  $path = $_GET['q'];
+  foreach ($available_content_types as $bundle) {
+    $text = $entity_info['bundles'][$bundle]['label'];
     if ($bundle != $filtered_content_type) {
-      $text = $entity_info['bundles'][$bundle]['label'];
-      $path = $_GET['q'];
       $options['query']['f']['0'] = 'bundle:' . $bundle;
       $link = l($text, $path, $options);
       $content = $content . '<div class="library-leaf library-leaf-' . $bundle . '">' . $link . '</div>';
     }else{
-      $text = $entity_info['bundles'][$bundle]['label'];
-      $link = l($text, 'library');
+      $link = l($text, $path);
       $content = $content . '<div class="library-leaf library-leaf-' . $bundle . ' active">' . $link . '</div>';
       $form = drupal_get_form('facet_collection_block_form');
       $form = drupal_render($form);
