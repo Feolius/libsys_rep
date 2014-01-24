@@ -61,7 +61,7 @@ function library_background_homepage_get_css() {
     ? variable_get('library_background_homepage_css_v_position_other') . 'px '
     : $css_vp;
   $image['css_attachment'] = variable_get('library_background_homepage_css_attachment');
-  $image['important'] = isset($importand) && $importand != FALSE ? '!important' : '';
+  $image['important'] = isset($importand) && $importand != FALSE ? ' !important' : '';
   return $image;
 }
 
@@ -81,7 +81,7 @@ function library_background_simple_get_css() {
     ? variable_get('library_background_pages_css_v_position_other') . 'px '
     : $css_vp;
   $image['css_attachment'] = variable_get('library_background_pages_css_attachment');
-  $image['important'] = isset($importand) && $importand != FALSE ? '!important' : '';
+  $image['important'] = isset($importand) && $importand != FALSE ? ' !important' : '';
   $image['exclude'] = variable_get('library_background_exclude_main_background');
   return $image;
 }
@@ -99,19 +99,23 @@ function library_background_preprocess_html(&$variables) {
   );
   if ($variables['is_front'] == TRUE) {
     $file = library_background_homepage_get_css();
-    $css = 'body' . ' { background: url("' . $file['url'] . '") !important;
-    background-repeat: ' . $file['css_repeat'] . $file['important'] . ';
-    background-position: ' . $file['css_h_position'] . ' ' . $file['css_v_position'] . $file['important'] . ';
-    background-attachment: ' . $file['css_attachment'] . $file['important'] . '}';
-    drupal_add_css($css, $options);
-  } else {
-    if ($theme == 'ellen_white_estate') {
-      $file = library_background_simple_get_css();
+    if (!empty($file['url'])) {
       $css = 'body' . ' { background: url("' . $file['url'] . '") !important;
       background-repeat: ' . $file['css_repeat'] . $file['important'] . ';
       background-position: ' . $file['css_h_position'] . ' ' . $file['css_v_position'] . $file['important'] . ';
       background-attachment: ' . $file['css_attachment'] . $file['important'] . '}';
       drupal_add_css($css, $options);
+    }
+  } else {
+    if ($theme == 'ellen_white_estate') {
+      if (!empty($file['url'])) {
+        $file = library_background_simple_get_css();
+        $css = 'body' . ' { background: url("' . $file['url'] . '") !important;
+        background-repeat: ' . $file['css_repeat'] . $file['important'] . ';
+        background-position: ' . $file['css_h_position'] . ' ' . $file['css_v_position'] . $file['important'] . ';
+        background-attachment: ' . $file['css_attachment'] . $file['important'] . '}';
+        drupal_add_css($css, $options);
+      }
     }
   }
 }
