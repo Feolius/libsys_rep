@@ -108,9 +108,8 @@ function library_background_preprocess_html(&$variables) {
     }
   } else {
     if ($theme == 'ellen_white_estate') {
+      $file = library_background_simple_get_css();
       if (!empty($file['url'])) {
-        $file = library_background_simple_get_css();
-        kpr($file);
         $css = 'body' . ' { background: url("' . $file['url'] . '") !important;
         background-repeat: ' . $file['css_repeat'] . $file['important'] . ';
         background-position: ' . $file['css_h_position'] . ' ' . $file['css_v_position'] . $file['important'] . ';
