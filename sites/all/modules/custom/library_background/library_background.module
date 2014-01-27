@@ -336,7 +336,7 @@ function library_background_homepage_get_file_random() {
  */
 function library_background_simple_get_file_random() {
   $img = '';
-  $bgs = cache_get('library_background_simple_images');
+  $bgs = '';//cache_get('library_background_simple_images');
   if ($bgs == FALSE || empty($bgs->data)) {
     $bgs = library_background_simple_images_list();
     if (!empty($bgs)) {
