@@ -110,6 +110,7 @@ function library_background_preprocess_html(&$variables) {
     if ($theme == 'ellen_white_estate') {
       if (!empty($file['url'])) {
         $file = library_background_simple_get_css();
+        kpr($file);
         $css = 'body' . ' { background: url("' . $file['url'] . '") !important;
         background-repeat: ' . $file['css_repeat'] . $file['important'] . ';
         background-position: ' . $file['css_h_position'] . ' ' . $file['css_v_position'] . $file['important'] . ';
@@ -336,7 +337,7 @@ function library_background_homepage_get_file_random() {
  */
 function library_background_simple_get_file_random() {
   $img = '';
-  $bgs = '';//cache_get('library_background_simple_images');
+  $bgs = cache_get('library_background_simple_images');
   if ($bgs == FALSE || empty($bgs->data)) {
     $bgs = library_background_simple_images_list();
     if (!empty($bgs)) {
