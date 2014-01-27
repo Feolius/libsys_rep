@@ -83,10 +83,6 @@ html{ color: #606060; }
 
 body { font: 0.8em/165% "Open Sans",Helvetica,Arial,sans-serif; margin:0; padding:0; outline:0 none; vertical-align:baseline;  min-width:960px; }
 
-body.front { color: #7a7a7a; background: url(images/home_img.jpg) center 131px no-repeat; }
-
-body.not-front { background: url(images/node_background.jpg) center 151px no-repeat; }
-
 h1, h2, h3, h4, h5, h6 { margin:25px 0 20px 0; line-height:1.2; }
 
 h1 { font-size: 28px; font-weight:700; margin:0 0 20px 0; color:#000;}
