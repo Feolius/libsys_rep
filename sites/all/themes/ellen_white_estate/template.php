@@ -389,7 +389,7 @@ function _ellen_white_estate_preprocess_node__files_primary_audio($vars) {
     $output['subtitle'] = $vars['content']['field_files_subtitle'];
   }
   if (isset($vars['content']['field_files_album_poster'])
-    && !empty($vars['content']['field_files_album_poster'][0]['#markup'])) {
+    && !empty($vars['content']['field_files_album_poster'][0])) {
     $output['poster'] = $vars['content']['field_files_album_poster'];
   }
   if (isset($vars['content']['field_files_audio'])
