@@ -57,9 +57,10 @@
 
 .field-type-fivestar div.fivestar-widget,
 .field-type-fivestar div.fivestar-widget-static {
-  float: right;
   padding-bottom: 10px;
 }
+
+#edit-author--2{ margin-bottom:10px;}
 
 
 /* Add this button*/
@@ -71,10 +72,6 @@
   display: none;
 }
 
-.ui-tabs .ui-tabs-panel {
-  padding: 2px;
-  border: 1px solid #aaa;
-}
 
 .ui-tabs .ui-tabs-nav {
   padding: 0;
@@ -93,58 +90,12 @@
   width: 634px;
 }
 
-#home-top {
-  width: 960px;
-  margin: 0 auto;
-  padding-top: 165px;
-}
-
-#home-top div:first-child {
-  margin: 0;
-}
 
 .pane-node-list {
   clear: both;
   margin-top: 30px;
   border-top: 4px solid #757575;
   padding-top: 30px;
-}
-
-#home-top div.field-name-title-field a {
-  background: #191D22;
-  color: #fff;
-  font-size: 18px;
-  padding: 14px; /* 12px 46px 12px 12px */
-  display: block;
-  height: 59px;
-  overflow: hidden;
-  text-transform: none;
-}
-
-#home-top div.field-name-title-field h2 {
-  margin: 0;
-}
-
-#home-top div.node-view-home span.arrow-link a:hover {
-  background-color: #49B1D6;
-  background-position: -102px center;
-}
-
-#home-top span.arrow-link a {
-  display: block;
-  width: 0;
-  height: 87px;
-  background: url(images/more_arrow.png) 0 center #0c7091 no-repeat;
-}
-
-#home-top li > div:hover .arrow-link a {
-  width: 34px;
-}
-
-#home-top span.arrow-link {
-  position: absolute;
-  right: 0;
-  bottom: 0;
 }
 
 #header-inside-right #facet-collection-search-block-form div.form-item {
@@ -365,10 +316,7 @@ body .ui-datepicker select.ui-datepicker-month option[selected="selected"], body
 #facet-collection-block-form input.ui-autocomplete-input {
   float: left;
   height: 16px;
-}
-
-#header-inside-right .form-submit {
-  height: 33px;
+  padding:6px 5px;
 }
 
 ol.collection-search-results, ul.collection-search-results, .page-home .page ul, .page-home .page li {
@@ -431,10 +379,6 @@ li {
   margin-left: 20px;
 }
 
-#sidebar .library-leaf-events a.library-content-type-filter-link {
-  background-position: 10px 10px;
-}
-
 html.CSS1Compat {
   background: white;
 }
@@ -467,4 +411,58 @@ html.CSS1Compat {
   opacity: 0.7;
   filter: Alpha(Opacity=30);
   background: rgb(29, 28, 28);
+}
+
+
+/* Stefan */
+
+/* Font style for RTE */
+p.board_action {
+	text-indent:50px;
+}
+.publication_reference {
+	font-style: italic;
+}
+p.quote {
+	margin-left: 50px;
+}
+.emphasis {
+	font-style: italic;
+}
+
+/* On articles, text should wrap around first image */
+h2 {
+	margin-bottom: 10px;
+}
+p {
+	margin-bottom: 10px;
+}
+ul {
+	display: block; /* Was list-item... dunno why */
+}
+div.messages.status {
+	margin-top: 10px;
+	margin-bottom: -53px;
+}
+.webform-confirmation {
+	background-color: #f9f7f4;
+	padding: 25px;
+	min-height: 230px;
+}
+.webform-confirmation h2 {
+	margin-top: 0px;
+}
+.node-news img:first-child {
+	float: left;
+	margin: 0 15px 5px 0;
+}
+h2.comment-form {
+	font-size: 150%;
+	text-transform: none;
+}
+.view h3 {
+	margin: 18px 0 4px 0;
+}
+#home-left h2, #home-middle h2, #home-right h2 {
+	margin-top: 50px;
 }
