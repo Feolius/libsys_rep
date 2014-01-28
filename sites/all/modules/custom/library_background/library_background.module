@@ -173,8 +173,12 @@ function library_background_homepage_image_submit($form, &$form_state) {
   }
   if ($images = $form_state['values']['library_background_homepage_image']) {
     $scheme = variable_get('file_default_scheme', 'public') . '://';
-    if (!is_dir('sites/default/files/hp/')) {
-      drupal_mkdir('sites/default/files/hp/');
+    $public_dir = variable_get('file_public_path', conf_path() . '/files');
+    if (empty($public_dir)) {
+      $public_dir = 'sites/default/files';
+    }
+    if (!is_dir($public_dir . '/hp/')) {
+      drupal_mkdir($public_dir . '/hp/');
     }
     $scheme .= 'hp/';
     foreach ($images as $uploaded_file) {
@@ -185,7 +189,7 @@ function library_background_homepage_image_submit($form, &$form_state) {
         $file = plupload_file_uri_to_object($destination);
         file_save($file);
         drupal_write_record('files', $file);
-        if (file_exists('sites/default/files/hp/' . $file->name)) {
+        if (file_exists($public_dir . '/hp/' . $file->filename)) {
           $ids[] = $file->fid;
           $saved_files[] = $file;
         }
@@ -213,8 +217,12 @@ function library_background_others_pages_bgs_form_submit($form, $form_state) {
   }
   if ($images = $form_state['values']['library_background_pages_image']) {
     $scheme = variable_get('file_default_scheme', 'public') . '://';
-    if (!is_dir('sites/default/files/oth/')) {
-      drupal_mkdir('sites/default/files/oth/');
+    $public_dir = variable_get('file_public_path', conf_path() . '/files');
+    if (empty($public_dir)) {
+      $public_dir = 'sites/default/files';
+    }
+    if (!is_dir($public_dir . '/oth/')) {
+      drupal_mkdir($public_dir . '/oth/');
     }
     $scheme .= 'oth/';
     foreach ($images as $uploaded_file) {
@@ -225,7 +233,7 @@ function library_background_others_pages_bgs_form_submit($form, $form_state) {
         $file = plupload_file_uri_to_object($destination);
         file_save($file);
         drupal_write_record('files', $file);
-        if (file_exists('sites/default/files/oth/' . $file->name)) {
+        if (file_exists($public_dir . '/oth/' . $file->filename)) {
           $ids[] = $file->fid;
           $saved_files[] = $file;
         }
@@ -247,7 +255,11 @@ function library_background_check_hp_files($fids) {
   $files = file_load_multiple($fids);
   return array_map(function ($file) {
     $images = array();
-    if (file_exists('sites/default/files/hp/' . $file->filename)) {
+    $public_dir = variable_get('file_public_path', conf_path() . '/files');
+    if (empty($public_dir)) {
+      $public_dir = 'sites/default/files';
+    }
+    if (file_exists($public_dir . '/hp/' . $file->filename)) {
       return $images[] = $file->fid;
     }
   }, $files);
@@ -260,7 +272,11 @@ function library_background_check_oth_files($fids) {
   $files = file_load_multiple($fids);
   return array_map(function ($file) {
     $images = array();
-    if (file_exists('sites/default/files/oth/'. $file->filename)) {
+    $public_dir = variable_get('file_public_path', conf_path() . '/files');
+    if (empty($public_dir)) {
+      $public_dir = 'sites/default/files';
+    }
+    if (file_exists($public_dir . '/oth/'. $file->filename)) {
       return $images[] = $file->fid;
     }
   }, $files);
