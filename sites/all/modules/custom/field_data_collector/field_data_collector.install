@@ -13,7 +13,7 @@ function field_data_collector_field_schema($field)
     $columns = array(
         'value' => array(
             'type' => 'blob',
-            'size' => 'medium',
+            'size' => 'big',
             'not null' => FALSE,
         ),
     );
@@ -33,48 +33,48 @@ function field_data_collector_uninstall()
 /**
  * Update the blob type for field values.
  */
-function field_data_collector_update_7201()
+function field_data_collector_update_7202()
 {
-    $updating_field_and_tables = array(
-        'events' => array(
-            'images',
-            'documents',
-            'map',
-            'timeline',
-            'videos'
-        ),
-        'location' => array(
-            'events',
-            'images',
-            'received_docs',
-            'videos',
-            'written_docs'
-        ),
-        'topics' => array(
-            'documents',
-            'events',
-            'images',
-            'location',
-            'videos'
-        ),
-        'people' => array(
-            'events',
-            'images',
-            'location',
-            'received_docs',
-            'videos',
-            'written_docs'
-        ),
-    );
+  $updating_field_and_tables = array(
+    'events' => array(
+      'images',
+      'documents',
+      'map',
+      'timeline',
+      'videos'
+    ),
+    'location' => array(
+      'events',
+      'images',
+      'received_docs',
+      'videos',
+      'written_docs'
+    ),
+    'topics' => array(
+      'documents',
+      'events',
+      'images',
+      'location',
+      'videos'
+    ),
+    'people' => array(
+      'events',
+      'images',
+      'location',
+      'received_docs',
+      'videos',
+      'written_docs'
+    ),
+  );
 
-    foreach ($updating_field_and_tables as $table_name => $fields) {
-        foreach ($fields as $field) {
-            if (db_table_exists('field_data_field_' . $table_name . '_tab_' . $field)) {
-                db_query("ALTER TABLE field_data_field_" . $table_name . "_tab_" . $field . " MODIFY field_" . $table_name . "_tab_" . $field . "_value	 MEDIUMBLOB");
-            }
-            if (db_table_exists('field_revision_field_' . $table_name . '_tab_' . $field)) {
-                db_query("ALTER TABLE field_revision_field_" . $table_name . "_tab_" . $field . " MODIFY field_" . $table_name . "_tab_" . $field . "_value	 MEDIUMBLOB");
-            }
-        }
+  foreach ($updating_field_and_tables as $table_name => $fields) {
+    foreach ($fields as $field) {
+      if (db_table_exists('field_data_field_' . $table_name . '_tab_' . $field)) {
+        db_query("ALTER TABLE field_data_field_" . $table_name . "_tab_" . $field . " MODIFY field_" . $table_name . "_tab_" . $field . "_value	 LONGBLOB");
+      }
+      if (db_table_exists('field_revision_field_' . $table_name . '_tab_' . $field)) {
+        db_query("ALTER TABLE field_revision_field_" . $table_name . "_tab_" . $field . " MODIFY field_" . $table_name . "_tab_" . $field . "_value	 LONGBLOB");
+      }
     }
+  }
 }
