@@ -215,6 +215,10 @@ function facet_collection_block_form($form, &$form_state) {
   $form_state['build_info']['args'][0]['facet_deltas'] = $facet_deltas;
   $form_state['build_info']['args'][0]['facet_fields'] = $facet_fields;
   $form_state['build_info']['args'][0]['search_deltas'] = $search_deltas;
+  //If form is empty, we add a special class for css tweaks.
+  if(empty($form)) {
+    $form['#attributes']['class'] = array('no-filters');
+  }
   return $form;
 }
 
