@@ -630,6 +630,7 @@ function field_data_collector_field_formatter_prepare_view(
     // has been already existed we sould also generate the data for the field.
     $unserialized_items[$id] = array();
     if ($entity_type == 'node' && $entity->changed <= $field['settings']['last_changes_time']) {
+      $entity->title = $entity->title_original;
       node_save($entity);
       $items[$id] = field_get_items($entity_type, $entity, $field['field_name'], $langcode);
     }
