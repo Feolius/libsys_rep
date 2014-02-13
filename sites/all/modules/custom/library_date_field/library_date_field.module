@@ -266,11 +266,10 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
   $date_full = date('d/m/Y');
   $date_middle = date('m/Y');
   $date_short = date('Y');
-  $default = (empty($item[$delta]) || ($item[$delta]['value'] == $item[$delta]['value2'])) ? FALSE : TRUE;
   $element['show_end_date'] = array(
     '#type' => 'checkbox',
     '#title' => t('Show end date'),
-    '#default_value' => $default,
+    '#default_value' => $item[$delta]['show_end_date'],
   );
 
   // Add fieldset.
@@ -280,7 +279,6 @@ function library_date_field_field_widget_form(&$form, &$form_state, $field, $ins
   );
 
   foreach ($process as $processed) {
-
     if ($item && !empty($item[$delta][$processed])) {
       $defaul_value = library_date_field_return_date($item[$delta], $processed);
     }
@@ -360,8 +358,10 @@ function library_date_field_field_formatter_view($entity_type, $entity, $field, 
       $date[$processed] = library_date_field_get_date($item, $processed);
     }
     $output = !empty($date['value']) ? $date['value'] : '' ;
-    if (sizeof($process) == 2 && !empty($date['value2']) && $date['value'] != $date['value2']) {
-      $output .= " - {$date['value2']}";
+    if ((int) $item['show_end_date'] == 1) {
+      if (sizeof($process) == 2 && !empty($date['value2']) && $date['value'] != $date['value2']) {
+        $output .= " - {$date['value2']}";
+      }
     }
     if ($item['notice'] == TRUE) {
       $output .= ' ' . t("(approximation)");
