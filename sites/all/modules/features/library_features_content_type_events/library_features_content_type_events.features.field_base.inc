@@ -531,10 +531,8 @@ function library_features_content_type_events_field_default_field_bases() {
       'collecting_fields' => array(
         'field_events_documents' => 'field_events_documents',
       ),
-      'last_changes_time' => 1372071116,
-      'target_bundles' => array(
-        'files' => 'files',
-      ),
+      'last_changes_time' => 1393246150,
+      'target_bundles' => 'files',
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -556,10 +554,8 @@ function library_features_content_type_events_field_default_field_bases() {
       'collecting_fields' => array(
         'field_events_images' => 'field_events_images',
       ),
-      'last_changes_time' => 1372070838,
-      'target_bundles' => array(
-        'files' => 'files',
-      ),
+      'last_changes_time' => 1393246108,
+      'target_bundles' => 'files',
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -584,10 +580,33 @@ function library_features_content_type_events_field_default_field_bases() {
         'field_events_route_start' => 'field_events_route_start',
         'field_events_route_to' => 'field_events_route_to',
       ),
-      'last_changes_time' => 1385486305,
-      'target_bundles' => array(
-        'location' => 'location',
+      'last_changes_time' => 1393246156,
+      'target_bundles' => 'location',
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'field_data_collector',
+  );
+
+  // Exported field_base: 'field_events_tab_people'
+  $field_bases['field_events_tab_people'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_events_tab_people',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'field_data_collector',
+    'settings' => array(
+      'collecting_fields' => array(
+        'field_events_author' => 'field_events_author',
+        'field_events_main_character' => 'field_events_main_character',
+        'field_events_receiver' => 'field_events_receiver',
       ),
+      'last_changes_time' => 1393246162,
+      'target_bundles' => 'people',
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -630,10 +649,8 @@ function library_features_content_type_events_field_default_field_bases() {
       'collecting_fields' => array(
         'field_events_videos' => 'field_events_videos',
       ),
-      'last_changes_time' => 1372077156,
-      'target_bundles' => array(
-        'files' => 'files',
-      ),
+      'last_changes_time' => 1393246125,
+      'target_bundles' => 'files',
       'target_type' => 'node',
     ),
     'translatable' => 0,

@@ -58,6 +58,9 @@ function library_features_content_type_people_strongarm() {
       'library_snippet' => array(
         'custom_settings' => TRUE,
       ),
+      'map_overlay' => array(
+        'custom_settings' => FALSE,
+      ),
     ),
     'extra_fields' => array(
       'form' => array(

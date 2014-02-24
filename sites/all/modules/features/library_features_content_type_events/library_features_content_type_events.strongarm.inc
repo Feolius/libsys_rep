@@ -104,6 +104,9 @@ function library_features_content_type_events_strongarm() {
       'token' => array(
         'custom_settings' => FALSE,
       ),
+      'map_overlay' => array(
+        'custom_settings' => FALSE,
+      ),
     ),
     'extra_fields' => array(
       'form' => array(

@@ -143,6 +143,18 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'hidden',
+        'module' => 'addressfield',
+        'settings' => array(
+          'format_handlers' => array(
+            0 => 'address',
+          ),
+          'use_widget_handlers' => 1,
+        ),
+        'type' => 'addressfield_default',
+        'weight' => 2,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -177,7 +189,92 @@ function library_features_content_type_location_field_default_field_instances() 
         ),
       ),
       'type' => 'addressfield_standard',
-      'weight' => 3,
+      'weight' => 1,
+    ),
+  );
+
+  // Exported field_instance: 'node-location-field_location_classification'
+  $field_instances['node-location-field_location_classification'] = array(
+    'bundle' => 'location',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'taxonomy',
+        'settings' => array(),
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 27,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_location_classification',
+    'label' => 'Classification',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(),
+      'type' => 'options_select',
+      'weight' => 9,
     ),
   );
 
@@ -235,6 +332,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 21,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -320,6 +423,15 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(
+          'trim_length' => 600,
+        ),
+        'type' => 'text_summary_or_trimmed',
+        'weight' => 1,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -350,7 +462,284 @@ function library_features_content_type_location_field_default_field_instances() 
         'summary_rows' => 5,
       ),
       'type' => 'text_textarea_with_summary',
-      'weight' => 31,
+      'weight' => 6,
+    ),
+  );
+
+  // Exported field_instance: 'node-location-field_location_director'
+  $field_instances['node-location-field_location_director'] = array(
+    'bundle' => 'location',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'entityreference',
+        'settings' => array(
+          'link' => FALSE,
+        ),
+        'type' => 'entityreference_label',
+        'weight' => 28,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_location_director',
+    'label' => 'Director',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'entityreference',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+        'path' => '',
+        'size' => 60,
+      ),
+      'type' => 'entityreference_autocomplete_tags',
+      'weight' => 10,
+    ),
+  );
+
+  // Exported field_instance: 'node-location-field_location_email'
+  $field_instances['node-location-field_location_email'] = array(
+    'bundle' => 'location',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 31,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_location_email',
+    'label' => 'E-Mail',
+    'required' => 0,
+    'settings' => array(
+      'linkit' => array(
+        'button_text' => 'Search',
+        'enable' => 0,
+        'profile' => '',
+      ),
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 4,
+    ),
+  );
+
+  // Exported field_instance: 'node-location-field_location_fax'
+  $field_instances['node-location-field_location_fax'] = array(
+    'bundle' => 'location',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 30,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_location_fax',
+    'label' => 'Fax',
+    'required' => 0,
+    'settings' => array(
+      'linkit' => array(
+        'button_text' => 'Search',
+        'enable' => 0,
+        'profile' => '',
+      ),
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 3,
     ),
   );
 
@@ -413,6 +802,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'hidden',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 4,
+      ),
       'rendered_in_node' => array(
         'label' => 'above',
         'settings' => array(),
@@ -465,7 +860,7 @@ function library_features_content_type_location_field_default_field_instances() 
         ),
       ),
       'type' => 'geocoder',
-      'weight' => 2,
+      'weight' => 8,
     ),
   );
 
@@ -525,6 +920,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 8,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -556,7 +957,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'year_range' => '-3:+3',
       ),
       'type' => 'library_date_field_text',
-      'weight' => 57,
+      'weight' => 39,
     ),
   );
 
@@ -617,6 +1018,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 7,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -699,6 +1106,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 26,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -729,7 +1142,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'progress_indicator' => 'throbber',
       ),
       'type' => 'image_image',
-      'weight' => 19,
+      'weight' => 7,
     ),
   );
 
@@ -787,6 +1200,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 20,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -870,6 +1289,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 11,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -893,6 +1318,99 @@ function library_features_content_type_location_field_default_field_instances() 
       ),
       'type' => 'text_textfield',
       'weight' => 35,
+    ),
+  );
+
+  // Exported field_instance: 'node-location-field_location_phone'
+  $field_instances['node-location-field_location_phone'] = array(
+    'bundle' => 'location',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 29,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_location_phone',
+    'label' => 'Phone',
+    'required' => 0,
+    'settings' => array(
+      'linkit' => array(
+        'button_text' => 'Search',
+        'enable' => 0,
+        'profile' => '',
+      ),
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 2,
     ),
   );
 
@@ -950,6 +1468,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 16,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1041,6 +1565,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'hidden',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 3,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -1063,7 +1593,7 @@ function library_features_content_type_location_field_default_field_instances() 
       'module' => 'fivestar',
       'settings' => array(),
       'type' => 'exposed',
-      'weight' => 58,
+      'weight' => 14,
     ),
   );
 
@@ -1121,6 +1651,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 10,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -1210,6 +1746,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 13,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -1291,6 +1833,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 15,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1374,6 +1922,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 14,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -1456,6 +2010,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 12,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -1537,6 +2097,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 19,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -1563,7 +2129,7 @@ function library_features_content_type_location_field_default_field_instances() 
   // Exported field_instance: 'node-location-field_location_tab_images'
   $field_instances['node-location-field_location_tab_images'] = array(
     'bundle' => 'location',
-    'default_value' => array(),
+    'default_value' => NULL,
     'deleted' => 0,
     'description' => '',
     'display' => array(
@@ -1615,6 +2181,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 24,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -1641,7 +2213,7 @@ function library_features_content_type_location_field_default_field_instances() 
   // Exported field_instance: 'node-location-field_location_tab_received_docs'
   $field_instances['node-location-field_location_tab_received_docs'] = array(
     'bundle' => 'location',
-    'default_value' => array(),
+    'default_value' => NULL,
     'deleted' => 0,
     'description' => '',
     'display' => array(
@@ -1693,6 +2265,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 17,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -1719,7 +2297,7 @@ function library_features_content_type_location_field_default_field_instances() 
   // Exported field_instance: 'node-location-field_location_tab_videos'
   $field_instances['node-location-field_location_tab_videos'] = array(
     'bundle' => 'location',
-    'default_value' => array(),
+    'default_value' => NULL,
     'deleted' => 0,
     'description' => '',
     'display' => array(
@@ -1771,6 +2349,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 18,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -1797,7 +2381,7 @@ function library_features_content_type_location_field_default_field_instances() 
   // Exported field_instance: 'node-location-field_location_tab_written_docs'
   $field_instances['node-location-field_location_tab_written_docs'] = array(
     'bundle' => 'location',
-    'default_value' => array(),
+    'default_value' => NULL,
     'deleted' => 0,
     'description' => '',
     'display' => array(
@@ -1848,6 +2432,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 23,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -1926,6 +2516,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 22,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -2007,6 +2603,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 25,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -2091,6 +2693,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 6,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -2122,7 +2730,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'year_range' => '-3:+3',
       ),
       'type' => 'library_date_field_text',
-      'weight' => 55,
+      'weight' => 38,
     ),
   );
 
@@ -2184,6 +2792,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 5,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -2208,6 +2822,99 @@ function library_features_content_type_location_field_default_field_instances() 
       ),
       'type' => 'entityreference_autocomplete',
       'weight' => 28,
+    ),
+  );
+
+  // Exported field_instance: 'node-location-field_location_website'
+  $field_instances['node-location-field_location_website'] = array(
+    'bundle' => 'location',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 32,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_location_website',
+    'label' => 'Website',
+    'required' => 0,
+    'settings' => array(
+      'linkit' => array(
+        'button_text' => 'Search',
+        'enable' => 0,
+        'profile' => '',
+      ),
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 5,
     ),
   );
 
@@ -2265,6 +2972,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 9,
       ),
       'rendered_in_node' => array(
         'label' => 'above',
@@ -2384,6 +3097,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'title_linked',
         'weight' => 0,
       ),
+      'map_overlay' => array(
+        'label' => 'hidden',
+        'module' => 'title',
+        'settings' => array(
+          'title_class' => '',
+          'title_link' => 'content',
+          'title_style' => 'h2',
+        ),
+        'type' => 'title_linked',
+        'weight' => 0,
+      ),
       'teaser' => array(
         'label' => 'above',
         'settings' => array(),
@@ -2416,16 +3140,21 @@ function library_features_content_type_location_field_default_field_instances() 
   // Translatables
   // Included for use with string extractors like potx.
   t('Address');
+  t('Classification');
   t('Comment');
   t('County');
   t('Description');
+  t('Director');
+  t('E-Mail');
   t('Events');
+  t('Fax');
   t('Geofield');
   t('Home date');
   t('Home nodes');
   t('Image');
   t('Images');
   t('Link');
+  t('Phone');
   t('Placed event');
   t('Rating');
   t('Received Documents');
@@ -2439,6 +3168,7 @@ function library_features_content_type_location_field_default_field_instances() 
   t('Videos');
   t('Visit date');
   t('Visit nodes');
+  t('Website');
   t('Written Documents');
   t('Written Files');
 

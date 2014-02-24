@@ -90,6 +90,7 @@ function library_features_content_type_events_field_group_info() {
       2 => 'field_events_tab_map',
       3 => 'field_events_tab_timeline',
       4 => 'field_events_tab_videos',
+      5 => 'field_events_tab_people',
     ),
     'format_type' => 'div',
     'format_settings' => array(

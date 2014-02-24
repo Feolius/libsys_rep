@@ -55,11 +55,14 @@ function library_features_content_type_location_strongarm() {
       'token' => array(
         'custom_settings' => FALSE,
       ),
+      'map_overlay' => array(
+        'custom_settings' => TRUE,
+      ),
     ),
     'extra_fields' => array(
       'form' => array(
         'path' => array(
-          'weight' => '4',
+          'weight' => '5',
         ),
       ),
       'display' => array(),

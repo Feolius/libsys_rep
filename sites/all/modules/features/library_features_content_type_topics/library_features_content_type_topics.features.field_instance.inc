@@ -22,31 +22,37 @@ function library_features_content_type_topics_field_default_field_instances() {
         'module' => 'text',
         'settings' => array(),
         'type' => 'text_default',
-        'weight' => 0,
+        'weight' => 1,
       ),
     ),
     'entity_type' => 'comment',
     'field_name' => 'comment_body',
     'label' => 'Comment',
-    'required' => TRUE,
+    'required' => 1,
     'settings' => array(
-      'text_processing' => 1,
+      'linkit' => array(
+        'button_text' => 'Search',
+        'enable' => 0,
+        'profile' => '',
+      ),
+      'text_processing' => 0,
       'user_register_form' => FALSE,
     ),
     'widget' => array(
+      'active' => 1,
       'module' => 'text',
       'settings' => array(
         'rows' => 5,
       ),
       'type' => 'text_textarea',
-      'weight' => 0,
+      'weight' => 3,
     ),
   );
 
   // Exported field_instance: 'comment-comment_node_topics-field_rating'
   $field_instances['comment-comment_node_topics-field_rating'] = array(
     'bundle' => 'comment_node_topics',
-    'default_value' => NULL,
+    'default_value' => array(),
     'deleted' => 0,
     'description' => '',
     'display' => array(
@@ -55,14 +61,14 @@ function library_features_content_type_topics_field_default_field_instances() {
         'module' => 'fivestar',
         'settings' => array(
           'expose' => TRUE,
-          'style' => 'user',
-          'text' => 'user',
+          'style' => 'average',
+          'text' => 'average',
           'widget' => array(
-            'fivestar_widget' => 'default',
+            'fivestar_widget' => NULL,
           ),
         ),
         'type' => 'fivestar_formatter_default',
-        'weight' => 1,
+        'weight' => 0,
       ),
     ),
     'entity_type' => 'comment',
@@ -84,7 +90,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         ),
       ),
       'type' => 'stars',
-      'weight' => 2,
+      'weight' => 0,
     ),
   );
 
@@ -99,7 +105,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 11,
+        'weight' => 10,
       ),
       'collection_thumbnail' => array(
         'label' => 'above',
@@ -115,11 +121,11 @@ function library_features_content_type_topics_field_default_field_instances() {
           'style' => 'average',
           'text' => 'none',
           'widget' => array(
-            'fivestar_widget' => 'default',
+            'fivestar_widget' => 'sites/all/modules/contrib/fivestar/widgets/minimal/minimal.css',
           ),
         ),
         'type' => 'fivestar_formatter_default',
-        'weight' => 1,
+        'weight' => 0,
       ),
       'home' => array(
         'label' => 'above',
@@ -180,94 +186,6 @@ function library_features_content_type_topics_field_default_field_instances() {
       'settings' => array(),
       'type' => 'exposed',
       'weight' => 5,
-    ),
-  );
-
-  // Exported field_instance: 'node-topics-field_tags'
-  $field_instances['node-topics-field_tags'] = array(
-    'bundle' => 'topics',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 3,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 3,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'module' => 'taxonomy',
-        'settings' => array(),
-        'type' => 'taxonomy_term_reference_link',
-        'weight' => 4,
-      ),
-      'home' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 2,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 4,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 7,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_tags',
-    'label' => 'Tags',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 0,
-      'module' => 'taxonomy',
-      'settings' => array(
-        'autocomplete_path' => 'taxonomy/autocomplete',
-        'size' => 60,
-      ),
-      'type' => 'taxonomy_autocomplete',
-      'weight' => 8,
     ),
   );
 
@@ -363,8 +281,8 @@ function library_features_content_type_topics_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-topics-field_topics_documents'
-  $field_instances['node-topics-field_topics_documents'] = array(
+  // Exported field_instance: 'node-topics-field_topics_files'
+  $field_instances['node-topics-field_topics_files'] = array(
     'bundle' => 'topics',
     'default_value' => NULL,
     'deleted' => 0,
@@ -374,19 +292,22 @@ function library_features_content_type_topics_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 2,
+        'weight' => 0,
       ),
       'collection_thumbnail' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 2,
+        'weight' => 0,
       ),
       'default' => array(
         'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 14,
+        'module' => 'entityreference',
+        'settings' => array(
+          'link' => FALSE,
+        ),
+        'type' => 'entityreference_label',
+        'weight' => 16,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -426,8 +347,8 @@ function library_features_content_type_topics_field_default_field_instances() {
       ),
     ),
     'entity_type' => 'node',
-    'field_name' => 'field_topics_documents',
-    'label' => 'Documents',
+    'field_name' => 'field_topics_files',
+    'label' => 'Files',
     'required' => 0,
     'settings' => array(
       'user_register_form' => FALSE,
@@ -440,8 +361,8 @@ function library_features_content_type_topics_field_default_field_instances() {
         'path' => '',
         'size' => 60,
       ),
-      'type' => 'entityreference_autocomplete',
-      'weight' => 11,
+      'type' => 'entityreference_autocomplete_tags',
+      'weight' => 5,
     ),
   );
 
@@ -559,88 +480,6 @@ function library_features_content_type_topics_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-topics-field_topics_images'
-  $field_instances['node-topics-field_topics_images'] = array(
-    'bundle' => 'topics',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 5,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 5,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 12,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_topics_images',
-    'label' => 'Images',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'entityreference',
-      'settings' => array(
-        'match_operator' => 'CONTAINS',
-        'path' => '',
-        'size' => 60,
-      ),
-      'type' => 'entityreference_autocomplete',
-      'weight' => 9,
-    ),
-  );
-
   // Exported field_instance: 'node-topics-field_topics_kind'
   $field_instances['node-topics-field_topics_kind'] = array(
     'bundle' => 'topics',
@@ -652,7 +491,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 13,
+        'weight' => 12,
       ),
       'collection_thumbnail' => array(
         'label' => 'above',
@@ -664,7 +503,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'label' => 'hidden',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 5,
+        'weight' => 6,
       ),
       'home' => array(
         'label' => 'above',
@@ -803,7 +642,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 12,
+      'weight' => 7,
     ),
   );
 
@@ -818,7 +657,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 12,
+        'weight' => 11,
       ),
       'collection_thumbnail' => array(
         'label' => 'above',
@@ -830,7 +669,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'label' => 'hidden',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 6,
+        'weight' => 7,
       ),
       'home' => array(
         'label' => 'above',
@@ -877,7 +716,7 @@ function library_features_content_type_topics_field_default_field_instances() {
     ),
     'entity_type' => 'node',
     'field_name' => 'field_topics_related_event',
-    'label' => 'Related event',
+    'label' => 'Event',
     'required' => 0,
     'settings' => array(
       'user_register_form' => FALSE,
@@ -891,7 +730,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 4,
+      'weight' => 6,
     ),
   );
 
@@ -906,7 +745,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 14,
+        'weight' => 13,
       ),
       'collection_thumbnail' => array(
         'label' => 'above',
@@ -984,7 +823,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 16,
+        'weight' => 15,
       ),
       'collection_thumbnail' => array(
         'label' => 'above',
@@ -996,7 +835,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 9,
+        'weight' => 5,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1051,84 +890,6 @@ function library_features_content_type_topics_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-topics-field_topics_tab_images'
-  $field_instances['node-topics-field_topics_tab_images'] = array(
-    'bundle' => 'topics',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 15,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 15,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 7,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 4,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_topics_tab_images',
-    'label' => 'Images',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 0,
-      'module' => 'field_data_collector',
-      'settings' => array(),
-      'type' => 'field_data_collector_default_widget',
-      'weight' => 33,
-    ),
-  );
-
   // Exported field_instance: 'node-topics-field_topics_tab_location'
   $field_instances['node-topics-field_topics_tab_location'] = array(
     'bundle' => 'topics',
@@ -1140,7 +901,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 10,
+        'weight' => 9,
       ),
       'collection_thumbnail' => array(
         'label' => 'above',
@@ -1207,166 +968,6 @@ function library_features_content_type_topics_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-topics-field_topics_tab_videos'
-  $field_instances['node-topics-field_topics_tab_videos'] = array(
-    'bundle' => 'topics',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 9,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 9,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 8,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 6,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_topics_tab_videos',
-    'label' => 'Videos',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 0,
-      'module' => 'field_data_collector',
-      'settings' => array(),
-      'type' => 'field_data_collector_default_widget',
-      'weight' => 34,
-    ),
-  );
-
-  // Exported field_instance: 'node-topics-field_topics_videos'
-  $field_instances['node-topics-field_topics_videos'] = array(
-    'bundle' => 'topics',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 8,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 8,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 13,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_topics_videos',
-    'label' => 'Videos',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'entityreference',
-      'settings' => array(
-        'match_operator' => 'CONTAINS',
-        'path' => '',
-        'size' => 60,
-      ),
-      'type' => 'entityreference_autocomplete',
-      'weight' => 10,
-    ),
-  );
-
   // Exported field_instance: 'node-topics-title_field'
   $field_instances['node-topics-title_field'] = array(
     'bundle' => 'topics',
@@ -1378,7 +979,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 7,
+        'weight' => 2,
       ),
       'collection_thumbnail' => array(
         'label' => 'above',
@@ -1395,7 +996,7 @@ function library_features_content_type_topics_field_default_field_instances() {
           'title_style' => 'h2',
         ),
         'type' => 'title_linked',
-        'weight' => 0,
+        'weight' => 1,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1452,7 +1053,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => -5,
+      'weight' => 0,
     ),
   );
 
@@ -1461,17 +1062,15 @@ function library_features_content_type_topics_field_default_field_instances() {
   t('Body');
   t('Comment');
   t('Documents');
+  t('Event');
   t('Events');
+  t('Files');
   t('Image');
-  t('Images');
   t('Kind');
   t('Location');
   t('Locations');
   t('Rating');
-  t('Related event');
-  t('Tags');
   t('Title');
-  t('Videos');
 
   return $field_instances;
 }

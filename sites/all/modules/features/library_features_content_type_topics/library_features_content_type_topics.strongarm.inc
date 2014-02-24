@@ -55,6 +55,9 @@ function library_features_content_type_topics_strongarm() {
       'token' => array(
         'custom_settings' => FALSE,
       ),
+      'map_overlay' => array(
+        'custom_settings' => FALSE,
+      ),
     ),
     'extra_fields' => array(
       'form' => array(
@@ -62,7 +65,7 @@ function library_features_content_type_topics_strongarm() {
           'weight' => '-5',
         ),
         'path' => array(
-          'weight' => '30',
+          'weight' => '13',
         ),
       ),
       'display' => array(),

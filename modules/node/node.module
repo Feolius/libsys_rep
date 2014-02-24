@@ -1364,7 +1364,6 @@ function node_view($node, $view_mode = 'full', $langcode = NULL) {
   // Allow modules to modify the structured node.
   $type = 'node';
   drupal_alter(array('node_view', 'entity_view'), $build, $type);
-
   return $build;
 }
 

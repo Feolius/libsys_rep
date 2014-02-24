@@ -28,12 +28,18 @@ function library_features_content_type_events_field_default_field_instances() {
     'entity_type' => 'comment',
     'field_name' => 'comment_body',
     'label' => 'Comment',
-    'required' => TRUE,
+    'required' => 1,
     'settings' => array(
-      'text_processing' => 1,
+      'linkit' => array(
+        'button_text' => 'Search',
+        'enable' => 0,
+        'profile' => '',
+      ),
+      'text_processing' => 0,
       'user_register_form' => FALSE,
     ),
     'widget' => array(
+      'active' => 1,
       'module' => 'text',
       'settings' => array(
         'rows' => 5,
@@ -138,7 +144,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 10,
+        'weight' => 17,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -221,7 +227,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 15,
+        'weight' => 20,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -304,7 +310,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 9,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -393,7 +399,7 @@ function library_features_content_type_events_field_default_field_instances() {
           'image_style' => 'home-image-full',
         ),
         'type' => 'image',
-        'weight' => 0,
+        'weight' => 1,
       ),
       'home_top' => array(
         'label' => 'hidden',
@@ -486,7 +492,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 10,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -568,7 +574,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 14,
+        'weight' => 19,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -654,7 +660,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 2,
+        'weight' => 12,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -736,7 +742,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 11,
+        'weight' => 18,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -753,7 +759,7 @@ function library_features_content_type_events_field_default_field_instances() {
     ),
     'entity_type' => 'node',
     'field_name' => 'field_events_place_nodes',
-    'label' => 'Place nodes',
+    'label' => 'Location',
     'required' => 0,
     'settings' => array(
       'user_register_form' => FALSE,
@@ -826,7 +832,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 8,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -907,7 +913,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 9,
+        'weight' => 16,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -989,7 +995,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 1,
+        'weight' => 11,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -1071,7 +1077,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 7,
+        'weight' => 14,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -1153,7 +1159,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 8,
+        'weight' => 15,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -1235,7 +1241,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 4,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -1262,7 +1268,7 @@ function library_features_content_type_events_field_default_field_instances() {
       'module' => 'field_data_collector',
       'settings' => array(),
       'type' => 'field_data_collector_default_widget',
-      'weight' => 41,
+      'weight' => 38,
     ),
   );
 
@@ -1313,7 +1319,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 5,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -1340,7 +1346,7 @@ function library_features_content_type_events_field_default_field_instances() {
       'module' => 'field_data_collector',
       'settings' => array(),
       'type' => 'field_data_collector_default_widget',
-      'weight' => 39,
+      'weight' => 36,
     ),
   );
 
@@ -1391,7 +1397,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 3,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -1418,7 +1424,86 @@ function library_features_content_type_events_field_default_field_instances() {
       'module' => 'field_data_collector',
       'settings' => array(),
       'type' => 'field_data_collector_default_widget',
-      'weight' => 42,
+      'weight' => 39,
+    ),
+  );
+
+  // Exported field_instance: 'node-events-field_events_tab_people'
+  $field_instances['node-events-field_events_tab_people'] = array(
+    'bundle' => 'events',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'field_data_collector',
+        'settings' => array(),
+        'type' => 'field_data_collector_default_formatter',
+        'weight' => 21,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_events_tab_people',
+    'label' => 'People',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'field_data_collector',
+      'settings' => array(),
+      'type' => 'field_data_collector_default_widget',
+      'weight' => 40,
     ),
   );
 
@@ -1470,7 +1555,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 2,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -1551,7 +1636,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 6,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -1578,7 +1663,7 @@ function library_features_content_type_events_field_default_field_instances() {
       'module' => 'field_data_collector',
       'settings' => array(),
       'type' => 'field_data_collector_default_widget',
-      'weight' => 40,
+      'weight' => 37,
     ),
   );
 
@@ -1630,7 +1715,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 3,
+        'weight' => 13,
       ),
       'home_top' => array(
         'label' => 'hidden',
@@ -1719,7 +1804,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 0,
+        'weight' => 7,
       ),
       'home_top' => array(
         'label' => 'above',
@@ -1818,10 +1903,15 @@ function library_features_content_type_events_field_default_field_instances() {
         'weight' => 0,
       ),
       'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 5,
+        'label' => 'hidden',
+        'module' => 'title',
+        'settings' => array(
+          'title_class' => '',
+          'title_link' => 'content',
+          'title_style' => 'h2',
+        ),
+        'type' => 'title_linked',
+        'weight' => 0,
       ),
       'home_top' => array(
         'label' => 'hidden',
@@ -1871,10 +1961,11 @@ function library_features_content_type_events_field_default_field_instances() {
   t('Documents');
   t('Image');
   t('Images');
+  t('Location');
   t('Locations');
   t('Main character');
   t('Original place');
-  t('Place nodes');
+  t('People');
   t('Rating');
   t('Receiver');
   t('Related topic');

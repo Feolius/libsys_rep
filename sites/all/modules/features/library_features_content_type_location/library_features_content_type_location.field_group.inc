@@ -57,7 +57,7 @@ function library_features_content_type_location_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Tabs',
-    'weight' => '23',
+    'weight' => '13',
     'children' => array(
       0 => 'field_location_tab_events',
       1 => 'field_location_tab_images',
@@ -94,6 +94,8 @@ function library_features_content_type_location_field_group_info() {
       1 => 'field_location_link',
       2 => 'field_location_source',
       3 => 'field_location_related_entities',
+      4 => 'field_location_home_date',
+      5 => 'field_location_visit_date',
     ),
     'format_type' => 'fieldset',
     'format_settings' => array(

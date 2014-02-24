@@ -32,12 +32,10 @@ function field_data_collector_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('field_data_collector_delete_preset_form', 5),
     'file' => 'field_data_collector.admin.inc',
-
   );
 
   return $items;
 }
-
 
 /**
  * Implements hook_permission().
@@ -142,8 +140,7 @@ function _field_data_collector_field_settings_form_process($form, $form_state) {
   foreach ($instances as $instance_name => $instance) {
     $field_of_instances[$instance_name] = field_info_field($instance_name);
 
-    if ($field_of_instances[$instance_name]['type'] == 'entityreference'
-      && $field_of_instances[$instance_name]['settings']['target_type'] == 'node'
+    if ($field_of_instances[$instance_name]['type'] == 'entityreference' && $field_of_instances[$instance_name]['settings']['target_type'] == 'node'
     ) {
       $collecting_fields[$instance_name] = $instance['label'];
     }
@@ -154,9 +151,7 @@ function _field_data_collector_field_settings_form_process($form, $form_state) {
 
     $collecting_fields_settings = $settings['collecting_fields'];
 
-    $collecting_fields_settings = isset($form_state['values']['field']['settings']['collecting_fields'])
-      ? $form_state['values']['field']['settings']['collecting_fields']
-      : $collecting_fields_settings;
+    $collecting_fields_settings = isset($form_state['values']['field']['settings']['collecting_fields']) ? $form_state['values']['field']['settings']['collecting_fields'] : $collecting_fields_settings;
     // Display the possible fields for collecting
     $form['collecting_fields'] = array(
       '#type' => 'checkboxes',
@@ -168,7 +163,7 @@ function _field_data_collector_field_settings_form_process($form, $form_state) {
       '#description' => t('The fields data from whose will be collected into this field.'),
       '#ajax' => array(
         'callback' => '_field_data_collector_field_settings_ajax_callback',
-        'wrapper' => 'target_bundles_checkboxes',
+        'wrapper' => 'target_bundles_radios',
         'method' => 'replace',
         'effect' => 'fade',
       ),
@@ -201,16 +196,16 @@ function _field_data_collector_field_settings_form_process($form, $form_state) {
       }
     }
     $form['target_bundles'] = array(
-      '#type' => 'checkboxes',
+      '#type' => 'radios',
       '#title' => t('Target bundles'),
       '#options' => $bundles,
       '#default_value' => $settings['target_bundles'],
       '#multiple' => TRUE,
       '#size' => 6,
       '#description' => t('The bundles of the entity type that can be referenced.'),
-      '#prefix' => '<div id = "target_bundles_checkboxes">',
+      '#prefix' => '<div id = "target_bundles_radios">',
       '#suffix' => '</div>',
-      '#element_validate' => array('_field_data_collector_element_validate_filter'),
+//      '#element_validate' => array('_field_data_collector_element_validate_filter'),
     );
   } // In other way display the message
   else {
@@ -229,8 +224,6 @@ function _field_data_collector_field_settings_form_process($form, $form_state) {
     '#type' => 'hidden',
     '#value' => REQUEST_TIME,
   );
-
-  //dpm($form);
   return $form;
 }
 
@@ -257,7 +250,6 @@ function _field_data_collector_element_validate_filter(&$element, &$form_state) 
   form_set_value($element, $element['#value'], $form_state);
 }
 
-
 function _field_data_collector_field_settings_validate($form, &$form_state) {
   // Store the new values in the form state.
   $field = $form['#field'];
@@ -268,119 +260,119 @@ function _field_data_collector_field_settings_validate($form, &$form_state) {
 }
 
 /**
- * Implements hook_field_attach_presave().
+ * Perform saving needed data in field data collector.
  */
-function field_data_collector_field_attach_presave($entity_type, $entity) {
+function _field_data_collector_save_data($entity_type, $entity, $field, $instance, $langcode, &$items) {
   if ($entity_type == 'node') {
-    $bundle = $entity->type;
-    $instances = field_info_instances($entity_type, $bundle);
-    foreach ($instances as $instance) {
-      $field = field_info_field($instance['field_name']);
-      if ($field['type'] == 'field_data_collector') {
-        //If the collector field already store something we could use it to avoid regenerating
-        //target_ids for non-changed fields
-        $tmp_collector_field_field_items = field_get_items($entity_type, $entity, $field['field_name']);
-        $collector_field_field_items = array();
-        if ($tmp_collector_field_field_items && isset($tmp_collector_field_field_items[0]['value'])) {
-          $collector_field_field_items = unserialize($tmp_collector_field_field_items[0]['value']);
-        }
-        $collecting_fields_could_have_needed_items = FALSE;
-        $target_bundles = $field['settings']['target_bundles'];
-        $collecting_fields = $field['settings']['collecting_fields'];
-        $field_settings_last_changes_time = $field['settings']['last_changes_time'];
 
+    $collecting_fields_could_have_needed_items = FALSE;
+    $target_bundles = array($field['settings']['target_bundles'] => $field['settings']['target_bundles']);
+    $collecting_fields = $field['settings']['collecting_fields'];
+    $field_settings_last_changes_time = $field['settings']['last_changes_time'];
+    // If the collector field already store something we could use it to avoid regenerating
+    // target_ids for non-changed fields.
+    if ($items && isset($items[0]['value'])) {
+      $collector_field_field_items = unserialize($items[0]['value']);
+      $tmp_collector_field_field_items = array_intersect_key($collector_field_field_items, $collecting_fields);
+      if($collector_field_field_items != $tmp_collector_field_field_items)
+      {
+        $collecting_fields_could_have_needed_items = TRUE;
+      }
+      $collector_field_field_items = $tmp_collector_field_field_items;
+    }
+    // Look through the settings and collect the data from fields which exist in
+    // the settings for current collector field.
+    foreach ($collecting_fields as $collecting_field_name) {
+      $collecting_field_items = field_get_items($entity_type, $entity, $collecting_field_name);
+      $original_collecting_field_items = property_exists($entity, 'original') && !empty($entity->original) ? field_get_items($entity_type, $entity->original, $collecting_field_name) : NULL;
+      //Write data to the collector field if settings changes were made after the node creation or
+      // the data in collecting field was changed
+      if ((property_exists($entity, "changed") && $entity->changed <= $field_settings_last_changes_time) ||
+        ($collecting_field_items != $original_collecting_field_items) ||
+        (empty($collector_field_field_items[$collecting_field_name]) && $collecting_field_items != FALSE)
+      ) {
+        $collecting_field_info = field_info_field($collecting_field_name);
 
-        //Look through the settings and collect the data from fields which exist in
-        // the settings for current collector field
-        foreach ($collecting_fields as $collecting_field_name) {
-
-          $collecting_field_items = field_get_items($entity_type, $entity, $collecting_field_name);
-
-          $original_collecting_field_items = property_exists($entity, 'original') && !empty($entity->original)
-            ? field_get_items($entity_type, $entity->original, $collecting_field_name)
-            : NULL;
-
-          //Write data to the collector field if settings changes were made after the node creation or
-          // the data in collecting field was changed
-          if ((property_exists($entity, "changed") && $entity->changed <= $field_settings_last_changes_time)
-            || ($collecting_field_items != $original_collecting_field_items)
-            || (empty($collector_field_field_items[$collecting_field_name]) && $collecting_field_items != FALSE)
-          ) {
-            $collecting_field_info = field_info_field($collecting_field_name);
-
-            if (!empty($collecting_field_info['settings']['handler_settings']['target_bundles'])) {
-              $bundles_intersection = array_intersect(
-                $target_bundles,
-                $collecting_field_info['settings']['handler_settings']['target_bundles']
-              );
-              //If the collecting field have the same list of available bundles as list in the
-              //current collector field settings, we could just copy all target ids from this collecting field.
-              if ($collecting_field_info['settings']['handler_settings']['target_bundles'] == $target_bundles) {
-                $collecting_fields_could_have_needed_items = TRUE;
-                $target_ids = array();
-                if ($collecting_field_items) {
-                  foreach ($collecting_field_items as $item) {
-                    $target_ids[] = $item['target_id'];
-                  }
-                }
-                $collector_field_field_items[$collecting_field_name] = $target_ids;
-              } //If these list are not the same, we need to filter the target ids and choose only ids with
-              //needed bundles.
-              elseif (!empty($bundles_intersection)) {
-                $node_ids = array();
-                $target_nodes = array();
-                if ($collecting_field_items) {
-                  foreach ($collecting_field_items as $item) {
-                    $node_ids[] = $item['target_id'];
-                  }
-                }
-
-                if (!empty($node_ids)) {
-                  $query = new EntityFieldQuery();
-                  $target_nodes = $query->entityCondition('entity_type', 'node')
-                    ->entityCondition('entity_id', $node_ids, 'IN')
-                    ->entityCondition('bundle', $target_bundles, 'IN')
-                    ->execute();
-                }
-
-                if (isset($target_nodes['node']) && !empty($target_nodes['node'])) {
-                  $collecting_fields_could_have_needed_items = TRUE;
-                  $target_ids = array();
-                  foreach ($target_nodes['node'] as $node) {
-                    $target_ids[] = $node->nid;
-                  }
-                  $collector_field_field_items[$collecting_field_name] = $target_ids;
-                } //If collector field have already store some ids for current field but now the field don't we should
-                //update the collector field data
-                elseif (isset($collector_field_field_items[$collecting_field_name])
-                  && !empty($collector_field_field_items[$collecting_field_name])
-                ) {
-                  $collecting_fields_could_have_needed_items = TRUE;
-                  unset($collector_field_field_items[$collecting_field_name]);
-                }
+        if (!empty($collecting_field_info['settings']['handler_settings']['target_bundles'])) {
+          $bundles_intersection = array_intersect(
+            $target_bundles, $collecting_field_info['settings']['handler_settings']['target_bundles']
+          );
+          //If the collecting field have the same list of available bundles as list in the
+          //current collector field settings, we could just copy all target ids from this collecting field.
+          if ($collecting_field_info['settings']['handler_settings']['target_bundles'] == $target_bundles) {
+            $collecting_fields_could_have_needed_items = TRUE;
+            $target_ids = array();
+            if ($collecting_field_items) {
+              foreach ($collecting_field_items as $item) {
+                $target_ids[] = $item['target_id'];
               }
+            }
+            $collector_field_field_items[$collecting_field_name] = $target_ids;
+          }
+          elseif (!empty($bundles_intersection)) {
+            //If these list are not the same, we need to filter the target ids and choose only ids with
+            //needed bundles.
+            $node_ids = array();
+            $target_nodes = array();
+            if ($collecting_field_items) {
+              foreach ($collecting_field_items as $item) {
+                $node_ids[] = $item['target_id'];
+              }
+            }
+            if (!empty($node_ids)) {
+              $query = new EntityFieldQuery();
+              $target_nodes = $query->entityCondition('entity_type', 'node')
+                ->entityCondition('entity_id', $node_ids, 'IN')
+                ->entityCondition('bundle', $target_bundles, 'IN')
+                ->execute();
+            }
+
+            if (isset($target_nodes['node']) && !empty($target_nodes['node'])) {
+              $collecting_fields_could_have_needed_items = TRUE;
+              $target_ids = array();
+              foreach ($target_nodes['node'] as $node) {
+                $target_ids[] = $node->nid;
+              }
+              $collector_field_field_items[$collecting_field_name] = $target_ids;
+            }
+            elseif (isset($collector_field_field_items[$collecting_field_name]) && !empty($collector_field_field_items[$collecting_field_name])) {
+              // If collector field have already store some ids for current field but now the field don't we should
+              // update the collector field data.
+              $collecting_fields_could_have_needed_items = TRUE;
+              unset($collector_field_field_items[$collecting_field_name]);
             }
           }
         }
-        //If the data of field was added or updated we need to write it into the collector field
-        if ($collecting_fields_could_have_needed_items) {
-          $collector_field_field_items = array_intersect_key($collector_field_field_items, $collecting_fields);
-          $collector_field_target_ids = array();
-          foreach ($collector_field_field_items as $field_ids) {
-            $collector_field_target_ids = array_merge($collector_field_target_ids, $field_ids);
-          }
-          $collector_field_field_items['target_ids'] = $collector_field_target_ids;
-          $entity->{$instance['field_name']} = array(
-            LANGUAGE_NONE => array(
-              0 => array(
-                'value' => serialize($collector_field_field_items),
-              )
-            ),
-          );
-        }
       }
     }
+    // If the data of field was added or updated we need to write it into the collector field.
+    if ($collecting_fields_could_have_needed_items) {
+      $collector_field_target_ids = array();
+      foreach ($collector_field_field_items as $field_ids) {
+        $collector_field_target_ids = array_merge($collector_field_target_ids, $field_ids);
+      }
+      $collector_field_field_items['target_ids'] = $collector_field_target_ids;
+      $items = array(
+        0 => array(
+          'value' => serialize($collector_field_field_items),
+        )
+      );
+    }
   }
+}
+
+/**
+ * Implements hook_field_attach_insert().
+ */
+function field_data_collector_field_insert($entity_type, $entity, $field, $instance, $langcode, &$items) {
+  _field_data_collector_save_data($entity_type, $entity, $field, $instance, $langcode, $items);
+}
+
+/**
+ * Implements hook_field_attach_update().
+ */
+function field_data_collector_field_update($entity_type, $entity, $field, $instance, $langcode, &$items) {
+  _field_data_collector_save_data($entity_type, $entity, $field, $instance, $langcode, $items);
 }
 
 /**
@@ -392,18 +384,11 @@ function field_data_collector_field_is_empty($item, $field) {
   return $empty;
 }
 
-
 /**
  * Implements hook_field_formatter_view()
  */
 function field_data_collector_field_formatter_view(
-  $entity_type,
-  $entity,
-  $field,
-  $instance,
-  $langcode,
-  $items,
-  $display
+  $entity_type, $entity, $field, $instance, $langcode, $items, $display
 ) {
   $element = array();
 
@@ -423,8 +408,7 @@ function field_data_collector_field_formatter_view(
       array_pop($items);
       $items[] = array(
         'more_than_limit_items' => variable_get(
-          'library_field_data_collector_more_items_text',
-          'Not everything shown'
+          'library_field_data_collector_more_items_text', 'Not everything shown'
         )
       );
     }
@@ -437,41 +421,29 @@ function field_data_collector_field_formatter_view(
 
         // If the primary media field was set for current item
         // we should get the settings for each item bundle
-        if (isset($settings[$target_entity->type]['primary_media_field'])
-          && $settings[$target_entity->type]['primary_media_field'] != 'none' &&
+        if (isset($settings[$target_entity->type]['primary_media_field']) && $settings[$target_entity->type]['primary_media_field'] != 'none' &&
           property_exists($target_entity, $settings[$target_entity->type]['primary_media_field'])
         ) {
           $primary_media_field_items = field_get_items(
-            $field['settings']['target_type'],
-            $target_entity,
-            $settings[$target_entity->type]['primary_media_field'],
-            $langcode
+            $field['settings']['target_type'], $target_entity, $settings[$target_entity->type]['primary_media_field'], $langcode
           );
           if (!empty($primary_media_field_items)) {
             $primary_media = $primary_media_field_items[0]['value'];
-            $primary_media_formatter_settings = isset($settings[$target_entity->type]['primary_media_values_fields_with_formatters'][$primary_media])
-              ? $settings[$target_entity->type]['primary_media_values_fields_with_formatters'][$primary_media]
-              : array();
+            $primary_media_formatter_settings = isset($settings[$target_entity->type]['primary_media_values_fields_with_formatters'][$primary_media]) ? $settings[$target_entity->type]['primary_media_values_fields_with_formatters'][$primary_media] : array();
           }
         } // In other way we apply the default display settings for each item bundle
         else {
-          $primary_media_formatter_settings = isset($settings[$target_entity->type]['primary_media_values_fields_with_formatters']['default'])
-            ? $settings[$target_entity->type]['primary_media_values_fields_with_formatters']['default']
-            : array();
+          $primary_media_formatter_settings = isset($settings[$target_entity->type]['primary_media_values_fields_with_formatters']['default']) ? $settings[$target_entity->type]['primary_media_values_fields_with_formatters']['default'] : array();
         }
         //Get the array of display fields
-        $display_fields_with_settings = isset($primary_media_formatter_settings['fields_and_formatters'])
-          ? $primary_media_formatter_settings['fields_and_formatters']
-          : array();
+        $display_fields_with_settings = isset($primary_media_formatter_settings['fields_and_formatters']) ? $primary_media_formatter_settings['fields_and_formatters'] : array();
         //Sort the display fields by weight
         usort($display_fields_with_settings, '_field_data_collector_fields_with_settings_compare_by_weight');
 
         //Display all fields with needed formatters and settings
         foreach ($display_fields_with_settings as $display_field_settings) {
           $field_output = '';
-          $ref_field_name = isset($display_field_settings['field_for_value'])
-            ? $display_field_settings['field_for_value']
-            : "";
+          $ref_field_name = isset($display_field_settings['field_for_value']) ? $display_field_settings['field_for_value'] : "";
           //If the user choose the title as field to display
           if ($ref_field_name == 'title') {
             if ($display_field_settings['field_label']) {
@@ -479,9 +451,7 @@ function field_data_collector_field_formatter_view(
             }
             if ($uri = entity_uri('node', $target_entity)) {
               $field_output .= '<div class="field-data">' . l(
-                  $target_entity->title,
-                  $uri['path'],
-                  $uri['options']
+                  $target_entity->title, $uri['path'], $uri['options']
                 ) . '</div>';
             }
             else {
@@ -490,13 +460,9 @@ function field_data_collector_field_formatter_view(
           } //If the user choose any other field to display
           else {
             //Get the referenced formatter name
-            $ref_field_formatter_name = isset($display_field_settings['formatter_for_field']['formatter'])
-              ? $display_field_settings['formatter_for_field']['formatter']
-              : "";
+            $ref_field_formatter_name = isset($display_field_settings['formatter_for_field']['formatter']) ? $display_field_settings['formatter_for_field']['formatter'] : "";
             //And get the referenced formatter settings
-            $ref_field_formatter_settings = isset($display_field_settings['formatter_for_field']['formatter_settings']['settings'])
-              ? $display_field_settings['formatter_for_field']['formatter_settings']['settings']
-              : "";
+            $ref_field_formatter_settings = isset($display_field_settings['formatter_for_field']['formatter_settings']['settings']) ? $display_field_settings['formatter_for_field']['formatter_settings']['settings'] : "";
 
             //If somethings needed is not set in the settings, we apply the default formatter for this
             //field data collector field
@@ -508,9 +474,7 @@ function field_data_collector_field_formatter_view(
               $ref_field = field_info_field($ref_field_name);
 
               $ref_instance = field_info_instance(
-                $ref_entity_type,
-                $ref_field_name,
-                $target_entity->type
+                $ref_entity_type, $ref_field_name, $target_entity->type
               );
 
               $ref_display = field_get_display($ref_instance, 'default', $ref_entity);
@@ -529,15 +493,7 @@ function field_data_collector_field_formatter_view(
                   $field_output .= '<div class="field-label">' . $ref_instance['label'] . ': </div>';
                 }
                 $field_data = module_invoke(
-                  $ref_display['module'],
-                  'field_formatter_view',
-                  $ref_entity_type,
-                  $ref_entity,
-                  $ref_field,
-                  $ref_instance,
-                  $ref_langcode,
-                  $ref_items,
-                  $ref_display
+                  $ref_display['module'], 'field_formatter_view', $ref_entity_type, $ref_entity, $ref_field, $ref_instance, $ref_langcode, $ref_items, $ref_display
                 );
                 // Put the returned value from referenced formatter into current formatter output
                 $field_output .= '<div class="field-data">' . drupal_render($field_data) . '</div>';
@@ -561,8 +517,6 @@ function field_data_collector_field_formatter_view(
         );
       }
     }
-
-
   }
 
   if ($display['type'] == 'field_data_collector_default_formatter') {
@@ -585,7 +539,6 @@ function field_data_collector_field_formatter_view(
   }
 
   return $element;
-
 }
 
 /**
@@ -613,13 +566,7 @@ function _field_data_collector_fields_with_settings_compare_by_weight($a, $b) {
  * Implements hook_field_formatter_prepare_view().
  */
 function field_data_collector_field_formatter_prepare_view(
-  $entity_type,
-  $entities,
-  $field,
-  $instances,
-  $langcode,
-  &$items,
-  $displays
+  $entity_type, $entities, $field, $instances, $langcode, &$items, $displays
 ) {
   $target_ids = array();
   $unserialized_items = array();
@@ -731,8 +678,7 @@ function field_data_collector_field_formatter_settings_form($field, $instance, $
       else {
         $form['content_types_settings'][$target_bundle]['no_preset_message'] = array(
           '#markup' => '<div class="messages warning">' . t(
-              'No presets are available. You must to <a href="@create">create a preset</a> to proceed.',
-              array('@create' => url('admin/config/media/field-data-collector-presets/add'))
+              'No presets are available. You must to <a href="@create">create a preset</a> to proceed.', array('@create' => url('admin/config/media/field-data-collector-presets/add'))
             ) . '</div>',
           '#tree' => TRUE,
         );
@@ -751,8 +697,7 @@ function field_data_collector_field_formatter_settings_form($field, $instance, $
       $form['field_settings_is_empty'] = array(
         '#markup' => '<div class="messages warning">'
           . t(
-            'The bundles did not set at the field settings. You need to set them on the <a href="@field_settings_page">field edit page</a> to proceed.',
-            array('@field_settings_page' => url($admin_path . '/fields/' . $field['field_name']))
+            'The bundles did not set at the field settings. You need to set them on the <a href="@field_settings_page">field edit page</a> to proceed.', array('@field_settings_page' => url($admin_path . '/fields/' . $field['field_name']))
           ) . '</div>',
       );
     }
@@ -769,7 +714,6 @@ function field_data_collector_field_formatter_settings_form($field, $instance, $
 
   return $form;
 }
-
 
 /**
  * Implements hook_field_formatter_settings_summary().
@@ -798,3 +742,4 @@ function field_data_collector_field_formatter_settings_summary($field, $instance
 
   return $summary;
 }
+
