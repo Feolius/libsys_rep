@@ -1,0 +1,4 @@
+name = Library strip text formatter
+description = Provide strip text formatter to display text field
+package = Library
+core = 7.x

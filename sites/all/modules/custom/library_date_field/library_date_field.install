@@ -273,3 +273,15 @@ function library_date_field_update_104() {
     db_query('ALTER TABLE {field_revision_field_publications_date} ADD field_publications_date_show_end_date int');
   }
 }
+
+/**
+ * Implements hook_update().
+ */
+function library_date_field_update_105() {
+  if (db_table_exists('field_data_field_correspondence_date')) {
+    db_query('ALTER TABLE {field_data_field_correspondence_date} ADD field_correspondence_date_show_end_date int');
+  }
+  if (db_table_exists('field_revision_field_correspondence_date')) {
+    db_query('ALTER TABLE {field_revision_field_correspondence_date} ADD field_correspondence_date_show_end_date int');
+  }
+}

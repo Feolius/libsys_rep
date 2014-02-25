@@ -1,0 +1,72 @@
+<?php
+/**
+ * Implements hook_field_formatter_info().
+ */
+function library_strip_text_formatter_field_formatter_info() {
+  return array(
+    'library_strip_text_formatter_by_tag' => array(
+      'label' => t('Strip text to tag'),
+      'field types' => array('text', 'text_long', 'text_with_summary'),
+      'settings' => array(
+        'tag' => '<p>',
+      ),
+    ),
+  );
+}
+
+/**
+* Implements hook_field_formatter_settings_form().
+ */
+function library_strip_text_formatter_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  $element = array();
+
+  if ($display['type'] == 'library_strip_text_formatter_by_tag') {
+    $element['tag'] = array(
+      '#title' => t('Tag for cut'),
+      '#type' => 'textfield',
+      '#default_value' => $settings['tag'],
+    );
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function library_strip_text_formatter_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  $summary = '';
+  if ($display['type'] == 'library_strip_text_formatter_by_tag') {
+    $summary .= t('Tag for cut') . ': ' . htmlspecialchars($settings['tag'], ENT_QUOTES);
+  }
+  return $summary;
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function library_strip_text_formatter_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  $output = '' ;
+  if (!empty($entity->field_source)) {
+    $values = field_get_items('node', $entity, 'field_source');
+  } else {
+    $values = '';
+  }
+    foreach ($items as $delta => $item) {
+      if (!empty($item['value'])) {
+        if (!empty($values) && $values[0]['taxonomy_term']->name != 'General') {
+          $pattern = "/<p>(.*?)<\/p>/";
+          preg_match($pattern, $item['value'], $matches);
+          $output .= strip_tags($matches[1]);
+        } else {
+          $output = $item['value'];
+      }
+    }
+    $element[$delta] = array('#markup' => $output);
+  }
+  return $element;
+}
