@@ -266,7 +266,11 @@ function _field_data_collector_save_data($entity_type, $entity, $field, $instanc
   if ($entity_type == 'node') {
 
     $collecting_fields_could_have_needed_items = FALSE;
-    $target_bundles = array($field['settings']['target_bundles'] => $field['settings']['target_bundles']);
+    if(isset($field['settings']['target_bundles']) && !empty($field['settings']['target_bundles'])){
+       $target_bundles = array($field['settings']['target_bundles'] => $field['settings']['target_bundles']);
+    } else {
+      $target_bundles = array();
+    }
     $collecting_fields = $field['settings']['collecting_fields'];
     $field_settings_last_changes_time = $field['settings']['last_changes_time'];
     // If the collector field already store something we could use it to avoid regenerating
