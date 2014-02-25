@@ -21,7 +21,7 @@ function library_features_content_type_events_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Connections',
-    'weight' => '15',
+    'weight' => '4',
     'children' => array(
       0 => 'field_events_author',
       1 => 'field_events_receiver',
@@ -29,11 +29,10 @@ function library_features_content_type_events_field_group_info() {
       3 => 'field_events_main_character',
       4 => 'field_events_route_to',
       5 => 'field_events_route_start',
-      6 => 'field_events_original_place',
-      7 => 'field_events_related_topic',
-      8 => 'field_events_documents',
-      9 => 'field_events_images',
-      10 => 'field_events_videos',
+      6 => 'field_events_related_topic',
+      7 => 'field_events_documents',
+      8 => 'field_events_images',
+      9 => 'field_events_videos',
     ),
     'format_type' => 'fieldset',
     'format_settings' => array(
@@ -75,6 +74,33 @@ function library_features_content_type_events_field_group_info() {
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
   $field_group->api_version = 1;
+  $field_group->identifier = 'group_probably_empty|node|events|form';
+  $field_group->group_name = 'group_probably_empty';
+  $field_group->entity_type = 'node';
+  $field_group->bundle = 'events';
+  $field_group->mode = 'form';
+  $field_group->parent_name = '';
+  $field_group->data = array(
+    'label' => 'Probably Empty',
+    'weight' => '5',
+    'children' => array(
+      0 => 'field_events_original_place',
+    ),
+    'format_type' => 'fieldset',
+    'format_settings' => array(
+      'formatter' => 'collapsible',
+      'instance_settings' => array(
+        'description' => '',
+        'classes' => '',
+        'required_fields' => 1,
+      ),
+    ),
+  );
+  $export['group_probably_empty|node|events|form'] = $field_group;
+
+  $field_group = new stdClass();
+  $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
+  $field_group->api_version = 1;
   $field_group->identifier = 'group_tabs|node|events|form';
   $field_group->group_name = 'group_tabs';
   $field_group->entity_type = 'node';
@@ -83,7 +109,7 @@ function library_features_content_type_events_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Tabs',
-    'weight' => '21',
+    'weight' => '6',
     'children' => array(
       0 => 'field_events_tab_documents',
       1 => 'field_events_tab_images',

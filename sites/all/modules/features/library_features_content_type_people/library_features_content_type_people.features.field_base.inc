@@ -738,13 +738,9 @@ function library_features_content_type_people_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
-      'collecting_fields' => array(
-        'field_people_images' => 'field_people_images',
-      ),
-      'last_changes_time' => 1372072390,
-      'target_bundles' => array(
-        'files' => 'files',
-      ),
+      'collecting_fields' => array(),
+      'last_changes_time' => 1393314655,
+      'target_bundles' => 'files',
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -810,13 +806,9 @@ function library_features_content_type_people_field_default_field_bases() {
     'locked' => 0,
     'module' => 'field_data_collector',
     'settings' => array(
-      'collecting_fields' => array(
-        'field_people_videos' => 'field_people_videos',
-      ),
-      'last_changes_time' => 1372072465,
-      'target_bundles' => array(
-        'files' => 'files',
-      ),
+      'collecting_fields' => array(),
+      'last_changes_time' => 1393314695,
+      'target_bundles' => 'files',
       'target_type' => 'node',
     ),
     'translatable' => 0,

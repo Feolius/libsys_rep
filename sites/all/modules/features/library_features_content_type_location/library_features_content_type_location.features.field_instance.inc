@@ -274,7 +274,7 @@ function library_features_content_type_location_field_default_field_instances() 
       'module' => 'options',
       'settings' => array(),
       'type' => 'options_select',
-      'weight' => 9,
+      'weight' => 10,
     ),
   );
 
@@ -361,7 +361,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 34,
+      'weight' => 43,
     ),
   );
 
@@ -462,7 +462,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'summary_rows' => 5,
       ),
       'type' => 'text_textarea_with_summary',
-      'weight' => 6,
+      'weight' => 7,
     ),
   );
 
@@ -553,7 +553,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete_tags',
-      'weight' => 10,
+      'weight' => 11,
     ),
   );
 
@@ -860,7 +860,7 @@ function library_features_content_type_location_field_default_field_instances() 
         ),
       ),
       'type' => 'geocoder',
-      'weight' => 8,
+      'weight' => 9,
     ),
   );
 
@@ -957,7 +957,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'year_range' => '-3:+3',
       ),
       'type' => 'library_date_field_text',
-      'weight' => 39,
+      'weight' => 40,
     ),
   );
 
@@ -1048,7 +1048,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 29,
+      'weight' => 39,
     ),
   );
 
@@ -1142,7 +1142,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'progress_indicator' => 'throbber',
       ),
       'type' => 'image_image',
-      'weight' => 7,
+      'weight' => 8,
     ),
   );
 
@@ -1317,7 +1317,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 35,
+      'weight' => 44,
     ),
   );
 
@@ -1498,7 +1498,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 27,
+      'weight' => 42,
     ),
   );
 
@@ -1593,7 +1593,7 @@ function library_features_content_type_location_field_default_field_instances() 
       'module' => 'fivestar',
       'settings' => array(),
       'type' => 'exposed',
-      'weight' => 14,
+      'weight' => 16,
     ),
   );
 
@@ -1687,7 +1687,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 24,
+      'weight' => 25,
     ),
   );
 
@@ -1761,7 +1761,7 @@ function library_features_content_type_location_field_default_field_instances() 
     ),
     'entity_type' => 'node',
     'field_name' => 'field_location_related_entities',
-    'label' => 'Related entities',
+    'label' => 'Related Events',
     'required' => 0,
     'settings' => array(
       'user_register_form' => FALSE,
@@ -1775,7 +1775,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 37,
+      'weight' => 24,
     ),
   );
 
@@ -1863,7 +1863,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 26,
+      'weight' => 27,
     ),
   );
 
@@ -1951,7 +1951,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 25,
+      'weight' => 26,
     ),
   );
 
@@ -2038,7 +2038,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 36,
+      'weight' => 45,
     ),
   );
 
@@ -2821,7 +2821,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 28,
+      'weight' => 41,
     ),
   );
 
@@ -2914,7 +2914,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 5,
+      'weight' => 6,
     ),
   );
 
@@ -3159,7 +3159,7 @@ function library_features_content_type_location_field_default_field_instances() 
   t('Rating');
   t('Received Documents');
   t('Received Files');
-  t('Related entities');
+  t('Related Events');
   t('Route start event');
   t('Route to events');
   t('Source');

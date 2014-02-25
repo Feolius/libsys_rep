@@ -862,7 +862,7 @@ function library_features_content_type_events_field_default_field_instances() {
       'module' => 'fivestar',
       'settings' => array(),
       'type' => 'exposed',
-      'weight' => 43,
+      'weight' => 8,
     ),
   );
 
@@ -1753,7 +1753,7 @@ function library_features_content_type_events_field_default_field_instances() {
         'year_range' => '-3:+3',
       ),
       'type' => 'library_date_field_text',
-      'weight' => 13,
+      'weight' => 3,
     ),
   );
 

@@ -330,7 +330,7 @@ function library_features_content_type_people_field_default_field_instances() {
     ),
     'entity_type' => 'node',
     'field_name' => 'field_people_created_event',
-    'label' => 'Created event',
+    'label' => 'Wrote Text at Event',
     'required' => 0,
     'settings' => array(
       'user_register_form' => FALSE,
@@ -344,7 +344,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 41,
+      'weight' => 22,
     ),
   );
 
@@ -1569,7 +1569,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 19,
+      'weight' => 20,
     ),
   );
 
@@ -1640,7 +1640,7 @@ function library_features_content_type_people_field_default_field_instances() {
     ),
     'entity_type' => 'node',
     'field_name' => 'field_people_received_event',
-    'label' => 'Received event',
+    'label' => 'Received Text at Event',
     'required' => 0,
     'settings' => array(
       'user_register_form' => FALSE,
@@ -1654,7 +1654,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 19,
+      'weight' => 23,
     ),
   );
 
@@ -1830,7 +1830,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 20,
+      'weight' => 19,
     ),
   );
 
@@ -2730,7 +2730,7 @@ function library_features_content_type_people_field_default_field_instances() {
     ),
     'entity_type' => 'node',
     'field_name' => 'field_people_visit_nodes',
-    'label' => 'Visit nodes',
+    'label' => 'Visited Locations',
     'required' => 0,
     'settings' => array(
       'user_register_form' => FALSE,
@@ -2744,7 +2744,7 @@ function library_features_content_type_people_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 25,
+      'weight' => 21,
     ),
   );
 
@@ -3029,7 +3029,6 @@ function library_features_content_type_people_field_default_field_instances() {
   t('Birthday');
   t('Children');
   t('Comment');
-  t('Created event');
   t('Death date');
   t('Degree');
   t('Description');
@@ -3050,16 +3049,17 @@ function library_features_content_type_people_field_default_field_instances() {
   t('Rating');
   t('Received Documents');
   t('Received Files');
-  t('Received event');
+  t('Received Text at Event');
   t('Related event');
   t('Source');
   t('Tags');
   t('Title');
   t('Videos');
   t('Visit date');
-  t('Visit nodes');
+  t('Visited Locations');
   t('Written Documents');
   t('Written Files');
+  t('Wrote Text at Event');
 
   return $field_instances;
 }
