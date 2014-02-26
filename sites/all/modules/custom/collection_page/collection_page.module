@@ -13,14 +13,14 @@
 function collection_page_menu() {
   $items = array();
   $items['timeline-json'] = array(
-    'access callback' => TRUE,
-    'page callback' => 'collection_page_timeline_json_callback',
-    'type' => MENU_CALLBACK,
+      'access callback' => TRUE,
+      'page callback' => 'collection_page_timeline_json_callback',
+      'type' => MENU_CALLBACK,
   );
   $items['timeline-iframe'] = array(
-    'access callback' => TRUE,
-    'page callback' => 'collection_page_timeline_frame_callback',
-    'type' => MENU_CALLBACK,
+      'access callback' => TRUE,
+      'page callback' => 'collection_page_timeline_frame_callback',
+      'type' => MENU_CALLBACK,
   );
 
   return $items;
@@ -31,46 +31,46 @@ function collection_page_menu() {
  */
 function collection_page_theme() {
   return array(
-    'facet_collection_search_results__alter' => array(
-      'variables' => array('results' => NULL),
-    ),
-    'collection_page' => array(
-      'template' => 'theme/collection-page',
-      'variables' => array(
-        'content' => NULL,
-        'default_url' => NULL,
-        'thumbnail_url' => NULL
-      )
-    ),
-    'timeline_json' => array(
-      'template' => 'theme/timeline-json-page',
-      'arguments' => array(
-        'options' => NULL,
+      'facet_collection_search_results__alter' => array(
+          'variables' => array('results' => NULL),
       ),
-    ),
-    'timeline_iframe' => array(
-      'template' => 'theme/timeline-iframe-page',
-    ),
-    'collection_standard_thumbnail_view' => array(
-      'template' => 'theme/collection-standard-thumbnail-view',
-      'variables' => array('results' => NULL)
-    ),
-    'collection_search_results' => array(
-      'template' => 'theme/collection-search-results',
-      'variables' => array('results' => NULL, 'bundle_machine_name' => NULL)
-    ),
-    'collection_search_result' => array(
-      'template' => 'theme/collection-search-result',
-      'variables' => array('result' => NULL, 'image_style' => NULL)
-    ),
-    'collection_standard_default_view' => array(
-      'template' => 'theme/collection-standard-default-view',
-      'variables' => array('results' => NULL)
-    ),
-    'collection_search_result_snippet_data' => array(
-      'template' => 'theme/collection-page-search-result-snippet',
-      'variables' => array('snippet_type' => NULL, 'snippet_data' => NULL),
-    ),
+      'collection_page' => array(
+          'template' => 'theme/collection-page',
+          'variables' => array(
+              'content' => NULL,
+              'default_url' => NULL,
+              'thumbnail_url' => NULL
+          )
+      ),
+      'timeline_json' => array(
+          'template' => 'theme/timeline-json-page',
+          'arguments' => array(
+              'options' => NULL,
+          ),
+      ),
+      'timeline_iframe' => array(
+          'template' => 'theme/timeline-iframe-page',
+      ),
+      'collection_standard_thumbnail_view' => array(
+          'template' => 'theme/collection-standard-thumbnail-view',
+          'variables' => array('results' => NULL)
+      ),
+      'collection_search_results' => array(
+          'template' => 'theme/collection-search-results',
+          'variables' => array('results' => NULL, 'bundle_machine_name' => NULL)
+      ),
+      'collection_search_result' => array(
+          'template' => 'theme/collection-search-result',
+          'variables' => array('result' => NULL, 'image_style' => NULL)
+      ),
+      'collection_standard_default_view' => array(
+          'template' => 'theme/collection-standard-default-view',
+          'variables' => array('results' => NULL)
+      ),
+      'collection_search_result_snippet_data' => array(
+          'template' => 'theme/collection-page-search-result-snippet',
+          'variables' => array('snippet_type' => NULL, 'snippet_data' => NULL),
+      ),
   );
 }
 
@@ -82,23 +82,23 @@ function collection_page_theme() {
  */
 function theme_facet_collection_search_results__alter($variables) {
   $content_tabs = array(
-    '#standard-default' => array(
-      '#id' => 'standard-default-view',
-      '#title' => 'Standard View (Default)',
-      '#class' => 'standart',
-    ),
-    '#standard-thumbnail' => array(
-      '#id' => 'standard-thumbnail-view',
-      '#title' => 'Standard View (Thumbnail)',
-      '#class' => 'thumbnail',
-    ),
-    //@TODO uncomment it when timeline tab will be available
+      '#standard-default' => array(
+          '#id' => 'standard-default-view',
+          '#title' => 'Standard View (Default)',
+          '#class' => 'standart',
+      ),
+      '#standard-thumbnail' => array(
+          '#id' => 'standard-thumbnail-view',
+          '#title' => 'Standard View (Thumbnail)',
+          '#class' => 'thumbnail',
+      ),
+          //@TODO uncomment it when timeline tab will be available
 //    '#timeline' => array(
 //      '#id' => 'timeline-view',
 //      '#title' => t('Timeline View'),
 //      '#class' => 'timeline',
 //    ),
-    //@TODO uncomment it when location tab will be available
+          //@TODO uncomment it when location tab will be available
 //    '#location' => array(
 //      '#id' => 'location-view',
 //      '#title' => t('Location View'),
@@ -116,16 +116,14 @@ function theme_facet_collection_search_results__alter($variables) {
   node_load_multiple($node_ids);
 
   $content_tabs['#standard-default']['#content'] = array(
-    theme(
-      'collection_standard_default_view',
-      array('results' => $results)
-    )
+      theme(
+              'collection_standard_default_view', array('results' => $results)
+      )
   );
   $content_tabs['#standard-thumbnail']['#content'] = array(
-    theme(
-      'collection_standard_thumbnail_view',
-      array('results' => $results)
-    )
+      theme(
+              'collection_standard_thumbnail_view', array('results' => $results)
+      )
   );
 
   //Define for what bundle current apache_solr request was executed
@@ -260,13 +258,11 @@ function theme_facet_collection_search_results__alter($variables) {
   }
 
   return theme(
-    'collection_page',
-    array(
+          'collection_page', array(
       'content' => $content_tabs,
-    )
+          )
   );
 }
-
 
 /**
  * Page callback for Timeline View on Collection Page.
@@ -275,8 +271,8 @@ function collection_page_timeline_frame_callback() {
   $options = new stdClass();
   $options->start_slide = 0;
   $options->timeline_lib_url = $GLOBALS['base_url'] . '/' . libraries_get_path(
-      'timeline'
-    ) . '/compiled/js/storyjs-embed.js';
+                  'timeline'
+          ) . '/compiled/js/storyjs-embed.js';
   echo theme('timeline_json', array('options' => $options));
   exit;
 }
@@ -304,10 +300,9 @@ function collection_page_timeline_json_callback() {
         //If the node have more then one date fields, the earliest one would be chosen.
         if (isset($timeline_item->startDate)) {
           $timeline_item->startDate = (strtotime($timeline_item->startDate) > strtotime(
-              $item_date
-            )) ? $item_date : $timeline_item->startDate;
-        }
-        else {
+                          $item_date
+                  )) ? $item_date : $timeline_item->startDate;
+        } else {
           $timeline_item->startDate = $item_date;
         }
       }
@@ -339,8 +334,7 @@ function collection_page_timeline_json_callback() {
             $styles = image_styles();
             if (in_array($style, array_keys($styles))) {
               $image_path = image_style_url($style, $uri);
-            }
-            else {
+            } else {
               $image_path = file_create_url($uri);
             }
             break;
@@ -355,14 +349,12 @@ function collection_page_timeline_json_callback() {
 
     $timeline_item->headline = $result['title'];
     $timeline_item->text = l(
-      'read more',
-      $GLOBALS['base_url'] . $result['link'],
-      array(
+            'read more', $GLOBALS['base_url'] . $result['link'], array(
         'attributes' => array(
-          'target' => '_parent',
-          'class' => 'active'
+            'target' => '_parent',
+            'class' => 'active'
         )
-      )
+            )
     );
     $timeline_item->asset = $asset;
     $date[] = $timeline_item;
@@ -387,7 +379,6 @@ function collection_page_preprocess_timeline_json(&$vars) {
   $vars['start_slide'] = $options->start_slide;
   $vars['timeline_lib_url'] = $options->timeline_lib_url;
   $vars['source'] = $GLOBALS['base_url'] . '/timeline-json';
-
 }
 
 /**
@@ -438,8 +429,7 @@ function _collection_page_get_date_fields_from_bundle($bundle) {
       }
     }
     cache_set('collection_page:date_fields', $date_fields, 'cache', CACHE_TEMPORARY);
-  }
-  else {
+  } else {
     $date_fields[$bundle] = $date_fields_cache->data[$bundle];
   }
 
@@ -468,8 +458,7 @@ function _collection_page_is_date_fields_not_empty($results) {
     }
 
     return FALSE;
-  }
-  else {
+  } else {
     return FALSE;
   }
 }
@@ -498,12 +487,12 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
   $coeff = $popover_height / $height;
   // These variables is used in image_style_theme() function.
   $attributes = array(
-    'class' => array('collection-thumbnail'),
-    'style' => array("height:" . $height . "px"),
+      'class' => array('collection-thumbnail'),
+      'style' => array("height:" . $height . "px"),
   );
   $variables = array(
-    'style_name' => 'collection_popover_thumbnail',
-    'attributes' => $attributes,
+      'style_name' => 'collection_popover_thumbnail',
+      'attributes' => $attributes,
   );
   $results['collection_thumbnails'] = array();
 
@@ -538,13 +527,12 @@ function template_preprocess_collection_standard_thumbnail_view(&$results) {
     $results['collection_thumbnails'][] = $thumbnail_content;
   }
   drupal_add_js(
-    array(
+          array(
       'collection_page' => array(
-        'height' => $height,
-        'coefficient' => $coeff
+          'height' => $height,
+          'coefficient' => $coeff
       )
-    ),
-    'setting'
+          ), 'setting'
   );
   $results['pager'] = theme('pager', array('tags' => NULL));
 }
@@ -564,8 +552,7 @@ function _collection_page_get_bundle_image_fields($bundle) {
       }
     }
     cache_set('collection_page:image_fields', $image_fields, 'cache', CACHE_TEMPORARY);
-  }
-  else {
+  } else {
     $image_fields[$bundle] = $image_cache->data[$bundle];
   }
   return $image_fields[$bundle];
@@ -581,8 +568,7 @@ function template_preprocess_collection_standard_default_view(&$variables) {
   //Number of rows in page
   if (isset($_GET['rNum'])) {
     $r_num = $_GET['rNum'];
-  }
-  else {
+  } else {
     $facet_collection_rows_number_variants = variable_get('facet_collection_rows_number_variants', '25 50 100');
     $facet_collection_rows_number_variants = explode(' ', $facet_collection_rows_number_variants);
     $r_num = $facet_collection_rows_number_variants[0];
@@ -622,11 +608,7 @@ function template_preprocess_collection_page(&$variables) {
 }
 
 function collection_page_preprocess_breadcrumb(&$variables) {
-  if (arg(0) == 'node'
-    && is_numeric(arg(1))
-    && (isset($_GET['collection']) && $_GET['collection'] == 'true')
-    && isset($_GET['curr'])
-  ) {
+  if (arg(0) == 'node' && is_numeric(arg(1)) && (isset($_GET['collection']) && $_GET['collection'] == 'true') && isset($_GET['curr'])) {
 
     // Build link at library page.
     $library_get_options = $_GET;
@@ -637,8 +619,7 @@ function collection_page_preprocess_breadcrumb(&$variables) {
     unset($library_get_options['q']);
     if (isset($_GET['query'])) {
       $path = 'library/' . $_GET['query'];
-    }
-    else {
+    } else {
       $path = 'library';
     }
     $back_to_library_html = l(t('Library'), $path, array('query' => $library_get_options));
@@ -764,7 +745,6 @@ function collection_page_get_image_field($node) {
   return $image_field_name;
 }
 
-
 /**
  * Return an image html for for the given node and given image field.
  * @param $variables
@@ -774,64 +754,62 @@ function collection_page_get_image_field($node) {
  */
 function collection_page_node_snippet_image($node, $image_field_name, $variables, $image_link = NULL) {
   $image = FALSE;
-  if ($image_field_name == 'video_thumb') {
-    if ((module_exists('youtube'))) {
-      $youtube_field_items = field_get_items('node', $node, 'field_files_youtube_media');
-      if (!empty($youtube_field_items)) {
-        foreach ($youtube_field_items as $item) {
-          if (isset($item['video_id'])) {
-            $image = theme(
-              'library_youtube_thumbnail',
-              array(
-                'video_id' => $item['video_id'],
-                'image_variables' => $variables,
-              )
-            );
-            break;
-          }
-        }
-      }
-    }
-  }
-  elseif ($image_field_name == 'document_thumb') {
-    //We have two types of snippets for primary media document
-    //The first one is Email - if the category of document is Email.
-    //The second one - all other documents
-    $category_items = field_get_items('node', $node, 'field_files_category');
-    if (!empty($category_items)) {
-      $item = $category_items[0];
-      $term = taxonomy_term_load($item['tid']);
-      //For email display just an Email dummy image
-      if ($term->name == 'E-Mail') {
-        $uri = file_build_uri('collection_page_images/email.png');
-        $image = theme('image_style', array_merge($variables, array('path' => $uri)));
-      }
-    }
-    //For the document display thumbnail of pdf file
-    if (!$image) {
-      $book_field_items = field_get_items('node', $node, 'field_files_file');
-      if (!empty($book_field_items)) {
-        foreach ($book_field_items as $item) {
-          if (isset($item['fid_thumb'])) {
-            $file_thumb = file_load($item['fid_thumb']);
-            if ($file_thumb) {
-              $uri_thumb = $file_thumb->uri;
-              $image = theme('image_style', array_merge($variables, array('path' => $uri_thumb)));
+  if ($image_field_name) {
+    if ($image_field_name == 'video_thumb') {
+      if ((module_exists('youtube'))) {
+        $youtube_field_items = field_get_items('node', $node, 'field_files_youtube_media');
+        if (!empty($youtube_field_items)) {
+          foreach ($youtube_field_items as $item) {
+            if (isset($item['video_id'])) {
+              $image = theme(
+                      'library_youtube_thumbnail', array(
+                  'video_id' => $item['video_id'],
+                  'image_variables' => $variables,
+                      )
+              );
               break;
             }
           }
         }
       }
-    }
-
-  }
-  else {
-    $items = field_get_items('node', $node, $image_field_name);
-    if (!empty($items)) {
-      $item = $items[0];
-      if (isset($item['uri'])) {
-        $uri = $item['uri'];
-        $image = theme('image_style', array_merge($variables, array('path' => $uri)));
+    } elseif ($image_field_name == 'document_thumb') {
+      //We have two types of snippets for primary media document
+      //The first one is Email - if the category of document is Email.
+      //The second one - all other documents
+      $category_items = field_get_items('node', $node, 'field_files_category');
+      if (!empty($category_items)) {
+        $item = $category_items[0];
+        $term = taxonomy_term_load($item['tid']);
+        //For email display just an Email dummy image
+        if ($term->name == 'E-Mail') {
+          $uri = file_build_uri('collection_page_images/email.png');
+          $image = theme('image_style', array_merge($variables, array('path' => $uri)));
+        }
+      }
+      //For the document display thumbnail of pdf file
+      if (!$image) {
+        $book_field_items = field_get_items('node', $node, 'field_files_file');
+        if (!empty($book_field_items)) {
+          foreach ($book_field_items as $item) {
+            if (isset($item['fid_thumb'])) {
+              $file_thumb = file_load($item['fid_thumb']);
+              if ($file_thumb) {
+                $uri_thumb = $file_thumb->uri;
+                $image = theme('image_style', array_merge($variables, array('path' => $uri_thumb)));
+                break;
+              }
+            }
+          }
+        }
+      }
+    } else {
+      $items = field_get_items('node', $node, $image_field_name);
+      if (!empty($items)) {
+        $item = $items[0];
+        if (isset($item['uri'])) {
+          $uri = $item['uri'];
+          $image = theme('image_style', array_merge($variables, array('path' => $uri)));
+        }
       }
     }
   }
@@ -842,8 +820,6 @@ function collection_page_node_snippet_image($node, $image_field_name, $variables
       $uri = file_build_uri('collection_page_images/default_images/default.png');
     }
     $image = theme('image', array_merge($variables, array('path' => $uri)));
-
-
   }
   if ($image_link != NULL) {
     $url_path = $image_link['path'];
@@ -866,10 +842,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
   switch ($node->type) {
     case 'files':
       $snippet_data = collection_page_files_node_snippet_data(
-        $node,
-        $trimmed_characters_length,
-        $snippet,
-        $snippet_contain_search_result
+              $node, $trimmed_characters_length, $snippet, $snippet_contain_search_result
       );
       break;
     case 'people':
@@ -883,8 +856,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
         //If the user search some word or frase, we nned to show the snippet from apache solr
         //with highlighted found text.
         $description = $snippet;
-      }
-      else {
+      } else {
         $items = field_get_items('node', $node, 'field_people_description');
         if (!empty($items)) {
           foreach ($items as $item) {
@@ -942,24 +914,23 @@ function collection_page_node_snippet_data($nid, $snippet) {
         }
       }
       $snippet_data = theme(
-        'collection_search_result_snippet_data',
-        array(
+              'collection_search_result_snippet_data', array(
           'snippet_type' => 'people',
           'snippet_data' => array(
-            'description' => array(
-              '#label' => FALSE,
-              '#data' => strip_tags($description, '<strong>'),
-            ),
-            'birth_date' => array(
-              '#label' => 'Birth Date',
-              '#data' => $birth_date,
-            ),
-            'death_date' => array(
-              '#label' => 'Death Date',
-              '#data' => $death_date,
-            ),
+              'description' => array(
+                  '#label' => FALSE,
+                  '#data' => strip_tags($description, '<strong>'),
+              ),
+              'birth_date' => array(
+                  '#label' => 'Birth Date',
+                  '#data' => $birth_date,
+              ),
+              'death_date' => array(
+                  '#label' => 'Death Date',
+                  '#data' => $death_date,
+              ),
           ),
-        )
+              )
       );
 
       break;
@@ -974,8 +945,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
         //If the user search some word or phrase, we need to show the snippet from apache solr
         //with highlighted found text.
         $description = $snippet;
-      }
-      else {
+      } else {
         $items = field_get_items('node', $node, 'field_location_description');
         if (!empty($items)) {
           foreach ($items as $item) {
@@ -999,13 +969,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
         $display['type'] = 'addressfield_default';
         $display['settings']['format_handlers'] = array('address');
         $field_element = addressfield_field_formatter_view(
-          'node',
-          $node,
-          $field,
-          $instance,
-          LANGUAGE_NONE,
-          $items,
-          $display
+                'node', $node, $field, $instance, LANGUAGE_NONE, $items, $display
         );
         $address = drupal_render($field_element);
 
@@ -1014,20 +978,19 @@ function collection_page_node_snippet_data($nid, $snippet) {
         }
       }
       $snippet_data = theme(
-        'collection_search_result_snippet_data',
-        array(
+              'collection_search_result_snippet_data', array(
           'snippet_type' => 'location',
           'snippet_data' => array(
-            'description' => array(
-              '#label' => FALSE,
-              '#data' => strip_tags($description, '<strong>'),
-            ),
-            'address' => array(
-              '#label' => 'Address',
-              '#data' => $address,
-            ),
+              'description' => array(
+                  '#label' => FALSE,
+                  '#data' => strip_tags($description, '<strong>'),
+              ),
+              'address' => array(
+                  '#label' => 'Address',
+                  '#data' => $address,
+              ),
           ),
-        )
+              )
       );
 
       break;
@@ -1042,8 +1005,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
         //If the user search some word or frase, we nned to show the snippet from apache solr
         //with highlighted found text.
         $description = $snippet;
-      }
-      else {
+      } else {
         $items = field_get_items('node', $node, 'field_events_description');
         if (!empty($items)) {
           foreach ($items as $item) {
@@ -1077,8 +1039,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
             $uri = entity_uri($field['settings']['target_type'], $target_entity);
             if ($uri) {
               $location[] = l($label, $uri['path'], $uri['options']);
-            }
-            else {
+            } else {
               $location[] = check_plain($label);
             }
           }
@@ -1100,24 +1061,23 @@ function collection_page_node_snippet_data($nid, $snippet) {
       }
 
       $snippet_data = theme(
-        'collection_search_result_snippet_data',
-        array(
+              'collection_search_result_snippet_data', array(
           'snippet_type' => 'events',
           'snippet_data' => array(
-            'description' => array(
-              '#label' => FALSE,
-              '#data' => strip_tags($description, '<strong>'),
-            ),
-            'location' => array(
-              '#label' => 'Location',
-              '#data' => implode(',', $location),
-            ),
-            'date' => array(
-              '#label' => 'Date',
-              '#data' => $date,
-            ),
+              'description' => array(
+                  '#label' => FALSE,
+                  '#data' => strip_tags($description, '<strong>'),
+              ),
+              'location' => array(
+                  '#label' => 'Location',
+                  '#data' => implode(',', $location),
+              ),
+              'date' => array(
+                  '#label' => 'Date',
+                  '#data' => $date,
+              ),
           ),
-        )
+              )
       );
 
       break;
@@ -1129,8 +1089,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
         //If the user search some word or frase, we nned to show the snippet from apache solr
         //with highlighted found text.
         $description = $snippet;
-      }
-      else {
+      } else {
         $items = field_get_items('node', $node, 'field_topics_body');
         if (!empty($items)) {
           foreach ($items as $item) {
@@ -1146,20 +1105,18 @@ function collection_page_node_snippet_data($nid, $snippet) {
       }
 
       $snippet_data = theme(
-        'collection_search_result_snippet_data',
-        array(
+              'collection_search_result_snippet_data', array(
           'snippet_type' => 'topics',
           'snippet_data' => array(
-            'description' => array(
-              '#label' => FALSE,
-              '#data' => strip_tags($description, '<strong>'),
-            ),
+              'description' => array(
+                  '#label' => FALSE,
+                  '#data' => strip_tags($description, '<strong>'),
+              ),
           ),
-        )
+              )
       );
 
       break;
-
   }
 
   return $snippet_data;
@@ -1174,10 +1131,7 @@ function collection_page_node_snippet_data($nid, $snippet) {
  * @return string
  */
 function collection_page_files_node_snippet_data(
-  $node,
-  $trimmed_characters_length,
-  $snippet,
-  $snippet_contain_search_result
+$node, $trimmed_characters_length, $snippet, $snippet_contain_search_result
 ) {
   $snippet_data = '';
 
@@ -1216,14 +1170,13 @@ function collection_page_files_node_snippet_data(
                 $plain_label = check_plain($label);
                 if ($uri) {
                   $people[] = array(
-                    'normal' => l($label, $uri['path'], $uri['options']),
-                    'plain' => $plain_label
+                      'normal' => l($label, $uri['path'], $uri['options']),
+                      'plain' => $plain_label
                   );
-                }
-                else {
+                } else {
                   $people[] = array(
-                    'normal' => $plain_label,
-                    'plain' => $plain_label
+                      'normal' => $plain_label,
+                      'plain' => $plain_label
                   );
                 }
               }
@@ -1250,14 +1203,13 @@ function collection_page_files_node_snippet_data(
                 $plain_label = check_plain($label);
                 if ($uri) {
                   $locations[] = array(
-                    'normal' => l($label, $uri['path'], $uri['options']),
-                    'plain' => $plain_label
+                      'normal' => l($label, $uri['path'], $uri['options']),
+                      'plain' => $plain_label
                   );
-                }
-                else {
+                } else {
                   $locations[] = array(
-                    'normal' => $plain_label,
-                    'plain' => $plain_label
+                      'normal' => $plain_label,
+                      'plain' => $plain_label
                   );
                 }
               }
@@ -1285,8 +1237,7 @@ function collection_page_files_node_snippet_data(
             $length = iconv_strlen(implode(',', $tmp_people), 'UTF-8');
             if ($length < 40) {
               $people_field_data[] = $person['normal'];
-            }
-            else {
+            } else {
               $people_field_data[] = '...';
               break;
             }
@@ -1299,39 +1250,36 @@ function collection_page_files_node_snippet_data(
             $length = iconv_strlen(implode(',', $tmp_locations), 'UTF-8');
             if ($length < 40) {
               $location_field_data[] = $location['normal'];
-            }
-            else {
+            } else {
               $location_field_data[] = '...';
               break;
             }
           }
 
           $snippet_data = theme(
-            'collection_search_result_snippet_data',
-            array(
+                  'collection_search_result_snippet_data', array(
               'snippet_type' => 'files-image',
               'snippet_data' => array(
-                'search_snippet' => array(
-                  '#label' => FALSE,
-                  '#data' => strip_tags($search_snippet, '<strong>'),
-                ),
-                'people' => array(
-                  '#label' => 'People',
-                  '#data' => implode(',', $people_field_data),
-                ),
-                'location' => array(
-                  '#label' => 'Location',
-                  '#data' => implode(',', $location_field_data),
-                ),
-                'date' => array(
-                  '#label' => 'Date',
-                  '#data' => $date,
-                ),
+                  'search_snippet' => array(
+                      '#label' => FALSE,
+                      '#data' => strip_tags($search_snippet, '<strong>'),
+                  ),
+                  'people' => array(
+                      '#label' => 'People',
+                      '#data' => implode(',', $people_field_data),
+                  ),
+                  'location' => array(
+                      '#label' => 'Location',
+                      '#data' => implode(',', $location_field_data),
+                  ),
+                  'date' => array(
+                      '#label' => 'Date',
+                      '#data' => $date,
+                  ),
               ),
-            )
+                  )
           );
-        }
-        elseif ($item['value'] == 'audio') {
+        } elseif ($item['value'] == 'audio') {
           //Snippet for files node with primary media audio consist of description and length of audio file
 
           $description = '';
@@ -1341,15 +1289,13 @@ function collection_page_files_node_snippet_data(
             //If the user search some word or frase, we nned to show the snippet from apache solr
             //with highlighted found text.
             $description = $snippet;
-          }
-          else {
+          } else {
             $description_items = field_get_items('node', $node, 'field_files_description');
             if (!empty($description_items)) {
               foreach ($description_items as $item) {
                 //Trim the description text
                 if ((module_exists('text') && isset($item['value']))) {
                   $description = text_summary($item['value'], NULL, $trimmed_characters_length);
-
                 }
                 //We need only one picture from the image field
                 //If the field have more then one picture we take the first one.
@@ -1373,23 +1319,21 @@ function collection_page_files_node_snippet_data(
           }
 
           $snippet_data = theme(
-            'collection_search_result_snippet_data',
-            array(
+                  'collection_search_result_snippet_data', array(
               'snippet_type' => 'files-audio',
               'snippet_data' => array(
-                'description' => array(
-                  '#label' => FALSE,
-                  '#data' => strip_tags($description, '<strong>'),
-                ),
-                'length' => array(
-                  '#label' => 'Length',
-                  '#data' => $length,
-                ),
+                  'description' => array(
+                      '#label' => FALSE,
+                      '#data' => strip_tags($description, '<strong>'),
+                  ),
+                  'length' => array(
+                      '#label' => 'Length',
+                      '#data' => $length,
+                  ),
               ),
-            )
+                  )
           );
-        }
-        elseif ($item['value'] == 'video') {
+        } elseif ($item['value'] == 'video') {
 
           $description = '';
           $length = '';
@@ -1398,8 +1342,7 @@ function collection_page_files_node_snippet_data(
             //If the user search some word or frase, we nned to show the snippet from apache solr
             //with highlighted found text.
             $description = $snippet;
-          }
-          else {
+          } else {
             $description_items = field_get_items('node', $node, 'field_files_description');
             if (!empty($description_items)) {
               foreach ($description_items as $item) {
@@ -1429,23 +1372,21 @@ function collection_page_files_node_snippet_data(
           }
 
           $snippet_data = theme(
-            'collection_search_result_snippet_data',
-            array(
+                  'collection_search_result_snippet_data', array(
               'snippet_type' => 'files-videos',
               'snippet_data' => array(
-                'description' => array(
-                  '#label' => FALSE,
-                  '#data' => strip_tags($description, '<strong>'),
-                ),
-                'length' => array(
-                  '#label' => 'Length',
-                  '#data' => $length,
-                ),
+                  'description' => array(
+                      '#label' => FALSE,
+                      '#data' => strip_tags($description, '<strong>'),
+                  ),
+                  'length' => array(
+                      '#label' => 'Length',
+                      '#data' => $length,
+                  ),
               ),
-            )
+                  )
           );
-        }
-        elseif ($item['value'] == 'document') {
+        } elseif ($item['value'] == 'document') {
           //We have two types of snippets for primary media document
           //The first one is Email - if the category of document is Email.
           //The second one - all other documents
@@ -1475,24 +1416,22 @@ function collection_page_files_node_snippet_data(
                   }
 
                   $snippet_data = theme(
-                    'collection_search_result_snippet_data',
-                    array(
+                          'collection_search_result_snippet_data', array(
                       'snippet_type' => 'files-email',
                       'snippet_data' => array(
-                        'search_snippet' => array(
-                          '#label' => FALSE,
-                          '#data' => strip_tags($search_snippet, '<strong>'),
-                        ),
-                        'date' => array(
-                          '#label' => 'Date',
-                          '#data' => $date,
-                        ),
+                          'search_snippet' => array(
+                              '#label' => FALSE,
+                              '#data' => strip_tags($search_snippet, '<strong>'),
+                          ),
+                          'date' => array(
+                              '#label' => 'Date',
+                              '#data' => $date,
+                          ),
                       ),
-                    )
+                          )
                   );
                 }
                 //For the document display author and date and subtitle
-
               }
               //We need only one picture from the image field
               //If the field have more then one picture we take the first one.
@@ -1541,8 +1480,7 @@ function collection_page_files_node_snippet_data(
                   $uri = entity_uri($field['settings']['target_type'], $target_entity);
                   if ($uri) {
                     $author[] = l($label, $uri['path'], $uri['options']);
-                  }
-                  else {
+                  } else {
                     $author[] = check_plain($label);
                   }
                 }
@@ -1564,30 +1502,28 @@ function collection_page_files_node_snippet_data(
             }
 
             $snippet_data = theme(
-              'collection_search_result_snippet_data',
-              array(
+                    'collection_search_result_snippet_data', array(
                 'snippet_type' => 'files-document',
                 'snippet_data' => array(
-                  'subtitle' => array(
-                    '#label' => FALSE,
-                    '#data' => $subtitle,
-                  ),
-                  'search_snippet' => array(
-                    '#label' => FALSE,
-                    '#data' => strip_tags($search_snippet, '<strong>'),
-                  ),
-                  'author' => array(
-                    '#label' => 'Author',
-                    '#data' => implode(',', $author),
-                  ),
-                  'date' => array(
-                    '#label' => 'Date',
-                    '#data' => $date,
-                  ),
+                    'subtitle' => array(
+                        '#label' => FALSE,
+                        '#data' => $subtitle,
+                    ),
+                    'search_snippet' => array(
+                        '#label' => FALSE,
+                        '#data' => strip_tags($search_snippet, '<strong>'),
+                    ),
+                    'author' => array(
+                        '#label' => 'Author',
+                        '#data' => implode(',', $author),
+                    ),
+                    'date' => array(
+                        '#label' => 'Date',
+                        '#data' => $date,
+                    ),
                 ),
-              )
+                    )
             );
-
           }
         }
       }
