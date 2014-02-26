@@ -15,11 +15,11 @@ abstract class LibraryMigration extends DynamicMigration {
 //      );
     //For import on production server
     $other_database = array(
-      'database' => 'archive_library',
-      'username' => 'archive_library',
-      'password' => 'jkqeq23ffa3rh',
-      'host' => 'sql-3',
-      'driver' => 'mysql',
+        'database' => 'archive_library',
+        'username' => 'archive_library',
+        'password' => 'jkqeq23ffa3rh',
+        'host' => 'sql-3',
+        'driver' => 'mysql',
     );
     Database::addConnectionInfo('ImportDatabaseKey', 'default', $other_database);
     set_time_limit(0);
@@ -28,7 +28,7 @@ abstract class LibraryMigration extends DynamicMigration {
   //Get source ids for entries which related with the reference entry ($reference_id, $reference_tb) through given linker
   public function getRelatedSids($reference_id, $reference_tb, $needed_tbs, $linkerinfo_id) {
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('egw_linker', 'l');
+            ->select('egw_linker', 'l');
     $query->addField('l', 'tb_id');
     $query->join('egw_linker2info', 'l2i', 'l2i.linker_id = l.linker_entry_id');
     $query->join('egw_linker', 'l2', 'l2.linker_entry_id = l.linker_entry_id');
@@ -61,7 +61,7 @@ abstract class LibraryMigration extends DynamicMigration {
       $source_migration = Migration::getInstance($source_name);
       foreach ($sids as $sid) {
         $destids = $source_migration->getMap()
-          ->lookupDestinationID(array($sid));
+                ->lookupDestinationID(array($sid));
         if (!empty($destids['destid1'])) {
           $results[] = $destids['destid1'];
         } else {
@@ -95,19 +95,19 @@ abstract class LibraryMigration extends DynamicMigration {
     if (isset($data['adv_date_time'])) {
       foreach ($data['adv_date_time'] as $creation_date_id) {
         $query = Database::getConnection('default', 'ImportDatabaseKey')
-          ->select('adv_date_time', 'l');
+                ->select('adv_date_time', 'l');
         $query->condition('l.ID', $creation_date_id, '=');
         $query->fields('l', array(
-          'start_year',
-          'start_month',
-          'start_day',
-          'end_year',
-          'end_month',
-          'end_day'
+            'start_year',
+            'start_month',
+            'start_day',
+            'end_year',
+            'end_month',
+            'end_day'
         ));
         $result = $query->execute();
         $i = 0;
-        $record = $result->fetchAssoc();        
+        $record = $result->fetchAssoc();
         if (isset($record['start_year'])) {
           $start_year = $record['start_year'];
           $rounding = 1;
@@ -168,6 +168,8 @@ abstract class LibraryMigration extends DynamicMigration {
             $node->{$field_name}['und'][$i]['rounding'] = $rounding;
             $node->{$field_name}['und'][$i]['rounding2'] = $rounding2;
             $node->{$field_name}['und'][$i]['value2'] = $end_year . '-' . $end_month . '-' . $end_day . ' 00:00:00';
+            $node->{$field_name}['und'][$i]['notice'] = 0;
+            $node->{$field_name}['und'][$i]['show_end_date'] = 1;
             $i++;
           } else {
             continue;
@@ -180,7 +182,7 @@ abstract class LibraryMigration extends DynamicMigration {
   //Method allows to get destination ids from mapping tables
   public function getDidsFromMapTable($table_name, $sids) {
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select($table_name, 'l');
+            ->select($table_name, 'l');
     $query->addField('l', 'destid1');
     $condition = db_or();
     if (!empty($sids)) {
@@ -198,6 +200,16 @@ abstract class LibraryMigration extends DynamicMigration {
     }
     return $dids;
   }
+  
+  /**
+   * Put empty array into node field, if corresponding field in the row is empty. 
+   * Each text field should go through this function.
+   */
+  public function check_empty_text($node, $row, $field_name, $row_field) {
+    if(empty($row->$row_field)) {
+      $node->$field_name = array();
+    }    
+  }
 
 }
 
@@ -207,14 +219,14 @@ class FileCollectionMigration extends LibraryMigration {
     parent::__construct();
     $this->description = t('Migrate Files Collections from file_collection table');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('file_collection', 'fc')
-      ->fields('fc', array('ID', 'name', 'name_short', 'description'));
+            ->select('file_collection', 'fc')
+            ->fields('fc', array('ID', 'name', 'name_short', 'description'));
     $this->map = new MigrateSQLMap($this->machineName, array(
         'ID' => array(
-          'type' => 'int',
-          'not null' => TRUE,
+            'type' => 'int',
+            'not null' => TRUE,
         )
-      ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
+            ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
     );
     $this->source = new MigrateSourceSQL($query);
     $this->destination = new MigrateDestinationTerm('file_collection');
@@ -232,21 +244,21 @@ class FileFolderMigration extends LibraryMigration {
     $this->description = t('Migrate Files Folders from file_folder table');
     $this->dependencies = array('FileCollection');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('file_folder', 'ff')
-      ->fields('ff', array(
+            ->select('file_folder', 'ff')
+            ->fields('ff', array(
         'ID',
         'collection_id',
         'topic',
         'file_no',
         'other_source',
         'comments'
-      ));
+    ));
     $this->map = new MigrateSQLMap($this->machineName, array(
         'ID' => array(
-          'type' => 'int',
-          'not null' => TRUE,
+            'type' => 'int',
+            'not null' => TRUE,
         )
-      ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
+            ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
     );
 
     $this->source = new MigrateSourceSQL($query);
@@ -256,8 +268,8 @@ class FileFolderMigration extends LibraryMigration {
     $this->addFieldMapping('field_files_folder_other_source', 'other_source');
     $this->addFieldMapping('field_files_folder_comments', 'comments');
     $this->addFieldMapping('field_files_folder_collection', 'collection_id')
-      ->sourceMigration('FileCollection')
-      ->arguments(array('source_type' => 'tid'));
+            ->sourceMigration('FileCollection')
+            ->arguments(array('source_type' => 'tid'));
   }
 
 }
@@ -268,14 +280,14 @@ class FileCategoryMigration extends LibraryMigration {
     parent::__construct();
     $this->description = t('Migrate Files Categories from file_categories table');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('file_categories', 'fcc')
-      ->fields('fcc', array('ID', 'name'));
+            ->select('file_categories', 'fcc')
+            ->fields('fcc', array('ID', 'name'));
     $this->map = new MigrateSQLMap($this->machineName, array(
         'ID' => array(
-          'type' => 'int',
-          'not null' => TRUE,
+            'type' => 'int',
+            'not null' => TRUE,
         )
-      ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
+            ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
     );
     $this->source = new MigrateSourceSQL($query);
     $this->destination = new MigrateDestinationTerm('file_category');
@@ -290,15 +302,15 @@ class FilesMigration extends LibraryMigration {
     parent::__construct();
     $this->description = t('Migrate Files content type from file table');
     $this->dependencies = array(
-      'FileCollection',
-      'FileFolder',
-      'FileCategory',
-      'People',
-      'Location'
+        'FileCollection',
+        'FileFolder',
+        'FileCategory',
+        'People',
+        'Location'
     );
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('file', 'f')
-      ->fields('f', array(
+            ->select('file', 'f')
+            ->fields('f', array(
         'ID',
         'topic',
         'extendedtopic',
@@ -319,14 +331,14 @@ class FilesMigration extends LibraryMigration {
         'typewritten',
         'letterhead',
         'remarks'
-      ));
+    ));
     $this->map = new MigrateSQLMap($this->machineName, array(
         'ID' => array(
-          'type' => 'int',
-          'not null' => TRUE,
-          'alias' => 'f',
+            'type' => 'int',
+            'not null' => TRUE,
+            'alias' => 'f',
         )
-      ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
+            ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
     );
     $this->source = new MigrateSourceSQL($query);
     $this->destination = new MigrateDestinationNode('files');
@@ -338,12 +350,12 @@ class FilesMigration extends LibraryMigration {
     $this->addFieldMapping('field_files_extended_summary', 'extended_summary');
     $this->addFieldMapping('field_files_text', 'text');
     $this->addFieldMapping('field_files_keywords', 'keywords')
-      ->separator(',')
-      ->arguments(array('create_term' => TRUE));
+            ->separator(',')
+            ->arguments(array('create_term' => TRUE));
     $this->addFieldMapping('field_files_original_title', 'original_title');
     $this->addFieldMapping('field_files_category', 'category_id')
-      ->sourceMigration('FileCategory')
-      ->arguments(array('source_type' => 'tid'));
+            ->sourceMigration('FileCategory')
+            ->arguments(array('source_type' => 'tid'));
     $this->addFieldMapping('field_files_source_title', 'source');
     $this->addFieldMapping('field_files_source_volume', 'volume');
     $this->addFieldMapping('field_files_source_number', 'number');
@@ -354,22 +366,22 @@ class FilesMigration extends LibraryMigration {
     $this->addFieldMapping('field_files_letterhead', 'letterhead');
     $this->addFieldMapping('field_files_notes', 'remarks');
     $this->addFieldMapping('field_files_collection', 'cid')
-      ->sourceMigration('FileCollection')
-      ->arguments(array('source_type' => 'tid'));
+            ->sourceMigration('FileCollection')
+            ->arguments(array('source_type' => 'tid'));
     $this->addFieldMapping('field_files_folder', 'fid')
-      ->sourceMigration('FileFolder')
-      ->arguments(array('source_type' => 'tid'));
+            ->sourceMigration('FileFolder')
+            ->arguments(array('source_type' => 'tid'));
     $this->addFieldMapping('field_files_author', 'author')
-      ->sourceMigration('People');
+            ->sourceMigration('People');
     $this->addFieldMapping('field_files_receiver', 'receiver')
-      ->sourceMigration('People');
+            ->sourceMigration('People');
     $this->addFieldMapping('field_files_author_location', 'author_location')
-      ->sourceMigration('Location');
+            ->sourceMigration('Location');
     $this->addFieldMapping('field_files_receiver_location', 'receiver_location')
-      ->sourceMigration('Location');
+            ->sourceMigration('Location');
   }
 
-  public function prepareRow($row) {    
+  public function prepareRow($row) {
     //Check if this file from collection with id 1,2,3 or 4
     $taxonomy = $this->prepareTaxonomy($row->ID);
     $collection_ids = $taxonomy['collection_ids'];
@@ -378,20 +390,20 @@ class FilesMigration extends LibraryMigration {
     $collection_check = FALSE;
     foreach ($collection_ids as $key => $collection_id) {
       if (in_array($collection_id, array(1, 2, 3, 4))) {
-        $collection_check = TRUE;        
+        $collection_check = TRUE;
       } else {
         unset($collection_ids[$key]);
       }
     }
     if (!$collection_check) {
       return FALSE;
-    }    
-    if(count($collection_ids) == 1 && $collection_ids[0] == 1) {
-      $dir_arr = scandir(file_default_scheme() . '://books/');      
-      if(!in_array($row->ID, $dir_arr)) {
+    }
+    if (count($collection_ids) == 1 && $collection_ids[0] == 1) {
+      $dir_arr = scandir(file_default_scheme() . '://books/');
+      if (!in_array($row->ID, $dir_arr)) {
         return FALSE;
       }
-    }    
+    }
     $row->cid = $collection_ids;
     if (!empty($folder_ids)) {
       $row->fid = $folder_ids;
@@ -429,9 +441,9 @@ class FilesMigration extends LibraryMigration {
     if (!$collection_check) {
       return FALSE;
     }
-    if(count($collection_ids) == 1 && $collection_ids[0] == 1) {
-      $dir_arr = scandir(file_default_scheme() . '://books/');      
-      if(!in_array($source_id[0], $dir_arr)) {
+    if (count($collection_ids) == 1 && $collection_ids[0] == 1) {
+      $dir_arr = scandir(file_default_scheme() . '://books/');
+      if (!in_array($source_id[0], $dir_arr)) {
         return FALSE;
       }
     }
@@ -450,28 +462,53 @@ class FilesMigration extends LibraryMigration {
   }
 
   public function prepare($node, $row) {
+    $this->check_empty_text($node, $row, 'field_files_subtitle', 'extendedtopic');
+    $this->check_empty_text($node, $row, 'field_files_description', 'description');
+    $this->check_empty_text($node, $row, 'field_files_key_points', 'keypoints');
+    $this->check_empty_text($node, $row, 'field_files_extended_summary', 'extended_summary');
+    $this->check_empty_text($node, $row, 'field_files_text', 'text');
+    $this->check_empty_text($node, $row, 'field_files_original_title', 'original_title');
+    $this->check_empty_text($node, $row, 'field_files_source_title', 'source');
+    $this->check_empty_text($node, $row, 'field_files_source_volume', 'volume');
+    $this->check_empty_text($node, $row, 'field_files_source_number', 'number');
+    $this->check_empty_text($node, $row, 'field_files_source_page', 'page');
+    $this->check_empty_text($node, $row, 'field_files_source_chapter', 'chapter');
+    $this->check_empty_text($node, $row, 'field_files_notes', 'notes');
+    
     $ID = $row->ID;
     //Deal with pdfs and swfs
     $directory = file_default_scheme() . '://books/' . $ID;
     if (file_prepare_directory($directory)) {
       $pdf_uri = $directory . '/' . $ID . '.pdf';
-      $pdf_file = new stdClass();
-      $pdf_file->uri = $pdf_uri;
-      $pdf_file->uid = 1;
-      $pdf_file->status = 1;
-      $pdf_file->filename = $ID . '.pdf';
-      $pdf_file->filemime = 'application/pdf';
-      $pdf_file->filesize = filesize(drupal_realpath($pdf_uri));
-      $pdf_file = file_save($pdf_file);
+      $files = file_load_multiple(array(), array('uri' => $pdf_uri));
+      $file = reset($files);
+      if ($file) {
+        $pdf_file = $file;
+      } else {
+        $pdf_file = new stdClass();
+        $pdf_file->uri = $pdf_uri;
+        $pdf_file->uid = 1;
+        $pdf_file->status = 1;
+        $pdf_file->filename = $ID . '.pdf';
+        $pdf_file->filemime = 'application/pdf';
+        $pdf_file->filesize = filesize(drupal_realpath($pdf_uri));
+        $pdf_file = file_save($pdf_file);
+      }
       $image_uri = $directory . '/' . $ID . '_1.png';
-      $image_file = new stdClass();
-      $image_file->uri = $image_uri;
-      $image_file->uid = 1;
-      $image_file->status = 1;
-      $image_file->filename = $ID . '_1.png';
-      $image_file->filemime = 'image/png';
-      $image_file->filesize = filesize($image_uri);
-      $image_file = file_save($image_file);
+      $files = file_load_multiple(array(), array('uri' => $image_uri));
+      $file = reset($files);
+      if ($file) {
+        $image_file = $file;
+      } else {
+        $image_file = new stdClass();
+        $image_file->uri = $image_uri;
+        $image_file->uid = 1;
+        $image_file->status = 1;
+        $image_file->filename = $ID . '_1.png';
+        $image_file->filemime = 'image/png';
+        $image_file->filesize = filesize($image_uri);
+        $image_file = file_save($image_file);
+      }
       $node->field_files_file['und'][0]['fid'] = $pdf_file->fid;
       $node->field_files_file['und'][0]['fid_thumb'] = $image_file->fid;
       $node->field_files_file['und'][0]['folder_name'] = $ID;
@@ -480,24 +517,16 @@ class FilesMigration extends LibraryMigration {
     $node->language = 'en';
     if (!is_null($row->description)) {
       $node->field_files_description['und'][0]['format'] = 'full_html';
-    } else {
-      $node->field_files_description = array();
-    }
+    } 
     if (!is_null($row->extended_summary)) {
       $node->field_files_extended_summary['und'][0]['format'] = 'full_html';
-    } else {
-      $node->field_files_extended_summary = array();
-    }
+    } 
     if (!is_null($row->text)) {
       $node->field_files_text['und'][0]['format'] = 'full_html';
-    } else {
-      $node->field_files_text = array();
-    }
+    } 
     if (!is_null($row->keypoints)) {
       $node->field_files_key_points['und'][0]['format'] = 'full_html';
-    } else {
-      $node->field_files_key_points = array();
-    }
+    } 
     $node->field_files_primary_media['und'][0]['value'] = 'document';
   }
 
@@ -505,9 +534,9 @@ class FilesMigration extends LibraryMigration {
   public function prepareTaxonomy($ID) {
     // Get collections
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('file_collection2file', 'c2f')
-      ->condition('c2f.file_id', $ID)
-      ->fields('c2f', array('collection_id'));
+            ->select('file_collection2file', 'c2f')
+            ->condition('c2f.file_id', $ID)
+            ->fields('c2f', array('collection_id'));
     $result = $query->execute();
     $collection_ids = array();
     while ($row_res = $result->fetchAssoc()) {
@@ -515,9 +544,9 @@ class FilesMigration extends LibraryMigration {
     }
     // Get folders.
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('file_file2folder', 'f2f')
-      ->condition('f2f.file_id', $ID)
-      ->fields('f2f', array('folder_id'));
+            ->select('file_file2folder', 'f2f')
+            ->condition('f2f.file_id', $ID)
+            ->fields('f2f', array('folder_id'));
     $query->join('file_folder', 'ff', 'ff.ID = f2f.folder_id');
     $query->addField('ff', 'collection_id');
     $query->addField('f2f', 'folder_id');
@@ -530,8 +559,8 @@ class FilesMigration extends LibraryMigration {
     $collection_ids = array_unique($collection_ids);
     $folder_ids = array_unique($folder_ids);
     return array(
-      'collection_ids' => $collection_ids,
-      'folder_ids' => $folder_ids,
+        'collection_ids' => $collection_ids,
+        'folder_ids' => $folder_ids,
     );
   }
 
@@ -543,8 +572,8 @@ class PeopleMigration extends LibraryMigration {
     parent::__construct();
     $this->description = t('Migrate People content type from adv_people table');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('adv_people', 'p')
-      ->fields('p', array(
+            ->select('adv_people', 'p')
+            ->fields('p', array(
         'ID',
         'first_name',
         'middle_name',
@@ -557,15 +586,15 @@ class PeopleMigration extends LibraryMigration {
         'degree',
         'official_position',
         'source'
-      ));
+    ));
 
     $this->map = new MigrateSQLMap($this->machineName, array(
         'ID' => array(
-          'type' => 'int',
-          'not null' => FALSE,
-          'alias' => 'p',
+            'type' => 'int',
+            'not null' => FALSE,
+            'alias' => 'p',
         )
-      ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
+            ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
     );
     $this->source = new MigrateSourceSQL($query);
     $this->destination = new MigrateDestinationNode('people');
@@ -582,9 +611,9 @@ class PeopleMigration extends LibraryMigration {
     $this->addFieldMapping('field_people_source', 'source');
     $this->addFieldMapping('field_people_description', 'description');
     $this->addFieldMapping('field_people_written_files', 'written_files')
-      ->sourceMigration('Files');
+            ->sourceMigration('Files');
     $this->addFieldMapping('field_people_received_files', 'received_files')
-      ->sourceMigration('Files');
+            ->sourceMigration('Files');
     $this->addFieldMapping(PEOPLE_FIELD_1, 'people_field_1');
     $this->addFieldMapping(PEOPLE_FIELD_3, 'people_field_3');
     $this->addFieldMapping(PEOPLE_FIELD_14, 'people_field_14');
@@ -593,7 +622,7 @@ class PeopleMigration extends LibraryMigration {
     $this->addFieldMapping(PEOPLE_FIELD_17, 'people_field_17');
   }
 
-  public function prepareRow($row) {
+  public function prepareRow($row) {    
     if ($row->official_position != 1) {
       return FALSE;
     }
@@ -612,17 +641,17 @@ class PeopleMigration extends LibraryMigration {
     }
     $row->real_title = $real_title;
     $data = $this->getRelatedSids($row->ID, 'adv_people', array(
-      'file',
-      'adv_events'
-    ), 1);
+        'file',
+        'adv_events'
+            ), 1);
     $row->written_files = $data['file'];
     $sids = array();
     $sids['Events'] = $data['adv_events'];
     $row->people_field_1 = $this->sidsHandler($sids);
     $data = $this->getRelatedSids($row->ID, 'adv_people', array(
-      'file',
-      'adv_events'
-    ), 3);
+        'file',
+        'adv_events'
+            ), 3);
     $row->received_files = $data['file'];
     $sids = array();
     $sids['Events'] = $data['adv_events'];
@@ -632,9 +661,9 @@ class PeopleMigration extends LibraryMigration {
     $data = $this->getRelatedSids($row->ID, 'adv_people', array('adv_location'), 18);
     $row->visit_place = $data['adv_location'];
     $data = $this->getRelatedSids($row->ID, 'adv_people', array(
-      'adv_events',
-      'adv_location'
-    ), 14);
+        'adv_events',
+        'adv_location'
+            ), 14);
     $sids = array();
     $sids['Events'] = $data['adv_events'];
     $sids['Location'] = $data['adv_location'];
@@ -657,14 +686,14 @@ class PeopleMigration extends LibraryMigration {
     //We should create stubs only when we go from location migration
     if (get_class($migration) == "LocationMigration") {
       $query = Database::getConnection('default', 'ImportDatabaseKey')
-        ->select('adv_people', 'p')
-        ->fields('p', array(
+              ->select('adv_people', 'p')
+              ->fields('p', array(
           'first_name',
           'middle_name',
           'last_name',
           'email',
           'official_position'
-        ));
+      ));
       $result = $query->execute();
       if ($record = $result->fetchAssoc()) {
         if ($record['official_position'] != 1) {
@@ -692,12 +721,20 @@ class PeopleMigration extends LibraryMigration {
   }
 
   public function prepare($node, $row) {
+    $this->check_empty_text($node, $row, 'field_people_description', 'description');
+    $this->check_empty_text($node, $row, 'field_people_first_name', 'first_name');
+    $this->check_empty_text($node, $row, 'field_people_last_name', 'last_name');
+    $this->check_empty_text($node, $row, 'field_people_middle_name', 'middle_name');
+    $this->check_empty_text($node, $row, 'field_people_maiden_name', 'mailden_name');
+    $this->check_empty_text($node, $row, 'field_people_generic_name', 'generic_name');
+    $this->check_empty_text($node, $row, 'field_people_e_mail', 'email');
+    $this->check_empty_text($node, $row, 'field_people_title', 'title');
+    $this->check_empty_text($node, $row, 'field_people_degree', 'degree');
+    $this->check_empty_text($node, $row, 'field_people_source', 'source');
     $node->language = 'en';
     if (!is_null($row->description)) {
       $node->field_people_description['und'][0]['format'] = 'full_html';
-    } else {
-      $node->field_people_description = array();
-    }
+    } 
     $this->set_datefield_value(PEOPLE_FIELD_17_DATE, $node, $row->ID, 'adv_people', 17);
     $this->set_datefield_value(PEOPLE_FIELD_18_DATE, $node, $row->ID, 'adv_people', 18);
   }
@@ -710,8 +747,8 @@ class LocationMigration extends LibraryMigration {
     parent::__construct();
     $this->description = t('Migrate Location content type from adv_location table');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('adv_location_iso', 'p')
-      ->fields('p', array(
+            ->select('adv_location_iso', 'p')
+            ->fields('p', array(
         'ID',
         'locname',
         'address',
@@ -722,14 +759,14 @@ class LocationMigration extends LibraryMigration {
         'description',
         'link',
         'source'
-      ));
+    ));
     $this->map = new MigrateSQLMap($this->machineName, array(
         'ID' => array(
-          'type' => 'int',
-          'not null' => FALSE,
-          'alias' => 'p',
+            'type' => 'int',
+            'not null' => FALSE,
+            'alias' => 'p',
         )
-      ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
+            ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
     );
     $this->source = new MigrateSourceSQL($query);
     $this->destination = new MigrateDestinationNode('location');
@@ -738,9 +775,9 @@ class LocationMigration extends LibraryMigration {
     $this->addFieldMapping('field_location_link', 'link');
     $this->addFieldMapping('field_location_source', 'source');
     $this->addFieldMapping('field_location_written_files', 'written_files')
-      ->sourceMigration('Files');
+            ->sourceMigration('Files');
     $this->addFieldMapping('field_location_received_files', 'received_files')
-      ->sourceMigration('Files');
+            ->sourceMigration('Files');
     $this->addFieldMapping(LOCATION_FIELD_14, 'location_field_14');
     $this->addFieldMapping(LOCATION_FIELD_18, 'location_field_18');
     $this->addFieldMapping(LOCATION_FIELD_20, 'location_field_20');
@@ -790,13 +827,16 @@ class LocationMigration extends LibraryMigration {
     $sids = array();
     $sids['People'] = $data['adv_people'];
     $row->location_field_17 = $this->sidsHandler($sids);
+    // Stefan wanted to unify items from 14 and 22 linkers into one field.
     $data = $this->getRelatedSids($row->ID, 'adv_location', array(
-      'adv_people',
-      'adv_events'
-    ), 14);
+        'adv_people',
+        'adv_events'
+            ), 14);
     $sids = array();
     $sids['People'] = $data['adv_people'];
     $sids['Events'] = $data['adv_events'];
+    $data = $this->getRelatedSids($row->ID, 'adv_location', array('adv_events'), 22);
+    $sids['Events'] = array_merge($sids['Events'], $data['adv_events']);
     $row->location_field_14 = $this->sidsHandler($sids);
     $data = $this->getRelatedSids($row->ID, 'adv_location', array('adv_people'), 18);
     $sids = array();
@@ -809,36 +849,33 @@ class LocationMigration extends LibraryMigration {
     $data = $this->getRelatedSids($row->ID, 'adv_location', array('adv_events'), 21);
     $sids = array();
     $sids['Events'] = $data['adv_events'];
-    $row->location_field_21 = $this->sidsHandler($sids);
-    $data = $this->getRelatedSids($row->ID, 'adv_location', array('adv_events'), 22);
-    $sids = array();
-    $sids['Events'] = $data['adv_events'];
-    $row->location_field_22 = $this->sidsHandler($sids);
+    $row->location_field_21 = $this->sidsHandler($sids);    
   }
 
-  public function prepare($node, $row) {
+  public function prepare($node, $row) {      
     $node->language = 'en';
+    $this->check_empty_text($node, $row, 'field_location_description', 'description');
+    $this->check_empty_text($node, $row, 'field_location_link', 'link');
+    $this->check_empty_text($node, $row, 'field_location_source', 'source');
     if (!is_null($row->description)) {
       $node->field_location_description['und'][0]['format'] = 'full_html';
-    } else {
-      $node->field_location_description = array();
-    }
+    } 
     require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'library_migrate') . '/library_migrate_state_info.inc';
     $country = $row->country;
     $state = library_migrate_state_ISO($country, $row->state);
     $addressfield_content = array(
-      'country' => $country,
-      'administrative_area' => $state,
-      'locality' => $row->town,
-      'postal_code' => $row->zipcode,
-      'thoroughfare' => $row->address,
-      'organisation_name' => $row->locname
+        'country' => $country,
+        'administrative_area' => $state,
+        'locality' => $row->town,
+        'postal_code' => $row->zipcode,
+        'thoroughfare' => $row->address,
+        'organisation_name' => $row->locname
     );
     $node->field_location_address['und']['0'] = $addressfield_content;
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('adv_location_geocoding', 'p')
-      ->condition('p.loc_id', $row->ID)
-      ->fields('p', array('data'));
+            ->select('adv_location_geocoding', 'p')
+            ->condition('p.loc_id', $row->ID)
+            ->fields('p', array('data'));
     $result = $query->execute()->fetchField();
     if ($result) {
       $geocoder_data = drupal_json_decode($result);
@@ -866,24 +903,24 @@ class EventsMigration extends LibraryMigration {
     $this->description = t('Migrate Events content type from adv_events table');
     $this->dependencies = array('Location', 'People');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('adv_events', 'p')
-      ->fields('p', array('events_id', 'title', 'description'));
+            ->select('adv_events', 'p')
+            ->fields('p', array('events_id', 'title', 'description'));
     $this->map = new MigrateSQLMap($this->machineName, array(
         'events_id' => array(
-          'type' => 'int',
-          'not null' => FALSE,
-          'alias' => 'p',
+            'type' => 'int',
+            'not null' => FALSE,
+            'alias' => 'p',
         )
-      ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
+            ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
     );
     $this->source = new MigrateSourceSQL($query);
     $this->destination = new MigrateDestinationNode('events');
     $this->addSimpleMappings(array('title'));
     $this->addFieldMapping('field_events_description', 'description');
     $this->addFieldMapping(EVENT_FIELD_1, 'author')
-      ->sourceMigration('People');
+            ->sourceMigration('People');
     $this->addFieldMapping(EVENT_FIELD_3, 'receiver')
-      ->sourceMigration('People');
+            ->sourceMigration('People');
     //$this->addFieldMapping(EVENT_FIELD_13, 'event_field_13');
     $this->addFieldMapping(EVENT_FIELD_14, 'event_field_14');
     $this->addFieldMapping(EVENT_FIELD_23, 'event_field_23');
@@ -891,10 +928,17 @@ class EventsMigration extends LibraryMigration {
     $this->addFieldMapping(EVENT_FIELD_21, 'event_field_21');
     $this->addFieldMapping(EVENT_FIELD_22, 'event_field_22');
     $this->addFieldMapping('field_events_related_topic', 'topic')
-      ->sourceMigration('Topics');
+            ->sourceMigration('Topics');
   }
 
-  public function prepareRow($row) {
+  public function prepareRow($row) {    
+    // Need to replace some special characters in description.
+    if(!empty($row->description)) {
+      $row->description = str_replace('&igrave;', '"', $row->description);
+      $row->description = str_replace('&icirc;', '"', $row->description);
+      $row->description = str_replace('&iacute;', "'", $row->description);     
+      $row->description = str_replace('??', "&icirc;", $row->description);
+    }
     //Add author
     $data = $this->getRelatedSids($row->events_id, 'adv_events', array('adv_people'), 1);
     $row->author = $data['adv_people'];
@@ -908,12 +952,15 @@ class EventsMigration extends LibraryMigration {
       $nids = $this->getDidsFromMapTable('migrate_map_location', $data['adv_location']);
       $nids = array_merge($nids, $this->getDidsFromMapTable('migrate_map_people', $data['adv_people']));
       $row->event_field_13 = $nids; */
+    // Stefan said that we need to unify data from 14 and 22 linkers.
     $data = $this->getRelatedSids($row->events_id, 'adv_events', array(
-      'adv_people',
-      'adv_location'
-    ), 14);
+        'adv_people',
+        'adv_location'
+            ), 14);
     $nids = $this->getDidsFromMapTable('migrate_map_location', $data['adv_location']);
     $nids = array_merge($nids, $this->getDidsFromMapTable('migrate_map_people', $data['adv_people']));
+    $data = $this->getRelatedSids($row->events_id, 'adv_events', array('adv_location'), 22);
+    $nids = array_merge($nids, $this->getDidsFromMapTable('migrate_map_location', $data['adv_location']));
     $row->event_field_14 = $nids;
     $data = $this->getRelatedSids($row->events_id, 'adv_events', array('adv_people'), 23);
     $nids = $this->getDidsFromMapTable('migrate_map_people', $data['adv_people']);
@@ -923,21 +970,17 @@ class EventsMigration extends LibraryMigration {
     $row->event_field_20 = $nids;
     $data = $this->getRelatedSids($row->events_id, 'adv_events', array('adv_location'), 21);
     $nids = $this->getDidsFromMapTable('migrate_map_location', $data['adv_location']);
-    $row->event_field_21 = $nids;
-    $data = $this->getRelatedSids($row->events_id, 'adv_events', array('adv_location'), 22);
-    $nids = $this->getDidsFromMapTable('migrate_map_location', $data['adv_location']);
-    $row->event_field_22 = $nids;
+    $row->event_field_21 = $nids;    
     //Add encyclopedia and publication
     $data = $this->getRelatedSids($row->events_id, 'adv_events', array('adv_entities'), 25);
     $row->topic = $data['adv_entities'];
   }
 
   public function prepare($node, $row) {
+    $this->check_empty_text($node, $row, 'field_events_description', 'description');
     $node->language = 'en';
     if (!is_null($row->description)) {
       $node->field_events_description['und'][0]['format'] = 'full_html';
-    } else {
-      $node->field_events_description = array();
     }
     //Add dates
     $this->set_datefield_value(EVENT_FIELD_13_DATE, $node, $row->events_id, 'adv_events', 13);
@@ -965,7 +1008,7 @@ class EventsMigration extends LibraryMigration {
         //If drupal doesn't have corresponding node, we should create a stub for it
         $source_migration = Migration::getInstance('Events');
         $parent_node = new stdClass();
-        $parent_node->title = $this->getEventTitle($parent_id);        
+        $parent_node->title = $this->getEventTitle($parent_id);
         $parent_node->body = t('Stub body');
         $parent_node->type = $source_migration->destination->getBundle();
         $parent_node->uid = 1;
@@ -1019,7 +1062,7 @@ class EventsMigration extends LibraryMigration {
   //Return event title from adv_events table
   public function getEventTitle($events_id) {
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('adv_events', 'l');
+            ->select('adv_events', 'l');
     $query->condition('l.events_id', $events_id);
     $query->addField('l', 'title');
     $result = $query->execute();
@@ -1031,7 +1074,7 @@ class EventsMigration extends LibraryMigration {
   public function getParentSid($event_id) {
     $info = array();
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('adv_events_parents', 'l');
+            ->select('adv_events_parents', 'l');
     $query->condition('l.event_id', $event_id);
     $query->addField('l', 'parent_event_id');
     $query->addField('l', 'pos');
@@ -1056,24 +1099,24 @@ class TopicsMigration extends LibraryMigration {
     $this->description = t('Migrate Topics content type from adv_entities table');
     $this->dependencies = array('Events');
     $query = Database::getConnection('default', 'ImportDatabaseKey')
-      ->select('adv_entities', 'e')
-      ->fields('e', array('ID', 'title', 'description', 'kind'));
+            ->select('adv_entities', 'e')
+            ->fields('e', array('ID', 'title', 'description', 'kind'));
     $this->map = new MigrateSQLMap($this->machineName, array(
         'ID' => array(
-          'type' => 'int',
-          'not null' => FALSE,
-          'alias' => 'e',
+            'type' => 'int',
+            'not null' => FALSE,
+            'alias' => 'e',
         )
-      ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
+            ), MigrateDestinationTerm::getKeySchema(), 'ImportDatabaseKey'
     );
     $this->source = new MigrateSourceSQL($query);
     $this->destination = new MigrateDestinationNode('topics');
     $this->addSimpleMappings(array('title'));
     $this->addFieldMapping('field_topics_body', 'description');
     $this->addFieldMapping('field_topics_related_event', 'event')
-      ->sourceMigration('Events');
+            ->sourceMigration('Events');
     $this->addFieldMapping('field_topics_kind', 'kind')
-      ->arguments(array('create_term' => TRUE));
+            ->arguments(array('create_term' => TRUE));
   }
 
   public function prepareRow($row) {
@@ -1116,6 +1159,7 @@ class TopicsMigration extends LibraryMigration {
   }
 
   public function prepare($node, $row) {
+    $this->check_empty_text($node, $row, 'field_topics_body', 'description');
     $node->language = 'en';
     if (!is_null($row->description)) {
       $node->field_topics_body['und'][0]['format'] = 'full_html';

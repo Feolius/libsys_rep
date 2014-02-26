@@ -1,27 +1,6 @@
 <?php
 
 /**
- * Implements hook_init()
- */
-//function facet_collection_init() {
-//  //We will check if get parameters is good, and redirect it to default state of library page, if not
-//  if (arg(0) == 'library') {
-//    //Check if we have right filtered content type
-//    $filtered_content_type = facet_collection_get_filtered_content_type();
-//    if ($filtered_content_type) {
-//      $environment = apachesolr_default_environment();
-//      $indexed_bundles = apachesolr_get_index_bundles($environment, 'node');
-//      if (in_array($filtered_content_type, $indexed_bundles)) {
-//        return;
-//      }
-//    }
-//    //Something is wrong with filtered content type. Redirect to default library page state
-//    $query['f'][0] = 'bundle:files';
-//    drupal_goto('library', array('query' => $query));
-//  }
-//}
-
-/**
  * Implements hook_menu()
  */
 function facet_collection_menu() {
