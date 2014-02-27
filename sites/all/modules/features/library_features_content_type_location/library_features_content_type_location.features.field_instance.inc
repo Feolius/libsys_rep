@@ -22,69 +22,30 @@ function library_features_content_type_location_field_default_field_instances() 
         'module' => 'text',
         'settings' => array(),
         'type' => 'text_default',
-        'weight' => 0,
+        'weight' => 1,
       ),
     ),
     'entity_type' => 'comment',
     'field_name' => 'comment_body',
     'label' => 'Comment',
-    'required' => TRUE,
+    'required' => 1,
     'settings' => array(
-      'text_processing' => 1,
+      'linkit' => array(
+        'button_text' => 'Search',
+        'enable' => 0,
+        'profile' => '',
+      ),
+      'text_processing' => 0,
       'user_register_form' => FALSE,
     ),
     'widget' => array(
+      'active' => 1,
       'module' => 'text',
       'settings' => array(
         'rows' => 5,
       ),
       'type' => 'text_textarea',
-      'weight' => 0,
-    ),
-  );
-
-  // Exported field_instance: 'comment-comment_node_location-field_location_rating'
-  $field_instances['comment-comment_node_location-field_location_rating'] = array(
-    'bundle' => 'comment_node_location',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'fivestar',
-        'settings' => array(
-          'expose' => TRUE,
-          'style' => 'user',
-          'text' => 'user',
-          'widget' => array(
-            'fivestar_widget' => 'default',
-          ),
-        ),
-        'type' => 'fivestar_formatter_default',
-        'weight' => 1,
-      ),
-    ),
-    'entity_type' => 'comment',
-    'field_name' => 'field_location_rating',
-    'label' => 'Rating',
-    'required' => 0,
-    'settings' => array(
-      'allow_clear' => 0,
-      'stars' => 5,
-      'target' => 'parent_node',
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'fivestar',
-      'settings' => array(
-        'widget' => array(
-          'fivestar_widget' => 'default',
-        ),
-      ),
-      'type' => 'stars',
-      'weight' => 2,
+      'weight' => 3,
     ),
   );
 
@@ -107,11 +68,23 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
-      'default' => array(
+      'connections' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 8,
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'addressfield',
+        'settings' => array(
+          'format_handlers' => array(
+            'address' => 'address',
+          ),
+          'use_widget_handlers' => 1,
+        ),
+        'type' => 'addressfield_default',
+        'weight' => 5,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -189,7 +162,7 @@ function library_features_content_type_location_field_default_field_instances() 
         ),
       ),
       'type' => 'addressfield_standard',
-      'weight' => 1,
+      'weight' => 4,
     ),
   );
 
@@ -212,12 +185,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
-        'module' => 'taxonomy',
         'settings' => array(),
-        'type' => 'taxonomy_term_reference_link',
-        'weight' => 27,
+        'type' => 'hidden',
+        'weight' => 6,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -274,94 +252,7 @@ function library_features_content_type_location_field_default_field_instances() 
       'module' => 'options',
       'settings' => array(),
       'type' => 'options_select',
-      'weight' => 10,
-    ),
-  );
-
-  // Exported field_instance: 'node-location-field_location_county'
-  $field_instances['node-location-field_location_county'] = array(
-    'bundle' => 'location',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 21,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'map_overlay' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 21,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_location_county',
-    'label' => 'County',
-    'required' => 0,
-    'settings' => array(
-      'text_processing' => 0,
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'text',
-      'settings' => array(
-        'size' => 60,
-      ),
-      'type' => 'text_textfield',
-      'weight' => 43,
+      'weight' => 11,
     ),
   );
 
@@ -384,13 +275,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
-      'default' => array(
+      'connections' => array(
         'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'hidden',
         'module' => 'text',
-        'settings' => array(
-          'trim_length' => 600,
-        ),
-        'type' => 'text_summary_or_trimmed',
+        'settings' => array(),
+        'type' => 'text_default',
         'weight' => 3,
       ),
       'home_bottom' => array(
@@ -462,7 +357,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'summary_rows' => 5,
       ),
       'type' => 'text_textarea_with_summary',
-      'weight' => 7,
+      'weight' => 2,
     ),
   );
 
@@ -485,14 +380,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
-        'module' => 'entityreference',
-        'settings' => array(
-          'link' => FALSE,
-        ),
-        'type' => 'entityreference_label',
-        'weight' => 28,
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 7,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -553,7 +451,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete_tags',
-      'weight' => 11,
+      'weight' => 10,
     ),
   );
 
@@ -576,12 +474,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
-        'module' => 'text',
         'settings' => array(),
-        'type' => 'text_default',
-        'weight' => 31,
+        'type' => 'hidden',
+        'weight' => 10,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -646,7 +549,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 4,
+      'weight' => 8,
     ),
   );
 
@@ -669,12 +572,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
-        'module' => 'text',
         'settings' => array(),
-        'type' => 'text_default',
-        'weight' => 30,
+        'type' => 'hidden',
+        'weight' => 9,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -739,7 +647,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 3,
+      'weight' => 7,
     ),
   );
 
@@ -762,15 +670,21 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
-        'label' => 'hidden',
+        'label' => 'above',
         'module' => 'geofield',
         'settings' => array(
           'data' => 'full',
           'map_preset' => 'geofield_formatter_map',
         ),
         'type' => 'geofield_openlayers',
-        'weight' => 2,
+        'weight' => 4,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -854,201 +768,13 @@ function library_features_content_type_location_field_default_field_instances() 
               'APPROXIMATE' => 0,
               'GEOMETRIC_CENTER' => 0,
               'RANGE_INTERPOLATED' => 0,
-              'ROOFTOP' => 'ROOFTOP',
+              'ROOFTOP' => 0,
             ),
           ),
         ),
       ),
       'type' => 'geocoder',
-      'weight' => 9,
-    ),
-  );
-
-  // Exported field_instance: 'node-location-field_location_home_date'
-  $field_instances['node-location-field_location_home_date'] = array(
-    'bundle' => 'location',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'module' => 'library_date_field',
-        'settings' => array(),
-        'type' => 'library_date_field_default',
-        'weight' => 7,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'map_overlay' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 8,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_location_home_date',
-    'label' => 'Home date',
-    'required' => 0,
-    'settings' => array(
-      'default_value' => '',
-      'default_value2' => '',
-      'rounding' => '',
-      'rounding2' => '',
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'library_date_field',
-      'settings' => array(
-        'display_all_day' => 0,
-        'increment' => 15,
-        'input_format' => 'm/d/Y - H:i:s',
-        'input_format_custom' => '',
-        'label_position' => 'above',
-        'text_parts' => array(),
-        'year_range' => '-3:+3',
-      ),
-      'type' => 'library_date_field_text',
-      'weight' => 40,
-    ),
-  );
-
-  // Exported field_instance: 'node-location-field_location_home_nodes'
-  $field_instances['node-location-field_location_home_nodes'] = array(
-    'bundle' => 'location',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'module' => 'entityreference',
-        'settings' => array(
-          'link' => FALSE,
-        ),
-        'type' => 'entityreference_label',
-        'weight' => 6,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'map_overlay' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 7,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_location_home_nodes',
-    'label' => 'Home nodes',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'entityreference',
-      'settings' => array(
-        'match_operator' => 'CONTAINS',
-        'path' => '',
-        'size' => 60,
-      ),
-      'type' => 'entityreference_autocomplete',
-      'weight' => 39,
+      'weight' => 5,
     ),
   );
 
@@ -1070,11 +796,21 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
-      'default' => array(
+      'connections' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 26,
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'hidden',
+        'module' => 'image',
+        'settings' => array(
+          'image_link' => '',
+          'image_style' => 'node_main',
+        ),
+        'type' => 'image',
+        'weight' => 2,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1142,7 +878,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'progress_indicator' => 'throbber',
       ),
       'type' => 'image_image',
-      'weight' => 8,
+      'weight' => 3,
     ),
   );
 
@@ -1165,11 +901,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
-      'default' => array(
+      'connections' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 20,
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'hidden',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 13,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1230,94 +972,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 20,
-    ),
-  );
-
-  // Exported field_instance: 'node-location-field_location_link'
-  $field_instances['node-location-field_location_link'] = array(
-    'bundle' => 'location',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 11,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'map_overlay' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 11,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_location_link',
-    'label' => 'Link',
-    'required' => 0,
-    'settings' => array(
-      'text_processing' => 0,
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'text',
-      'settings' => array(
-        'size' => 60,
-      ),
-      'type' => 'text_textfield',
-      'weight' => 44,
+      'weight' => 11,
     ),
   );
 
@@ -1340,12 +995,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
-        'module' => 'text',
         'settings' => array(),
-        'type' => 'text_default',
-        'weight' => 29,
+        'type' => 'hidden',
+        'weight' => 8,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1410,190 +1070,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 2,
-    ),
-  );
-
-  // Exported field_instance: 'node-location-field_location_placed_event'
-  $field_instances['node-location-field_location_placed_event'] = array(
-    'bundle' => 'location',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 16,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'map_overlay' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 16,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_location_placed_event',
-    'label' => 'Placed event',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'entityreference',
-      'settings' => array(
-        'match_operator' => 'CONTAINS',
-        'path' => '',
-        'size' => 60,
-      ),
-      'type' => 'entityreference_autocomplete',
-      'weight' => 42,
-    ),
-  );
-
-  // Exported field_instance: 'node-location-field_location_rating'
-  $field_instances['node-location-field_location_rating'] = array(
-    'bundle' => 'location',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'hidden',
-        'module' => 'fivestar',
-        'settings' => array(
-          'expose' => 0,
-          'style' => 'average',
-          'text' => 'none',
-          'widget' => array(
-            'fivestar_widget' => 'default',
-          ),
-        ),
-        'type' => 'fivestar_formatter_default',
-        'weight' => 0,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'map_overlay' => array(
-        'label' => 'hidden',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 3,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_location_rating',
-    'label' => 'Rating',
-    'required' => 0,
-    'settings' => array(
-      'allow_clear' => 0,
-      'stars' => 5,
-      'target' => 'none',
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'fivestar',
-      'settings' => array(),
-      'type' => 'exposed',
-      'weight' => 16,
+      'weight' => 6,
     ),
   );
 
@@ -1616,11 +1093,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 10,
+        'weight' => 15,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1687,7 +1170,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 25,
+      'weight' => 15,
     ),
   );
 
@@ -1710,11 +1193,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 13,
+        'weight' => 16,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1775,7 +1264,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 24,
+      'weight' => 16,
     ),
   );
 
@@ -1798,11 +1287,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 15,
+        'weight' => 18,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1849,7 +1344,7 @@ function library_features_content_type_location_field_default_field_instances() 
     ),
     'entity_type' => 'node',
     'field_name' => 'field_location_route_start_event',
-    'label' => 'Route start event',
+    'label' => 'Start of route',
     'required' => 0,
     'settings' => array(
       'user_register_form' => FALSE,
@@ -1863,7 +1358,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 27,
+      'weight' => 18,
     ),
   );
 
@@ -1886,11 +1381,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 14,
+        'weight' => 17,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -1937,7 +1438,7 @@ function library_features_content_type_location_field_default_field_instances() 
     ),
     'entity_type' => 'node',
     'field_name' => 'field_location_route_to_events',
-    'label' => 'Route to events',
+    'label' => 'En route to event',
     'required' => 0,
     'settings' => array(
       'user_register_form' => FALSE,
@@ -1951,94 +1452,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 26,
-    ),
-  );
-
-  // Exported field_instance: 'node-location-field_location_source'
-  $field_instances['node-location-field_location_source'] = array(
-    'bundle' => 'location',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 12,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'map_overlay' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 12,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_location_source',
-    'label' => 'Source',
-    'required' => 0,
-    'settings' => array(
-      'text_processing' => 0,
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'text',
-      'settings' => array(
-        'size' => 60,
-      ),
-      'type' => 'text_textfield',
-      'weight' => 45,
+      'weight' => 17,
     ),
   );
 
@@ -2061,11 +1475,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 19,
+        'weight' => 20,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -2122,91 +1542,7 @@ function library_features_content_type_location_field_default_field_instances() 
       'module' => 'field_data_collector',
       'settings' => array(),
       'type' => 'field_data_collector_default_widget',
-      'weight' => 52,
-    ),
-  );
-
-  // Exported field_instance: 'node-location-field_location_tab_images'
-  $field_instances['node-location-field_location_tab_images'] = array(
-    'bundle' => 'location',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 24,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'map_overlay' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 24,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_location_tab_images',
-    'label' => 'Images',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 0,
-      'module' => 'field_data_collector',
-      'settings' => array(),
-      'type' => 'field_data_collector_default_widget',
-      'weight' => 49,
+      'weight' => 14,
     ),
   );
 
@@ -2229,11 +1565,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 17,
+        'weight' => 19,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -2290,91 +1632,7 @@ function library_features_content_type_location_field_default_field_instances() 
       'module' => 'field_data_collector',
       'settings' => array(),
       'type' => 'field_data_collector_default_widget',
-      'weight' => 51,
-    ),
-  );
-
-  // Exported field_instance: 'node-location-field_location_tab_videos'
-  $field_instances['node-location-field_location_tab_videos'] = array(
-    'bundle' => 'location',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 18,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'map_overlay' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 18,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_location_tab_videos',
-    'label' => 'Videos',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 0,
-      'module' => 'field_data_collector',
-      'settings' => array(),
-      'type' => 'field_data_collector_default_widget',
-      'weight' => 53,
+      'weight' => 13,
     ),
   );
 
@@ -2397,11 +1655,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 23,
+        'weight' => 22,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -2458,7 +1722,7 @@ function library_features_content_type_location_field_default_field_instances() 
       'module' => 'field_data_collector',
       'settings' => array(),
       'type' => 'field_data_collector_default_widget',
-      'weight' => 50,
+      'weight' => 12,
     ),
   );
 
@@ -2481,11 +1745,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 22,
+        'weight' => 21,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -2533,11 +1803,12 @@ function library_features_content_type_location_field_default_field_instances() 
     'entity_type' => 'node',
     'field_name' => 'field_location_topics',
     'label' => 'Topics',
-    'required' => FALSE,
+    'required' => 0,
     'settings' => array(
       'user_register_form' => FALSE,
     ),
     'widget' => array(
+      'active' => 1,
       'module' => 'entityreference',
       'settings' => array(
         'match_operator' => 'CONTAINS',
@@ -2545,7 +1816,97 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 22,
+      'weight' => 13,
+    ),
+  );
+
+  // Exported field_instance: 'node-location-field_location_topics_fdc'
+  $field_instances['node-location-field_location_topics_fdc'] = array(
+    'bundle' => 'location',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 12,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_location_topics_fdc',
+    'label' => 'Topics',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'field_data_collector',
+      'settings' => array(),
+      'type' => 'field_data_collector_default_widget',
+      'weight' => 15,
     ),
   );
 
@@ -2568,11 +1929,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 25,
+        'weight' => 23,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -2633,195 +2000,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 21,
-    ),
-  );
-
-  // Exported field_instance: 'node-location-field_location_visit_date'
-  $field_instances['node-location-field_location_visit_date'] = array(
-    'bundle' => 'location',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'module' => 'library_date_field',
-        'settings' => array(),
-        'type' => 'library_date_field_default',
-        'weight' => 5,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'map_overlay' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 6,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_location_visit_date',
-    'label' => 'Visit date',
-    'required' => 0,
-    'settings' => array(
-      'default_value' => '',
-      'default_value2' => '',
-      'rounding' => '',
-      'rounding2' => '',
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'library_date_field',
-      'settings' => array(
-        'display_all_day' => 0,
-        'increment' => 15,
-        'input_format' => 'm/d/Y - H:i:s',
-        'input_format_custom' => '',
-        'label_position' => 'above',
-        'text_parts' => array(),
-        'year_range' => '-3:+3',
-      ),
-      'type' => 'library_date_field_text',
-      'weight' => 38,
-    ),
-  );
-
-  // Exported field_instance: 'node-location-field_location_visit_nodes'
-  $field_instances['node-location-field_location_visit_nodes'] = array(
-    'bundle' => 'location',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'collection_teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'collection_thumbnail' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'default' => array(
-        'label' => 'above',
-        'module' => 'entityreference',
-        'settings' => array(
-          'link' => FALSE,
-        ),
-        'type' => 'entityreference_label',
-        'weight' => 4,
-      ),
-      'home_bottom' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_left' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_middle' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_right' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'home_top' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'map_overlay' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 5,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'field_location_visit_nodes',
-    'label' => 'Visit nodes',
-    'required' => 0,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'active' => 1,
-      'module' => 'entityreference',
-      'settings' => array(
-        'match_operator' => 'CONTAINS',
-        'path' => '',
-        'size' => 60,
-      ),
-      'type' => 'entityreference_autocomplete',
-      'weight' => 41,
+      'weight' => 12,
     ),
   );
 
@@ -2844,12 +2023,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
-        'module' => 'text',
         'settings' => array(),
-        'type' => 'text_default',
-        'weight' => 32,
+        'type' => 'hidden',
+        'weight' => 11,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -2914,7 +2098,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 6,
+      'weight' => 9,
     ),
   );
 
@@ -2937,11 +2121,17 @@ function library_features_content_type_location_field_default_field_instances() 
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 9,
+        'weight' => 14,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -3008,7 +2198,112 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'entityreference_autocomplete',
-      'weight' => 23,
+      'weight' => 14,
+    ),
+  );
+
+  // Exported field_instance: 'node-location-field_rating'
+  $field_instances['node-location-field_rating'] = array(
+    'bundle' => 'location',
+    'default_value' => array(),
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'hidden',
+        'module' => 'fivestar',
+        'settings' => array(
+          'expose' => TRUE,
+          'style' => 'average',
+          'text' => 'none',
+          'widget' => array(
+            'fivestar_widget' => 'sites/all/modules/contrib/fivestar/widgets/minimal/minimal.css',
+          ),
+        ),
+        'type' => 'fivestar_formatter_default',
+        'weight' => 0,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'map_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_rating',
+    'label' => 'Rating',
+    'required' => 0,
+    'settings' => array(
+      'allow_clear' => 0,
+      'stars' => 5,
+      'target' => 'none',
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'fivestar',
+      'settings' => array(
+        'widget' => array(
+          'fivestar_widget' => 'sites/all/modules/contrib/fivestar/widgets/minimal/minimal.css',
+        ),
+      ),
+      'type' => 'stars',
+      'weight' => 17,
     ),
   );
 
@@ -3026,6 +2321,12 @@ function library_features_content_type_location_field_default_field_instances() 
         'weight' => 0,
       ),
       'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'connections' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -3133,7 +2434,7 @@ function library_features_content_type_location_field_default_field_instances() 
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 0,
+      'weight' => 1,
     ),
   );
 
@@ -3142,32 +2443,24 @@ function library_features_content_type_location_field_default_field_instances() 
   t('Address');
   t('Classification');
   t('Comment');
-  t('County');
   t('Description');
   t('Director');
   t('E-Mail');
+  t('En route to event');
   t('Events');
   t('Fax');
   t('Geofield');
-  t('Home date');
-  t('Home nodes');
   t('Image');
   t('Images');
-  t('Link');
   t('Phone');
-  t('Placed event');
   t('Rating');
   t('Received Documents');
   t('Received Files');
   t('Related Events');
-  t('Route start event');
-  t('Route to events');
-  t('Source');
+  t('Start of route');
   t('Title');
   t('Topics');
   t('Videos');
-  t('Visit date');
-  t('Visit nodes');
   t('Website');
   t('Written Documents');
   t('Written Files');

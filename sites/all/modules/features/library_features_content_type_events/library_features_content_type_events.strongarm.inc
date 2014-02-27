@@ -14,7 +14,7 @@ function library_features_content_type_events_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'comment_anonymous_events';
-  $strongarm->value = 0;
+  $strongarm->value = '0';
   $export['comment_anonymous_events'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -49,7 +49,7 @@ function library_features_content_type_events_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'comment_preview_events';
-  $strongarm->value = '1';
+  $strongarm->value = '0';
   $export['comment_preview_events'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -107,11 +107,14 @@ function library_features_content_type_events_strongarm() {
       'map_overlay' => array(
         'custom_settings' => FALSE,
       ),
+      'connections' => array(
+        'custom_settings' => TRUE,
+      ),
     ),
     'extra_fields' => array(
       'form' => array(
         'path' => array(
-          'weight' => '7',
+          'weight' => '43',
         ),
       ),
       'display' => array(),

@@ -52,19 +52,19 @@ function library_features_content_type_topics_field_default_field_instances() {
   // Exported field_instance: 'comment-comment_node_topics-field_rating'
   $field_instances['comment-comment_node_topics-field_rating'] = array(
     'bundle' => 'comment_node_topics',
-    'default_value' => array(),
+    'default_value' => NULL,
     'deleted' => 0,
     'description' => '',
     'display' => array(
       'default' => array(
-        'label' => 'above',
+        'label' => 'hidden',
         'module' => 'fivestar',
         'settings' => array(
           'expose' => TRUE,
-          'style' => 'average',
-          'text' => 'average',
+          'style' => 'user',
+          'text' => 'none',
           'widget' => array(
-            'fivestar_widget' => NULL,
+            'fivestar_widget' => 'sites/all/modules/contrib/fivestar/widgets/minimal/minimal.css',
           ),
         ),
         'type' => 'fivestar_formatter_default',
@@ -86,11 +86,11 @@ function library_features_content_type_topics_field_default_field_instances() {
       'module' => 'fivestar',
       'settings' => array(
         'widget' => array(
-          'fivestar_widget' => 'default',
+          'fivestar_widget' => 'sites/all/modules/contrib/fivestar/widgets/outline/outline.css',
         ),
       ),
       'type' => 'stars',
-      'weight' => 0,
+      'weight' => 1,
     ),
   );
 
@@ -112,6 +112,12 @@ function library_features_content_type_topics_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 11,
+      ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'default' => array(
         'label' => 'hidden',
@@ -185,7 +191,91 @@ function library_features_content_type_topics_field_default_field_instances() {
       'module' => 'fivestar',
       'settings' => array(),
       'type' => 'exposed',
-      'weight' => 5,
+      'weight' => 9,
+    ),
+  );
+
+  // Exported field_instance: 'node-topics-field_source'
+  $field_instances['node-topics-field_source'] = array(
+    'bundle' => 'topics',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'collection_teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'collection_thumbnail' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'hidden',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 9,
+      ),
+      'home_bottom' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_left' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_middle' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_right' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'home_top' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_source',
+    'label' => 'Source',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(),
+      'type' => 'options_select',
+      'weight' => 4,
     ),
   );
 
@@ -210,11 +300,19 @@ function library_features_content_type_topics_field_default_field_instances() {
         'type' => 'library_text',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'hidden',
-        'module' => 'text',
-        'settings' => array(),
-        'type' => 'text_default',
+        'module' => 'library_strip_text_formatter',
+        'settings' => array(
+          'tag' => '<p>',
+        ),
+        'type' => 'library_strip_text_formatter_by_tag',
         'weight' => 3,
       ),
       'home' => array(
@@ -277,14 +375,14 @@ function library_features_content_type_topics_field_default_field_instances() {
         'summary_rows' => 5,
       ),
       'type' => 'text_textarea_with_summary',
-      'weight' => 2,
+      'weight' => 3,
     ),
   );
 
   // Exported field_instance: 'node-topics-field_topics_files'
   $field_instances['node-topics-field_topics_files'] = array(
     'bundle' => 'topics',
-    'default_value' => NULL,
+    'default_value' => array(),
     'deleted' => 0,
     'description' => '',
     'display' => array(
@@ -300,14 +398,17 @@ function library_features_content_type_topics_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
-        'module' => 'entityreference',
-        'settings' => array(
-          'link' => FALSE,
-        ),
-        'type' => 'entityreference_label',
-        'weight' => 16,
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 8,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -361,7 +462,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'path' => '',
         'size' => 60,
       ),
-      'type' => 'entityreference_autocomplete_tags',
+      'type' => 'entityreference_autocomplete',
       'weight' => 5,
     ),
   );
@@ -392,12 +493,18 @@ function library_features_content_type_topics_field_default_field_instances() {
         'type' => 'image',
         'weight' => 1,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'hidden',
         'module' => 'image',
         'settings' => array(
           'image_link' => '',
-          'image_style' => 'topics-image-full',
+          'image_style' => 'node_main',
         ),
         'type' => 'image',
         'weight' => 2,
@@ -476,7 +583,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'progress_indicator' => 'throbber',
       ),
       'type' => 'image_image',
-      'weight' => 1,
+      'weight' => 2,
     ),
   );
 
@@ -499,11 +606,17 @@ function library_features_content_type_topics_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 13,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'hidden',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 6,
+        'weight' => 10,
       ),
       'home' => array(
         'label' => 'above',
@@ -560,7 +673,7 @@ function library_features_content_type_topics_field_default_field_instances() {
       'module' => 'options',
       'settings' => array(),
       'type' => 'options_select',
-      'weight' => 3,
+      'weight' => 5,
     ),
   );
 
@@ -583,11 +696,17 @@ function library_features_content_type_topics_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 6,
       ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
       'default' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 15,
+        'weight' => 6,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -664,6 +783,12 @@ function library_features_content_type_topics_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 12,
+      ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'default' => array(
         'label' => 'hidden',
@@ -753,10 +878,17 @@ function library_features_content_type_topics_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 14,
       ),
-      'default' => array(
+      'connections' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'hidden',
+        'module' => 'field_data_collector',
+        'settings' => array(),
+        'type' => 'field_data_collector_default_formatter',
         'weight' => 11,
       ),
       'home_bottom' => array(
@@ -808,7 +940,7 @@ function library_features_content_type_topics_field_default_field_instances() {
       'module' => 'field_data_collector',
       'settings' => array(),
       'type' => 'field_data_collector_default_widget',
-      'weight' => 37,
+      'weight' => 8,
     ),
   );
 
@@ -831,11 +963,18 @@ function library_features_content_type_topics_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 16,
       ),
-      'default' => array(
+      'connections' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 5,
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'hidden',
+        'module' => 'field_data_collector',
+        'settings' => array(),
+        'type' => 'field_data_collector_default_formatter',
+        'weight' => 8,
       ),
       'home_bottom' => array(
         'label' => 'above',
@@ -886,7 +1025,7 @@ function library_features_content_type_topics_field_default_field_instances() {
       'module' => 'field_data_collector',
       'settings' => array(),
       'type' => 'field_data_collector_default_widget',
-      'weight' => 35,
+      'weight' => 6,
     ),
   );
 
@@ -909,10 +1048,17 @@ function library_features_content_type_topics_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 10,
       ),
-      'default' => array(
+      'connections' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'hidden',
+        'module' => 'field_data_collector',
+        'settings' => array(),
+        'type' => 'field_data_collector_default_formatter',
         'weight' => 10,
       ),
       'home_bottom' => array(
@@ -964,7 +1110,7 @@ function library_features_content_type_topics_field_default_field_instances() {
       'module' => 'field_data_collector',
       'settings' => array(),
       'type' => 'field_data_collector_default_widget',
-      'weight' => 36,
+      'weight' => 7,
     ),
   );
 
@@ -986,6 +1132,12 @@ function library_features_content_type_topics_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 7,
+      ),
+      'connections' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
       'default' => array(
         'label' => 'hidden',
@@ -1053,7 +1205,7 @@ function library_features_content_type_topics_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 0,
+      'weight' => 1,
     ),
   );
 
@@ -1070,6 +1222,7 @@ function library_features_content_type_topics_field_default_field_instances() {
   t('Location');
   t('Locations');
   t('Rating');
+  t('Source');
   t('Title');
 
   return $field_instances;

@@ -196,16 +196,16 @@ function _field_data_collector_field_settings_form_process($form, $form_state) {
       }
     }
     $form['target_bundles'] = array(
-      '#type' => 'radios',
+      '#type' => 'checkboxes',
       '#title' => t('Target bundles'),
       '#options' => $bundles,
       '#default_value' => $settings['target_bundles'],
       '#multiple' => TRUE,
       '#size' => 6,
       '#description' => t('The bundles of the entity type that can be referenced.'),
-      '#prefix' => '<div id = "target_bundles_radios">',
+      '#prefix' => '<div id = "target_bundles_checkboxes">',
       '#suffix' => '</div>',
-//      '#element_validate' => array('_field_data_collector_element_validate_filter'),
+      '#element_validate' => array('_field_data_collector_element_validate_filter'),
     );
   } // In other way display the message
   else {
@@ -267,7 +267,7 @@ function _field_data_collector_save_data($entity_type, $entity, $field, $instanc
 
     $collecting_fields_could_have_needed_items = FALSE;
     if(isset($field['settings']['target_bundles']) && !empty($field['settings']['target_bundles'])){
-       $target_bundles = array($field['settings']['target_bundles'] => $field['settings']['target_bundles']);
+       $target_bundles = $field['settings']['target_bundles'];
     } else {
       $target_bundles = array();
     }

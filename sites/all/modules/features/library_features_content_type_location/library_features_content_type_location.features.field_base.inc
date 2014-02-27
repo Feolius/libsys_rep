@@ -60,35 +60,6 @@ function library_features_content_type_location_field_default_field_bases() {
     'type' => 'taxonomy_term_reference',
   );
 
-  // Exported field_base: 'field_location_county'
-  $field_bases['field_location_county'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_location_county',
-    'foreign keys' => array(
-      'format' => array(
-        'columns' => array(
-          'format' => 'format',
-        ),
-        'table' => 'filter_format',
-      ),
-    ),
-    'indexes' => array(
-      'format' => array(
-        0 => 'format',
-      ),
-    ),
-    'locked' => 0,
-    'module' => 'text',
-    'settings' => array(
-      'max_length' => 255,
-    ),
-    'translatable' => 0,
-    'type' => 'text',
-  );
-
   // Exported field_base: 'field_location_description'
   $field_bases['field_location_description'] = array(
     'active' => 1,
@@ -269,73 +240,6 @@ function library_features_content_type_location_field_default_field_bases() {
     'type' => 'geofield',
   );
 
-  // Exported field_base: 'field_location_home_date'
-  $field_bases['field_location_home_date'] = array(
-    'active' => 1,
-    'cardinality' => -1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_location_home_date',
-    'foreign keys' => array(),
-    'indexes' => array(),
-    'locked' => 0,
-    'module' => 'library_date_field',
-    'settings' => array(
-      'granularity' => array(
-        'day' => 'day',
-        'month' => 'month',
-        'year' => 'year',
-      ),
-      'timezone_db' => 'UTC',
-      'tz_handling' => 'site',
-    ),
-    'translatable' => 0,
-    'type' => 'library_date_field',
-  );
-
-  // Exported field_base: 'field_location_home_nodes'
-  $field_bases['field_location_home_nodes'] = array(
-    'active' => 1,
-    'cardinality' => -1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_location_home_nodes',
-    'foreign keys' => array(
-      'node' => array(
-        'columns' => array(
-          'target_id' => 'nid',
-        ),
-        'table' => 'node',
-      ),
-    ),
-    'indexes' => array(
-      'target_id' => array(
-        0 => 'target_id',
-      ),
-    ),
-    'locked' => 0,
-    'module' => 'entityreference',
-    'settings' => array(
-      'handler' => 'base',
-      'handler_settings' => array(
-        'behaviors' => array(
-          'views-select-list' => array(
-            'status' => 0,
-          ),
-        ),
-        'sort' => array(
-          'type' => 'none',
-        ),
-        'target_bundles' => array(
-          'people' => 'people',
-        ),
-      ),
-      'target_type' => 'node',
-    ),
-    'translatable' => 0,
-    'type' => 'entityreference',
-  );
-
   // Exported field_base: 'field_location_image'
   $field_bases['field_location_image'] = array(
     'active' => 1,
@@ -409,35 +313,6 @@ function library_features_content_type_location_field_default_field_bases() {
     'type' => 'entityreference',
   );
 
-  // Exported field_base: 'field_location_link'
-  $field_bases['field_location_link'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_location_link',
-    'foreign keys' => array(
-      'format' => array(
-        'columns' => array(
-          'format' => 'format',
-        ),
-        'table' => 'filter_format',
-      ),
-    ),
-    'indexes' => array(
-      'format' => array(
-        0 => 'format',
-      ),
-    ),
-    'locked' => 0,
-    'module' => 'text',
-    'settings' => array(
-      'max_length' => 255,
-    ),
-    'translatable' => 0,
-    'type' => 'text',
-  );
-
   // Exported field_base: 'field_location_phone'
   $field_bases['field_location_phone'] = array(
     'active' => 1,
@@ -465,67 +340,6 @@ function library_features_content_type_location_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'text',
-  );
-
-  // Exported field_base: 'field_location_placed_event'
-  $field_bases['field_location_placed_event'] = array(
-    'active' => 1,
-    'cardinality' => -1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_location_placed_event',
-    'foreign keys' => array(
-      'node' => array(
-        'columns' => array(
-          'target_id' => 'nid',
-        ),
-        'table' => 'node',
-      ),
-    ),
-    'indexes' => array(
-      'target_id' => array(
-        0 => 'target_id',
-      ),
-    ),
-    'locked' => 0,
-    'module' => 'entityreference',
-    'settings' => array(
-      'handler' => 'base',
-      'handler_settings' => array(
-        'behaviors' => array(
-          'views-select-list' => array(
-            'status' => 0,
-          ),
-        ),
-        'sort' => array(
-          'type' => 'none',
-        ),
-        'target_bundles' => array(
-          'events' => 'events',
-        ),
-      ),
-      'target_type' => 'node',
-    ),
-    'translatable' => 0,
-    'type' => 'entityreference',
-  );
-
-  // Exported field_base: 'field_location_rating'
-  $field_bases['field_location_rating'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_location_rating',
-    'foreign keys' => array(),
-    'indexes' => array(),
-    'locked' => 0,
-    'module' => 'fivestar',
-    'settings' => array(
-      'axis' => 'vote',
-    ),
-    'translatable' => 0,
-    'type' => 'fivestar',
   );
 
   // Exported field_base: 'field_location_received_files'
@@ -701,35 +515,6 @@ function library_features_content_type_location_field_default_field_bases() {
     'type' => 'entityreference',
   );
 
-  // Exported field_base: 'field_location_source'
-  $field_bases['field_location_source'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_location_source',
-    'foreign keys' => array(
-      'format' => array(
-        'columns' => array(
-          'format' => 'format',
-        ),
-        'table' => 'filter_format',
-      ),
-    ),
-    'indexes' => array(
-      'format' => array(
-        0 => 'format',
-      ),
-    ),
-    'locked' => 0,
-    'module' => 'text',
-    'settings' => array(
-      'max_length' => 255,
-    ),
-    'translatable' => 0,
-    'type' => 'text',
-  );
-
   // Exported field_base: 'field_location_tab_events'
   $field_bases['field_location_tab_events'] = array(
     'active' => 1,
@@ -743,36 +528,14 @@ function library_features_content_type_location_field_default_field_bases() {
     'module' => 'field_data_collector',
     'settings' => array(
       'collecting_fields' => array(
-        'field_location_placed_event' => 'field_location_placed_event',
         'field_location_related_entities' => 'field_location_related_entities',
         'field_location_route_start_event' => 'field_location_route_start_event',
         'field_location_route_to_events' => 'field_location_route_to_events',
       ),
-      'last_changes_time' => 1393247557,
-      'target_bundles' => 'events',
-      'target_type' => 'node',
-    ),
-    'translatable' => 0,
-    'type' => 'field_data_collector',
-  );
-
-  // Exported field_base: 'field_location_tab_images'
-  $field_bases['field_location_tab_images'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_location_tab_images',
-    'foreign keys' => array(),
-    'indexes' => array(),
-    'locked' => 0,
-    'module' => 'field_data_collector',
-    'settings' => array(
-      'collecting_fields' => array(
-        'field_location_images' => 'field_location_images',
+      'last_changes_time' => 1393491480,
+      'target_bundles' => array(
+        'events' => 'events',
       ),
-      'last_changes_time' => 1393246209,
-      'target_bundles' => 'files',
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -794,31 +557,10 @@ function library_features_content_type_location_field_default_field_bases() {
       'collecting_fields' => array(
         'field_location_received_files' => 'field_location_received_files',
       ),
-      'last_changes_time' => 1393246218,
-      'target_bundles' => 'files',
-      'target_type' => 'node',
-    ),
-    'translatable' => 0,
-    'type' => 'field_data_collector',
-  );
-
-  // Exported field_base: 'field_location_tab_videos'
-  $field_bases['field_location_tab_videos'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_location_tab_videos',
-    'foreign keys' => array(),
-    'indexes' => array(),
-    'locked' => 0,
-    'module' => 'field_data_collector',
-    'settings' => array(
-      'collecting_fields' => array(
-        'field_location_videos' => 'field_location_videos',
+      'last_changes_time' => 1393491413,
+      'target_bundles' => array(
+        'files' => 'files',
       ),
-      'last_changes_time' => 1393246230,
-      'target_bundles' => 'files',
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -840,8 +582,10 @@ function library_features_content_type_location_field_default_field_bases() {
       'collecting_fields' => array(
         'field_location_written_files' => 'field_location_written_files',
       ),
-      'last_changes_time' => 1393246213,
-      'target_bundles' => 'files',
+      'last_changes_time' => 1393491404,
+      'target_bundles' => array(
+        'files' => 'files',
+      ),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -851,7 +595,7 @@ function library_features_content_type_location_field_default_field_bases() {
   // Exported field_base: 'field_location_topics'
   $field_bases['field_location_topics'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_location_topics',
@@ -872,11 +616,48 @@ function library_features_content_type_location_field_default_field_bases() {
     'module' => 'entityreference',
     'settings' => array(
       'handler' => 'base',
-      'handler_settings' => array(),
+      'handler_settings' => array(
+        'behaviors' => array(
+          'views-select-list' => array(
+            'status' => 0,
+          ),
+        ),
+        'sort' => array(
+          'type' => 'none',
+        ),
+        'target_bundles' => array(
+          'topics' => 'topics',
+        ),
+      ),
       'target_type' => 'node',
     ),
     'translatable' => 0,
     'type' => 'entityreference',
+  );
+
+  // Exported field_base: 'field_location_topics_fdc'
+  $field_bases['field_location_topics_fdc'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_location_topics_fdc',
+    'foreign keys' => array(),
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'field_data_collector',
+    'settings' => array(
+      'collecting_fields' => array(
+        'field_location_topics' => 'field_location_topics',
+      ),
+      'last_changes_time' => 1393491469,
+      'target_bundles' => array(
+        'topics' => 'topics',
+      ),
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'field_data_collector',
   );
 
   // Exported field_base: 'field_location_videos'
@@ -914,73 +695,6 @@ function library_features_content_type_location_field_default_field_bases() {
         ),
         'target_bundles' => array(
           'files' => 'files',
-        ),
-      ),
-      'target_type' => 'node',
-    ),
-    'translatable' => 0,
-    'type' => 'entityreference',
-  );
-
-  // Exported field_base: 'field_location_visit_date'
-  $field_bases['field_location_visit_date'] = array(
-    'active' => 1,
-    'cardinality' => -1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_location_visit_date',
-    'foreign keys' => array(),
-    'indexes' => array(),
-    'locked' => 0,
-    'module' => 'library_date_field',
-    'settings' => array(
-      'granularity' => array(
-        'day' => 'day',
-        'month' => 'month',
-        'year' => 'year',
-      ),
-      'timezone_db' => 'UTC',
-      'tz_handling' => 'site',
-    ),
-    'translatable' => 0,
-    'type' => 'library_date_field',
-  );
-
-  // Exported field_base: 'field_location_visit_nodes'
-  $field_bases['field_location_visit_nodes'] = array(
-    'active' => 1,
-    'cardinality' => -1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_location_visit_nodes',
-    'foreign keys' => array(
-      'node' => array(
-        'columns' => array(
-          'target_id' => 'nid',
-        ),
-        'table' => 'node',
-      ),
-    ),
-    'indexes' => array(
-      'target_id' => array(
-        0 => 'target_id',
-      ),
-    ),
-    'locked' => 0,
-    'module' => 'entityreference',
-    'settings' => array(
-      'handler' => 'base',
-      'handler_settings' => array(
-        'behaviors' => array(
-          'views-select-list' => array(
-            'status' => 0,
-          ),
-        ),
-        'sort' => array(
-          'type' => 'none',
-        ),
-        'target_bundles' => array(
-          'people' => 'people',
         ),
       ),
       'target_type' => 'node',

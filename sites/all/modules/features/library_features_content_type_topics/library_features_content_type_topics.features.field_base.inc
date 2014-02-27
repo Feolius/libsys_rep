@@ -10,6 +10,40 @@
 function library_features_content_type_topics_field_default_field_bases() {
   $field_bases = array();
 
+  // Exported field_base: 'field_source'
+  $field_bases['field_source'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_source',
+    'foreign keys' => array(
+      'tid' => array(
+        'columns' => array(
+          'tid' => 'tid',
+        ),
+        'table' => 'taxonomy_term_data',
+      ),
+    ),
+    'indexes' => array(
+      'tid' => array(
+        0 => 'tid',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'taxonomy',
+    'settings' => array(
+      'allowed_values' => array(
+        0 => array(
+          'vocabulary' => 'taxonomy_source',
+          'parent' => 0,
+        ),
+      ),
+    ),
+    'translatable' => 0,
+    'type' => 'taxonomy_term_reference',
+  );
+
   // Exported field_base: 'field_topics_body'
   $field_bases['field_topics_body'] = array(
     'active' => 1,
@@ -40,7 +74,7 @@ function library_features_content_type_topics_field_default_field_bases() {
   // Exported field_base: 'field_topics_files'
   $field_bases['field_topics_files'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_topics_files',
@@ -148,7 +182,7 @@ function library_features_content_type_topics_field_default_field_bases() {
   // Exported field_base: 'field_topics_locations'
   $field_bases['field_topics_locations'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_topics_locations',
@@ -246,8 +280,10 @@ function library_features_content_type_topics_field_default_field_bases() {
       'collecting_fields' => array(
         'field_topics_files' => 'field_topics_files',
       ),
-      'last_changes_time' => 1393246441,
-      'target_bundles' => 'files',
+      'last_changes_time' => 1393491632,
+      'target_bundles' => array(
+        'files' => 'files',
+      ),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -269,8 +305,10 @@ function library_features_content_type_topics_field_default_field_bases() {
       'collecting_fields' => array(
         'field_topics_related_event' => 'field_topics_related_event',
       ),
-      'last_changes_time' => 1393246434,
-      'target_bundles' => 'events',
+      'last_changes_time' => 1393491623,
+      'target_bundles' => array(
+        'events' => 'events',
+      ),
       'target_type' => 'node',
     ),
     'translatable' => 0,
@@ -292,8 +330,10 @@ function library_features_content_type_topics_field_default_field_bases() {
       'collecting_fields' => array(
         'field_topics_locations' => 'field_topics_locations',
       ),
-      'last_changes_time' => 1393246438,
-      'target_bundles' => 'location',
+      'last_changes_time' => 1393491627,
+      'target_bundles' => array(
+        'location' => 'location',
+      ),
       'target_type' => 'node',
     ),
     'translatable' => 0,
