@@ -1,4 +1,7 @@
 <?php
+
+define('STRIP_TEXT_CUT_VALUE_TID', 14151);
+
 /**
  * Implements hook_field_formatter_info().
  */
@@ -56,14 +59,18 @@ function library_strip_text_formatter_field_formatter_view($entity_type, $entity
   } else {
     $values = '';
   }
-    foreach ($items as $delta => $item) {
-      if (!empty($item['value'])) {
-        if (!empty($values) && $values[0]['taxonomy_term']->name != 'General') {
-          $pattern = "/<p>(.*?)<\/p>/";
-          preg_match($pattern, $item['value'], $matches);
+  foreach ($items as $delta => $item) {
+    if (!empty($item['value'])) {
+      if (!empty($values) && $values[0]['tid'] == STRIP_TEXT_CUT_VALUE_TID) {
+        $pattern = "/<p>(.*?)<\/p>/";
+        preg_match($pattern, $item['value'], $matches);
+        if (!empty($matches)) {
           $output .= strip_tags($matches[1]);
         } else {
           $output = $item['value'];
+        }
+      } else {
+        $output = $item['value'];
       }
     }
     $element[$delta] = array('#markup' => $output);
