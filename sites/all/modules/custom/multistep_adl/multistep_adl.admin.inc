@@ -152,6 +152,17 @@ function multistep_adl_manage_steps_form($form, &$form_state, $entity_type, $bun
   }
   $steps = multistep_adl_get_steps($bundle);
   $first_step = multistep_adl_get_first($bundle);
+  if (empty($first_step)) {
+    $bundles = field_info_bundles($entity_type);
+    $bundle_info = $bundles[$bundle];
+    $admin_path = "";
+    if (isset($bundle_info['admin'])) {
+      $admin_path =  isset($bundle_info['admin']['real path']) ? $bundle_info['admin']['real path'] : $bundle_info['admin']['path'];
+    }
+    drupal_set_message(t('There are no steps defined for this content type. You can define them on <a href="@link">Manage fields</a> page.', array('@link' => url($admin_path . '/fields'))), 'warning');
+    return $form;
+  }
+
   $step_settings = drupal_json_decode(variable_get('multistep_adl_steps_settings'));
 
   $optional_steps = array('none' => '-None-');
