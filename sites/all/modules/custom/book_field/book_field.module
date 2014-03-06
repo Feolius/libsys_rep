@@ -126,7 +126,8 @@ function _book_field_get_terms_from_json($terms, $json) {
         //If we find it in current text, it is good. Just take it.
         $found_terms[] = $term;
         continue;
-      } else {
+      }
+      else {
         // Term could be complicated, if it goes from quotes and consist on few words.
         // Assume that words are separated only by spaces.
         $term_arr = explode(' ', $term);
@@ -146,7 +147,8 @@ function _book_field_get_terms_from_json($terms, $json) {
                 $found_terms[] = $term;
                 continue 3;
               }
-            } elseif ($words_found > 1 && !empty($string)) {
+            }
+            elseif ($words_found > 1 && !empty($string)) {
               // Drop counter. The whole phrase was not found.
               $words_found = 0;
             }
@@ -202,19 +204,22 @@ function _book_field_progress_get_info($upload_key, $swf_progress_key, $png_prog
         ));
         $progress['percentage'] = round(100 * $status['bytes_uploaded'] / $status['bytes_total']);
       }
-    } else {
+    }
+    else {
       $progress = array(
         'message' => t('Uploading...'),
         'percentage' => -1,
       );
     }
-  } elseif ($swf_info != NULL && $png_info == NULL) {
+  }
+  elseif ($swf_info != NULL && $png_info == NULL) {
     if ($swf_info[0]->progress == -1) {
       $progress = array(
         'message' => t('Preparing conversion to swf...'),
         'percentage' => 0,
       );
-    } else {
+    }
+    else {
       $status = ($swf_info[0]->progress);
       $status = explode('/', $status);
       $current_page = $status[0];
@@ -225,13 +230,15 @@ function _book_field_progress_get_info($upload_key, $swf_progress_key, $png_prog
       ));
       $progress['percentage'] = round(100 * $current_page / $last_page);
     }
-  } else {
+  }
+  else {
     if ($png_info[0]->progress == -1) {
       $progress = array(
         'message' => t('Preparing conversion to png...'),
         'percentage' => 0,
       );
-    } else {
+    }
+    else {
       $status = ($png_info[0]->progress);
       $status = explode('/', $status);
       $current_page = $status[0];
@@ -286,7 +293,8 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
 
   if ($element['#extended'] && isset($form_state_fid['fid'])) {
     $fid = $form_state_fid['fid'];
-  } elseif (is_numeric($form_state_fid)) {
+  }
+  elseif (is_numeric($form_state_fid)) {
     $fid = $form_state_fid;
   }
 
@@ -314,7 +322,8 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
           _book_field_managed_book_create_json($file, $folder_name);
         }
       }
-    } else {
+    }
+    else {
       // Load file if the FID has changed to confirm it exists.
       if (isset($input['fid']) && $file = file_load($input['fid'])) {
         $fid = $file->fid;
@@ -326,7 +335,8 @@ function book_field_managed_book_value(&$element, $input = FALSE, $form_state = 
         $folder_name = $input['folder_name'];
       }
     }
-  } else {
+  }
+  else {
     $default_fid = isset($element['#default_value']) ? $element['#default_value']['fid'] : 0;
     $default_fid_thumb = isset($element['#default_value']) ? $element['#default_value']['fid_thumb'] : 0;
     $folder_name = isset($element['#default_value']) ? $element['#default_value']['folder_name'] : 0;
@@ -534,7 +544,8 @@ function book_field_managed_book_process($element, &$form_state, $form) {
   //Check if upload progress extension is available
   if (extension_loaded('uploadprogress')) {
     $upload_progress_key = mt_rand();
-  } else {
+  }
+  else {
     $upload_progress_key = 0;
   }
   $element['UPLOAD_IDENTIFIER'] = array(
@@ -768,7 +779,8 @@ function book_field_field_formatter_settings_summary($field, $instance, $view_mo
     unset($image_styles['']);
     if (isset($image_styles[$settings['image_style']])) {
       $summary[] = t('Image style: @style', array('@style' => $image_styles[$settings['image_style']]));
-    } else {
+    }
+    else {
       $summary[] = t('Original image');
     }
   }
@@ -863,7 +875,8 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
           $thumbnail_suffix = str_replace($file_name, '', $file_thumbnail_name);
           if (!strpos($thumbnail_suffix, '_')) {
             $png_path = $base_url . '/' . $relative_path . '/' . $file_name . '{page}.png';
-          } else {
+          }
+          else {
             $png_path = $base_url . '/' . $relative_path . '/' . $file_name . '_{page}.png';
           }
           $json_path = $base_url . '/' . $relative_path . '/' . $file_name . '.js';
@@ -874,7 +887,8 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
           $is_text_searchable = book_field_is_text_searchable($json_uri);
           if ($is_text_searchable) {
             $show_search_tools = TRUE;
-          } else {
+          }
+          else {
             $show_search_tools = FALSE;
           }
           $extension = _book_field_get_file_extension($file);
@@ -898,6 +912,18 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
           );
           drupal_add_js(array('book_field' => $settings), 'setting');
           $element[$delta] = array(
+            'document_download_link' => array(
+              '#access' => TRUE,
+              '#markup' => l(t('Download'),
+                file_create_url($file->uri),
+                array(
+                  'attributes' => array(
+                    'class' => array('download', 'flexpaper-download-btn'),
+                    'target' => '_blank'
+                  )
+                )
+              )
+            ),
             'flexpaper' => array(
               '#attached' => array(
                 'css' => array(
@@ -915,7 +941,9 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
               '#file' => $file,
             )
           );
-        } else {
+
+        }
+        else {
           $element[$delta] = array(
             '#theme' => 'book_field_google_doc_view',
             '#file' => $file,
@@ -923,16 +951,20 @@ function book_field_field_formatter_view($entity_type, $entity, $field, $instanc
         }
       }
     }
-  } elseif ($display['type'] == 'book_field_thumbnail_formatter') {
+  }
+  elseif ($display['type'] == 'book_field_thumbnail_formatter') {
     foreach ($items as $delta => $item) {
       $file_thumb = file_load(($item['fid_thumb']));
-      $uri_thumb = $file_thumb->uri;
 
-      $element[$delta] = array(
-        '#theme' => 'image_formatter',
-        '#item' => array('uri' => $uri_thumb),
-        '#image_style' => $display['settings']['image_style'],
-      );
+      if (isset($file_thumb->uri)) {
+        $uri_thumb = $file_thumb->uri;
+
+        $element[$delta] = array(
+          '#theme' => 'image_formatter',
+          '#item' => array('uri' => $uri_thumb),
+          '#image_style' => $display['settings']['image_style'],
+        );
+      }
     }
   }
   return $element;
@@ -1124,7 +1156,7 @@ function book_field_theme() {
  * Theme function for the googledoc formatter.
  */
 function theme_book_field_google_doc_view($variables) {
-  $file = (object)$variables['file'];
+  $file = (object) $variables['file'];
   $url = file_create_url($file->uri);
   $out = '<iframe src="https://docs.google.com/viewer?url=' . $url . '&embedded=true" style="width:720px; height:500px;" frameborder="1"></iframe>';
   if (!empty($file_thumb)) {
@@ -1134,7 +1166,8 @@ function theme_book_field_google_doc_view($variables) {
     $text = '<img src="' . image_style_url($style, $uri_thumb) . '">';
     $options['html'] = TRUE;
     $out = $out . '<h1>' . $file->filename . '</h1>' . l($text, file_create_url($uri), $options);
-  } else {
+  }
+  else {
     $out = $out . theme_file_link($variables);
   }
   return $out;
@@ -1161,7 +1194,8 @@ function get_real_file_name($file) {
     //Exclude name of file extension
     unset($arr[$arr_length - 1]);
     $real_file_name = implode('.', $arr);
-  } else {
+  }
+  else {
     $real_file_name = $arr[0];
   }
   return $real_file_name;
