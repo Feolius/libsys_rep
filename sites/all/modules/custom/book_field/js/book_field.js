@@ -46,7 +46,8 @@
           var pngPath = pngPaths[i];
           var jsonPath = jsonPaths[i];
           var pdfPath = pdfPaths[i];
-          $('#' + id).FlexPaperViewer(
+          $('#' + id).once(function(){
+            $(this).FlexPaperViewer(
             { config: {
               SwfFile: swfPath,
               JSONFile: jsonPath,
@@ -80,9 +81,10 @@
               localeChain: 'en_US'
             }}
           );
+          });
         }
         $('#' + id).once('flexpaper').bind('onDocumentLoaded', function (e, totalPages) {
-          $('#toolbar_documentViewer').before('<button class="flexpaper-fullscreen-view-btn">Full Screen View</button>');
+          $('.flexpaper-viewer-container').before('<button class="flexpaper-fullscreen-view-btn">Full Screen View</button>');
           $('.flexpaper-fullscreen-view-btn').click(function () {
             $('.flexpaper_bttnFullScreen').click();
           });
@@ -109,8 +111,9 @@
                 var parent = $('#' + id).parent();
                 //Get flexpaper viewer container element
                 //var parent = parents[1];
-                var container = $('<div class="highlight-buttons-container"></div>').insertBefore(parent);
-                container.html('<h3>Search document</h3>');
+                var container = $('<div class="highlight-buttons-container"></div>');
+                $('.flexpaper-viewer-container').parent().prepend(container);
+                //container.html('<h3>Search document</h3>');
                 for (var key in data) {
                   term = data[key];
                   if (typeof term != 'function') {
