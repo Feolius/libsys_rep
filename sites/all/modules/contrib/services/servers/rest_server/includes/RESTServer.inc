@@ -35,14 +35,13 @@ class RESTServer {
   public function handle() {
     $controller = $this->getController();
 
-    // Parse the request data
-    $arguments = $this->getControllerArguments($controller);
-
     $formatter = $this->getResponseFormatter();
 
     services_set_server_info('resource_uri_formatter', array(&$this, 'uri_formatter'));
 
     try {
+      // Parse the request data
+      $arguments = $this->getControllerArguments($controller);
       $result = services_controller_execute($controller, $arguments);
     }
     catch (ServicesException $e) {
@@ -307,6 +306,10 @@ class RESTServer {
           $argument_source_keys = array_keys($argument_source);
           $source_name = reset($argument_source_keys);
           $argument_name = $argument_source[$source_name];
+          // Path arguments can be only integers. i.e.'path' => 0 and not 'path' => '0'.
+          if ($source_name == 'path') {
+            $argument_name = (int) $argument_name;
+          }
           if (isset($sources[$source_name][$argument_name])) {
             $arguments[$argument_number] = $sources[$source_name][$argument_name];
           }
@@ -481,6 +484,16 @@ class RESTServer {
     $operation_type = NULL;
     $operation = NULL;
 
+    // For any HEAD request return response "200 OK".
+    if ($request_method == 'HEAD') {
+      return services_error('OK', 200);
+    }
+
+    // For any OPTIONS request return only the headers.
+    if ($request_method == 'OPTIONS') {
+      exit;
+    }
+
     // We do not group "if" conditions on purpose for better readability.
 
     // 'index' method.
@@ -552,7 +565,7 @@ class RESTServer {
     }
 
     // 'actions'
-    // Forst path element should be action name
+    // First path element should be action name
     if (   $request_method == 'POST'
         && $canon_path_count >= 1
         && isset($resource['actions'][$canonical_path_array[0]])
@@ -580,10 +593,15 @@ class RESTServer {
     }
 
     $controller = $resource[$operation_type][$operation];
+
+    if (isset($resource['endpoint']['operations'][$operation]['settings'])) {
+      // Add the endpoint's settings for the specified operation.
+      $controller['endpoint'] = $resource['endpoint']['operations'][$operation]['settings'];
+    }
+
     if (isset($resource['file']) && empty($controller['file'])) {
       $controller['file'] = $resource['file'];
     }
-
 
     return $controller;
   }
@@ -630,26 +648,29 @@ class RESTServer {
 
     switch ($error_code) {
       case 204:
-        $error_header_status_message = '204 No Content: ' . $error_message;
+        $error_header_status_message = $this->formatHttpHeaderStatusMessage('204 No Content', $error_message);
         break;
       case 304:
-        $error_header_status_message =  '304 Not Modified: ' . $error_message;
+        $error_header_status_message = $this->formatHttpHeaderStatusMessage('304 Not Modified', $error_message);
         break;
       case 401:
-        $error_header_status_message =  '401 Unauthorized: ' . $error_message;
+        $error_header_status_message = $this->formatHttpHeaderStatusMessage('401 Unauthorized', $error_message);
         break;
       case 404:
-        $error_header_status_message =  '404 Not found: ' . $error_message;
+        $error_header_status_message = $this->formatHttpHeaderStatusMessage('404 Not found', $error_message);
         break;
       case 406:
-        $error_header_status_message = '406 Not Acceptable: ' . $error_message;
+        $error_header_status_message = $this->formatHttpHeaderStatusMessage('406 Not Acceptable', $error_message);
+        break;
+      case 200:
+        $error_header_status_message = $this->formatHttpHeaderStatusMessage('200', $error_message);
         break;
       default:
         if ($error_code >= 400 && $error_code < 600) {
-          $error_header_status_message = $error_code . ':' . $error_message;
+          $error_header_status_message = $this->formatHttpHeaderStatusMessage($error_code, $error_message);
         }
         else {
-          $error_header_status_message = '500 Internal Server Error: An error occurred (' . $error_code . '): ' . $error_message;
+          $error_header_status_message = $this->formatHttpHeaderStatusMessage('500 Internal Server Error', "An error occurred ({$error_code}): {$error_message}");
         }
         break;
     }
@@ -661,8 +682,23 @@ class RESTServer {
     );
     drupal_alter('rest_server_execute_errors', $error_alter_array, $controller, $arguments);
 
-    drupal_add_http_header('Status', strip_tags($error_header_status_message));
+    drupal_add_http_header('Status', strip_tags(str_replace(PHP_EOL, '', $error_header_status_message)));
 
     return $error_data;
+  }
+
+  /**
+   * Formats a status code and message for use as an HTTP header message.
+   *
+   * @param $status_code
+   *   An HTTP status code, e.g. "404 Not found" or "200".
+   * @param $message
+   *   A message string.
+   *
+   * @return string
+   *   A properly formatted HTTP header status message.
+   */
+  protected function formatHttpHeaderStatusMessage($status_code, $message) {
+    return "{$status_code} : {$message}";
   }
 }
