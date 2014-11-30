@@ -6,9 +6,9 @@ core = 7.x
 
 files[] = nodehierarchy_widgets.module
 
-; Information added by drupal.org packaging script on 2013-01-24
+; Information added by drupal.org packaging script on 2013-10-01
 version = "7.x-2.x-dev"
 core = "7.x"
 project = "nodehierarchy"
-datestamp = "1359034336"
+datestamp = "1380593425"
 

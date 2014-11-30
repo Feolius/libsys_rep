@@ -112,8 +112,9 @@ function video_theme() {
   // Lets setup our themes for our players
   // We include video.utility.inc here, because when upgrading the autoload cache is not updated yet.
   module_load_include('utility.inc', 'video');
-  $players = video_utility::getVideoPlayers();
-  foreach ($players as $tpl => $value) {
+  $players = array_keys(video_utility::getVideoPlayers());
+  $players[] = 'video_play_html5_audio';
+  foreach ($players as $tpl) {
     $theme[$tpl] = array(
       'variables' => array('item' => NULL, 'width' => NULL, 'height' => NULL),
       'template' => str_replace('_', '-', $tpl),
@@ -145,6 +146,11 @@ function video_theme() {
  * Add a generic preprocess function to all video theme methods.
  */
 function video_theme_registry_alter(&$registry) {
+  // After upgrades, this class may not yet be in the class registry,
+  // so load the include explicitly.
+  if (!class_exists('video_utility', TRUE)) {
+    module_load_include('utility.inc', 'video');
+  }
   $players = video_utility::getVideoPlayers();
   $templates = array_keys($players);
   $templates[] = 'video_flv';

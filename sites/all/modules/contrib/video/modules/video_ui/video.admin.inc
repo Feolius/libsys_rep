@@ -431,10 +431,14 @@ function video_video_flv_players() {
  */
 function video_video_html5_players() {
   $options = array(
-    'video' => t('Video for everybody'),
+    'video' => t('Plain HTML5 video player with Flash fallback'),
+    'audio' => t('Plain HTML5 audio player with Flash fallback'),
   );
   if (module_exists('videojs')) {
     $options['videojs'] = t('Video.js');
+  }
+  if (module_exists('mediaelement')) {
+    $options['mediaelement'] = t('MediaElement');
   }
   return $options;
 }

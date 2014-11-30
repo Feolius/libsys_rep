@@ -330,7 +330,7 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
         '#type' => 'textfield',
         '#title' => t('Zencoder API key'),
         '#default_value' => variable_get('video_zencoder_api_key', NULL),
-        '#description' => t('Zencoder API Key. Click <b>Reset to default</b> button to add new account.')
+        '#description' => t('Leave empty and submit the form to start creating a new Zencoder account.')
       );
       $form['zencoder_info']['video_thumbnail_count_zc'] = array(
         '#type' => 'textfield',
@@ -517,7 +517,7 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
       $errors = '';
       foreach ($e->getErrors() as $error) {
         if ($error == 'Email has already been taken') {
-          drupal_set_message(t('Your account already exists on Zencoder. So <a href="@login-url">login</a> to here and enter API key below.', array('@login-url' => 'https://app.zencoder.com/session/new')));
+          drupal_set_message(t('Your account already exists on Zencoder. So <a href="@login-url">login</a> to here and enter a full access API key key below.', array('@login-url' => 'https://app.zencoder.com/api')));
           variable_set('video_zencoder_api_key', t('Please enter your API key'));
           return TRUE;
         }
@@ -894,5 +894,14 @@ class TranscoderAbstractionFactoryZencoder extends TranscoderAbstractionFactory 
     }
 
     return $message;
+  }
+
+  /**
+   * Whether the transcoder works by sending jobs to an external system.
+   *
+   * True for transcoders like Zencoder, false for transcoders like FFmpeg.
+   */
+  public function isOffSite() {
+    return TRUE;
   }
 }

@@ -64,7 +64,7 @@ body .olImageLoadError {
  */
 div.olPopup img,
 div.olLayerDiv img.olTileImage {
-  max-width: none !important;
+  max-width: none;
 }
 
 /*
