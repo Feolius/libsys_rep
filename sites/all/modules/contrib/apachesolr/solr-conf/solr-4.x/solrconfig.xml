@@ -16,11 +16,11 @@
  limitations under the License.
 -->
 
-<!-- 
+<!--
      For more details about configurations options that may appear in
-     this file, see http://wiki.apache.org/solr/SolrConfigXml. 
+     this file, see http://wiki.apache.org/solr/SolrConfigXml.
 -->
-<config name="drupal-4.0-solr-4.x" >
+<config name="drupal-4.3-solr-4.x" >
   <!-- In all configuration below, a prefix of "solr." for class names
        is an alias that causes solr to search appropriate packages,
        including org.apache.solr.(search|update|request|core|analysis)
@@ -40,14 +40,14 @@
          -Dsolr.abortOnConfigurationError=false
     -->
   <abortOnConfigurationError>${solr.abortOnConfigurationError:true}</abortOnConfigurationError>
-  
+
   <!-- Controls what version of Lucene various components of Solr
        adhere to.  Generally, you want to use the latest version to
        get all bug fixes and improvements. It is highly recommended
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>${luceneVersion:LUCENE_35}</luceneMatchVersion>
+  <luceneMatchVersion>${solr.luceneMatchVersion:LUCENE_40}</luceneMatchVersion>
 
   <!-- lib directives can be used to instruct Solr to load an Jars
        identified and use them to resolve any "plugins" specified in
@@ -68,8 +68,9 @@
        the classpath, this is useful for including all jars in a
        directory.
     -->
-  <lib dir="../../contrib/extraction/lib" />
-  <lib dir="../../contrib/clustering/lib/" />
+  <lib dir="${solr.contrib.dir:../../../contrib}/extraction/lib" />
+  <lib dir="${solr.contrib.dir:../../../contrib}/clustering/lib/" />
+
   <!-- The velocity library has been known to crash Solr in some
        instances when deployed as a war file to Tomcat. Therefore all
        references have been removed from the default configuration.
@@ -204,10 +205,6 @@
       -->
     <!-- <termIndexInterval>256</termIndexInterval> -->
 
-    <useCompoundFile>false</useCompoundFile>
-    <ramBufferSizeMB>32</ramBufferSizeMB>
-    <mergeFactor>10</mergeFactor>
-
     <!-- Unlock On Startup
 
          If true, unlock any held write or commit locks on startup.
@@ -299,15 +296,25 @@
 
          maxTime - Maximum amount of time that is allowed to pass
                    since a document was added before automaticly
-                   triggering a new commit. 
+                   triggering a new commit.
       -->
-    <autoCommit> 
-      <maxDocs>10000</maxDocs>
-      <maxTime>120000</maxTime> 
+    <autoCommit>
+      <maxDocs>${solr.autoCommit.MaxDocs:10000}</maxDocs>
+      <maxTime>${solr.autoCommit.MaxTime:120000}</maxTime>
     </autoCommit>
 
+    <!-- softAutoCommit is like autoCommit except it causes a
+         'soft' commit which only ensures that changes are visible
+         but does not ensure that data is synced to disk.  This is
+         faster and more near-realtime friendly than a hard commit.
+    -->
+    <autoSoftCommit>
+      <maxDocs>${solr.autoSoftCommit.MaxDocs:2000}</maxDocs>
+      <maxTime>${solr.autoSoftCommit.MaxTime:10000}</maxTime>
+    </autoSoftCommit>
+
     <!-- Update Related Event Listeners
-         
+
          Various IndexWriter related events can trigger Listeners to
          take actions.
 
@@ -337,6 +344,17 @@
          <arr name="env"> <str>MYVAR=val1</str> </arr>
        </listener>
       -->
+    <!-- Enables a transaction log, currently used for real-time get.
+         "dir" - the target directory for transaction logs, defaults to the
+         solr data directory.  -->
+    <updateLog>
+      <str name="dir">${solr.data.dir:}</str>
+      <!-- if you want to take control of the synchronization you may specify
+           the syncLevel as one of the following where ''flush'' is the default.
+           Fsync will reduce throughput.
+           <str name="syncLevel">flush|fsync|none</str>
+      -->
+    </updateLog>
   </updateHandler>
   
   <!-- IndexReaderFactory
@@ -849,7 +867,7 @@
       <bool name="omitHeader">true</bool>
       <float name="tie">0.01</float>
       <!-- Don't abort searches for the pinkPony request handler (set in solrcore.properties) -->
-      <int name="timeAllowed">${pinkPony.timeAllowed:-1}</int>
+      <int name="timeAllowed">${solr.pinkPony.timeAllowed:-1}</int>
       <str name="q.alt">*:*</str>
 
       <!-- By default, don't spell check -->
@@ -862,6 +880,7 @@
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
+      <str>elevator</str>
     </arr>
   </requestHandler>
 
@@ -876,8 +895,16 @@
       <str name="mlt.maxqt">20</str>
       <str name="mlt.match.include">false</str>
       <!-- Abort any searches longer than 2 seconds (set in solrcore.properties) -->
-      <int name="timeAllowed">${mlt.timeAllowed:2000}</int>
+      <int name="timeAllowed">${solr.mlt.timeAllowed:2000}</int>
     </lst>
+  </requestHandler>
+
+  <!-- A minimal query type for doing luene queries -->
+  <requestHandler name="standard" class="solr.SearchHandler">
+     <lst name="defaults">
+       <str name="echoParams">explicit</str>
+       <bool name="omitHeader">true</bool>
+     </lst>
   </requestHandler>
 
   <!-- XML Update Request Handler.  
@@ -1014,8 +1041,7 @@
        Admin Handlers - This will register all the standard admin
        RequestHandlers.  
     -->
-  <requestHandler name="/admin/" 
-                  class="solr.admin.AdminHandlers" />
+  <requestHandler name="/admin/" class="solr.admin.AdminHandlers" />
   <!-- This single handler is equivalent to the following... -->
   <!--
      <requestHandler name="/admin/luke"       class="solr.admin.LukeRequestHandler" />
@@ -1043,10 +1069,17 @@
     <lst name="invariants">
       <str name="qt">pinkPony</str>
       <str name="q">solrpingquery</str>
+      <str name="omitHeader">false</str>
     </lst>
     <lst name="defaults">
       <str name="echoParams">all</str>
     </lst>
+    <!-- An optional feature of the PingRequestHandler is to configure the 
+         handler with a "healthcheckFile" which can be used to enable/disable 
+         the PingRequestHandler.
+         relative paths are resolved against the data dir 
+    -->
+    <!-- <str name="healthcheckFile">server-enabled.txt</str> -->
   </requestHandler>
 
   <!-- Echo the request contents back to the client -->
@@ -1060,42 +1093,54 @@
   <!-- Solr Replication
 
        The SolrReplicationHandler supports replicating indexes from a
-       "master" used for indexing and "salves" used for queries.
+       "master" used for indexing and "slaves" used for queries.
 
-       http://wiki.apache.org/solr/SolrReplication 
+       http://wiki.apache.org/solr/SolrReplication
 
        In the example below, remove the <lst name="master"> section if
        this is just a slave and remove  the <lst name="slave"> section
        if this is just a master.
-    -->
-     <requestHandler name="/replication" class="solr.ReplicationHandler" >
-       <lst name="master">
-         <str name="enable">${enable.master:false}</str>
-         <str name="replicateAfter">commit</str>
-         <str name="replicateAfter">startup</str>
-         <str name="confFiles">${confFiles}</str>
-       </lst>
-       <lst name="slave">
-         <str name="enable">${enable.slave:false}</str>
-         <str name="masterUrl">${masterCoreUrl}/replication</str>
-         <str name="pollInterval">${pollTime:00:00:60}</str>
-       </lst>
-     </requestHandler>
+  -->
+  <requestHandler name="/replication" class="solr.ReplicationHandler" >
+    <lst name="master">
+      <str name="enable">${solr.replication.master:false}</str>
+      <str name="replicateAfter">commit</str>
+      <str name="replicateAfter">startup</str>
+      <str name="confFiles">${solr.replication.confFiles:schema.xml,mapping-ISOLatin1Accent.txt,protwords.txt,stopwords.txt,synonyms.txt,elevate.xml}</str>
+    </lst>
+    <lst name="slave">
+      <str name="enable">${solr.replication.slave:false}</str>
+      <str name="masterUrl">${solr.replication.masterUrl:http://localhost:8983/solr}/replication</str>
+      <str name="pollInterval">${solr.replication.pollInterval:00:00:60}</str>
+    </lst>
+  </requestHandler>
+
+  <!-- Realtime get handler, guaranteed to return the latest stored fields of
+       any document, without the need to commit or open a new searcher.  The
+       current implementation relies on the updateLog feature being enabled.
+  -->
+  <requestHandler name="/get" class="solr.RealTimeGetHandler">
+    <lst name="defaults">
+      <str name="omitHeader">true</str>
+      <str name="wt">json</str>
+      <str name="indent">true</str>
+    </lst>
+  </requestHandler>
 
   <!-- Search Components
 
-       Search components are registered to SolrCore and used by 
+       Search components are registered to SolrCore and used by
        instances of SearchHandler (which can access them by name)
-       
+
        By default, the following components are available:
-       
+
        <searchComponent name="query"     class="solr.QueryComponent" />
        <searchComponent name="facet"     class="solr.FacetComponent" />
        <searchComponent name="mlt"       class="solr.MoreLikeThisComponent" />
        <searchComponent name="highlight" class="solr.HighlightComponent" />
        <searchComponent name="stats"     class="solr.StatsComponent" />
        <searchComponent name="debug"     class="solr.DebugComponent" />
-   
+
        Default configuration in a requestHandler would look like:
 
        <arr name="components">
@@ -1360,8 +1405,8 @@
                  default="true"
                  class="solr.highlight.HtmlFormatter">
         <lst name="defaults">
-          <str name="hl.simple.pre"><![CDATA[<em>]]></str>
-          <str name="hl.simple.post"><![CDATA[</em>]]></str>
+          <str name="hl.simple.pre"><![CDATA[<strong>]]></str>
+          <str name="hl.simple.post"><![CDATA[</strong>]]></str>
         </lst>
       </formatter>
 
@@ -1569,7 +1614,28 @@
 
   <!-- Following is a dynamic way to include other components or any customized solrconfig.xml stuff, added by other contrib modules -->
   <xi:include href="solrconfig_extra.xml" xmlns:xi="http://www.w3.org/2001/XInclude">
-    <xi:fallback></xi:fallback>
+    <xi:fallback>
+    <!-- Spell Check
+
+        The spell check component can return a list of alternative spelling
+        suggestions. This component must be defined in
+        solrconfig_extra.xml if present, since it's used in the search handler.
+
+        http://wiki.apache.org/solr/SpellCheckComponent
+     -->
+    <searchComponent name="spellcheck" class="solr.SpellCheckComponent">
+
+    <str name="queryAnalyzerFieldType">textSpell</str>
+
+    <!-- a spellchecker built from a field of the main index -->
+      <lst name="spellchecker">
+        <str name="name">default</str>
+        <str name="field">spell</str>
+        <str name="spellcheckIndexDir">spellchecker</str>
+        <str name="buildOnOptimize">true</str>
+      </lst>
+    </searchComponent>
+    </xi:fallback>
   </xi:include>
 
 </config>
