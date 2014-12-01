@@ -1,85 +1,62 @@
 <?php
+
 /**
  * @file
- * Admin functionality, separated for performance purposes.
+ * Administrative functionality, separated for performance purposes.
  */
 
 /**
  * The settings form.
  */
-function cer_settings_form() {
-  $form['intro'] = array('#markup' => t('Check which entity references should listen to each other. When checking a check box a reference on entity type A to entity B will automatically update the entity reference field on entity B adding an entry which points to entity A.'));
+function cer_settings_form($form = array(), &$form_state) {
+  $channels = array();
 
-  $result = db_query("SELECT field_name, data FROM {field_config} WHERE type = :type AND deleted = 0", array(':type' => 'entityreference'));
-  foreach ($result as $row) {
-    $data = unserialize($row->data);
-    if(empty($data['settings']['handler_settings']['target_bundles'])){
-      	$references[$row->field_name][] = $data['settings']['target_type'];
+  foreach (_cer_get_fields() as $field) {
+    // A field that hasn't been instantiated yet will not have a 'bundles' key, which
+    // means it's useless to us, so skip over it.
+    if (! isset($field['bundles'])) {
+      continue;
     }
-    if(isset($data['settings']['handler_settings']['target_bundles'])){
-      foreach ($data['settings']['handler_settings']['target_bundles'] as $reference) {
-        if ($reference != '0') {
-          $references[$row->field_name][] = $reference;
+
+    foreach ($field['bundles'] as $entity_type => $bundles) {
+      foreach ($bundles as $bundle) {
+        $instance = field_info_instance($entity_type, $field['field_name'], $bundle);
+        if ($instance) {
+          $channels = array_merge($channels, _cer_find_channels($instance));
         }
-      }
-    }
-  }
+       }
+     }
+   }
 
-  $result = db_query("SELECT fci.field_name, fci.entity_type, fci.bundle FROM {field_config_instance} fci INNER JOIN {field_config} fc ON fc.field_name = fci.field_name WHERE fc.type = :type", array(':type' => 'entityreference'));
-
-  foreach ($result as $row) {
-
-    if (!empty($references[$row->field_name])) {
-      foreach ($references[$row->field_name] as $reference) {
-          $fields_to_compare[] = array('field_type' => $row->field_name, 'bundle' => $row->bundle, 'reference' => $reference, 'entity' => $row->entity_type);
-      }
-    }
-  }
-
-  if (!empty($fields_to_compare)) {
-    $corr_entityrefs = array();
-    foreach ($fields_to_compare as $field) {
-      foreach ($fields_to_compare as $second_field) {
-        if ($field['bundle'] == $second_field['reference'] && $second_field['bundle'] == $field['reference']) {
-          if (!array_key_exists($field['entity'] . ' ' . $field['bundle'] . ' ' . $field['field_type'] . ' ' .
-                         $second_field['entity'] . ' ' . $second_field['bundle'] . ' ' . $second_field['field_type'], $corr_entityrefs)
-           && !array_key_exists($second_field['entity'] . ' ' . $second_field['bundle'] . ' ' . $second_field['field_type'] . ' ' . $field['entity'] . ' ' . $field['bundle'] . ' ' . $field['field_type'], $corr_entityrefs)) {
-            $corr_entityrefs[$field['entity'] . ' ' . $field['bundle'] . ' ' . $field['field_type'] . ' ' .
-                      $second_field['entity'] . ' ' . $second_field['bundle'] . ' ' . $second_field['field_type']] = array('entity_1' => $field['entity'], 'bundle_1' => $field['bundle'], 'field_1' => $field['field_type'], 'entity_2' => $second_field['entity'], 'bundle_2' => $second_field['bundle'], 'field_2' => $second_field['field_type']);
-          }
-        }
-      }
-    }
-
-    if (!empty($corr_entityrefs)) {
-      $count = 0;
-
-      foreach ($corr_entityrefs as $key => $corr_entityref) {
-        $formatted_key = str_replace(' ', '*', $key);
-
-        $mapping[] = $formatted_key;
-        $form['values'][$count] = array(
-          '#type' => 'fieldset',
-        );
-        $form['values'][$count]['enabled_' . $count] = array(
-          '#type' => 'checkbox',
-          '#default_value' => cer_preset_enabled($formatted_key),
-          '#title' => theme('cer_label', array('key' => $key)),
-        );
-        $count++;
-      }
-
-      //We are using a hidden field to submit the configuration because on some systems the checkbox name length is limited
-      //, using the key would cause the length to be too long see issue #558612
-      $form['mapping'] = array(
-        '#type' => 'hidden',
-        '#value' => serialize($mapping),
-      );
-      $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
-    }
+  if (empty($channels)) {
+    drupal_set_message(t('There are no entity reference fields that can correspond.'), 'warning');
   }
   else {
-    $form['text'] = array('#markup' => '<div>' . t('There are no entity types which have a corresponding entity reference') . '</div>');
+    $mapping = array();
+    foreach ($channels as $count => $key) {
+      $formatted_key = str_replace(' ', '*', $key);
+
+      $mapping[$count] = $formatted_key;
+
+      $form['values']["enabled_{$count}"] = array(
+        '#type' => 'checkbox',
+        '#default_value' => cer_preset_enabled($formatted_key),
+        '#title' => filter_xss(theme('cer_label', array('key' => $key))),
+      );
+    }
+
+    // We are using a hidden field to submit the configuration because on
+    // some systems the checkbox name length is limited, and using
+    // the key would cause the length to be too long. (Issue #558612)
+    $form['mapping'] = array(
+      '#type' => 'hidden',
+      '#value' => serialize($mapping),
+    );
+
+    $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save'),
+    );
   }
 
 
@@ -89,13 +66,13 @@ function cer_settings_form() {
 /**
  * Submit function for settings form.
  */
-function cer_settings_form_submit($form, $form_values) {
+function cer_settings_form_submit($form, $form_state) {
   ctools_include('export');
   $query_values = array();
 
-  $mapping = unserialize($form_values['values']['mapping']);
+  $mapping = unserialize($form_state['values']['mapping']);
 
-  foreach ($form_values['values'] as $key => $value) {
+  foreach ($form_state['values'] as $key => $value) {
     $keys = explode('_', $key);
     if ($keys[0] == 'enabled') {
       $query_values[$mapping[$keys[1]]] = $value;
@@ -108,76 +85,41 @@ function cer_settings_form_submit($form, $form_values) {
   foreach ($query_values as $key => $value) {
     // get preset object (create new one if it doesn't exist already).
     $preset = empty($presets[$key]) ? ctools_export_crud_new('cer') : $presets[$key];
-    // set and save value
 
+    // set and save value
     if (empty($preset->entity_types_content_fields)) {
       $preset->entity_types_content_fields = $key;
     }
     $preset->enabled = $value;
     ctools_export_crud_save('cer', $preset);
+
     // remove from list of presets, so we know which ones are still used
-    if (isset($presets[$key])) unset($presets[$key]);
+    if (isset($presets[$key])) {
+      unset($presets[$key]);
+    }
   }
 
-  // delete old presets
-  foreach ($presets as $preset) {
-    //ctools_export_crud_delete($preset);
-  }
-
-  drupal_set_message(t('The configuration has been saved'));
+  drupal_set_message(t('The configuration has been saved.'));
 }
 
 /**
- * The update form.
- * Allows updating of current entitys.
+ * Allows batch updating of existing entities.
  */
-function cer_update_form() {
-  $form = array();
-
-  $form['intro'] = array(
-    '#value' => t('This will update all the existing entitys for the selected content types so that their entity reference fields are in sync.') . '<br />' . t('This process may take a long time depending on the number of entitys you are updating.') . '<br />' . t('When the process is finished you will see a count of the number of entitys that were updated.')
-  );
-
-  $options = entity_get_info();
-  foreach ($options as $type => $class) {
-    $options[$type] = $class['label'];
-  }
-
+function cer_update_form($form = array(), &$form_state) {
   $form['type'] = array(
     '#type' => 'select',
-    '#title' => t('Entity types'),
-    '#options' => $options,
+    '#title' => t('Entity type'),
+    '#required' => TRUE,
+    '#options' => array(),
     '#description' => t('Select the entity type that you want to update.'),
   );
-
-
-  $form['limit'] = array(
-    '#type' => 'select',
-    '#title' => t('Number of entities to process at once'),
-    '#options' => array(
-      10 => t('10'),
-      20 => t('20'),
-      30 => t('30'),
-      50 => t('50'),
-      75 => t('75'),
-      100 => t('100'),
-      125 => t('125'),
-      150 => t('150'),
-      200 => t('200'),
-      250 => t('250'),
-      300 => t('300'),
-      350 => t('350'),
-      400 => t('400'),
-      450 => t('450'),
-      500 => t('500'),
-    ),
-    '#default_value' => 50,
-    '#description' => t('This process is done in batches. This is the number of entitys processed in each batch. If necessary, reduce the number of entitys to prevent timeouts and memory errors while processing.'),
-  );
+  foreach (entity_get_info() as $type => $class) {
+    $form['type']['#options'][$type] = $class['label'];
+  }
 
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => 'submit',
+    '#value' => t('Submit'),
   );
 
   return $form;
@@ -187,18 +129,149 @@ function cer_update_form() {
  * The update form.
  * Allows updating of current entitys.
  */
-function cer_update_form_validate($form, &$form_state) {
-  $type = $form_state['values']['type'];
-  if (empty($type)) {
-    form_set_error('type', t('You must select an entity type.'));
+function cer_update_form_submit($form, &$form_state) {
+  $batch = array(
+    'finished' => 'cer_batch_update_existing_finished',
+    'title' => t('Processing'),
+    'init_message' => t('Preparing to update corresponding entity references for existing entities...'),
+    'progress_message' => t('Processing entities...'),
+    'error_message' => t('Corresponding entity references - existing entity update has encountered an error.'),
+  );
+
+  $entity_type = $form_state['values']['type'];
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', $entity_type);
+  $result = $query->execute();
+  if (isset($result[$entity_type])) {
+    foreach ($result[$entity_type] as $entity_id => $stub) {
+      $batch['operations'][] = array('cer_processing_entity', array('update', $entity_id, $entity_type));
+    }
   }
+  batch_set($batch);
 }
 
 /**
- * The update form.
- * Allows updating of current entitys.
+ * The purpose of this function is to answer this question: I am a field instance. Which other
+ * fields reference the entity that owns me? And of those instances, which ones can I reference?
+ * The answer is returned as an array of CER keys: "entity1 bundle1 field1 entity2 bundle2 field2".
+ *
+ * @param array $instance
+ *  Field instance info, as returned by field_info_instance().
+ *
+ * @return array
  */
-function cer_update_form_submit($form, &$form_state) {
-  $type = $form_state['values']['type'];
-  cer_batch_index_remaining($type, $form_state['values']['limit']);
+function _cer_find_channels($instance) {
+  $channels = array();
+
+  $my_id = $instance['entity_type'] . ' ' . $instance['bundle'] . ' ' . $instance['field_name'];
+  $my_info = field_info_field($instance['field_name']);
+  $my_targets = _cer_get_target_bundles($my_info);
+  $my_target_type = $my_info['settings']['target_type'];
+
+  $referrers = _cer_find_referrers($instance['entity_type'], $instance['bundle']);
+  foreach ($referrers as $referrer) {
+    if (isset($referrer['bundles'][$my_target_type])) {
+      if (empty($my_targets)) {
+        $bundles = $referrer['bundles'][$my_target_type];
+      }
+      else {
+        $bundles = array_intersect($referrer['bundles'][$my_target_type], $my_targets);
+      }
+      
+      foreach ($bundles as $bundle) {
+        $channels[] = "{$my_id} {$my_target_type} {$bundle} " . $referrer['field_name'];
+      }
+    }
+  }
+
+  return $channels;
+}
+
+/**
+ * Find all fields that can reference the given entity type and bundle.
+ *
+ * @param $entity_type
+ *  The entity type that can be referenced.
+ * @param $bundle
+ *  The bundle that can be referenced.
+ *
+ * @return array
+ */ 
+function _cer_find_referrers($entity_type, $bundle) {
+  $referrers = array();
+  foreach (_cer_get_fields() as $field) {
+    if ($field['settings']['target_type'] == $entity_type) {
+      $target_bundles = _cer_get_target_bundles($field);
+      if (empty($target_bundles) || in_array($bundle, $target_bundles)) {
+        $referrers[] = $field;
+      }
+    }
+  }
+
+  return $referrers;
+}
+
+/**
+ * Find all bundles reference-able by a given field. If all bundles are reference-able,
+ * an empty array is returned.
+ *
+ * @param $field
+ *  Field info array as returned by field_info_field().
+ *
+ * @return array
+ */
+function _cer_get_target_bundles($field) {
+  $target_bundles = array();
+
+  // If the reference field is using a view, load the view and see if it's filtering by the entity
+  // type's bundle filter. If it is, the filter values are the target bundles. Otherwise,
+  // assume that all bundles can be referenced.
+  //
+  // @todo Support contextual filters?
+  //
+  // NOTE: Selection handlers (i.e., $field['settings']['handler']) are plugins owned by
+  // Entity Reference. There is no method defined to get an array of referenceable
+  // bundles, but hopefully, if CER gains enough traction in the community, such a
+  // method can be added to the EntityReference_SelectionHandler interface. This
+  // function could then be deprecated, which would be a more flexible, future-proof
+  // method of finding a field's target bundles.
+  //
+  if ($field['settings']['handler'] == 'views') {
+    $view_name = $field['settings']['handler_settings']['view']['view_name'];
+
+    $view = views_get_view($view_name);
+    if ($view) {
+      $view->set_display($field['settings']['handler_settings']['view']['display_name']);
+
+      $info = entity_get_info($field['settings']['target_type']);
+      if ($info['entity keys']['bundle'] && $handler = $view->display_handler->get_handler('filter', $info['entity keys']['bundle'])) {
+        $target_bundles = $handler->value;
+      }
+    }
+    else {
+      drupal_set_message(t('Could not get target bundles for %field (failed to load view %view).', array('%view' => $view_name, '%field' => $field['field_name'])), 'error');
+    }
+  }
+  elseif (isset($field['settings']['handler_settings']['target_bundles'])) {
+    $target_bundles = $field['settings']['handler_settings']['target_bundles'];
+  }
+  else {
+    $info = entity_get_info($field['settings']['target_type']);
+    $target_bundles = array_keys($info['bundles']);
+  }
+
+  return $target_bundles;
+}
+
+/**
+ * Get the Field API definitions for all entity reference fields.
+ *
+ * @return array
+ */
+function _cer_get_fields() {
+  static $fields;
+  if (!isset($fields)) {
+    $fields = array_map('field_info_field', db_select('field_config', 'fc')->fields('fc', array('field_name'))->condition('type', 'entityreference')->execute()->fetchCol());
+  }  
+  return $fields;
 }
