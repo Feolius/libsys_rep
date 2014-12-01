@@ -9,34 +9,52 @@
  */
 function template_preprocess_views_timelinejs(&$vars) {
   global $language;
-
-  // Load required libraries and styles.
-  views_timelinejs_load_libraries();
-
   $view = $vars['view'];
   $vars['timelinejs_id'] = 'timelinejs_' . $view->name . '_' . $view->current_display;
 
-  $settings = array(
-    'width' => '100%',
-    'height' => '500',
-    'source' => $vars['rows'],
-    'embed_id' => $vars['timelinejs_id'],
-    'embed_path' => base_path() . libraries_get_path('timeline') . '/compiled/',
-    'lang' => $language->language,
-    'processed' => FALSE,
-  );
+  // Load required libraries and styles.
+  if (($library = libraries_load('timeline')) && !empty($library['loaded'])) {
+    $width_unit = $vars['options']['timeline_theme']['width_unit'] ? '%' : '';
+    $height_unit = $vars['options']['timeline_theme']['height_unit'] ? '%' : '';
 
-  if ($vars['options']['timeline_config']['hash_bookmark']) {
-    $settings['hash_bookmark'] = TRUE;
+    $width = check_plain($vars['options']['timeline_theme']['width']) . $width_unit;
+    $height = check_plain($vars['options']['timeline_theme']['height']) . $height_unit;
+
+    $settings = array(
+      'width' => $width,
+      'height' => $height,
+      'source' => $vars['rows'],
+      'embed_id' => $vars['timelinejs_id'],
+      'embed_path' => base_path() . libraries_get_path('timeline') . '/compiled/',
+      'lang' => $language->language,
+      'processed' => FALSE,
+      'maptype' => $vars['options']['timeline_config']['maptype'],
+    );
+
+    if ($vars['options']['timeline_config']['hash_bookmark']) {
+      $settings['hash_bookmark'] = TRUE;
+    }
+
+    if ($vars['options']['timeline_config']['start_at_end']) {
+      $settings['start_at_end'] = TRUE;
+    }
+
+    if($vars['options']['timeline_config']['start_at_current']){
+      $settings['start_at_end'] = FALSE;
+      $settings['start_at_slide'] = $vars['rows']['timeline']['start_at_current'];
+    }
+
+    if (isset($vars['options']['timeline_config']['start_zoom_adjust'])) {
+      $settings['start_zoom_adjust'] = check_plain($vars['options']['timeline_config']['start_zoom_adjust']);
+    }
+
+    // Add inline JavaScript.
+    drupal_add_js(array('timelineJS' => array($settings)), 'setting');
+    drupal_add_js(drupal_get_path('module', 'views_timelinejs') . '/js/views_timelinejs.js');
   }
-
-  if ($vars['options']['timeline_config']['start_at_end']) {
-    $settings['start_at_end'] = TRUE;
+  else {
+    drupal_set_message($library['error message'], 'error', FALSE);
   }
-
-  // Add inline JavaScript.
-  drupal_add_js(array('timelineJS' => array($settings)), 'setting');
-  drupal_add_js(drupal_get_path('module', 'views_timelinejs') . '/js/views_timelinejs.js');
 }
 
 /**

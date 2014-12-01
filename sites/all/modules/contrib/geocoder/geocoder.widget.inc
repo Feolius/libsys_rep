@@ -156,9 +156,6 @@ function geocoder_field_attach_presave($entity_type, $entity) {
       if (($field_value = geocoder_widget_get_field_value($entity_type, $field_instance, $entity)) !== FALSE) {
         $entity->{$field_instance['field_name']} = $field_value;
       }
-      else {
-        $entity->{$field_instance['field_name']} = array();
-      }
     }
   }
 }
@@ -229,7 +226,7 @@ function geocoder_widget_get_field_value($entity_type, $field_instance, $entity 
     }
     // If no valid source values were passed.
     if (empty($source_field_values)) {
-      return FALSE;
+      return array();
     }
 
     // For entities being updated, determine if another geocode is necessary
@@ -266,7 +263,9 @@ function geocoder_widget_get_field_value($entity_type, $field_instance, $entity 
     }
 
     // Allow other modules to alter values before we geocode them.
-    drupal_alter('geocoder_geocode_values', $source_field_values, $field_info,  $handler_settings);
+    drupal_alter('geocoder_geocode_values',
+        $source_field_values, $field_info, $handler_settings, $field_instance
+    );
 
     if (is_array($source_field_values) && count($source_field_values)) {
       $values = array();
@@ -325,7 +324,9 @@ function geocoder_widget_get_field_concat($items) {
   // Check if we should concatenate
   $concat = '';
   foreach ($items as $item) {
-    $concat .= trim($item['value']) . ', ';
+    if (!empty($item['value'])) {
+      $concat .= trim($item['value']) . ', ';
+    }
   }
   $concat = trim($concat, ', ');
   $items = array(array('value' => $concat));

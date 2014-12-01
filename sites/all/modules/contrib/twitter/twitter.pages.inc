@@ -95,7 +95,7 @@ function twitter_user_settings($account = NULL) {
   else {
     module_load_include('inc', 'twitter');
     if (!$account) {
-      $twitter_accounts = twitter_account_load_all();
+      $twitter_accounts = twitter_load_accounts();
     }
     else {
       $twitter_accounts = twitter_twitter_accounts($account);
@@ -137,6 +137,9 @@ function twitter_user_settings($account = NULL) {
     }
   }
 
+  // Give a chance to other modules to alter the output.
+  drupal_alter('twitter_user_settings', $output);
+
   return $output;
 }
 
@@ -167,9 +170,9 @@ function twitter_account_list_form($form, $form_state, $twitter_accounts = array
 function _twitter_account_list_row($account) {
   $form['#account'] = $account;
 
-  $form['id'] = array(
+  $form['twitter_uid'] = array(
     '#type' => 'value',
-    '#value' => $account->id,
+    '#value' => $account->twitter_uid,
   );
 
   $form['screen_name'] = array(
@@ -286,17 +289,21 @@ function theme_twitter_account_list_form($variables) {
 function twitter_account_list_form_submit($form, &$form_state) {
   $accounts = $form_state['values']['accounts'];
   foreach ($accounts as $account) {
+    $twitter_account = entity_load_single('twitter_account', $account['twitter_uid']);
     if (empty($account['delete'])) {
-      twitter_account_save($account);
+      $twitter_account->import = $account['import'];
+      if (isset($account['mentions'])) {
+        $twitter_account->mentions = $account['mentions'];
+      }
+      twitter_account_save($twitter_account);
     }
     else {
-      $twitter_account = twitter_account_load($account['id']);
-      twitter_account_delete($account['id']);
+      twitter_account_delete($account['twitter_uid']);
       drupal_set_message(t('The Twitter account <em>!account</em> was deleted.',
         array('!account' => $twitter_account->screen_name)));
     }
   }
-  drupal_set_message(t('The Twitter account settings were updated.'));
+  drupal_set_message(t('The account settings were updated.'));
 }
 
 /**
@@ -454,7 +461,7 @@ function twitter_oauth_callback_form_submit($form, &$form_state) {
   $twitter_account->set_auth($response);
   global $user;
   $twitter_account->uid = $user->uid;
-  twitter_account_save($twitter_account, TRUE);
+  twitter_account_save($twitter_account);
 
   $form_state['programmed'] = FALSE;
   $form_state['redirect'] = $form_state['twitter_oauth']['destination'];
@@ -498,14 +505,14 @@ function twitter_non_auth_account_form_submit($form, &$form_state) {
   $name = $form_state['values']['screen_name'];
   $twitter = twitter_connect();
   $twitter_account = $twitter->users_show($name, FALSE);
-  if (!isset($twitter_account->id)) {
+  if (!isset($twitter_account->twitter_uid)) {
     form_set_error('screen_name', t('Could not add the Twitter account <em>@name</em>. ' .
       'Check the recent messages log.', array('@name' => $name)));
   }
   else {
     global $user;
     $twitter_account->uid = $user->uid;
-    twitter_account_save($twitter_account, FALSE);
-    drupal_set_message(t('Twitter account added successfully'));
+    twitter_account_save($twitter_account);
+    drupal_set_message(t('Non authenticated Twitter account added successfully'));
   }
 }

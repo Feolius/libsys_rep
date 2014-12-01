@@ -37,7 +37,7 @@ view using the Views interface.
 
 Using the "Add new view" form, create your new TimelineJS view and choose the
 content type that has the required TimelineJS fields. Change the display format
-to "TimelineJS". Click "Continue and edit" to finish views_timelinejssetting up the new view.
+to "TimelineJS". Click "Continue and edit" to finish setting up the new view.
 
 3. Configuring the view
 
