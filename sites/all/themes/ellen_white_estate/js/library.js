@@ -34,7 +34,17 @@
           $(value).click(function(event) {
 			event.preventDefault();
               $(value).addClass('current');
-              $("#download-dialog").dialog("open");
+              if (($("#download-dialog").html() != undefined) && ($(this).hasClass('egw-images'))) {
+                $("#download-dialog").dialog("open");
+              } else {
+                $('a.download').each(function(index, value) {
+                  if ($(value).hasClass('current')) {
+                    $(value).removeClass('current');
+                    var url = $(value).attr('href');
+                    downloadFile(url);
+                  }
+                });
+              }
           });
         });
       })

@@ -1,58 +1,35 @@
 .field-name-field-files-album-poster {
-  float: left;
+  display: inline-block;
 }
-
-.field-name-field-files-album-poster + .field-name-field-files-audio .jp-interface {
-  margin-left: 150px;
-  width: 488px;
+.field-name-field-files-album-poster img {
+  vertical-align: inherit;
 }
-
-.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single div.jp-interface {
-  height: 121px;
+.field-name-field-files-audio {
+  display: inline-block;
+  margin-left: 15px;
 }
-
-.field-name-field-files-album-poster + .field-name-field-files-audio {
-  display: inline;
-  clear: both;
+div.jp-audio {
+  width: 510px;
 }
-
-.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single div.jp-progress {
-  width: 280px;
-  top: 40px;
-  height: 40px;
+div.jp-interface {
+  width: 100%;
 }
-
-.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single div.jp-duration {
-  width: 280px;
-  top: 100px;
+div.jp-audio div.jp-type-single div.jp-progress {
+  right: 94px;
+  width: auto;
 }
-
-.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single div.jp-current-time {
-  top: 100px;
+div.jp-audio div.jp-type-single a.jp-mute, div.jp-audio div.jp-type-single a.jp-unmute {
+  right: 65px;
+  left: auto;
 }
-
-.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single div.jp-volume-bar {
-  top: 58px;
-  left: 415px;
+div.jp-audio div.jp-type-single div.jp-volume-bar {
+  right: 10px;
+  left: auto;
 }
-
-.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-mute, div.jp-audio div.jp-type-single a.jp-unmute {
-  left: 385px;
-  top: 53px;
-}
-
-.field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-play
-.field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-pause {
-  top: 16px;
-}
-
-.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-pause,
-.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-play {
-  top: 40px;
-}
-
-.field-name-field-files-album-poster + .field-name-field-files-audio div.jp-audio div.jp-type-single a.jp-stop {
-  top: 47px;
+div.jp-audio div.jp-type-single div.jp-duration {
+  left: auto;
+  width: auto;
+  right: 94px;
 }
 
 .field-type-fivestar div.fivestar-widget,
@@ -183,15 +160,17 @@ a.download {
   font: bold 12px Arial, Helvetica, sans-serif;
   color: #9FBBD5;
   padding: 6px 14px;
-  border: 1px solid #0C7091;
+  border: 1px solid #1E84A7;
   cursor: pointer;
   background: #0C7091;
   text-align: center;
   border-radius: 0;
   -webkit-border-radius: 0;
-  margin-top: 7px;
   display: inline-block;
-  float: right;
+  margin: 0 3px 5px 0;
+}
+a.download:hover {
+  text-decoration:none; background:#1BA8D8; border-color:#1BA8D8; color:#fff;
 }
 
 .field-type-image {
@@ -218,21 +197,13 @@ a.download {
 #home-middle,
 #home-right {
   float: left;
-  width: 308px;
+  width: 288px;
+  padding: 0 10px;
 }
 
 #home-middle,
 #home-right {
   margin: 0 0 0 18px;
-}
-
-#home-left h2,
-#home-middle h2,
-#home-right h2,
-#home-bottom h2 {
-  margin-bottom: 0;
-  text-transform: none;
-  font-size: 18px;
 }
 
 #header-inside-left {
@@ -281,10 +252,11 @@ a.download {
 }
 
 .node-events .field-type-image,
+.node-location .field-type-image,
 .node-people .field-type-image,
 .node-topics .field-type-image {
-  float: left;
-  padding-right: 15px;
+  float: right;
+  padding-left: 20px;
   padding-bottom: 5px;
 }
 
@@ -339,9 +311,7 @@ ol.collection-search-results, ul.collection-search-results, .page-home .page ul,
   border: none;
 }
 
-.field-name-field-files-audio .jp-interface {
-  width: 632px;
-}
+
 
 .separator {
   clear: both;
@@ -364,19 +334,6 @@ ol.collection-search-results, ul.collection-search-results, .page-home .page ul,
 
 #edit-next-page-button:disabled {
   border-radius: 100px;
-}
-
-#home-left .title-block h2,
-#home-middle .title-block h2,
-#home-right .title-block h2,
-#home-bottom .title-block h2 {
-  font-size: 20px;
-  text-transform: uppercase;
-  font-weight: 700;
-}
-
-li {
-  margin-left: 20px;
 }
 
 html.CSS1Compat {
@@ -416,6 +373,18 @@ html.CSS1Compat {
 
 /* Stefan */
 
+h2 {
+    font-size: 22px;
+    font-weight: normal;
+}
+h3 {
+    font-weight: normal;
+}
+
+ul {
+  padding-left: 15px;
+}
+
 /* Font style for RTE */
 p.board_action {
 	text-indent:50px;
@@ -428,14 +397,6 @@ p.quote {
 }
 .emphasis {
 	font-style: italic;
-}
-
-/* On articles, text should wrap around first image */
-h2 {
-	margin-bottom: 10px;
-}
-p {
-	margin-bottom: 10px;
 }
 ul {
 	display: block; /* Was list-item... dunno why */
@@ -452,10 +413,17 @@ div.messages.status {
 .webform-confirmation h2 {
 	margin-top: 0px;
 }
-.node-news img:first-child {
+/*.page-node .node-article img:first-child, .page-node .node-news img:first-child  {
+	float: right;
+	margin: 0 0 5px 15px;
+}
+
+.node-article img:first-child, .node-news img:first-child{
 	float: left;
 	margin: 0 15px 5px 0;
 }
+*/
+
 h2.comment-form {
 	font-size: 150%;
 	text-transform: none;
@@ -464,5 +432,257 @@ h2.comment-form {
 	margin: 18px 0 4px 0;
 }
 #home-left h2, #home-middle h2, #home-right h2 {
-	margin-top: 50px;
+	margin-top: 55px;
+    margin-bottom: 26px;
+}
+#home-left h3, #home-middle h3, #home-right h3 {
+    margin-top: 0;
+}
+#home-left ul, #home-middle ul, #home-right ul {
+    padding-left: 0;
+}
+#home-left li, #home-middle li, #home-right li {
+   border-top: 1px dotted #63686f;
+   margin-top: 14px;
+   padding-top: 14px;
+}
+#home-left li:after, #home-middle li:after, #home-right li:after {
+    clear: both;
+}
+#home-left li:first-child, #home-middle li:first-child, #home-right li:first-child {
+    border-top: 0;
+}
+#home-left img, #home-middle img, #home-right img {
+    float: left;
+    margin-right: 14px;
+}
+
+.front .field-name-field-news-image + .field-name-field-news-short-title + .field-name-field-news-teaser {
+	margin-left: 57px;
+}
+#footer-bottom-right img {
+	float: right;
+}
+hr {
+	border-bottom: 1px solid #999999;
+	margin: 15px 0;
+}
+
+/* Nodes */
+.node h2 {
+  margin-top: 0px;
+  margin-bottom: 20px;
+}
+.node .field-name-field-rating, .node .field-name-field-events-rating, .comment .field-name-field-rating {
+	float: right;
+}
+#edit-field-rating {
+  float: none;
+}
+p {
+	margin-bottom: 10px;
+}
+.comment h3 {
+  margin-bottom: 0px;
+}
+
+/* No Filter on Library Filters */
+#sidebar .library-filter-content form { margin:14px}
+.no-filters {
+	display: none;
+}
+
+/* Background for 1col design (correspondence) */
+.pane-correspondence {
+	background-color: #f9f7f4;
+	padding: 25px;
+}
+
+/* Make views a little more bearable */
+.content > .view {
+	background-color: #f9f7f4;
+	padding: 25px;
+}
+
+.panel-page-user-login-form #main {
+    padding: 78px 0 80px;
+}
+
+.panel-page-user-login-form #main #block-system-main {
+  padding: 0;
+}
+
+/* Margin underneath 'Featured Quote' on Homepage */
+#home-right .title-block {
+  margin-bottom: 20px;
+}
+
+/* Get rid of textbox info */
+#comment-body-add-more-wrapper fieldset {
+  display: none;
+}
+
+/* Dates underneath title */
+.people-birth-death-dates, .field-name-field-events-time {
+  margin-top: -20px;
+  margin-bottom: 20px;
+  font-variant: small-caps;
+}
+.people-birth-death-dates div {
+  display: inline;
+}
+.people-birth-death-dates > .field-name-field-people-birthday + .field-name-field-people-death-date:before {
+  content: " - ";
+}
+
+/* Text Source */
+.text_source {
+  color: #AAAAAA;
+  font-size: 85%;
+}
+
+.field-group-htabs-wrapper {
+  margin-top: 15px;
+}
+
+/* Table Formatter */
+.field-group-table td, .field-group-table th {
+  padding-left: 0;
+}
+.field-group-table table {
+  width: auto;
+}
+.field-group-table.clean table {
+  border: none;
+}
+.field-group-table.clean th {
+  background-color: transparent;
+  border: none;
+  padding-right: 15px;
+  white-space: nowrap;
+  color: black;
+}
+.field-group-table.clean .field-content {
+  border: none;
+}
+.field-group-table.tight th, .field-group-table.tight td {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* FILES */
+.field-name-field-files-subtitle h3 {
+  margin-top: -15px;
+}
+.field-name-field-files-creation-date {
+  margin-top: -15px;
+  margin-bottom: 10px;
+  font-variant: small-caps;
+}
+.field-name-field-files-youtube-media {
+  margin: -0.5em -1em;
+}
+.highlight-buttons-container {
+  float: right;
+}
+.highlight-buttons-container .flexpaper-highlight-button {
+  margin: 0 0 5px 3px;
+  float: right;
+}
+
+/* Remove Flexpaper Buttons, etc */
+.flexpaper_txtPageNumber {
+  width: 25px !important;
+}
+.flexpaper_bttnRotate, .flexpaper_twopage {
+  display: none;
+}
+
+/* Download Buttons */
+.download.egw-images {
+  margin-top: 8px;
+}
+
+/* Restrict Comboboxes in height */
+.ui-autocomplete {
+  max-height: 306px;
+  overflow-y: scroll;
+}
+
+/* Problem with buttons of slider widget - they shine thought the comboboxes */
+#facetapi-slider-collection_field_files_creation_date > * {
+  z-index: 0;
+}
+
+/* Make filters in correspondence more narrow. */
+#views-exposed-form-correspondence-page input {
+    width: 110px;
+}
+
+/* Make sure menu in sidebar looks right */
+#sidebar ul.menu {
+    padding: 0;
+}
+
+/* Tab groups should get into images on detail pages */
+.field-group-tabs-wrapper {
+    clear: both;
+    padding-top: 10px;
+}
+
+
+/*** FIELD DATA COLLECTORS ***/
+
+/* Files */
+/*
+.field-data-collector-files_preset .field-info:first-child {
+    float: left;	
+    margin-right: 15px;
+    margin-bottom: 15px;
+}
+.field-name-field-location-media.field-type-field-data-collector .field-item,
+.field-name-field-location-tab-received-docs.field-type-field-data-collector .field-item {
+    clear: both;
+}
+*/
+.field-type-field-data-collector img {
+    float: left;
+    margin-right: 15px;
+    margin-bottom: 15px;
+}
+.field-type-field-data-collector .field-item {
+    clear: both;
+}
+
+/* Try p justified */
+p {
+    text-align: justify;
+}
+
+/* Library overview */
+#colection-search-results-container .collection-page-search-result-snippet .address {
+    margin-top: 7px;
+}
+
+/* Floats for custom images */
+.float_left {
+    float: left;
+    margin-right: 15px;
+    margin-bottom: 5px;
+}
+.float_right {
+    float: right;
+    margin-left: 15px;
+    margin-bottom: 5px;
+}
+
+/* Misc */
+.clearer {
+    clear: both;
+    height: 1px;
+}
+.separator {
+    margin-top: 12px;
+    height: 1px;
+    margin-bottom: 12px;
 }
