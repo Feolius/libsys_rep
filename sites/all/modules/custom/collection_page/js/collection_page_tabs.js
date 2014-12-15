@@ -16,9 +16,9 @@
                 (last_time_active_tab == NaN || last_time_active_tab == null)
                     || last_time_active_tab == Drupal.settings.collection_page.disabled_tab)
                 ) {
-                library_tabs.tabs('select', Drupal.settings.collection_page.default_tab);
+                library_tabs.tabs('option', 'active', Drupal.settings.collection_page.default_tab);
             } else {
-                library_tabs.tabs('select', parseInt($.cookie('collection_page_last_time_active_tab')));
+                library_tabs.tabs('option', 'active', parseInt($.cookie('collection_page_last_time_active_tab')));
             }
 
             library_tabs.tabs({

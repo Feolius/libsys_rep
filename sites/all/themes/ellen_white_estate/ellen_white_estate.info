@@ -12,7 +12,7 @@ stylesheets[all][] = color/colors.css
 stylesheets[all][] = custom.css
 
 ; Custom js
-scripts[] = js/addthis.js
+scripts[] = js/addthis_widget.js
 scripts[] = js/faq.js
 scripts[] = js/library.js
 
