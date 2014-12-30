@@ -1,0 +1,12 @@
+<?php
+
+function node_tabs_preprocess_node(&$variables) {
+  if ($variables['type'] =='files') {
+    if (isset($variables['field_files_primary_media'])) {
+      $primary_media = $variables['field_files_primary_media']['und'][0]['value'];
+      drupal_add_js('
+           window.location = "#'.$primary_media.'";
+     ', 'inline');
+    }
+  }
+}

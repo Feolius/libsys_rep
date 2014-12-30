@@ -1,6 +1,6 @@
-(function ($) {
+(function($) {
   Drupal.behaviors.flexpaper = {
-    attach: function (context, settings) {
+    attach: function(context, settings) {
 
       //Get paths for all needed files
       var swfPaths = Drupal.settings.book_field.swfPaths;
@@ -27,7 +27,7 @@
       var placeHolders = $('div.flexpaper_viewer');
 
       //Put ids for this elements
-      placeHolders.each(function (index) {
+      placeHolders.each(function(index) {
         //@TODO Uncomment it when flexpaper will be ready for using few different ids
         //$(this).attr('id', 'documentViewer' + index);
         $(this).attr('id', 'documentViewer');
@@ -46,47 +46,45 @@
           var pngPath = pngPaths[i];
           var jsonPath = jsonPaths[i];
           var pdfPath = pdfPaths[i];
-          $('#' + id).once(function(){
+          $('#' + id).once(function() {
             $(this).FlexPaperViewer(
-            { config: {
-              SwfFile: swfPath,
-              JSONFile: jsonPath,
-              IMGFiles: pngPath,
-              PDFFile: pdfPath,
-              Scale: 0.6,
-              ZoomTransition: 'easeOut',
-              ZoomTime: 0.5,
-              ZoomInterval: 0.2,
-              FitPageOnLoad: false,
-              FitWidthOnLoad: true,
-              FullScreenAsMaxWindow: false,
-              ProgressiveLoading: false,
-              MinZoomSize: 0.2,
-              MaxZoomSize: 5,
-              SearchMatchAll: true,
-              InitViewMode: 'Portrait',
-              RenderingOrder: renderingOrder,
-              jsDirectory: jsDirectory,
-              cssDirectory: cssDirectory,
-              localeDirectory: localeDirectory,
-
-              key: '$47ee5411a2cb791b9eb',
-
-              ViewModeToolsVisible: true,
-              ZoomToolsVisible: true,
-              NavToolsVisible: true,
-              CursorToolsVisible: true,
-              SearchToolsVisible: showSearchTools,
-
-              localeChain: 'en_US'
-            }}
-          );
+                    {config: {
+                        SwfFile: swfPath,
+                        JSONFile: jsonPath,
+                        IMGFiles: pngPath,
+                        PDFFile: pdfPath,
+                        Scale: 0.8,
+                        ZoomTransition: 'easeOut',
+                        ZoomTime: 0.5,
+                        ZoomInterval: 0.2,
+                        FitPageOnLoad: false,
+                        FitWidthOnLoad: true,
+                        FullScreenAsMaxWindow: false,
+                        ProgressiveLoading: false,
+                        MinZoomSize: 0.2,
+                        MaxZoomSize: 5,
+                        SearchMatchAll: true,
+                        InitViewMode: 'Portrait',
+                        RenderingOrder: renderingOrder,
+                        jsDirectory: jsDirectory,
+                        cssDirectory: cssDirectory,
+                        localeDirectory: localeDirectory,
+                        key: '$47ee5411a2cb791b9eb',
+                        ViewModeToolsVisible: true,
+                        ZoomToolsVisible: true,
+                        NavToolsVisible: true,
+                        CursorToolsVisible: true,
+                        SearchToolsVisible: showSearchTools,
+                        localeChain: 'en_US'
+                      }}
+            );
           });
         }
-        $('#' + id).once('flexpaper').bind('onDocumentLoaded', function (e, totalPages) {
+        $('#' + id).once('flexpaper').bind('onDocumentLoaded', function(e, totalPages) {
           $('.flexpaper-viewer-container').before('<button class="flexpaper-fullscreen-view-btn">Full Screen View</button>');
-          $('.flexpaper-fullscreen-view-btn').click(function () {
+          $('.flexpaper-fullscreen-view-btn').click(function() {
             $('.flexpaper_bttnFullScreen').click();
+            $FlexPaper("documentViewer").fitWidth();
           });
         });
         var url = document.URL;
@@ -96,7 +94,9 @@
         var baseUrl = protocol + '//' + host;
         var jsonUri = jsonUris[i];
         // Get search buttons.
-        if(showSearchTools) {
+        if (showSearchTools && Drupal.settings.book_field.searchButtonsFlag == undefined) {
+          // Set a flag to make this code executed only once.
+          Drupal.settings.book_field.searchButtonsFlag = true;
           $.ajax({
             url: baseUrl + '/book_field/highlight',
             type: 'POST',
@@ -106,7 +106,7 @@
               url: url,
               jsonPath: jsonUri
             },
-            success: function (data, status) {
+            success: function(data, status) {
               if (data.length > 0) {
                 var parent = $('#' + id).parent();
                 //Get flexpaper viewer container element
@@ -118,13 +118,13 @@
                   term = data[key];
                   if (typeof term != 'function') {
                     $('<button> </button>')
-                      .addClass('flexpaper-highlight-button')
-                      .val(term)
-                      .html(term)
-                      .appendTo(container);
+                            .addClass('flexpaper-highlight-button')
+                            .val(term)
+                            .html(term)
+                            .appendTo(container);
                   }
                 }
-                $('.flexpaper-highlight-button').click(function () {
+                $('.flexpaper-highlight-button').click(function() {
                   var searchTerm = $(this).val();
                   //@TODO Remove this hardcode and add possibility to use different ids
                   $FlexPaper("documentViewer").searchText(searchTerm);

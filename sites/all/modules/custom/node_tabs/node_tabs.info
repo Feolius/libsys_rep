@@ -1,0 +1,5 @@
+name = Node Tabs
+description = "Fixes the default tab for files node type"
+package = "Custom"
+core = 7.x
+
