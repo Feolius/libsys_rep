@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Implements hook_preprocess_node().
+ */
 function node_tabs_preprocess_node(&$variables) {
   if ($variables['type'] =='files') {
     if (isset($variables['field_files_primary_media'])) {

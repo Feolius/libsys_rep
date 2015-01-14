@@ -20,10 +20,9 @@
             } else {
                 library_tabs.tabs('option', 'active', parseInt($.cookie('collection_page_last_time_active_tab')));
             }
-
             library_tabs.tabs({
-                select: function (event, ui) {
-                    $.cookie('collection_page_last_time_active_tab', ui.index);
+                activate: function (event, ui) {
+                    $.cookie('collection_page_last_time_active_tab', $(this).tabs('option', 'active'));
                 }
             });
 
