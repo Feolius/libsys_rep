@@ -1,0 +1,10 @@
+name = "Migrate from CSV to DB"
+description = "Module to migrate my data from CSV files to DB"
+package = "Migration"
+core = 7.x
+
+dependencies[] = migrate
+
+#  include the files that contain your Migrate classes
+files[] = egw_letters.migrate.inc
+files[] = egw_letters.inc

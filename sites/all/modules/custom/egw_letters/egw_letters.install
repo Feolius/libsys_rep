@@ -1,0 +1,35 @@
+<?php
+
+function egw_letters_schema() {
+  $schema['migrate_egw_letters_dest'] = array(
+    'description' => 'Custom Drupal table to receive source data',
+    'fields' => array(
+      'recordid'  => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary key',
+      ),
+      'filename'  => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'First field',
+      ),
+      'from'  => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Second field',
+      ),
+      'to'  => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Second field',
+      ),
+    ),
+    'primary key' => array('recordid'),
+  );
+  return $schema;
+}
