@@ -16,7 +16,7 @@ class EgwLettersMigration extends Migration {
     $this->description = t('A CSV EGW letters import ');
 
 //The Source of the import
-    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/EGWLettersReceived(merged).csv', $columns);
+    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/EGWLettersReceived(merged)2.csv', $columns);
 
 //The destination table
     $this->destination = new MigrateDestinationTable($table_name);
@@ -25,10 +25,9 @@ class EgwLettersMigration extends Migration {
     $this->map = new MigrateSQLMap($this->machineName,
       array(
         'id_csv' => array(
-          'type' => 'int',
-          'unsigned' => TRUE,
+          'type' => 'varchar',
+          'length' => 255,
           'not null' => TRUE,
-          'alias' => 'import'
       )
       ),
       MigrateDestinationTable::getKeySchema($table_name)
@@ -36,8 +35,7 @@ class EgwLettersMigration extends Migration {
 
 
 //Field ampping
-    $this->addFieldMapping('title', 'title_csv');
-    $this->addFieldMapping('body', 'body_csv');
-    $this->addFieldMapping('another_field', 'another_field_csv');
+    $this->addFieldMapping('from', 'from_csv');
+    $this->addFieldMapping('to', 'from_csv');
   }
 }
