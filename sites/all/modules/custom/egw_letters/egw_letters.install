@@ -4,7 +4,7 @@ function egw_letters_schema() {
   $schema['migrate_egw_letters_dest'] = array(
     'description' => 'Custom Drupal table to receive source data',
     'fields' => array(
-      'recordid'  => array(
+      'rid'  => array(
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
@@ -28,8 +28,24 @@ function egw_letters_schema() {
         'not null' => TRUE,
         'description' => 'Second field',
       ),
+      'date' => array(
+        'description' => 'The Unix timestamp.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'location'  => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'notes'  => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
     ),
-    'primary key' => array('recordid'),
+    'primary key' => array('rid'),
   );
   return $schema;
 }
