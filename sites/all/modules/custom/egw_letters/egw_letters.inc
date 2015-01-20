@@ -5,18 +5,19 @@ class EgwLettersMigration extends Migration {
     parent::__construct($arguments);
     $table_name = 'migrate_egw_letters_dest';
 //The defintion of the collumns. Keys are integers. values are array(field name, description).
-    $columns[0] = array('id_csv', 'Id');
+    $columns[0] = array('id_csv', 'Filename');
     $columns[1] = array('from_csv', 'From');
-  //  $columns[2] = array('to_csv', 'To');
-  //  $columns[3] = array('date_csv', 'Date');
-  //  $columns[5] = array('location_csv', 'Location');
-  //  $columns[6] = array('date_csv', 'Date');
+    $columns[2] = array('to_csv', 'To');
+    $columns[3] = array('date_csv', 'Date');
+    $columns[4] = array('date_csv', 'Year');
+    $columns[5] = array('location_csv', 'Location');
+    $columns[6] = array('notes_csv', 'Notes');
 
 //The Description of the import. This desription is shown on the Migrate GUI
     $this->description = t('A CSV EGW letters import ');
 
 //The Source of the import
-    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/GL2008.TXT', $columns);
+    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/EGWLettersReceived(merged)2.csv', $columns, array());
 
 //The destination table
     $this->destination = new MigrateDestinationTable($table_name);
@@ -36,7 +37,19 @@ class EgwLettersMigration extends Migration {
 
 //Field mapping
     $this->addUnmigratedDestinations(array('rid'));
-    $this->addFieldMapping('from', 'from_csv');
-  //  $this->addFieldMapping('to', 'from_csv');
+    $this->addFieldMapping('filename', 'id_csv');
+    $this->addFieldMapping('sender', 'from_csv');
+    $this->addFieldMapping('recipient', 'to_csv');
+    $this->addFieldMapping('date', 'date_csv')->callbacks(array($this, 'computeDate'));;
+    $this->addFieldMapping('location', 'location_csv');
+    $this->addFieldMapping('notes', 'notes_csv');
   }
+
+  protected function computeDate($date_csv) {
+    //$a = strptime('19'.$date_csv, '%Y/%m/%d');
+   // $date = DateTime::createFromFormat('Y/m/d', '18'.$date_csv);
+   // return $date->format('U');
+    return $date_csv;
+  }
+
 }

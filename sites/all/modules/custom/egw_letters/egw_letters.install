@@ -12,21 +12,24 @@ function egw_letters_schema() {
       ),
       'filename'  => array(
         'type' => 'varchar',
+        'default' => '',
         'length' => 255,
         'not null' => TRUE,
         'description' => 'First field',
       ),
-      'from'  => array(
+      'sender'  => array(
         'type' => 'varchar',
         'length' => 255,
+        'default' => '',
         'not null' => TRUE,
         'description' => 'Second field',
       ),
-      'to'  => array(
+      'recipient'  => array(
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
-        'description' => 'Second field',
+        'default' => '',
+        'description' => 'Third field',
       ),
       'date' => array(
         'description' => 'The Unix timestamp.',
@@ -38,11 +41,13 @@ function egw_letters_schema() {
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
+        'default' => '',
       ),
       'notes'  => array(
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
+        'default' => '',
       ),
     ),
     'primary key' => array('rid'),
