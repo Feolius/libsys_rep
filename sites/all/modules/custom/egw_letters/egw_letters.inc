@@ -1,4 +1,4 @@
-<?
+<?php
 
 class EgwLettersMigration extends Migration {
   public function __construct($arguments) {
@@ -9,9 +9,10 @@ class EgwLettersMigration extends Migration {
     $columns[1] = array('from_csv', 'From');
     $columns[2] = array('to_csv', 'To');
     $columns[3] = array('date_csv', 'Date');
-    $columns[4] = array('date_csv', 'Year');
+    $columns[4] = array('year_csv', 'Year');
     $columns[5] = array('location_csv', 'Location');
     $columns[6] = array('notes_csv', 'Notes');
+    $columns[8] = array('full_date', 'Date');
 
 //The Description of the import. This desription is shown on the Migrate GUI
     $this->description = t('A CSV EGW letters import ');
@@ -40,16 +41,14 @@ class EgwLettersMigration extends Migration {
     $this->addFieldMapping('filename', 'id_csv');
     $this->addFieldMapping('sender', 'from_csv');
     $this->addFieldMapping('recipient', 'to_csv');
-    $this->addFieldMapping('date', 'date_csv')->callbacks(array($this, 'computeDate'));;
+    $this->addFieldMapping('date', 'full_date')->callbacks(array($this,'computeDate'));
     $this->addFieldMapping('location', 'location_csv');
     $this->addFieldMapping('notes', 'notes_csv');
   }
 
   protected function computeDate($date_csv) {
-    //$a = strptime('19'.$date_csv, '%Y/%m/%d');
-   // $date = DateTime::createFromFormat('Y/m/d', '18'.$date_csv);
-   // return $date->format('U');
-    return $date_csv;
+    $date = DateTime::createFromFormat('Y/m/d', $date_csv);
+    return $date->format('d/m/Y');
   }
 
 }

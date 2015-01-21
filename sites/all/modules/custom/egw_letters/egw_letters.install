@@ -32,8 +32,9 @@ function egw_letters_schema() {
         'description' => 'Third field',
       ),
       'date' => array(
-        'description' => 'The Unix timestamp.',
-        'type' => 'int',
+        'description' => 'The date in d/m/Y format.',
+        'type' => 'varchar',
+        'length' => 255,
         'not null' => TRUE,
         'default' => 0,
       ),
