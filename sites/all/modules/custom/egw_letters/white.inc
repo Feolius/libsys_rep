@@ -1,25 +1,23 @@
 <?php
 
-class EgwLettersMigration extends Migration {
+class WhiteIndexMigration extends Migration {
   public function __construct($arguments) {
     parent::__construct($arguments);
-    $table_name = 'migrate_egw_letters_dest';
+    $table_name = 'migrate_whiteje_index';
 //The defintion of the collumns. Keys are integers. values are array(field name, description).
     $columns[0] = array('id_csv', 'Filename');
     $columns[1] = array('from_csv', 'From');
     $columns[2] = array('to_csv', 'To');
     $columns[3] = array('date_csv', 'Date');
-    $columns[4] = array('year_csv', 'Year');
-    $columns[5] = array('location_csv', 'Location');
+    $columns[4] = array('location_csv', 'Location');
+    $columns[5] = array('lb_ref', 'Lb ref number');
     $columns[6] = array('notes_csv', 'Notes');
-    $columns[7] = array('lb_ref', 'Lb ref number');
-    $columns[8] = array('full_date', 'Date');
 
 //The Description of the import. This desription is shown on the Migrate GUI
-    $this->description = t('A CSV EGW letters import ');
+    $this->description = t('White JE index import');
 
 //The Source of the import
-    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/EGWLettersReceived(merged)2.csv', $columns, array());
+    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/white_je_index.csv', $columns, array('header_rows' => 1));
 
 //The destination table
     $this->destination = new MigrateDestinationTable($table_name);
@@ -31,7 +29,7 @@ class EgwLettersMigration extends Migration {
           'type' => 'int',
           'unsigned' => TRUE,
           'not null' => TRUE,
-      )
+        )
       ),
       MigrateDestinationTable::getKeySchema($table_name)
     );
@@ -42,15 +40,10 @@ class EgwLettersMigration extends Migration {
     $this->addFieldMapping('filename', 'id_csv');
     $this->addFieldMapping('sender', 'from_csv');
     $this->addFieldMapping('recipient', 'to_csv');
-    $this->addFieldMapping('date', 'full_date')->callbacks(array($this,'computeDate'));
+    $this->addFieldMapping('date', 'date_csv');
     $this->addFieldMapping('location', 'location_csv');
     $this->addFieldMapping('lb_ref_number', 'lb_ref');
     $this->addFieldMapping('notes', 'notes_csv');
-  }
-
-  protected function computeDate($date_csv) {
-    $date = DateTime::createFromFormat('Y/m/d', $date_csv);
-    return $date->format('d/m/Y');
   }
 
 }

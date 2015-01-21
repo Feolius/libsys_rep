@@ -1,0 +1,6 @@
+name = "Migrate Non-EGW Pamphlets"
+description = "Import Non-EGW Pamphlets"
+package = "Ellen G. White Estate"
+core = 7.x
+dependencies[] = migrate
+files[] = migrate_non_egw_pamphlets.module

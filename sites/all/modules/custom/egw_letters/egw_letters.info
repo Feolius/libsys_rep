@@ -8,3 +8,4 @@ dependencies[] = migrate
 #  include the files that contain your Migrate classes
 files[] = egw_letters.migrate.inc
 files[] = egw_letters.inc
+files[] = white.inc
