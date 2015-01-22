@@ -21,9 +21,9 @@ files[] = tests/VideoField.test
 files[] = tests/PHPVideoToolkit.test
 files[] = tests/VideoScheduling.test
 
-; Information added by drupal.org packaging script on 2013-04-23
-version = "7.x-2.10"
+; Information added by Drupal.org packaging script on 2015-01-14
+version = "7.x-2.11"
 core = "7.x"
 project = "video"
-datestamp = "1366693516"
+datestamp = "1421234306"
 
