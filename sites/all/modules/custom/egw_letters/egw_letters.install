@@ -136,7 +136,19 @@ function egw_letters_schema() {
         'not null' => TRUE,
         'default' => 0,
       ),
-      'location'  => array(
+      'country'  => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'state'  => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'city'  => array(
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,

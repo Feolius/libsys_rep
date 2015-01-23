@@ -1,13 +1,29 @@
 <?php
 
-class EgwLettersMigration extends Migration {
+class BasicEgwMigration extends Migration {
+  public function __construct($arguments) {
+    parent::__construct($arguments);
+  }
+
+  public function prepareRow($row) {
+    $point = geocoder('google', $row->location_csv);
+    if (is_object($point)) {
+      $row->country = $point->data['geocoder_address_components'][3]->long_name;
+      $row->state = $point->data['geocoder_address_components'][2]->long_name;
+      $row->city = $point->data['geocoder_address_components'][0]->long_name;
+    }
+  }
+}
+
+
+class EgwLettersMigration extends BasicEgwMigration {
   public function __construct($arguments) {
     parent::__construct($arguments);
     $table_name = 'migrate_egw_letters_dest';
 //The defintion of the collumns. Keys are integers. values are array(field name, description).
     $columns[0] = array('id_csv', 'Filename');
-  //  $columns[1] = array('from_csv', 'From');
-   // $columns[2] = array('to_csv', 'To');
+    //  $columns[1] = array('from_csv', 'From');
+    // $columns[2] = array('to_csv', 'To');
     $columns[3] = array('date_csv', 'Date');
     $columns[4] = array('year_csv', 'Year');
     $columns[5] = array('location_csv', 'Location');
@@ -30,16 +46,13 @@ class EgwLettersMigration extends Migration {
     $this->destination = new MigrateDestinationTable($table_name);
 
 //Source and destination relation for rollbacks
-    $this->map = new MigrateSQLMap($this->machineName,
-      array(
-        'id_csv' => array(
-          'type' => 'int',
-          'unsigned' => TRUE,
-          'not null' => TRUE,
+    $this->map = new MigrateSQLMap($this->machineName, array(
+      'id_csv' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
       )
-      ),
-      MigrateDestinationTable::getKeySchema($table_name)
-    );
+    ), MigrateDestinationTable::getKeySchema($table_name));
 
 
 //Field mapping
@@ -52,21 +65,30 @@ class EgwLettersMigration extends Migration {
     $this->addFieldMapping('recipient_first_name', 'to_first_name');
     $this->addFieldMapping('recipient_second_name', 'to_first_name');
     $this->addFieldMapping('date', 'full_date')->callbacks(array($this,'computeDate'));
-    $this->addFieldMapping('country', 'location_csv')->callbacks(array($this,'getCountry'));
-    $this->addFieldMapping('state', 'location_csv')->callbacks(array($this,'getState'));
-    $this->addFieldMapping('city', 'location_csv')->callbacks(array($this,'getCity'));
+    $this->addFieldMapping('country', 'country');
+    $this->addFieldMapping('state', 'state');
+    $this->addFieldMapping('city', 'city');
     $this->addFieldMapping('lb_ref_number', 'lb_ref');
     $this->addFieldMapping('notes', 'notes_csv');
   }
 
   protected function computeDate($date_csv) {
     $date = DateTime::createFromFormat('Y/m/d', $date_csv);
-    return $date->format('d/m/Y');
-  }
-  protected function getLocation($location) {
-    $point = geocoder('google',$location);
-   // dsm($point);
-    return $location;
+    return $date->format('m/d/Y');
   }
 
+  /*
+  public function getNames($string) {
+    $count = substr_count($string,'.');
+    if ($count == 2) {
+
+    }
+    else if ($count == 1) {
+
+    }
+    else {
+
+    }
+  }
+  */
 }

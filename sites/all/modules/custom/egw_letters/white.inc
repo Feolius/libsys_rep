@@ -1,6 +1,6 @@
 <?php
 
-class WhiteIndexMigration extends Migration {
+class WhiteIndexMigration extends BasicEgwMigration {
   public function __construct($arguments) {
     parent::__construct($arguments);
     $table_name = 'migrate_whiteje_index';
@@ -17,7 +17,7 @@ class WhiteIndexMigration extends Migration {
     $this->description = t('White JE index import');
 
 //The Source of the import
-    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/white_je_index.csv', $columns, array('header_rows' => 1));
+    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/white_je_index(test).csv', $columns, array('header_rows' => 1));
 
 //The destination table
     $this->destination = new MigrateDestinationTable($table_name);
@@ -40,10 +40,23 @@ class WhiteIndexMigration extends Migration {
     $this->addFieldMapping('filename', 'id_csv');
     $this->addFieldMapping('sender', 'from_csv');
     $this->addFieldMapping('recipient', 'to_csv');
-    $this->addFieldMapping('date', 'date_csv');
-    $this->addFieldMapping('location', 'location_csv');
+    $this->addFieldMapping('date', 'date_csv')->callbacks(array($this,'computeDate'));
+    $this->addFieldMapping('country', 'country');
+    $this->addFieldMapping('state', 'state');
+    $this->addFieldMapping('city', 'city');
     $this->addFieldMapping('lb_ref_number', 'lb_ref');
     $this->addFieldMapping('notes', 'notes_csv');
+  }
+
+
+  protected function computeDate($date_csv) {
+    $date = DateTime::createFromFormat('d/m/Y', $date_csv);
+    if (is_object($date)) {
+      return $date->format('m/d/Y');
+    }
+    else {
+      return '';
+    }
   }
 
 }
