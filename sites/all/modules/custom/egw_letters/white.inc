@@ -17,7 +17,7 @@ class WhiteIndexMigration extends BasicEgwMigration {
     $this->description = t('White JE index import');
 
 //The Source of the import
-    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/white_je_index(test).csv', $columns, array('header_rows' => 1));
+    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/white_je_index.csv', $columns, array('header_rows' => 1));
 
 //The destination table
     $this->destination = new MigrateDestinationTable($table_name);

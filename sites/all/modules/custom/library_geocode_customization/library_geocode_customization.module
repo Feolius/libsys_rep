@@ -1,0 +1,13 @@
+<?php
+
+/**
+ *  Implements hook_field_attach_presave().
+ */
+function library_geocode_customization_field_attach_presave($entity_type, $entity) {
+	if(empty($entity->field_location_map) && !empty($entity->field_location_cstm_coordinates)) {
+		$entity->field_location_map = $entity->field_location_cstm_coordinates;
+	}	
+	if(!empty($entity->field_field_location_gps)) {
+		$entity->field_location_map = $entity->field_field_location_gps;
+	}	
+}

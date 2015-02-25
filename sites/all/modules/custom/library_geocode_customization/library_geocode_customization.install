@@ -1,0 +1,11 @@
+<?php
+
+/**
+ * Imlements hook_install().
+ */
+function library_geocode_customization_install() {
+	db_update('system')
+    ->fields(array('weight' => 100))
+    ->condition('name', 'library_geocode_customization')
+    ->execute();
+}

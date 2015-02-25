@@ -1,0 +1,5 @@
+name = Library Geocode Customiztion
+description = "Provides a new geocode plugin, based on the google plugin, which allows to take values from custom field in case of geocode failure."
+package = Library
+core = 7.x
+dependencies[] = geocoder

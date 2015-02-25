@@ -40,7 +40,7 @@ class EgwLettersMigration extends BasicEgwMigration {
     $this->description = t('A CSV EGW letters import ');
 
 //The Source of the import
-    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/EGWLettersReceived(merged)2.csv', $columns, array());
+    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/EGWLettersReceived(merged).csv', $columns, array());
 
 //The destination table
     $this->destination = new MigrateDestinationTable($table_name);
