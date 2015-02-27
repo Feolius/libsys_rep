@@ -19,7 +19,6 @@ function library_admin_faq_list_block_ctools_content_types() {
   );
 }
 
-
 /**
  * Implements hook_content_type_render().
  */
