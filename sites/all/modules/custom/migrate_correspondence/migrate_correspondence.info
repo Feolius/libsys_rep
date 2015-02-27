@@ -1,6 +1,0 @@
-name = "Migrate Correspondence"
-description = "Import the correspondence"
-package = "Ellen G. White Estate"
-core = 7.x
-dependencies[] = migrate
-files[] = migrate_correspondence.module
