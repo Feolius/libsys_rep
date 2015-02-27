@@ -1,0 +1,102 @@
+<?php
+
+function migrate_non_egw_pamphlets_migrate_api() {
+  $api = array(
+    'api' => 2,
+    'groups' => array(
+        'egw' => array(
+            'title' => t('Ellen G. White Estate'),
+            'default_format' => 'filtered_html',
+        ),
+    ),
+    'migrations' => array(
+      'NonEGWPamphlets' => array(
+        'class_name' => 'NonEGWPamphletsMigration',
+        'group_name' => 'egw',
+      ),
+    ),
+  );
+  return $api;
+}
+
+class NonEGWPamphletsMigration extends Migration {
+  public function __construct($arguments) {
+    parent::__construct($arguments);
+	
+	// Source
+    $fields = array(
+      'id' => 'ID',
+      'title' => 'Title',
+      'author' => 'Author',
+      'location' => 'Location',
+    );
+    $json_file = drupal_get_path('module', 'migrate_non_egw_pamphlets') . '/pamphlets_non_egw2.txt';
+    $this->source = new MigrateSourceList(new DevotionalListJSON($json_file),
+      new DevotionalItemJSON($json_file, array()), $fields);
+
+	// Destination
+	$node_options = MigrateDestinationNode::options('en', 'full_html');
+	$this->destination = new MigrateDestinationNode('non_egw_pamphlets', $node_options);
+	
+	// Mapping
+    $this->map = new MigrateSQLMap($this->machineName,
+      array(
+        'id' => array(
+          'type' => 'int',
+          'unsigned' => TRUE,
+		  'not null' => TRUE,
+        )
+      ),
+      MigrateDestinationNode::getKeySchema()
+    );
+	$this->addFieldMapping('title', 'title');
+	$this->addFieldMapping('field_non_egw_pamphlets_author', 'author');
+	$this->addFieldMapping('field_non_egw_pamphlets_location', 'location');
+	
+  }
+}
+
+class DevotionalListJSON extends MigrateListJSON {
+  /**
+   * The default implementation assumes the IDs are top-level array elements,
+   * but the array elements are the data items - we need to look inside them
+   * for the IDs.
+   */
+  protected function getIDsFromJSON(array $data) {
+    $ids = array();
+    foreach ($data as $item) {
+      $ids[] = $item['id'];
+    }
+    return $ids;
+  }
+}
+class DevotionalItemJSON extends MigrateItemJSON {
+  protected $data = array();
+  /**
+   * Two problems with the default getItem() - it reads and parses the JSON on
+   * each call, which we don't want to do for multiple items in the file; and,
+   * we need to retrieve a given item from the file according to its 'id' element.
+   */
+  public function getItem($id) {
+    // We cache the parsed JSON at $this->data.
+    if (empty($this->data)) {
+      $data = $this->loadJSONUrl($this->itemUrl);
+      if ($data) {
+        // Let's index the array by the ID for easy retrieval.
+        foreach ($data as $item) {
+          $this->data[$item->id] = $item;
+        }
+      }
+      else {
+        // Error-handling here....
+      }
+    }
+    // Return the requested item
+    if (isset($this->data[$id])) {
+      return $this->data[$id];
+    }
+    else {
+      return NULL;
+    }
+  }
+}
