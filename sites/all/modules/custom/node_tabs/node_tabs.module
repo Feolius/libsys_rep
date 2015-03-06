@@ -4,12 +4,38 @@
  * Implements hook_preprocess_node().
  */
 function node_tabs_preprocess_node(&$variables) {
-  if ($variables['type'] =='files') {
+  //dsm($variables);
+  if ($variables['type'] == 'files') {
     if (isset($variables['field_files_primary_media'])) {
       $primary_media = $variables['field_files_primary_media']['und'][0]['value'];
       drupal_add_js('
-           window.location = "#'.$primary_media.'";
+           window.location = "#' . $primary_media . '";
      ', 'inline');
     }
+  }
+}
+
+
+/**
+ * Implements hook_node_view_alter().
+ */
+function node_tabs_node_view_alter(&$build) {
+  if (isset($build['field_files_image']['#items'][0]['uri'])) {
+    //Show image URL link
+
+    $build['field_image_url'][0]['#element']['title'] = t('Download');
+    $build['field_image_url'][0]['#element']['url'] = file_create_url($build['field_files_image']['#items'][0]['uri']);
+  }
+}
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function node_tabs_form_alter(&$form, &$form_state, $form_id) {
+  //Hide field_image_url from node add/edit form
+
+  if (arg(0) == 'node' && (arg(2) == 'add' || arg(2) == 'edit')) {
+    $form['field_image_url']['#access'] = 0;
   }
 }
