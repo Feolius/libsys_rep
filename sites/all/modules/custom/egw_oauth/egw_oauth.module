@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function egw_oauth_menu() {
+  $items['auth'] = array(
+    'page callback' => 'egw_oauth_login_callback',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+function egw_oauth_login_callback() {
+  $server_url = 'https://egwwritings.org/api/stable/auth';
+  $client_url = 'http://libsys-rep.my';
+  $oauth2_config = array(
+    'token_endpoint' => $server_url.'/token',
+    'auth_flow' => 'server-side',
+    'redirect_uri' => 'http://library.ellenwhite.org/auth/',
+    'authorization_endpoint' => $server_url,
+    'client_id' => 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS',
+    'client_secret' => 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs',
+  );
+  try {
+    $oauth2_client = new OAuth2\Client($oauth2_config);
+
+    $access_token = $oauth2_client->getAccessToken();
+
+  }
+  catch (Exception $e) {
+    drupal_set_message($e->getMessage(), 'error');
+  }
+  dsm($access_token);
+  dsm($oauth2_client);
+}
