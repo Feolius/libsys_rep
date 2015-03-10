@@ -291,5 +291,41 @@ function egw_letters_schema() {
     ),
     'primary key' => array('rid'),
   );
+  $schema['migrate_egw_bibliography'] = array(
+    'description' => 'Custom Drupal table to receive data from Bibliography of Ellen G. White Results page',
+    'fields' => array(
+      'rid'  => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary key',
+      ),
+      'title'  => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'year'  => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'pages'  => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'notes'  => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('rid'),
+  );
   return $schema;
 }

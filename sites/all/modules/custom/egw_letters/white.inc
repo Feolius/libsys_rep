@@ -49,7 +49,7 @@ class WhiteIndexMigration extends BasicEgwMigration {
       ),
       MigrateDestinationTable::getKeySchema($table_name)
     );
-    
+
 //Field mapping
     $this->addUnmigratedDestinations(array('rid'));
     $this->addFieldMapping('filename', 'filename');

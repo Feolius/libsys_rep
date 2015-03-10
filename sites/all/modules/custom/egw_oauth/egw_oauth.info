@@ -3,3 +3,5 @@ description = Oauth2 authentication with egwwritings.org
 package = Ellen G. White Estate
 core = 7.x
 files[] = egw_oauth.module
+
+dependencies[] = oauth2_client

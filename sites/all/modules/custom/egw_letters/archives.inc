@@ -26,11 +26,47 @@ class QuestionEgwMigration extends Migration {
       ),
     ), MigrateDestinationTable::getKeySchema($table_name));
 
-
 //Field mapping
     $this->addUnmigratedDestinations(array('rid'));
     $this->addFieldMapping('code_number', 'code_number_csv');
     $this->addFieldMapping('phrases', 'phrases_csv');
   }
+}
 
+
+class BibliographyEgwMigration extends Migration {
+  public function __construct($arguments) {
+    parent::__construct($arguments);
+    $table_name = 'migrate_egw_bibliography';
+//The defintion of the collumns. Keys are integers. values are array(field name, description).
+    $columns[0] = array('title', 'Title');
+    $columns[1] = array('year', 'Year');
+    $columns[2] = array('pages', 'Pages');
+    $columns[3] = array('notes', 'Notes');
+
+    //The Description of the import. This desription is shown on the Migrate GUI
+    $this->description = t('A CSV EGW bibliography import ');
+
+//The Source of the import
+    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/Bibliography_egw_writings.csv', $columns, array('header_rows' => 1));
+
+//The destination table
+    $this->destination = new MigrateDestinationTable($table_name);
+
+//Source and destination relation for rollbacks
+    $this->map = new MigrateSQLMap($this->machineName, array(
+      'title' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+    ), MigrateDestinationTable::getKeySchema($table_name));
+
+//Field mapping
+    $this->addUnmigratedDestinations(array('rid'));
+    $this->addFieldMapping('title', 'title');
+    $this->addFieldMapping('year', 'year');
+    $this->addFieldMapping('pages', 'pages');
+    $this->addFieldMapping('notes', 'notes');
+  }
 }

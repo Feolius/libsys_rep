@@ -5,6 +5,11 @@
  */
 function egw_oauth_menu() {
   $items['auth'] = array(
+    'page callback' => 'egw_oauth_token_callback',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  $items['auth/login'] = array(
     'page callback' => 'egw_oauth_login_callback',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
@@ -14,7 +19,7 @@ function egw_oauth_menu() {
 
 function egw_oauth_login_callback() {
   $server_url = 'https://egwwritings.org/api/stable/auth';
-  $client_url = 'http://libsys-rep.my';
+  $client_url = '';
   $oauth2_config = array(
     'token_endpoint' => $server_url.'/token',
     'auth_flow' => 'server-side',
@@ -22,16 +27,49 @@ function egw_oauth_login_callback() {
     'authorization_endpoint' => $server_url,
     'client_id' => 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS',
     'client_secret' => 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs',
+    'scope' => 'user_info',
   );
   try {
     $oauth2_client = new OAuth2\Client($oauth2_config);
-
     $access_token = $oauth2_client->getAccessToken();
-
   }
   catch (Exception $e) {
     drupal_set_message($e->getMessage(), 'error');
   }
-  dsm($access_token);
-  dsm($oauth2_client);
+}
+
+function egw_oauth_token_callback() {
+  /*
+  $url = 'https://egwwritings.org/api/stable/auth/token';
+  $params = array(
+    'code' => $_GET['code'],
+    'client_id' => 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS',
+    'client_secret' => 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs',
+    'redirect_uri' => 'http://library.ellenwhite.org/auth',
+    'grant_type' => 'authorization_code'
+  );
+  $result = file_get_contents($url, false, stream_context_create(array(
+    'http' => array(
+      'method'  => 'POST',
+      'header'  => 'Content-type: application/x-www-form-urlencoded',
+      'content' => http_build_query($params)
+    )
+  )));
+  */
+
+  $myCurl = curl_init();
+  curl_setopt_array($myCurl, array(
+    CURLOPT_URL => 'https://egwwritings.org/api/stable/auth/token',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => http_build_query(array(
+      'code' => $_GET['code'],
+      'client_id' => 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS',
+      'client_secret' => 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs',
+      'redirect_uri' => 'http://library.ellenwhite.org/auth/',
+      'grant_type' => 'authorization_code'
+    ))
+  ));
+  $response = curl_exec($myCurl);
+  curl_close($myCurl);
 }
