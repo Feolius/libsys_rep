@@ -35,8 +35,8 @@ function egw_letters_migrate_api() {
         'class_name' => 'QuestionEgwMigration',
         'group_name' => 'egw_archives',
       ),
-      'bibliography' => array(
-        'class_name' => 'BibliographyEgwMigration',
+      'private_office' => array(
+        'class_name' => 'PrivateOfficeEgwMigration',
         'group_name' => 'egw_archives',
       ),
     ),
