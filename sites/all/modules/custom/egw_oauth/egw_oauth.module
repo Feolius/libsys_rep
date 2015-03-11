@@ -71,5 +71,24 @@ function egw_oauth_token_callback() {
     ))
   ));
   $response = curl_exec($myCurl);
+  krumo($response);
+  $response_obj = json_decode($response);
+  curl_setopt_array($myCurl, array(
+    CURLOPT_URL => 'https://egwwritings.org/api/2.3/info/',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => http_build_query(array(
+    //  'code' => $_GET['code'],
+      'client_id' => 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS',
+      'client_secret' => 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs',
+     // 'redirect_uri' => 'http://library.ellenwhite.org/auth/',
+    //  'grant_type' => 'authorization_code'
+      'access_token' => $response_obj->access_token,
+      'token_type' => $response_obj->token_type,
+    ))
+  ));
+  $login_cred = curl_exec($myCurl);
+
+  krumo($login_cred);
   curl_close($myCurl);
 }
