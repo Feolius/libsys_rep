@@ -43,7 +43,7 @@ class WhiteIndexMigration extends BasicEgwMigration {
     $this->map = new MigrateSQLMap($this->machineName,
       array(
         'filename' => array(
-          'type' => 'var',
+          'type' => 'int',
           'not null' => TRUE,
         )
       ),
