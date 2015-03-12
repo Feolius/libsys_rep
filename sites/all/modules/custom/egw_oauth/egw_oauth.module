@@ -18,6 +18,13 @@ function egw_oauth_menu() {
 }
 
 function egw_oauth_login_callback() {
+  /*
+  global $user;
+  $user = user_load(2054);
+  drupal_session_regenerate();
+  drupal_goto('user');
+*/
+
   $server_url = 'https://egwwritings.org/api/stable/auth';
   $client_url = '';
   $oauth2_config = array(
@@ -40,23 +47,6 @@ function egw_oauth_login_callback() {
 
 function egw_oauth_token_callback() {
   /*
-  $url = 'https://egwwritings.org/api/stable/auth/token';
-  $params = array(
-    'code' => $_GET['code'],
-    'client_id' => 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS',
-    'client_secret' => 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs',
-    'redirect_uri' => 'http://library.ellenwhite.org/auth',
-    'grant_type' => 'authorization_code'
-  );
-  $result = file_get_contents($url, false, stream_context_create(array(
-    'http' => array(
-      'method'  => 'POST',
-      'header'  => 'Content-type: application/x-www-form-urlencoded',
-      'content' => http_build_query($params)
-    )
-  )));
-  */
-
   $myCurl = curl_init();
   curl_setopt_array($myCurl, array(
     CURLOPT_URL => 'https://egwwritings.org/api/stable/auth/token',
@@ -71,24 +61,60 @@ function egw_oauth_token_callback() {
     ))
   ));
   $response = curl_exec($myCurl);
-  krumo($response);
   $response_obj = json_decode($response);
-  curl_setopt_array($myCurl, array(
-    CURLOPT_URL => 'https://egwwritings.org/api/2.3/info/',
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_POST => true,
-    CURLOPT_POSTFIELDS => http_build_query(array(
-    //  'code' => $_GET['code'],
-      'client_id' => 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS',
-      'client_secret' => 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs',
-     // 'redirect_uri' => 'http://library.ellenwhite.org/auth/',
-    //  'grant_type' => 'authorization_code'
-      'access_token' => $response_obj->access_token,
-      'token_type' => $response_obj->token_type,
-    ))
-  ));
-  $login_cred = curl_exec($myCurl);
+  */
+  $client_id = 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS';
+  $client_secret = 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs';
+  $options = array(
+    'method' => 'POST',
+    'data' => http_build_query(array(
+      'grant_type' => 'authorization_code',
+      'code' => $_GET['code'],
+      'client_id' => $client_id,
+      'client_secret' => $client_secret,
+      'redirect_uri' => 'http://library.ellenwhite.org/auth/',
+    )),
+    'headers' => array(
+      'Content-Type' => 'application/x-www-form-urlencoded',
+      'Authorization' => 'Basic ' . base64_encode("$client_id:$client_secret"),
+    ),
+  );
+  $token_endpoint = 'https://egwwritings.org/api/stable/auth/token/';
+  $result = drupal_http_request($token_endpoint, $options);
+  $token = json_decode($result->data);
+  /*
+    $myCurl = curl_init();
+    curl_setopt_array($myCurl, array(
+      CURLOPT_URL => 'https://egwwritings.org/api/2.3/info/',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_POST => true,
+      CURLOPT_POSTFIELDS => http_build_query(array(
+        'client_id' => 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS',
+        'client_secret' => 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs',
+        'access_token' => $token->access_token,
+        'token_type' => $token->token_type,
+      ))
+    ));
 
+    $login_cred = curl_exec($myCurl);
+    curl_close($myCurl);
+  */
+
+  $options = array(
+    'method' => 'POST',
+    'data' => http_build_query(array(
+      'client_id' => $client_id,
+      'client_secret' => $client_secret,
+      'access_token' => $token->access_token,
+      'token_type' => $token->token_type,
+    )),
+    'headers' => array(
+      // 'Content-Type' => 'application/x-www-form-urlencoded',
+      'Authorization' => 'Bearer '.$token->access_token,
+    ),
+  );
+  $token_endpoint = 'https://egwwritings.org/api/2.3/info/';
+  $login_cred = drupal_http_request($token_endpoint, $options);
   krumo($login_cred);
-  curl_close($myCurl);
+
 }
