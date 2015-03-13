@@ -18,13 +18,6 @@ function egw_oauth_menu() {
 }
 
 function egw_oauth_login_callback() {
-  /*
-  global $user;
-  $user = user_load(2054);
-  drupal_session_regenerate();
-  drupal_goto('user');
-*/
-
   $server_url = 'https://egwwritings.org/api/stable/auth';
   $client_url = '';
   $oauth2_config = array(
@@ -52,7 +45,6 @@ function egw_oauth_token_callback() {
     drupal_set_message("Error: $error: $error_description", 'error');
     drupal_goto('user');
   }
-
   $client_id = 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS';
   $client_secret = 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs';
   $options = array(
@@ -71,11 +63,9 @@ function egw_oauth_token_callback() {
   );
   $token_endpoint = 'https://egwwritings.org/api/stable/auth/token/';
   $result = drupal_http_request($token_endpoint, $options);
-  krumo($result);
   if ($result->code != 200) {
    $error_data = json_decode($result->data);
     drupal_set_message("Error: $error_data->error: $error_data->error_description", 'error');
-
   }
   $token = json_decode($result->data);
 
@@ -84,22 +74,67 @@ function egw_oauth_token_callback() {
     'data' => http_build_query(array(
       'client_id' => $client_id,
       'client_secret' => $client_secret,
-      'access_token' => $token->access_token,
       'token_type' => $token->token_type,
     )),
     'headers' => array(
-      // 'Content-Type' => 'application/x-www-form-urlencoded',
       'Authorization' => 'Bearer '.$token->access_token,
     ),
   );
   $token_endpoint = 'https://egwwritings.org/api/2.3/info/';
   $login_cred = drupal_http_request($token_endpoint, $options);
   if ($login_cred->code != 200) {
+    $error_data = json_decode($result->data);
+    drupal_set_message("Error: $error_data->error: $error_data->error_description", 'error');
+  }
+  $user_cred = json_decode($login_cred->data);
+  if ($user_cred->email) {
+    $query = db_select('users', 'u')
+      ->fields('u', array('uid'))
+      ->condition('u.status', 1)
+      ->condition('u.mail', $user_cred->email);
+    $result = $query->execute()->fetchObject();
+  }
+  if ($result) {
+    global $user;
+    $user = user_load($result->uid);
+    drupal_session_regenerate();
+    drupal_goto('user');
+  }
+  else {
+    $edit = array(
+      'name' => egw_oauth_username_generate($user_cred->username),
+      'mail' => $user_cred->email,
+      'pass' => user_password(),
+      'status' => 1,
+    );
+    $account = user_save(drupal_anonymous_user(), $edit);
+    // Manually set the password so it appears in the e-mail.
+    $account->password = $edit['pass'];
+
+    // Send the e-mail through the user module.
+    $a = drupal_mail('user', 'register_no_approval_required', $user_cred->email, NULL, array('account' => $account), variable_get('site_mail', 'noreply@example..com'));
+dsm($a);
+    global $user;
+    $user = $account;
+    drupal_session_regenerate();
+    drupal_goto('user');
 
   }
+}
 
+function egw_oauth_username_generate($name) {
+  $counter = 0;
+  while (user_load_by_name($name)) {
+    $counter++;
+    $name = $name . ' ' . $counter;
+  }
+  $username = $name;
+  return $username;
+}
 
-  krumo($login_cred);
-$user_cred = json_decode($login_cred->data);
-  krumo($user_cred);
+/**
+ * Implements hook_form_alter().
+ */
+function egw_oauth_form_alter(&$form, &$form_state, $form_id) {
+  krumo($form);
 }
