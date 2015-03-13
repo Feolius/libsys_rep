@@ -46,23 +46,13 @@ function egw_oauth_login_callback() {
 }
 
 function egw_oauth_token_callback() {
-  /*
-  $myCurl = curl_init();
-  curl_setopt_array($myCurl, array(
-    CURLOPT_URL => 'https://egwwritings.org/api/stable/auth/token',
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_POST => true,
-    CURLOPT_POSTFIELDS => http_build_query(array(
-      'code' => $_GET['code'],
-      'client_id' => 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS',
-      'client_secret' => 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs',
-      'redirect_uri' => 'http://library.ellenwhite.org/auth/',
-      'grant_type' => 'authorization_code'
-    ))
-  ));
-  $response = curl_exec($myCurl);
-  $response_obj = json_decode($response);
-  */
+  if (isset($_GET['error'])) {
+    $error = $_GET['error'];
+    $error_description = $_GET['error_description'];
+    drupal_set_message("Error: $error: $error_description", 'error');
+    drupal_goto('user');
+  }
+
   $client_id = 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS';
   $client_secret = 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs';
   $options = array(
@@ -81,24 +71,13 @@ function egw_oauth_token_callback() {
   );
   $token_endpoint = 'https://egwwritings.org/api/stable/auth/token/';
   $result = drupal_http_request($token_endpoint, $options);
-  $token = json_decode($result->data);
-  /*
-    $myCurl = curl_init();
-    curl_setopt_array($myCurl, array(
-      CURLOPT_URL => 'https://egwwritings.org/api/2.3/info/',
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_POST => true,
-      CURLOPT_POSTFIELDS => http_build_query(array(
-        'client_id' => 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS',
-        'client_secret' => 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs',
-        'access_token' => $token->access_token,
-        'token_type' => $token->token_type,
-      ))
-    ));
+  krumo($result);
+  if ($result->code != 200) {
+   $error_data = json_decode($result->data);
+    drupal_set_message("Error: $error_data->error: $error_data->error_description", 'error');
 
-    $login_cred = curl_exec($myCurl);
-    curl_close($myCurl);
-  */
+  }
+  $token = json_decode($result->data);
 
   $options = array(
     'method' => 'POST',
@@ -115,6 +94,12 @@ function egw_oauth_token_callback() {
   );
   $token_endpoint = 'https://egwwritings.org/api/2.3/info/';
   $login_cred = drupal_http_request($token_endpoint, $options);
-  krumo($login_cred);
+  if ($login_cred->code != 200) {
 
+  }
+
+
+  krumo($login_cred);
+$user_cred = json_decode($login_cred->data);
+  krumo($user_cred);
 }
