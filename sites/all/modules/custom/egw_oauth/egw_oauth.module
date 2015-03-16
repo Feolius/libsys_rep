@@ -21,7 +21,7 @@ function egw_oauth_login_callback() {
   $server_url = 'https://egwwritings.org/api/stable/auth';
   $client_url = '';
   $oauth2_config = array(
-    'token_endpoint' => $server_url.'/token',
+    'token_endpoint' => $server_url . '/token',
     'auth_flow' => 'server-side',
     'redirect_uri' => 'http://library.ellenwhite.org/auth/',
     'authorization_endpoint' => $server_url,
@@ -32,8 +32,7 @@ function egw_oauth_login_callback() {
   try {
     $oauth2_client = new OAuth2\Client($oauth2_config);
     $access_token = $oauth2_client->getAccessToken();
-  }
-  catch (Exception $e) {
+  } catch (Exception $e) {
     drupal_set_message($e->getMessage(), 'error');
   }
 }
@@ -64,7 +63,7 @@ function egw_oauth_token_callback() {
   $token_endpoint = 'https://egwwritings.org/api/stable/auth/token/';
   $result = drupal_http_request($token_endpoint, $options);
   if ($result->code != 200) {
-   $error_data = json_decode($result->data);
+    $error_data = json_decode($result->data);
     drupal_set_message("Error: $error_data->error: $error_data->error_description", 'error');
   }
   $token = json_decode($result->data);
@@ -77,7 +76,7 @@ function egw_oauth_token_callback() {
       'token_type' => $token->token_type,
     )),
     'headers' => array(
-      'Authorization' => 'Bearer '.$token->access_token,
+      'Authorization' => 'Bearer ' . $token->access_token,
     ),
   );
   $token_endpoint = 'https://egwwritings.org/api/2.3/info/';
@@ -112,8 +111,7 @@ function egw_oauth_token_callback() {
     $account->password = $edit['pass'];
 
     // Send the e-mail through the user module.
-    $a = drupal_mail('user', 'register_no_approval_required', $user_cred->email, NULL, array('account' => $account), variable_get('site_mail', 'noreply@example..com'));
-dsm($a);
+    drupal_mail('user', 'register_no_approval_required', $user_cred->email, NULL, array('account' => $account), variable_get('site_mail', 'noreply@example..com'));
     global $user;
     $user = $account;
     drupal_session_regenerate();
@@ -136,5 +134,12 @@ function egw_oauth_username_generate($name) {
  * Implements hook_form_alter().
  */
 function egw_oauth_form_alter(&$form, &$form_state, $form_id) {
-  krumo($form);
+  if ($form_id == 'user_login') {
+    $form['from'] = array(
+      '#type' => 'item',
+      '#title' => t('Or log in with egwwritings.org account'),
+      '#markup' => l(t('Log in'), 'auth/login'),
+      '#description' => t('If you do not have an account on our site it will automatically be created')
+    );
+  }
 }

@@ -91,16 +91,16 @@ class PrivateOfficeEgwMigration extends Migration {
     $this->description = t('A CSV EGW Private and Office Libraries import ');
 
 //The Source of the import
-    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/private_office.csv', $columns, array('header_rows' => 1));
+    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/private_offices.csv', $columns, array('header_rows' => 1));
 
 //The destination table
     $this->destination = new MigrateDestinationTable($table_name);
 
     //Source and destination relation for rollbacks
     $this->map = new MigrateSQLMap($this->machineName, array(
-      'author' => array(
-        'type' => 'varchar',
-        'length' => 255,
+      'id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
         'not null' => TRUE,
       ),
     ), MigrateDestinationTable::getKeySchema($table_name));

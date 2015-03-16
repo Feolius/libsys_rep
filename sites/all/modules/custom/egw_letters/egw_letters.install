@@ -393,7 +393,5 @@ function egw_letters_schema() {
     ),
     'primary key' => array('rid'),
   );
-
-
   return $schema;
 }
