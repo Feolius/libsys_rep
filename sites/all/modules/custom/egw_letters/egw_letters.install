@@ -306,6 +306,12 @@ function egw_letters_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
+      'id'  => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Wine ID',
+      ),
       'year'  => array(
         'type' => 'varchar',
         'length' => 255,

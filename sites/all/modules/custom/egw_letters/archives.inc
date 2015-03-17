@@ -7,7 +7,7 @@ class QuestionEgwMigration extends Migration {
 //The defintion of the collumns. Keys are integers. values are array(field name, description).
     $columns[0] = array('code_number_csv', 'Filename');
     $columns[1] = array('phrases_csv', 'From');
-
+    $columns[2] = array('id', 'id');
 //The Description of the import. This desription is shown on the Migrate GUI
     $this->description = t('A CSV EGW answers and questions import ');
 
@@ -19,9 +19,9 @@ class QuestionEgwMigration extends Migration {
 
 //Source and destination relation for rollbacks
     $this->map = new MigrateSQLMap($this->machineName, array(
-      'code_number_csv' => array(
-        'type' => 'varchar',
-        'length' => 255,
+      'id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
         'not null' => TRUE,
       ),
     ), MigrateDestinationTable::getKeySchema($table_name));
@@ -44,7 +44,7 @@ class BibliographyEgwMigration extends Migration {
     $columns[1] = array('year', 'Year');
     $columns[2] = array('pages', 'Pages');
     $columns[3] = array('notes', 'Notes');
-
+    $columns[4] = array('id', 'id');
     //The Description of the import. This desription is shown on the Migrate GUI
     $this->description = t('A CSV EGW bibliography import ');
 
@@ -56,9 +56,9 @@ class BibliographyEgwMigration extends Migration {
 
 //Source and destination relation for rollbacks
     $this->map = new MigrateSQLMap($this->machineName, array(
-      'title' => array(
-        'type' => 'varchar',
-        'length' => 255,
+      'id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
         'not null' => TRUE,
       ),
     ), MigrateDestinationTable::getKeySchema($table_name));
@@ -68,6 +68,7 @@ class BibliographyEgwMigration extends Migration {
     $this->addFieldMapping('title', 'title');
     $this->addFieldMapping('year', 'year');
     $this->addFieldMapping('pages', 'pages');
+    $this->addFieldMapping('id', 'id');
     $this->addFieldMapping('notes', 'notes');
   }
 }
