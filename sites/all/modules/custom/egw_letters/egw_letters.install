@@ -62,7 +62,7 @@ function egw_letters_schema() {
       'date' => array(
         'description' => 'The date in d/m/Y format.',
         'type' => 'varchar',
-        'length' => 255,
+        'length' => 25,
         'not null' => TRUE,
         'default' => 0,
       ),
@@ -278,7 +278,7 @@ function egw_letters_schema() {
       ),
       'code_number'  => array(
         'type' => 'varchar',
-        'length' => 255,
+        'length' => 25,
         'not null' => TRUE,
         'default' => '',
       ),
@@ -306,15 +306,9 @@ function egw_letters_schema() {
         'not null' => TRUE,
         'default' => '',
       ),
-      'id'  => array(
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'description' => 'Wine ID',
-      ),
       'year'  => array(
         'type' => 'varchar',
-        'length' => 255,
+        'length' => 25,
         'not null' => TRUE,
         'default' => '',
       ),
@@ -326,7 +320,7 @@ function egw_letters_schema() {
       ),
       'notes'  => array(
         'type' => 'varchar',
-        'length' => 255,
+        'length' => 1500,
         'not null' => TRUE,
         'default' => '',
       ),

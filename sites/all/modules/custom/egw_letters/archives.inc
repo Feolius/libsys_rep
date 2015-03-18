@@ -30,7 +30,6 @@ class QuestionEgwMigration extends Migration {
     $this->addUnmigratedDestinations(array('rid'));
     $this->addFieldMapping('code_number', 'code_number_csv');
     $this->addFieldMapping('phrases', 'phrases_csv');
-    $this->addFieldMapping('id', 'id');
   }
 }
 
@@ -49,7 +48,7 @@ class BibliographyEgwMigration extends Migration {
     $this->description = t('A CSV EGW bibliography import ');
 
 //The Source of the import
-    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/Bibliography_egw_writings.csv', $columns, array('header_rows' => 1));
+    $this->source = new MigrateSourceCSV(drupal_get_path('module', 'egw_letters') . '/import/bibliography_egw_writings.csv', $columns, array('header_rows' => 1));
 
 //The destination table
     $this->destination = new MigrateDestinationTable($table_name);
@@ -68,7 +67,6 @@ class BibliographyEgwMigration extends Migration {
     $this->addFieldMapping('title', 'title');
     $this->addFieldMapping('year', 'year');
     $this->addFieldMapping('pages', 'pages');
-    $this->addFieldMapping('id', 'id');
     $this->addFieldMapping('notes', 'notes');
   }
 }
