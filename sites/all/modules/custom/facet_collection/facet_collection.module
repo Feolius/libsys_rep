@@ -12,6 +12,7 @@ function facet_collection_menu() {
     'access arguments' => array('search content'),
     'file' => 'facet_collection_field_relevancy.inc'
   );
+
   //This paths are used for displaing collection teasers
   $items['collection-teaser/node'] = array(
     'type' => MENU_CALLBACK,
@@ -50,6 +51,7 @@ function facet_collection_page() {
   return $build;
 }
 
+
 /**
  * Build solr query by given get params. We pass get params as argument, because we want to use this function in another
  * modules, where get params could be presented not explicitly.
@@ -66,6 +68,29 @@ function facet_collection_build_solr_query($get_params) {
   $page = pager_find_page();
   $query->page = $page;
   return $query;
+}
+
+/**
+ * Implements hook_apachesolr_query_prepare().
+ */
+function facet_collection_apachesolr_query_prepare(DrupalSolrQueryInterface $query) {
+  //Adds the available sort by date
+  $query->setAvailableSort('ds_field_files_creation_date', array(
+    'title' => t('File\'s date'),
+    'default' => 'asc',
+  ));
+}
+
+
+/**
+ * Implements hook_apachesolr_query_alter().
+ */
+function facet_collection_apachesolr_query_alter(DrupalSolrQueryInterface $query) {
+   //Adds the sorting by date for images files
+    $request = $query->getParam('fq');
+    if (in_array('{!tag=sm_field_files_primary_media}sm_field_files_primary_media:(image)', $request)) {
+      $query->setSolrsort('ds_field_files_creation_date', 'asc');
+    }
 }
 
 /**
@@ -404,6 +429,14 @@ function facet_collection_get_filtered_content_type() {
  * Implements hook_apachesolr_index_document_build_ENTITY_TYPE()
  */
 function facet_collection_apachesolr_index_document_build_node($filedocument, $node, $env_id) {
+  //Add the single date field to the index for files content type
+  if ($node->type == 'files') {
+    $research_date = field_get_items('node', $node, 'field_files_creation_date');
+    if (!empty($research_date)) {
+      $filedocument->addField('ds_field_files_creation_date', apachesolr_date_iso(strtotime($research_date[0]['value'])));
+    }
+  }
+
   $field_type_facet_list = variable_get('facet_collection:field_type_facet_list');
   $field_type_search_list = variable_get('facet_collection:field_type_search_list');
   $field_type_list = array_merge($field_type_facet_list, $field_type_search_list);
@@ -584,4 +617,3 @@ function facet_collection_entity_info_alter(&$entity_info) {
     ),
   );
 }
-

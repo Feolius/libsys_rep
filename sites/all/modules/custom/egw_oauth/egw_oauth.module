@@ -143,20 +143,3 @@ function egw_oauth_form_alter(&$form, &$form_state, $form_id) {
     );
   }
 }
-
-/**
- * Implements hook_apachesolr_query_prepare().
- */
-function egw_oauth_apachesolr_query_prepare(DrupalSolrQueryInterface $query) {
-  /*
-  global $user;
-  if ($user->uid == '2054') {
-    $query->setSolrsort('field_files_creation_date','asc');
-    $query->setAvailableSort('dm_facet_collection_field_files_creation_date', array(
-      'title' => t('Date'),
-      'default' => 'asc',
-    ));
-  //  dsm($query);
-  }
-  */
-}
