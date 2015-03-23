@@ -18,6 +18,7 @@ function migrate_drush_command() {
     'force' => 'Force an operation to run, even if all dependencies are not satisfied',
     'group' => 'Name of the migration group to run',
     'notify' => 'Send email notification upon completion of operation',
+    'wildcard' => 'Process migrations that match a certain pattern. For example, Content*.',
   );
   $items['migrate-status'] = array(
     'description' => 'List all migrations with current status.',
@@ -824,15 +825,6 @@ function drush_migrate_rollback($args = NULL) {
       // Capture non-informational output for mailing
       ob_start();
       ob_implicit_flush(FALSE);
-      // Save original mail setup, which Migrate will disable, so we can
-      // restore it later.
-      global $conf;
-      if (!empty($conf['mail_system'])) {
-        $mail_system = $conf['mail_system'];
-      }
-      else {
-        $mail_system = NULL;
-      }
     }
 
     $migrations = drush_migrate_get_migrations($args);
@@ -928,12 +920,6 @@ function drush_migrate_rollback($args = NULL) {
 
   // Notify user
   if (drush_get_option('notify')) {
-    if (is_null($mail_system)) {
-      unset($conf['mail_system']);
-    }
-    else {
-      $conf['mail_system'] = $mail_system;
-    }
     _drush_migrate_notify();
   }
 }
@@ -966,7 +952,7 @@ function drush_migrate_get_migrations($args) {
     $seen = $start === TRUE ? TRUE : FALSE;
 
     foreach ($migration_objects as $name => $migration) {
-      if (!$seen && (drupal_strtolower($start) . 'migration' == drupal_strtolower($name))) {
+      if (!$seen && (drupal_strtolower($start) == drupal_strtolower($name))) {
         // We found our starting migration. $seen is always TRUE now.
         $seen = TRUE;
       }
@@ -981,6 +967,14 @@ function drush_migrate_get_migrations($args) {
       if (drupal_strtolower($group) !=
           drupal_strtolower($migration->getGroup()->getName()) ||
             !$migration->getEnabled()) {
+        unset($migration_objects[$name]);
+      }
+    }
+  }
+  elseif ($wildcard = drush_get_option('wildcard')) {
+    foreach ($migration_objects as $name => $migration) {
+      if (!fnmatch(drupal_strtolower($wildcard), drupal_strtolower($name)) ||
+        !$migration->getEnabled()) {
         unset($migration_objects[$name]);
       }
     }
@@ -1057,18 +1051,23 @@ function drush_migrate_rollback_validate($args = NULL) {
 
 function drush_migrate_validate_common($args) {
   if (drush_get_option('all')) {
-    if (!empty($args) || drush_get_option('group')) {
-      return drush_set_error(NULL, dt('You must specify exactly one of a migration name, --all, or --group'));
+    if (!empty($args) || drush_get_option('group') || drush_get_option('wildcard')) {
+      return drush_set_error(NULL, dt('You must specify exactly one of a migration name, --all, or --group, or --wildcard'));
     }
   }
   elseif (drush_get_option('group')) {
-    if (!empty($args) || drush_get_option('all')) {
-      return drush_set_error(NULL, dt('You must specify exactly one of a migration name, --all, or --group'));
+    if (!empty($args) || drush_get_option('all') || drush_get_option('wildcard')) {
+      return drush_set_error(NULL, dt('You must specify exactly one of a migration name, --all, or --group, or --wildcard'));
+    }
+  }
+  elseif (drush_get_option('wildcard')) {
+    if (!empty($args) || drush_get_option('all') || drush_get_option('group')) {
+      return drush_set_error(NULL, dt('You must specify exactly one of a migration name, --all, or --group, or --wildcard'));
     }
   }
   else {
     if (empty($args)) {
-      return drush_set_error(NULL, dt('You must specify exactly one of a migration name, --all, or --group'));
+      return drush_set_error(NULL, dt('You must specify exactly one of a migration name, --all, or --group, or --wildcard'));
     }
     $machine_names = explode(',', $args);
 
@@ -1127,15 +1126,6 @@ function drush_migrate_import($args = NULL) {
       // Capture non-informational output for mailing
       ob_start();
       ob_implicit_flush(FALSE);
-      // Save original mail setup, which Migrate will disable, so we can
-      // restore it later.
-      global $conf;
-      if (!empty($conf['mail_system'])) {
-        $mail_system = $conf['mail_system'];
-      }
-      else {
-        $mail_system = NULL;
-      }
     }
     $migrations = drush_migrate_get_migrations($args);
     $options = array();
@@ -1294,12 +1284,6 @@ function drush_migrate_import($args = NULL) {
 
   // Notify user
   if (drush_get_option('notify')) {
-    if (is_null($mail_system)) {
-      unset($conf['mail_system']);
-    }
-    else {
-      $conf['mail_system'] = $mail_system;
-    }
     _drush_migrate_notify();
   }
 }

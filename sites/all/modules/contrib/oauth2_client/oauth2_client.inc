@@ -93,6 +93,23 @@ class Client {
   }
 
   /**
+   * Clear the token data from the session.
+   */
+  public function clearToken() {
+    if (isset($_SESSION['oauth2_client']['token'][$this->id])) {
+      unset($_SESSION['oauth2_client']['token'][$this->id]);
+    }
+    $this->token = array(
+      'access_token' => NULL,
+      'expires_in' => NULL,
+      'token_type' => NULL,
+      'scope' => NULL,
+      'refresh_token' => NULL,
+      'expiration_time' => NULL,
+    );
+  }
+
+  /**
    * Get and return an access token.
    *
    * If there is an existing token (stored in session),
@@ -318,7 +335,7 @@ class Client {
    * Get and return an access token for the grant_type given in $params.
    */
   protected function getToken($data) {
-    if (isset($data['scope']) and $data['scope'] == NULL) {
+    if (array_key_exists('scope', $data) and $data['scope'] === NULL) {
       unset($data['scope']);
     }
 

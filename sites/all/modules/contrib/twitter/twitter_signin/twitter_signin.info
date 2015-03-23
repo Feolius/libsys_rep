@@ -4,9 +4,9 @@ core = 7.x
 dependencies[] = twitter
 configure = admin/config/services/twitter/signin
 
-; Information added by Drupal.org packaging script on 2014-08-28
-version = "7.x-6.0-alpha2+3-dev"
+; Information added by Drupal.org packaging script on 2015-03-22
+version = "7.x-6.0-alpha2+7-dev"
 core = "7.x"
 project = "twitter"
-datestamp = "1409220545"
+datestamp = "1427019189"
 

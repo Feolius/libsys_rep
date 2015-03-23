@@ -217,6 +217,14 @@ abstract class MigrateUIWizard {
    * @var array
    */
   protected $extenders = array();
+  public function getExtender($extender_class) {
+    if (isset($this->extenders[$extender_class])) {
+      return $this->extenders[$extender_class];
+    }
+    else {
+      return NULL;
+    }
+  }
 
   /**
    * Returns the translatable name representing the source of the data (e.g.,
@@ -432,7 +440,9 @@ abstract class MigrateUIWizard {
       $validate_method .= 'Validate';
     }
 
-    call_user_func($validate_method, $form_state);
+    if (is_callable($validate_method)) {
+      call_user_func($validate_method, $form_state);
+    }
   }
 
   /**
