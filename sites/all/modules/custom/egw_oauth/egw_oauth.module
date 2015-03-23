@@ -5,6 +5,11 @@
  */
 function egw_oauth_menu() {
   $items['auth'] = array(
+    'page callback' => 'egw_oauth_authorized',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  $items['auth/authorized'] = array(
     'page callback' => 'egw_oauth_token_callback',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
@@ -17,10 +22,12 @@ function egw_oauth_menu() {
   return $items;
 }
 
-function egw_oauth_login_callback() {
+/**
+ * Implements hook_oauth2_clients().
+ */
+function egw_oauth_oauth2_clients() {
   $server_url = 'https://egwwritings.org/api/stable/auth';
-  $client_url = '';
-  $oauth2_config = array(
+  $oauth2_clients['egwwritings'] = array(
     'token_endpoint' => $server_url . '/token',
     'auth_flow' => 'server-side',
     'redirect_uri' => 'http://library.ellenwhite.org/auth/',
@@ -29,12 +36,38 @@ function egw_oauth_login_callback() {
     'client_secret' => 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs',
     'scope' => 'user_info',
   );
-  try {
-    $oauth2_client = new OAuth2\Client($oauth2_config);
-    $access_token = $oauth2_client->getAccessToken();
-  } catch (Exception $e) {
-    drupal_set_message($e->getMessage(), 'error');
+
+  return $oauth2_clients;
+}
+
+
+
+/**
+ * Callback for path auth/authorized.
+ *
+ * An authorized request in server-side flow
+ * will be redirected here (having variables
+ * 'code' and 'state').
+ */
+function egw_oauth_authorized() {
+  // If there is any error in the server response, display it.
+  if (isset($_GET['error'])) {
+    $error = $_GET['error'];
+    $error_description = $_GET['error_description'];
+    drupal_set_message("Error: $error: $error_description", 'error');
   }
+
+  // Redirect to the client that started the authentication.
+  OAuth2\Client::redirect($clean = FALSE);
+}
+
+function egw_oauth_login_callback() {
+    try {
+      $oauth2_client = oauth2_client_load('egwwritings');
+      $access_token = $oauth2_client->getAccessToken();
+    } catch (Exception $e) {
+      drupal_set_message($e->getMessage(), 'error');
+    }
 }
 
 function egw_oauth_token_callback() {
@@ -134,6 +167,7 @@ function egw_oauth_username_generate($name) {
  * Implements hook_form_alter().
  */
 function egw_oauth_form_alter(&$form, &$form_state, $form_id) {
+  /*
   if ($form_id == 'user_login') {
     $form['from'] = array(
       '#type' => 'item',
@@ -142,4 +176,5 @@ function egw_oauth_form_alter(&$form, &$form_state, $form_id) {
       '#description' => t('If you do not have an account on our site it will automatically be created')
     );
   }
+  */
 }
