@@ -77,20 +77,6 @@
 		</div>
 <?php }else{ ?>
 <script type="text/javascript"> 
-				$(function() {
-				$('#file_upload').uploadify({
-				  'swf'  			: 'admin_files/controls/uploadify.swf',
-				  'uploader'    	: 'admin_files/controls/uploadify.php',
-				  'cancelImg' 		: 'admin_files/images/cancel.png',
-				  'removeCompleted' : true,
-				  'hideButton' 		: true,
-				  'auto' 			: true,
-				  'queueID' 		: 'upload-queue',
-				  'fileTypeDesc'   	: 'PDF Files (.PDF)',
-				  'onQueueComplete' : function(queueData) {
-     				 	window.location.reload(true);
-    			   }
-});				});
 
 $(function() {
       $('table tbody tr').mouseover(function() {
@@ -122,6 +108,28 @@ $(function() {
 				$('input:first', this).prop("checked", !($('input:first', this).attr('checked') == 'checked'));
 		}
       });
+      
+      
+      $('.file-upload').fileUpload(
+		{
+			url: 'admin_files/controls/uploadify.php',
+			type: 'POST',
+			dataType: 'json',
+			beforeSend: function () {
+				jQuery('#Filename').val(jQuery('#Filedata').val().substr(jQuery('#Filedata').val().lastIndexOf("\\")+1));
+			},
+			complete: function () {
+
+			},
+			success: function (result, status, xhr) {
+				if(result=='0'){
+					alert('Unable to upload file. Please verify your server directory permissions.');
+				}else{
+					window.location.reload(true);
+				}
+			}
+		}
+	);
    });
 </script> 
 <script type="text/javascript" src="admin_files/js/pagination.js"></script>
@@ -131,8 +139,15 @@ $(function() {
 		
 		<div style="clear:both;background-color:#fff;padding: 20px 10px 20px 30px;border:0px;-webkit-box-shadow: rgba(0, 0, 0, 0.246094) 0px 4px 8px 0px;min-width:900px;float:left;width:900px;margin-left:10px;margin-bottom:50px;">
 			<h3>Available Documents</h3>
-			<form method="post" action="index.php">
-			<div style="float:left;position:absolute;"><div style="position:absolute;left:0px;top:0px;"><button class="tiny main n_button" type="submit"  onclick=""><span></span><em style="min-width:100px"><img src="admin_files/images/upload.png" style="padding-top:2px;">&nbsp;Upload</em></button>&nbsp;<br/></div><div style="position:absolute;left:0px;top:0px;"><input id="file_upload" type="file" name="Filedata" /></div></div>
+			<form action="index.php" method="post" enctype="multipart/form-data">
+			<div style="float:left;position:absolute;">
+			    <div style="position:absolute;left:0px;top:0px;">
+                    <input class="file-upload" type="file" name="Filedata" id="Filedata" style="width:115px;font-size: 250px;opacity:0;cursor: pointer;position:absolute;left:0;top:0;" />
+                    <button class="tiny main n_button" type="submit" onclick="return false;" style="pointer-events:none;"><span></span><em style="min-width:100px"><input type="hidden" name="Filename" id="Filename" value="" /><img src="admin_files/images/upload.png" style="padding-top:2px;">&nbsp;Upload</em></button>
+                    &nbsp;<br/>
+                </div><div style="position:absolute;left:0px;top:0px;"><div id="file_upload" type="button"></div></div>
+			</div>
+
 			<div style="float:left;padding-left:120px;"><button class="tiny main n_button" onclick="return window.confirm('Are you sure you want to delete these files?');" type="submit"><span></span><em style="min-width:100px"><img src="admin_files/images/delete.png" style="padding-top:2px;">&nbsp;Delete</em></button>&nbsp;</div>
 			<div style="clear:both"><br/></div>
 			<!-- <div style="float:left;"><button class="tiny main n_button disabled" id="bttn_view" onclick="window.location.href='simple_document.php';return false; " type="submit"><span></span><em style="min-width:100px">view</em></button>&nbsp;</div><br/>   -->

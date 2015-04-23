@@ -8,7 +8,6 @@
         <title>FlexPaper</title>         
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<link href="admin_files/css/install.css" media="screen" rel="stylesheet" type="text/css" />
- 		<link href="admin_files/css/uploadify.css" media="screen" rel="stylesheet" type="text/css" />
 		
         <style type="text/css" media="screen"> 
 			html, body	{ height:100%; }

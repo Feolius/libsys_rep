@@ -72,7 +72,7 @@ class Config {
 		$exe = strstr(PHP_OS, "WIN") ? ".exe" : "";
 		$config["allowcache"]						=	true;
 		$config["highrescache"]						=	true;
-		$config["splitmode"]						=	false;
+		$config["splitmode"]						=	true;
 		$config["path.pdf"]							=	ROOT . '\\' . APP_DIR . "\\pdf\\";
 		$config["path.swf"]							=	ROOT . '\\' . APP_DIR . "\\doc\\";
 		$config["renderingorder.primary"]			=	"flash";

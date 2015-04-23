@@ -1,3 +1,109 @@
+March
+ » Fixed an issue where the "+" character in file names caused documents not to open in desktop publisher
+ » Improved the ability to load images in Zine Flash version
+ » Improved desktop publisher stability with further fallback added for previewing documents
+ » Fixed an issue where unnessecary pages would be downloaded when printing in split mode under HTML5
+ » Fixed an issue where the toolbar wasn't shown in full screen on IE9, IE8
+ » Fixed an issue where excess print margin was added to pages when printing in split mode using HTML5
+ » New preview option added for Desktop Publisher that gives you the option of using either vectors or bitmaps when previewing your publication
+   Some publications preview faster using bitmaps so we hope that having this option gives you greater flexibility
+ » Fixed an issue where opening the viewer in full screen using FullScreenAsMaxWindow wouldn't close the window if clicked again.
+   Clicking the Esc key will also exit the full screen mode
+ » Fixed an issue where it was possible to reply to marks in the annotations viewer even if the mark had been made read only
+ » Fixed an issue where pinching on Android in single page mode caused the viewer to sometimes get stuck while pinching
+ » Further improvements to the touch device pinching of the Classic viewer
+ » Fixed an issue where drawing in the annotations viewer on mozilla/firefox would cause the line to appear from the wrong end of the pen
+ » Fixed an issue where our modal window was causing warings or errors on IE8/IE9 when used together with jQuery 1.11
+ » Fixed an issue where the annotations viewer could not create marks using the asp.net scripts due to a missing column in the insert sql statement
+
+
+February
+ » Fixed an issue where a gap was introduced between the pages in two-page mode after performing a search
+ » A number of issues related to full screen fixed for the annotations viewer
+ » 3D page turning animation speed adjusted slightly
+ » Minor page loader animation adjustments
+ » Fixed an issue where resizing the Zine HTML5 viewer when using WebGL caused pages to unload inproperly
+ » A number of minor regression issues corrected for the WebGL mode
+ » Fixed an issue where printing a page in HTML5 mode would download unnessecary pages
+ » Author field added to our HTML annotations viewer. Supplying UserCollaboration as false but setting the CurrentUser property will mark each
+   annotation with the author.
+ » Issue fixed which caused loading to fail for IE7 & IE8 in some scenarios
+ » New initial loader added for FlexPaper Zine when publishing in html5 mode. The new loader will show the first page of the publication
+ » Improved slider dot graphics in Zine HTML5 mode
+ » Fixed an issue where the book button in the toolbar for Zine in HTML5 mode wasn't indicating the mode properly
+ » Fixed an issue where switching from Zine to Portrait in the Flash flip book viewer caused the zoom to be incorrect
+ » Swiping improved on phone devices for our Classic HTML5/HTML4 viewer
+ » Corrected an issue where css styles were too widely defined in the HTML5 & HTML4 viewer
+ » Fixed an issue where switching to full screen multiple times in IE11 would cause the full screen mode to fail
+ » Fixed an issue where the bottom border of the annotations toolbar was hidden on resize
+ » Fixed an issue where clearing annotatinos was not possible in some scenarios
+ » Fixed an issue where the sub folder parameter was not passed on to the flash viewer properly
+ » Fixed an issue where quotes (') in the file names of pdf files caused the files not to open in desktop publisher
+ » Fixed an issue where zoom transition wasn't respected in HTML5 publishing mode for the flip book reader
+ » Improved responsiveness in the flip book viewer, it will now use one-page mode when viewing a publication in portrait on a touch device.
+   Switches to portrait on orientation change
+ » Fixed an issue where the size of the document viewer shrunk when switching between portrait and flip book multiple times
+ » Fixed an issue where it wasn't possible to recreate the document viewer after calling dispose
+
+
+January
+ » HTML5 rendering routine updated (version 1.0.1040 build #997096f)
+ » Improved native HTML5 rendering in iOS
+ » Corrected an issue where the Zine viewer would update the current page number incorrectly on the last page in some scenarios
+ » Our HTML5 flip book reader now features a enhanced hardware accelerated 3D mode that can be turned on from the desktop publisher.
+   This 3D mode automatically measures the graphics card and will get turned off if the performance is too low (<35 fps). The viewer will in those
+   cases gracefully degrade down to use CSS3.
+ » Improved page shadows for the HTML5 flip book viewer
+ » Fixed an issue where resizing the HTML5 flip book viewer would generate a javascript error
+ » Improved stability of the preview mode in deskto publisher
+ » Fixed an issue where tapping on a note in android caused the soft keyboard to disappear after appearing when using annotations in HTML5 mode
+ » Fixed an issue where creating a note without any note text would generate errors
+ » Fixed a regression issue where printing annotations in HTML5 mode didn't produce any annotations
+ » Fixed an issue where clicking user added images (through desktop publisher) would prevent zoom in the Zine HTML5 viewer
+ » Improved IE9 compatibility for native HTML5 rendering
+ » Fixed an issue where the FullScreenAsMaxWindow didn't work for the Zine HTML5 viewer in some scenarios
+ » Automatic link detection added for links in text that has not been created as links in the PDF document. Can be turned off and on by passing
+   the "AutoDetectLinks" parameter to the viewer or by ticking this option inside desktop publisher (under Viewer Behavior Settings).
+ » Start up screen added to desktop publisher presenting the latest news when a new version is released
+ » Fixed an issue where part of the link description was appearing in the search abstracts for our HTML5 and Flash based document viewer
+ » Ability to disable mouse wheel zooming now added to desktop publisher for our Zine HTML5 and Flash publishing mode
+
+
+December
+ » Added additional checks for documents that fail to preview in desktop publisher
+ » Issue fixed where it wasn't possible to delete collaborative annotations in Chrome under the PHP set up if using collaboration mode
+ » Fixed an issue where navigating using the left/right buttons in html5 mode for our classic viewer, in zoomed in mode caused the page to
+   unintentionally navigate to the left or right end of the page
+ » Fixed an issue where it wasn't possible to publish Vimeo videos in offline mode
+ » Fix for publishing two fold publications where FlexPaper Publisher were adjusting the last page incorrectly in some cases
+ » New HTML5 based uploader added to our server packages
+ » Fixed an issue in desktop publisher where it wasn't possible to remove links and videos in certain scenarios
+ » Fixed an issue related to entering the zoom value into the input text box of FlexPaper zine where the zoom position got miscalculated
+ » Improved initial zoom position in Safari when using Zine in HTML5 mode
+ » Improved page turning speed in Firefox for Mac OSX
+ » Improved rendering quality at high zoom levels for the HTML5 Zine viewer
+ » Tighter security checks against XSS spoofing exploits added for the Adobe Flash version (extra thanks to Francisco Alonso)
+
+
+November
+ » Fixed an issue related to next / previous buttons getting disabled in certain scenarios under iOS
+ » Improved annotations support in full screen mode for iOS8
+ » Corrections to the HTML5 annotations viewer for loading differently sized pages in MixedMode
+ » A number of minor UI corrections for search abstracts in HTML5 & HTML4 mode
+ » Fixed an issue where links in iOS phone devices had their links truncated in certain scenarios
+ » Fixed an issue where links in iOS devices caused the pages to blur when zooming in in some scenarios
+ » Improvements for desktop Safari 7.1
+ » Improvements in desktop publisher for OSX Yosemite
+ » Ability to disable zooming into publications now added to Desktop Publisher
+ » Retina support added for desktop publisher and default rendering mode switched to GPU
+ » Artwork updated for our different viewers
+ » Correction for Windows Phone where it wasn't getting the correct user interface for Zine
+ » Vimeo video support added to desktop publisher (Zine and Classic, both Flash and HTML5 mode)
+ » New flat material style icon set for Zine! We hope you like it!
+ » Issue fixed where links close to each other were not exported properly
+ » Big performance improvement in converting documents on Windows for Destkop Publisher
+
+
 August/October
  » Issue fixed related to collaborative annotations where the notes property of marks would cause a javascript error in certain configurations.
  » Our HTML4 and HTML5 rendering modes now feature full support for printing annotations

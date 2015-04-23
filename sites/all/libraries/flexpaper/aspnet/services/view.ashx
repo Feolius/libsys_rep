@@ -124,11 +124,11 @@ public class view : IHttpHandler
 					if (configManager.getConfig("splitmode") == "true"){
 						splitpdfconv = new splitpdf(context.Server.MapPath(VirtualPathUtility.GetDirectory(context.Request.Path))+@"..\");
 						if(splitpdfconv.convert(pdfdoc)=="[OK]"){
-							context.Response.AddHeader("Content-type", "Content-Type: application/pdf");
+							context.Response.ContentType = "application/pdf";
 							context.Response.WriteFile(pdfSplitPath); 							
 						}
 					}else{
-						context.Response.AddHeader("Content-type", "Content-Type: application/pdf");				
+						context.Response.ContentType = "application/pdf";
 						context.Response.WriteFile(pdfFilePath); 
 					}
 			    }

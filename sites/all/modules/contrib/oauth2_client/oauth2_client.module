@@ -73,7 +73,7 @@ function oauth2_client_authorized() {
     $error_description = $_GET['error_description'];
     drupal_set_message("Error: $error: $error_description", 'error');
   }
-
+  
   // Redirect to the client that started the authentication.
   OAuth2\Client::redirect($clean = FALSE);
 }

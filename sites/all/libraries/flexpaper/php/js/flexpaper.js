@@ -48,6 +48,8 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
         touchdevice : (function(){try {return 'ontouchstart' in document.documentElement;} catch (e) {return false;} })(),
         android : (userAgent.indexOf("android") > -1),
         ios : ((userAgent.match(/iphone/i)) || (userAgent.match(/ipod/i)) || (userAgent.match(/ipad/i))),
+        iphone : (userAgent.match(/iphone/i)) || (userAgent.match(/ipod/i)),
+        ipad : (userAgent.match(/ipad/i)),
         winphone : userAgent.match(/Windows Phone/i),
         blackberry : userAgent.match(/BlackBerry/i),
         webos : userAgent.match(/webOS/i)
@@ -141,6 +143,8 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
         PreviewMode             : config.PreviewMode,
         PublicationTitle        : config.PublicationTitle,
         MixedMode               : config.MixedMode,
+        EnableWebGL             : config.EnableWebGL,
+        AutoDetectLinks         : config.AutoDetectLinks,
         BitmapBasedRendering 	: (config.BitmapBasedRendering!=null)?config.BitmapBasedRendering:false,
         StartAtPage 			: (config.StartAtPage!=null&&config.StartAtPage.toString().length>0&&!isNaN(config.StartAtPage))?config.StartAtPage:1,
         PrintPaperAsBitmap		: (config.PrintPaperAsBitmap!=null)?config.PrintPaperAsBitmap:((browser.safari||browser.mozilla)?true:false),
@@ -625,7 +629,7 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
 
         var supportsCanvasDrawing 	= 	(browser.mozilla && browser.version.split(".")[0] >= 4) ||
             (browser.chrome && browser.version.split(".") >= 535) ||
-            (browser.msie && browser.version.split(".")[0] >= 10) ||
+            (browser.msie && browser.version.split(".")[0] >= 9) ||
             (browser.safari && browser.version.split(".")[0] >= 535 /*&& !platform.ios*/);
 
         // Default to a rendering mode if its not set
@@ -643,6 +647,13 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
             conf.RenderingOrder = conf.RenderingOrder.replace(/flash/g, 'html');
         }
 
+        if(platform.ios){
+            var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+            if(v!=null && v.length>1){
+                platform.iosversion = [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)][0];
+            }
+        }
+
         var viewerId = jQuery(root).attr('id');
         var instance = "FlexPaperViewer_Instance"+((viewerId==="undefined")?"":viewerId);
 
@@ -657,7 +668,7 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
                     top: '0px',
                     position : 'relative',
                     width : '100%',
-                    height : ((1 - jQuery(wrapper).find('.flexpaper_toolbar').height() / jQuery(root).parent().height()) * 100) + '%',
+                    height : ((1 - jQuery(wrapper).find('.flexpaper_toolbar').height() / jQuery(root).parent().height()) * 100) + '%'
                 }).addClass('flexpaper_viewer');
             }
 
@@ -700,7 +711,7 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
                     top: '0px',
                     position : 'relative',
                     width : '100%',
-                    height : ((1 - jQuery(wrapper).find('.flexpaper_toolbar').height() / jQuery(root).parent().height()) * 100) + '%',
+                    height : ((1 - jQuery(wrapper).find('.flexpaper_toolbar').height() / jQuery(root).parent().height()) * 100) + '%'
                 }).addClass('flexpaper_viewer');
 
                 wrapper.prepend(jQuery(conf.Toolbar));
@@ -774,7 +785,8 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
 
                         // add fallback for html if not specified
                         if(conf.JSONFile!=null && conf.JSONFile.length>0 && conf.IMGFiles!=null && conf.IMGFiles.length>0){
-                            if(platform.ios || platform.android){ // ios should use html as preferred rendering mode if available.
+
+                            if((platform.ios /*&& (platform.iosversion<8 && platform.ipad)*/) || platform.android || (browser.msie && browser.version <=9)){ // ios should use html as preferred rendering mode if available.
                                 conf.RenderingOrder = "html" + (conf.RenderingOrder.length>0?",":"") + conf.RenderingOrder;
                             }else{
                                 conf.RenderingOrder += (conf.RenderingOrder.length>0?",":"")+"html";
@@ -790,7 +802,7 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
                             oRenderingList[0] = 'html';
                         }
 
-                        if(conf.PdfFile!=null && conf.PdfFile.length>0 && conf.RenderingOrder.split(",").length>=1 && supportsCanvasDrawing && (oRenderingList[0] == 'html5' || (oRenderingList.length > 1 && oRenderingList[0] == 'flash' && oRenderingList[1] == 'html5')) && !(platform.touchonlydevice && oRenderingList.length > 1 && oRenderingList[1] == 'html')){
+                        if(conf.PdfFile!=null && conf.PdfFile.length>0 && conf.RenderingOrder.split(",").length>=1 && supportsCanvasDrawing && (oRenderingList[0] == 'html5' || (oRenderingList.length > 1 && oRenderingList[0] == 'flash' && oRenderingList[1] == 'html5'))){
                             pageRenderer = new CanvasPageRenderer(viewerId,conf.PdfFile,conf.jsDirectory,
                                 {
                                     jsonfile                : conf.JSONFile,
@@ -840,6 +852,7 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
                                 Scale 					: conf.Scale,
                                 FitPageOnLoad 			: conf.FitPageOnLoad,
                                 FitWidthOnLoad 			: conf.FitWidthOnLoad,
+                                FullScreenAsMaxWindow   : conf.FullScreenAsMaxWindow,
                                 MinZoomSize 			: conf.MinZoomSize,
                                 MaxZoomSize 			: conf.MaxZoomSize,
                                 SearchMatchAll 			: conf.SearchMatchAll,
@@ -849,11 +862,14 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
                                 TouchInitViewMode       : conf.TouchInitViewMode,
                                 PreviewMode             : conf.PreviewMode,
                                 MixedMode               : conf.MixedMode,
+                                EnableWebGL             : conf.EnableWebGL,
                                 StartAtPage 			: conf.StartAtPage,
                                 RenderingOrder 			: conf.RenderingOrder,
                                 useCustomJSONFormat 	: conf.useCustomJSONFormat,
                                 JSONPageDataFormat 		: conf.JSONPageDataFormat,
                                 JSONDataType 			: conf.JSONDataType,
+                                ZoomTime     			: conf.ZoomTime,
+                                ZoomTransition          : conf.ZoomTransition,
                                 ZoomInterval 			: conf.ZoomInterval,
                                 ViewModeToolsVisible 	: conf.ViewModeToolsVisible,
                                 ZoomToolsVisible 		: conf.ZoomToolsVisible,
@@ -862,6 +878,7 @@ window.FlexPaperViewerEmbedding = window.$f = function(id, args) {
                                 SearchToolsVisible 		: conf.SearchToolsVisible,
                                 AnnotationToolsVisible  : conf.AnnotationToolsVisible,
                                 StickyTools 			: conf.StickyTools,
+                                AutoDetectLinks         : conf.AutoDetectLinks,
                                 PrintPaperAsBitmap 		: conf.PrintPaperAsBitmap,
                                 AutoAdjustPrintSize 	: conf.AutoAdjustPrintSize,
                                 EnableSearchAbstracts   : conf.EnableSearchAbstracts,
@@ -1029,7 +1046,7 @@ if (typeof PDFJS === 'undefined') {
     (typeof window !== 'undefined' ? window : this).PDFJS = {};
 }
 
-window.unsupportedPDFJSieversion = getIEversion()>0 && getIEversion()<=9;
+window.unsupportedPDFJSieversion = getIEversion()>0 && getIEversion()<9;
 // Checking if the typed arrays are supported
 (function checkTypedArrayCompatibility() {
     if (typeof Uint8Array !== 'undefined') {

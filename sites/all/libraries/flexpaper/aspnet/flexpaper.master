@@ -4,7 +4,6 @@
 <head id="Head1" runat="server">
     <title>FlexPaper</title>
     <link href="admin_files/css/install.css" rel="stylesheet" type="text/css" />
-    <link href="admin_files/css/uploadify.css" rel="stylesheet" type="text/css" />
     
     <style type="text/css" media="screen"> 
 			html, body	{ height:100%; }

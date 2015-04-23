@@ -16,6 +16,11 @@ function egw_oauth_menu() {
   );
   $items['auth/login'] = array(
     'page callback' => 'egw_oauth_login_callback',
+    'access callback' => 'user_is_anonymous',
+    'type' => MENU_CALLBACK,
+  );
+  $items['flexpaper/test'] = array(
+    'page callback' => 'egw_oauth_test_flexpaper',
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
@@ -36,11 +41,18 @@ function egw_oauth_oauth2_clients() {
     'client_secret' => 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs',
     'scope' => 'user_info',
   );
-
+  $staging_server_url = 'http://api.staging.egwwritings.org/3.0/';
+  $oauth2_clients['staging_egwwritings'] = array(
+    'token_endpoint' => $staging_server_url . 'auth/token',
+    'auth_flow' => 'server-side',
+    'redirect_uri' => 'http://library.ellenwhite.org/auth/',
+    'authorization_endpoint' => $staging_server_url. 'auth/',
+    'client_id' => 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS',
+    'client_secret' => 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs',
+    'scope' => 'user_info',
+  );
   return $oauth2_clients;
 }
-
-
 
 /**
  * Callback for path auth/authorized.
@@ -56,101 +68,32 @@ function egw_oauth_authorized() {
     $error_description = $_GET['error_description'];
     drupal_set_message("Error: $error: $error_description", 'error');
   }
-
   // Redirect to the client that started the authentication.
   OAuth2\Client::redirect($clean = FALSE);
 }
 
 function egw_oauth_login_callback() {
-    try {
-      $oauth2_client = oauth2_client_load('egwwritings');
-      $access_token = $oauth2_client->getAccessToken();
-    } catch (Exception $e) {
-      drupal_set_message($e->getMessage(), 'error');
-    }
+  $access_token = egw_oauth_get_access_token('staging_egwwritings');
+ // $access_token = egw_oauth_get_access_token('egwwritings');
+  return egw_oauth_get_user_data($access_token);
 }
 
 function egw_oauth_token_callback() {
-  if (isset($_GET['error'])) {
-    $error = $_GET['error'];
-    $error_description = $_GET['error_description'];
-    drupal_set_message("Error: $error: $error_description", 'error');
-    drupal_goto('user');
-  }
-  $client_id = 'RfznKiGZzQTHzrnZFi6tNSEbrb3bhzE3F3deaK5znK7K3iytzrN87eakh3ntkTfS';
-  $client_secret = 'HkZHZQ79k5Hbb6yBh8zedzskkGFAnQeZ35yNGsKYhhZkdfNkd8tfyKyHf38yEbfs';
+  $access_token = egw_oauth_get_access_token('staging_egwwritings');
   $options = array(
-    'method' => 'POST',
+    'method' => 'GET',
     'data' => http_build_query(array(
-      'grant_type' => 'authorization_code',
-      'code' => $_GET['code'],
-      'client_id' => $client_id,
-      'client_secret' => $client_secret,
-      'redirect_uri' => 'http://library.ellenwhite.org/auth/',
+      'token_type' => 'Bearer',
     )),
     'headers' => array(
-      'Content-Type' => 'application/x-www-form-urlencoded',
-      'Authorization' => 'Basic ' . base64_encode("$client_id:$client_secret"),
+      'Authorization' => 'Bearer ' . $access_token,
     ),
+
   );
-  $token_endpoint = 'https://egwwritings.org/api/stable/auth/token/';
+  $token_endpoint = 'http://api.staging.egwwritings.org/3.0/subscriptions/getall/';
   $result = drupal_http_request($token_endpoint, $options);
-  if ($result->code != 200) {
-    $error_data = json_decode($result->data);
-    drupal_set_message("Error: $error_data->error: $error_data->error_description", 'error');
-  }
-  $token = json_decode($result->data);
-
-  $options = array(
-    'method' => 'POST',
-    'data' => http_build_query(array(
-      'client_id' => $client_id,
-      'client_secret' => $client_secret,
-      'token_type' => $token->token_type,
-    )),
-    'headers' => array(
-      'Authorization' => 'Bearer ' . $token->access_token,
-    ),
-  );
-  $token_endpoint = 'https://egwwritings.org/api/2.3/info/';
-  $login_cred = drupal_http_request($token_endpoint, $options);
-  if ($login_cred->code != 200) {
-    $error_data = json_decode($result->data);
-    drupal_set_message("Error: $error_data->error: $error_data->error_description", 'error');
-  }
-  $user_cred = json_decode($login_cred->data);
-  if ($user_cred->email) {
-    $query = db_select('users', 'u')
-      ->fields('u', array('uid'))
-      ->condition('u.status', 1)
-      ->condition('u.mail', $user_cred->email);
-    $result = $query->execute()->fetchObject();
-  }
-  if ($result) {
-    global $user;
-    $user = user_load($result->uid);
-    drupal_session_regenerate();
-    drupal_goto('user');
-  }
-  else {
-    $edit = array(
-      'name' => egw_oauth_username_generate($user_cred->username),
-      'mail' => $user_cred->email,
-      'pass' => user_password(),
-      'status' => 1,
-    );
-    $account = user_save(drupal_anonymous_user(), $edit);
-    // Manually set the password so it appears in the e-mail.
-    $account->password = $edit['pass'];
-
-    // Send the e-mail through the user module.
-    drupal_mail('user', 'register_no_approval_required', $user_cred->email, NULL, array('account' => $account), variable_get('site_mail', 'noreply@example..com'));
-    global $user;
-    $user = $account;
-    drupal_session_regenerate();
-    drupal_goto('user');
-
-  }
+  krumo($result);
+  return;
 }
 
 function egw_oauth_username_generate($name) {
@@ -177,4 +120,93 @@ function egw_oauth_form_alter(&$form, &$form_state, $form_id) {
     );
   }
   */
+}
+
+/**
+ * Implements hook_init().
+ */
+function egw_oauth_init() {
+  unset($_REQUEST['q']);
+}
+
+function egw_oauth_get_user_data($access_token) {
+  $options = array(
+    'method' => 'POST',
+    'data' => http_build_query(array(
+      'token_type' => 'Bearer',
+    )),
+    'headers' => array(
+      'Authorization' => 'Bearer ' . $access_token,
+    ),
+  );
+ // $token_endpoint = 'https://egwwritings.org/api/stable/info/';
+  $token_endpoint = 'http://api.staging.egwwritings.org/3.0/info/';
+  $result = drupal_http_request($token_endpoint, $options);
+  if ($result->code != 200) {
+    throw new Exception(t("Failed to get an user data.\nError: !result_error",
+      array('!result_error' => $result->error)
+    ));
+  }
+  $data = json_decode($result->data);
+  if ($data->email) {
+    $query = db_select('users', 'u')
+      ->fields('u', array('uid'))
+      ->condition('u.status', 1)
+      ->condition('u.mail', $data->email);
+    $account = $query->execute()->fetchObject();
+  }
+  if (is_object($account)) {
+    global $user;
+    $user = user_load($account->uid);
+    drupal_session_regenerate();
+    drupal_goto('user');
+  }
+  else {
+    $edit = array(
+      'name' => egw_oauth_username_generate($data->username),
+      'mail' => $data->email,
+      'pass' => user_password(),
+      'status' => 1,
+    );
+    $account = user_save(drupal_anonymous_user(), $edit);
+    // Manually set the password so it appears in the e-mail.
+    $account->password = $edit['pass'];
+
+    // Send the e-mail through the user module.
+    drupal_mail('user', 'register_no_approval_required', $data->email, NULL, array('account' => $account), variable_get('site_mail', 'noreply@example..com'));
+    global $user;
+    $user = $account;
+    drupal_session_regenerate();
+    drupal_goto('user');
+  }
+  return;
+}
+
+function egw_oauth_get_access_token($client) {
+  try {
+    $oauth2_client = oauth2_client_load($client);
+    $access_token = $oauth2_client->getAccessToken();
+  } catch (Exception $e) {
+    drupal_set_message($e->getMessage(), 'error');
+  }
+  return $access_token;
+}
+
+function egw_oauth_test_flexpaper() {
+  return drupal_get_form('egw_oauth_flexpaper_form');
+}
+
+function egw_oauth_flexpaper_form($form_state) {
+  $form = array();
+  drupal_add_js(libraries_get_path('flexpaper') . '/js/pdf.min.js');
+  drupal_add_js(libraries_get_path('flexpaper') . '/js/flexpaper.js');
+  drupal_add_js(libraries_get_path('flexpaper') . '/js/FlexPaperViewer.js');
+  drupal_add_js(libraries_get_path('flexpaper') . '/js/flexpaper_handlers.js');
+  drupal_add_js(libraries_get_path('flexpaper') . '/js/jquery.extensions.min.js');
+  drupal_add_css(libraries_get_path('flexpaper') . '/css/flexpaper.css');
+  drupal_add_js(drupal_get_path('module', 'egw_oauth') . '/egw_oauth.js');
+  $form['pdp'] = array(
+    '#markup' => '<div id="parent_flex" style="width:70%;"><div id="documentFlex"></div></div></div>',
+  );
+  return $form;
 }

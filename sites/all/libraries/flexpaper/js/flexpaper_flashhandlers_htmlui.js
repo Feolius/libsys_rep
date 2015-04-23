@@ -329,7 +329,6 @@ FLEXPAPER.bindFlashEventHandlers = FLEXPAPER.flashEventHandlers = (function(el){
             $FlexPaper(viewerId).openFullScreen();
             return;
          }
-
          if(window.FlexPaperTrueFullscreen){
              if (document.cancelFullScreen) {
                  document.cancelFullScreen();
@@ -356,12 +355,15 @@ FLEXPAPER.bindFlashEventHandlers = FLEXPAPER.flashEventHandlers = (function(el){
              if (document.documentElement.requestFullScreen) {
                  wrapper['requestFullScreen']();
                  jQuery(this).parent().css({position: 'absolute',left: '0px',top: '0px',width : '100%',height: '100%'});
+                 jQuery('#'+viewerId).css({height: '93%'});
              } else if (document.documentElement.mozRequestFullScreen) {
                  wrapper['mozRequestFullScreen']();
                  jQuery(this).parent().css({position: 'absolute',left: '0px',top: '0px',width : '100%',height: '100%'});
+                 jQuery('#'+viewerId).css({height: '93%'});
              } else if (document.documentElement.webkitRequestFullScreen) { // safari disabled for now. doesn't work properly
                  wrapper['webkitRequestFullScreen'](Element.ALLOW_KEYBOARD_INPUT);
-                 jQuery(this).parent().css({position: 'absolute',left: '0px',top: '0px',width : '100%',height: (100-0)+'%'}); // -bottomMargin not needed?
+                 jQuery(this).parent().css({position: 'absolute',left: '0px',top: '0px',width : '100%',height: '100%'}); // -bottomMargin not needed?
+                 jQuery('#'+viewerId).css({height: '93%'});
              } else{
                  params  = 'toolbar=no, location=no, scrollbars=no, width='+screen.width;
                  params += ', height='+screen.height;
@@ -383,7 +385,7 @@ FLEXPAPER.bindFlashEventHandlers = FLEXPAPER.flashEventHandlers = (function(el){
                  htmldata += '<scr'+'ipt type="text/javascript" src="js/flexpaper_flashhandlers_htmlui.js"></scr'+'ipt>';
                  htmldata += '</head>';
                  htmldata += '<body onload="openViewer();">';
-                 htmldata += '<div id="documentViewer" style="width:100%;height:100%;">';
+                 htmldata += '<div id="documentViewer" style="position:absolute;left:0px;top:0px;width:100%;height:100%;">';
                  htmldata += '</div>';
                  htmldata += '<scr'+'ipt type="text/javascript">';
                  htmldata += 'function openViewer(){';

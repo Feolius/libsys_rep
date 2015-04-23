@@ -30,8 +30,11 @@ if (!empty($_FILES)) {
 	$fileParts = pathinfo($_FILES['Filedata']['name']);
 	
 	if (in_array($fileParts['extension'],$fileTypes)) {
-		move_uploaded_file($tempFile,$targetFile);
-		echo '1';
+		if(move_uploaded_file($tempFile,$targetFile)){
+			echo '1';
+		}else{
+			echo '0';
+		}
 	} else {
 		echo 'Invalid file type.';
 	}
