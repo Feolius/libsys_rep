@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function egw_subscription_menu() {
+  $items = array();
+  $items['user/%user/subscription'] = array(
+    'title' => t('Subscriptions'),
+    'description' => 'List the subscriptions of logged in user.',
+    'page callback' => 'egw_subscription_list_subscriptions',
+    'page arguments' => array(1),
+    'access arguments' => array('manage egw subscriptions'),
+    'type' => MENU_LOCAL_TASK
+  );
+  $items['user/%user/subscription/add'] = array(
+    'title' => t('Add Subscription'),
+    'description' => 'List the subscriptions of logged in user.',
+    'page callback' => 'egw_subscription_add_subscription',
+    'page arguments' => array(1),
+    'access arguments' => array('manage egw subscriptions'),
+    'type' => MENU_LOCAL_TASK
+  );
+  return $items;
+}
+
+function egw_subscription_list_subscriptions($user) {
+  $output = l(t('Add Subscription'), 'user/' . $user->uid . '/subscription/add');
+  $output .= theme('table');
+  return $output;
+}
+
+function egw_subscription_add_subscription() {
+
+}

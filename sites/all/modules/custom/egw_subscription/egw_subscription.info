@@ -1,0 +1,5 @@
+name = EGW Subscriptions
+description = Adds Subscriptions from https://egwwritings.org/
+package = Ellen G. White Estate
+core = 7.x
+files[] = egw_subscription.module
