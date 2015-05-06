@@ -14,14 +14,15 @@ function egw_oauth_menu() {
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
+  $items['auth/request/%'] = array(
+    'page callback' => 'egw_oauth_request_callback',
+    'page arguments' => array(1),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
   $items['auth/login'] = array(
     'page callback' => 'egw_oauth_login_callback',
     'access callback' => 'user_is_anonymous',
-    'type' => MENU_CALLBACK,
-  );
-  $items['flexpaper/test'] = array(
-    'page callback' => 'egw_oauth_test_flexpaper',
-    'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
   return $items;
@@ -107,22 +108,6 @@ function egw_oauth_username_generate($name) {
 }
 
 /**
- * Implements hook_form_alter().
- */
-function egw_oauth_form_alter(&$form, &$form_state, $form_id) {
-  /*
-  if ($form_id == 'user_login') {
-    $form['from'] = array(
-      '#type' => 'item',
-      '#title' => t('Or log in with egwwritings.org account'),
-      '#markup' => l(t('Log in'), 'auth/login'),
-      '#description' => t('If you do not have an account on our site it will automatically be created')
-    );
-  }
-  */
-}
-
-/**
  * Implements hook_init().
  */
 function egw_oauth_init() {
@@ -192,21 +177,46 @@ function egw_oauth_get_access_token($client) {
   return $access_token;
 }
 
-function egw_oauth_test_flexpaper() {
-  return drupal_get_form('egw_oauth_flexpaper_form');
+function egw_oauth_make_request($path, $data, $access_token) {
+  $data['token_type'] = 'Bearer';
+  $options = array(
+    'method' => 'POST',
+    'data' => http_build_query($data),
+    'headers' => array(
+      'Authorization' => 'Bearer ' . $access_token,
+      'Content-Type' => 'application/x-www-form-urlencoded'
+    ),
+  );
+  $token_endpoint = 'http://api.staging.egwwritings.org/3.0/'.$path;
+  $result = drupal_http_request($token_endpoint, $options);
+  if ($result->code != 200) {
+    drupal_set_message(t($result->error), 'error');
+    /*
+    throw new Exception(t("Failed to make a request.\nError: !result_error",
+      array('!result_error' => $result->error)
+    ));
+    */
+    return $result;
+  }
+  return json_decode($result->data);
 }
 
-function egw_oauth_flexpaper_form($form_state) {
-  $form = array();
-  drupal_add_js(libraries_get_path('flexpaper') . '/js/pdf.min.js');
-  drupal_add_js(libraries_get_path('flexpaper') . '/js/flexpaper.js');
-  drupal_add_js(libraries_get_path('flexpaper') . '/js/FlexPaperViewer.js');
-  drupal_add_js(libraries_get_path('flexpaper') . '/js/flexpaper_handlers.js');
-  drupal_add_js(libraries_get_path('flexpaper') . '/js/jquery.extensions.min.js');
-  drupal_add_css(libraries_get_path('flexpaper') . '/css/flexpaper.css');
-  drupal_add_js(drupal_get_path('module', 'egw_oauth') . '/egw_oauth.js');
-  $form['pdp'] = array(
-    '#markup' => '<div id="parent_flex" style="width:70%;"><div id="documentFlex"></div></div></div>',
+function egw_oauth_request_callback($type) {
+  $access_token = egw_oauth_get_access_token('staging_egwwritings');
+  $data= array(
+    'type' => $type
   );
-  return $form;
+ // $result =  egw_oauth_make_request('subscriptions/list_languages/',$data,$access_token);
+  $result =  egw_oauth_make_request('subscriptions/list_items/',$data,$access_token);
+  $data = json_decode($result->data);
+     if ($result->code != 200) {
+      throw new \Exception(
+        t("Failed to get an access token of grant_type @grant_type.\nError: @result_error",
+          array(
+            '@grant_type' => $data['grant_type'],
+            '@result_error' => $result->error,
+          ))
+      );
+    }
+    return json_decode($result->data);
 }

@@ -5,31 +5,376 @@
  */
 function egw_subscription_menu() {
   $items = array();
+
+  $items['user/%user/subscription/view'] = array(
+    'title' => 'View',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
   $items['user/%user/subscription'] = array(
-    'title' => t('Subscriptions'),
+    'title' => t('My subscriptions'),
     'description' => 'List the subscriptions of logged in user.',
-    'page callback' => 'egw_subscription_list_subscriptions',
-    'page arguments' => array(1),
-    'access arguments' => array('manage egw subscriptions'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('egw_subscription_user_subscriptions', 1),
+    'access callback' => 'egw_subscription_access',
+    'access arguments' => array(1),
     'type' => MENU_LOCAL_TASK
   );
-  $items['user/%user/subscription/add'] = array(
-    'title' => t('Add Subscription'),
-    'description' => 'List the subscriptions of logged in user.',
-    'page callback' => 'egw_subscription_add_subscription',
-    'page arguments' => array(1),
-    'access arguments' => array('manage egw subscriptions'),
+  $items['user/%user/subscription/available_subscriptions'] = array(
+    'title' => t('Available subscriptions'),
+    'description' => 'List of the available subscriptions.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('egw_subscription_list_subscriptions', 1),
+    'access callback' => 'egw_subscription_access',
+    'access arguments' => array(1),
     'type' => MENU_LOCAL_TASK
+  );
+  $items['user/%user/subscription/%/edit'] = array(
+    'title' => t('Edit Subscription'),
+    'description' => 'Edit the user subscription.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('egw_subscription_edit_subscription', 1, 3),
+    'access callback' => 'egw_subscription_access',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK
   );
   return $items;
 }
 
-function egw_subscription_list_subscriptions($user) {
-  $output = l(t('Add Subscription'), 'user/' . $user->uid . '/subscription/add');
-  $output .= theme('table');
-  return $output;
+function egw_subscription_list_subscriptions($form, $form_state, $user) {
+  $form = array();
+  $access_token = egw_oauth_get_access_token('staging_egwwritings');
+  $available_types = egw_oauth_make_request('subscriptions/list_types', NULL, $access_token);
+  $default_title = isset($form_state['values']['title']) ? $form_state['values']['title'] : '';
+  $default_type = isset($form_state['values']['list_types']) ? $form_state['values']['list_types'] : 'books';
+  $form['list_types'] = array(
+    '#type' => 'select',
+    '#title' => t('Type'),
+    '#options' => $available_types,
+    '#default_value' => $default_type,
+    '#ajax' => array(
+      'callback' => 'egw_subscription_languages_callback',
+      'wrapper' => 'list-languages',
+    ),
+  );
+  $available_languages['none'] = t('None');
+  $languages = egw_oauth_make_request('subscriptions/list_languages', array('type' => $default_type), $access_token);
+  foreach ($languages as $key => $language) {
+    $available_languages[$language->id] = $language->name;
+  }
+  $default_language = isset($form_state['values']['list_languages']) ? $form_state['values']['list_languages'] : 'none';
+  $form['list_languages'] = array(
+    '#type' => 'select',
+    '#title' => t('Language'),
+    '#options' => $available_languages,
+    '#default_value' => $default_language,
+    '#prefix' => '<div id="list-languages">',
+    '#suffix' => '</div>',
+  );
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Text'),
+    '#default_value' => $default_title,
+    '#size' => 60,
+    '#maxlength' => 64,
+  );
+  $form['preview'] = array(
+    '#type' => 'button',
+    '#value' => t('Search'),
+    '#ajax' => array(
+      'callback' => 'egw_subscription_items_callback',
+      'wrapper' => 'list-subscriptions-items',
+    ),
+  );
+  $form['items'] = array(
+    '#type' => 'fieldset',
+    '#weight' => 5,
+    '#collapsible' => TRUE,
+    '#prefix' => '<div id="list-subscriptions-items">',
+    '#suffix' => '</div>',
+    '#collapsed' => FALSE,
+  );
+  $items_data = array(
+    'type' => $default_type,
+    'lang_id' => ($default_language == 'none') ? 1 : $default_language,
+    'filter' => $default_title,
+  );
+  $data = egw_oauth_make_request('subscriptions/list_items/', $items_data, $access_token);
+  if ($data) {
+    if (count($data)) {
+      foreach ($data as $key => $record) {
+        $rows[$record->pubnr] = array(
+          'id' => array('data' => $record->pubnr),
+          'title' => array('data' => $record->title),
+          'code' => array('data' => $record->code),
+          'npages' => array('data' => $record->npages)
+        );
+      }
+    }
+    $per_page = 25;
+    // Initialize the pager
+    $current_page = pager_default_initialize(count($rows), $per_page);
+    // Split your list into page sized chunks
+    $chunks = array_chunk($rows, $per_page, TRUE);
+
+    pager_default_initialize(count($data), $limit = 30, $element = 0);
+    $form['items']['pager'] = array(
+      '#weight' => 100,
+      '#markup' => theme('pager', array(
+        'quantity',
+        count($rows)
+      ))
+    );
+  }
+  $header = array(
+    'id' => array('data' => t('Id')),
+    'title' => array('data' => t('Title')),
+    'code' => array('data' => t('Code')),
+    'npages' => array('data' => t('Pages amount')),
+  );
+  $form['items']['lang_id'] = array(
+    '#type' => 'hidden',
+    '#value' => $default_language
+  );
+  $form['items']['sub_type'] = array(
+    '#type' => 'hidden',
+    '#value' => $default_type
+  );
+  $form['items']['subscriptions'] = array(
+    '#type' => 'tableselect',
+    '#header' => $header,
+    '#options' => isset($chunks) ? $chunks[$current_page] : NULL,
+    '#empty' => t('No content available.'),
+  );
+
+  $form['submit'] = array(
+    '#value' => t('Submit'),
+    '#weight' => 100,
+    '#type' => 'submit'
+  );
+  return $form;
 }
 
-function egw_subscription_add_subscription() {
+function egw_subscription_list_subscriptions_submit($form, &$form_state) {
+  $items = array_filter($form_state['values']['subscriptions']);
+  $access_token = egw_oauth_get_access_token('staging_egwwritings');
+  foreach ($items as $key => $item) {
+    $data = array(
+      'type' => $form_state['values']['sub_type'],
+      'item_id' => $item,
+      'lang_id' => $form_state['values']['lang_id']
+    );
+    $response = egw_oauth_make_request('subscriptions/add/', $data, $access_token);
+    if ($response->id) {
+      drupal_set_message(t('Your subscription to ' . $form['items']['subscriptions']['#options'][$key]['title']['data'] . ' has been removed'));
+    }
+    else {
+      drupal_set_message(t('Error'), 'error');
+    }
+  }
+}
 
+/*
+ * Ajax callback for egw_subscription_list_subscriptions.
+ */
+function egw_subscription_languages_callback($form, $form_state) {
+  return $form['list_languages'];
+}
+
+/*
+ * Ajax callback for egw_subscription_list_subscriptions.
+ */
+function egw_subscription_items_callback($form, $form_state) {
+  return $form['items'];
+}
+
+function egw_subscription_user_subscriptions($form, $form_state, $user) {
+  $access_token = egw_oauth_get_access_token('staging_egwwritings');
+  $data = egw_oauth_make_request('subscriptions/getall/', array(), $access_token);
+  $header = array(
+    'title' => array('data' => t('Title')),
+    'type' => array('data' => t('Type')),
+    'pages_per_day' => array('data' => t('Pages per day')),
+    'delivery_method' => array('data' => t('Delivery_method')),
+    'created' => array('data' => t('Created date')),
+    'operations' => array('data' => t('Operations'))
+  );
+  if ($data) {
+    foreach ($data as $key => $record) {
+      $rows[$record->id] = array(
+        'title' => $record->title,
+        'delivery_method' => $record->delivery_method,
+        'type' => $record->type,
+        'pages_per_day' => $record->pages_per_day,
+        'created' => $record->created,
+        'operations' => l('Edit', 'user/' . $user->uid . '/subscription/' . $record->id . '/edit'),
+      );
+    }
+
+  }
+  else {
+    $rows = array();
+  }
+
+  $form['subscriptions'] = array(
+    '#type' => 'tableselect',
+    '#header' => $header,
+    '#options' => $rows,
+    '#empty' => t('You have no subscriptions.'),
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Remove'),
+  );
+  return $form;
+}
+
+function egw_subscription_user_subscriptions_submit($form, &$form_state) {
+  $access_token = egw_oauth_get_access_token('staging_egwwritings');
+  $subscriptions = array_filter($form_state['values']['subscriptions']);
+  foreach ($subscriptions as $key => $subscription) {
+    $response = egw_oauth_make_request('subscriptions/remove/', array('id' => $subscription), $access_token);
+    if ($response->deleted_count == 1) {
+      drupal_set_message(t('Your subscription to ' . $form['subscriptions']['#options'][$key]['title'] . ' has been removed'));
+    }
+    else {
+      drupal_set_message(t('Error.Please contact the site administrator'), 'error');
+    }
+  }
+}
+
+function egw_subscription_edit_subscription($form, $form_state, $user, $sub_id) {
+  $access_token = egw_oauth_get_access_token('staging_egwwritings');
+  $data = egw_oauth_make_request('subscriptions/getone/', array('id' => $sub_id), $access_token);
+  // $list_delivery_methods = egw_oauth_make_request('subscriptions/list_delivery_methods/', array('type' => $data->type), $access_token);
+  $form['title'] = array(
+    '#markup' => t($data->title),
+  );
+  if ($data) {
+    $form['title'] = array(
+      '#title' => t('Title'),
+      '#type' => 'item',
+      '#markup' => t($data->title),
+    );
+    $form['type'] = array(
+      '#title' => t('Type'),
+      '#type' => 'item',
+      '#markup' => t($data->type),
+    );
+    $form['created'] = array(
+      '#title' => t('Created'),
+      '#type' => 'item',
+      '#markup' => t($data->created),
+    );
+    $form['active'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Active'),
+      '#default_value' => $data->is_active,
+      '#sescription' => t('You will not receive any e-mails from this subsscription if this checkbox is unchecked.')
+    );
+    if ($data->type == 'books') {
+      $form['pages_per_day'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Pages per day'),
+        '#element_validate' => array('egw_subscription_pages_per_day_validate'),
+        '#size' => 5,
+        '#maxlength' => 4,
+        '#default_value' => $data->pages_per_day,
+        '#description' => t('How many pages would you like to read per day?')
+      );
+    }
+    $form['delivery_method'] = array(
+      '#type' => 'item',
+      '#title' => t('Delivery_method'),
+      '#markup' => $data->delivery_method
+    );
+    for ($i = 0; $i < strlen($data->weekdays); $i++) {
+      $weekdays_array[] = $data->weekdays[$i];
+    }
+    $form['weekdays'] = array(
+      '#type' => 'checkboxes',
+      '#required' => TRUE,
+      '#title' => t('Weekdays'),
+      '#default_value' => $weekdays_array,
+      '#description' => t('Define the days on which you would like to receive your subscription'),
+      '#options' => array(
+        '1' => t('Monday'),
+        '2' => t('Tuesday'),
+        '3' => t('Wednesday'),
+        '4' => t('Thursday'),
+        '5' => t('Friday'),
+        '6' => t('Saturday'),
+        '7' => t('Sunday')
+      )
+    );
+    $form['finished'] = array(
+      '#title' => t('Is finished'),
+      '#type' => 'item',
+      '#markup' => $data->is_finished == 0 ? t('No') : t('Yes'),
+    );
+    $form['update'] = array('#type' => 'submit', '#value' => t('Update'));
+    $form['delete'] = array('#type' => 'submit', '#value' => t('Delete'));
+  }
+  return $form;
+}
+
+function egw_subscription_edit_subscription_submit($form, &$form_state) {
+  $access_token = egw_oauth_get_access_token('staging_egwwritings');
+  if ($form_state['values']['op'] == 'Delete') {
+    if (is_numeric(arg(3))) {
+      $response = egw_oauth_make_request('subscriptions/remove/', array('id' => arg(3)), $access_token);
+      if ($response->deleted_count == '1') {
+        drupal_set_message(t('Subscription has been removed'));
+      }
+    }
+  }
+  else {
+    if ($form_state['values']['op'] == 'Update') {
+      if (is_numeric(arg(3))) {
+        $weekdays = implode('', $form_state['values']['weekdays']);
+        $options = array(
+          'id' => arg(3),
+          'is_active' => $form_state['values']['active'],
+          'weekdays' => $weekdays,
+        );
+        if ($form['type']['#markup'] == 'books') {
+          $options['pages_per_day'] = $form_state['values']['pages_per_day'];
+        }
+        $response = egw_oauth_make_request('subscriptions/edit/', $options, $access_token);
+        if ($response->result == 1) {
+          drupal_set_message(t('Subscription has been updated'));
+        }
+      }
+    }
+  }
+}
+
+/*
+ * Validate function for pages per day form element
+ */
+function egw_subscription_pages_per_day_validate($element, &$form_state) {
+  if (!(is_numeric($element['#value']) && ($element['#value'] > 0))) {
+    form_error($element, t('Pages should be a number greater than zero'));
+  }
+}
+
+/**
+ * Access callback for user subscription section.
+ */
+function egw_subscription_access($account) {
+  return ($GLOBALS['user']->uid == $account->uid);
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function egw_subscription_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'user_login') {
+    $form['from'] = array(
+      '#type' => 'item',
+      '#title' => t('Or log in with egwwritings.org account'),
+      '#markup' => l(t('Log in'), 'auth/login'),
+      '#description' => t('If you do not have an account on our site it will automatically be created')
+    );
+  }
 }
