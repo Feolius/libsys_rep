@@ -362,13 +362,14 @@ function egw_subscription_pages_per_day_validate($element, &$form_state) {
  * Access callback for user subscription section.
  */
 function egw_subscription_access($account) {
-  return ($GLOBALS['user']->uid == $account->uid);
+  return ($GLOBALS['user']->uid == $account->uid &&  user_access('administer users'));
 }
 
 /**
  * Implements hook_form_alter().
  */
 function egw_subscription_form_alter(&$form, &$form_state, $form_id) {
+  /*
   if ($form_id == 'user_login') {
     $form['from'] = array(
       '#type' => 'item',
@@ -377,4 +378,5 @@ function egw_subscription_form_alter(&$form, &$form_state, $form_id) {
       '#description' => t('If you do not have an account on our site it will automatically be created')
     );
   }
+  */
 }

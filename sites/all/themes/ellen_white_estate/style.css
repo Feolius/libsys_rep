@@ -79,7 +79,13 @@ a:active, img:active{-webkit-transition: all 0.05s ease-out; -moz-transition: al
 
 html{ color: #606060; }
 
-body { font: 0.8em/165% 'Open Sans',Helvetica,Arial,sans-serif; margin:0; padding:0; outline:0 none; vertical-align:baseline;  min-width:960px; }
+body {
+  font: 0.8em/165% 'Open Sans',Helvetica,Arial,sans-serif;
+  margin:0;
+  padding:0;
+  outline:0 none;
+  vertical-align:baseline;
+}
 
 h1, h2, h3, h4, h5, h6 { margin:25px 0 20px 0; line-height:1.2; }
 
@@ -149,7 +155,17 @@ blockquote { background:transparent url('images/blockquote.png') no-repeat top l
 #header-inside { width: 960px; margin: 0 auto; padding:30px 0; overflow:hidden; } 
 
 #logo img{ box-shadow:none; -webkit-box-shadow:none;}
+#egw-logo {
+  float:right;
+  margin-left: 10px;
+}
+#header-inside-left .pane-page-logo {
+  float:left;
+}
 
+#header-inside-left  .panel-separator{
+  display:none;
+}
 #header-menu { clear:both; background:#187CA6; box-shadow:0 3px 95px 0 rgba(0, 0, 0, 0.5), 0 1px 5px 0 rgba(0, 0, 0, 0.2); -webkit-box-shadow:0 3px 95px 0 rgba(0, 0, 0, 0.5), 0 1px 5px 0 rgba(0, 0, 0, 0.2);}
 
 #header-menu-inside { width: 960px; margin: 0 auto; height:40px; line-height:40px; position:relative;} 
@@ -228,7 +244,23 @@ box-shadow: inset 0 0 18px 0 rgba(0, 0, 0, 0.15);
 
 .front #content-inside{ padding-top: 30px;}
 
-#main { float:left; width: 690px; margin:0;}
+#main {
+  float:left;
+  width: 100%;
+  margin:0;
+}
+
+#block-system-main .panel-node {
+  width: 100%;
+}
+
+#main .pane-page-breadcrumb{
+  margin-right: 266px;
+}
+
+#main .main_inside{
+  margin-right: 266px;
+}
 
 .not-front #main .main_inside{padding:25px; background:#f9f7f4; position:relative;}
 
@@ -352,9 +384,20 @@ box-shadow: inset 0 0 18px 0 rgba(0, 0, 0, 0.15);
 #main .search-results p{ margin-bottom:8px;}
 
 
-#sidebar { float:right; width: 246px; padding:0; margin-top:20px;} 
+#sidebar {
+  float:right;
+  width: 246px;
+  margin-left:-246px;
+  padding:0;
+  margin-top:20px;
+}
 
-#sidebar .pane-content {  background: #f9f7f4;   padding: 14px;    margin: 0 0 40px 0;}
+#sidebar .pane-content {
+  background: #f9f7f4;
+  padding: 14px;
+  overflow: hidden;
+  margin: 0 0 40px 0;
+}
 
 #sidebar .facetapi_range_info{ float:right;}
 
@@ -506,12 +549,52 @@ body > .openseadragon{ background:url(images/main_bg.jpg) #181b20;}
 
 .node.node-teaser { border-bottom:1px dotted #3A3F46; padding-bottom:30px; margin-bottom:30px; }
 
-.flexpaper_pages_border{ padding:0; height:100% !important;}
+.flexpaper_toolbarstd { border-color:#D3D3D3;}
 
-.flexpaper-viewer-container, .flexpaper_viewer_container{ background:none !important;}
+/*
+.flexpaper_page {
+  width:100% !important;
+}
 
-.flexpaper_toolbarstd, .flexpaper_pages_border{ border-color:#D3D3D3;}
+.flexpaper-viewer-container  {
+  background:none !important;
+  width:100%;
+}
 
+.horizontal-tabs-pane .fieldset-wrapper {
+  margin-bottom: 10px;
+}
+
+.flexpaper_viewer {
+  width:100% !important;
+}
+
+.flexpaper_pages_border {
+  border-color:#D3D3D3;
+  padding:0;
+  width:100% !important;
+  height:100% !important;
+}
+
+.flexpaper_page div {
+  width:100% !important;
+}
+
+.flexpaper_viewer_container {
+  background:none !important;
+  width:100% !important;
+}
+
+.flexpaper_pages_border {
+  border-color: #D3D3D3;
+  padding: 0;
+  width:100% !important;
+}
+
+.flexpaper_viewer {
+  width:100% !important;
+}
+*/
 
 /* pagination */
 
@@ -576,7 +659,15 @@ padding: 20px; overflow:hidden; margin:0 0 40px 0;
 
 .contact-form label, .comment-form label { font-weight:bold; }
 
-input[type="text"], input[type="password"], input[type="email"], input.email, .ui-autocomplete-input, textarea, select{background:#edeaea; border:1px solid #cfcdc9; padding:10px; font:13px Arial, Helvetica, sans-serif; -webkit-box-sizing: padding-box; -moz-box-sizing: padding-box; box-sizing: padding-box; }
+input[type="text"], input[type="password"], input[type="email"], input.email, .ui-autocomplete-input, textarea, select{
+  background:#edeaea; 
+  border:1px solid #cfcdc9; 
+  padding:10px; font:13px Arial, Helvetica, sans-serif; 
+  -webkit-box-sizing: padding-box; 
+  -moz-box-sizing: padding-box; 
+  box-sizing: padding-box;
+  width:100%;
+}
 
 input[type="text"]:focus, .ui-autocomplete-input:focus, input[type="password"]:focus, textarea:focus, select:focus, input[type="email"]:focus, input.email:focus{ background:#ffffff; border-color:#c3c1bd;}
 
@@ -1083,4 +1174,109 @@ Social
 
 .facetapi-daterange-slider div {
   transition: all 0s ease-out 0s;
+}
+
+/* Large screens ----------- */
+@media (min-width : 1440px) {
+  .page-node #content-inside {
+    width:70%;
+  }
+}
+
+@media (max-width : 960px) {
+  body,#home-top .main_view,.no-sidebars #main,#header-inside,#home-top .main_view,.slider-item .content,
+  #slider-controls-wrapper,#slider-controls, #header-menu-inside,#content-inside,#footer-bottom-inside,#footer-inside {
+    width:100%;
+  }
+
+  #sidebar {
+    width:100%;
+    clear: both;
+    padding: 0px;
+    margin: 0px;
+  }
+
+  #sidebar .panel-pane {
+    float:left;
+    margin: 1% 0 1% 1%;
+    width: 32%;
+  }
+
+  #sidebar .panel-pane .pane-content {
+    margin: auto;
+  }
+
+  #sidebar .panel-pane .pane-title {
+    margin: auto;
+  }
+
+  #sidebar .panel-separator {
+    clear:none;
+  }
+
+  #home-left,
+  #home-middle,
+  #home-right {
+    width: 100% !important;
+  }
+
+  #sidebar {
+    margin-left:0px;
+  }
+  #main .pane-page-breadcrumb{
+    margin-right: 0px;
+  }
+
+  #main .main_inside{
+    margin-right: 0px;
+  }
+}
+
+@media (max-width : 960px) and
+(min-width : 680px) {
+  #sidebar .panel-pane:nth-child(3n+1) {
+    clear:left;
+  }
+}
+
+@media (max-width : 680px) and
+(min-width : 480px) {
+  #sidebar .panel-pane {
+    width: 48.4%;
+  }
+  #sidebar .panel-pane:nth-child(4n+1) {
+    clear:left;
+  }
+}
+
+@media (max-width : 480px) {
+  #sidebar .panel-pane {
+    width: 100% !important;
+    margin-left: 0 !important;
+    clear: none !important;
+  }
+}
+
+/*
+Twitter block
+*/
+#FollowTwitter img {
+  width:100%;
+  max-width: 160px;
+}
+/*
+End of Twitter block
+*/
+
+.view-subscriptions-list .views-field-field-image {
+  float:left;
+  margin:5px;
+}
+
+.view-subscriptions-list table, .view-subscriptions-list td {
+  border:none;
+}
+
+.view-subscriptions-list #viewThoughts, .view-subscriptions-list h2{
+  text-align: center;
 }

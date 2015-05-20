@@ -15,6 +15,9 @@ function egw_letters_migrate_api() {
       'egw_csv_files' => array(
         'title' => t('EGW CSV files'),
       ),
+      'correspondence' => array(
+        'title' => t('Correspondence files'),
+      ),
       'egw_archives' => array(
         'title' => t('Ellen G. White Archives'),
       ),
@@ -30,6 +33,10 @@ function egw_letters_migrate_api() {
       'white_je' => array(
         'class_name' => 'WhiteIndexMigration',
         'group_name' => 'white_je_index',
+      ),
+      'egw_correspondence' => array(
+        'class_name' => 'EgwCorrespondenceMigration',
+        'group_name' => 'correspondence',
       ),
       'questions_answers' => array(
         'class_name' => 'QuestionEgwMigration',

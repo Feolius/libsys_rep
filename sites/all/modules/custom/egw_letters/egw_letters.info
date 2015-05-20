@@ -10,3 +10,4 @@ files[] = egw_letters.migrate.inc
 files[] = egw_letters.inc
 files[] = white.inc
 files[] = archives.inc
+files[] = correspondence.inc
