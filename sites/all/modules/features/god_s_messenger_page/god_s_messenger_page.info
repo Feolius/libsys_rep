@@ -1,0 +1,14 @@
+name = God's messenger page
+core = 7.x
+package = Features
+version = 7.x-1.0
+project = god_s_messenger_page
+dependencies[] = ctools
+dependencies[] = features
+dependencies[] = menu
+dependencies[] = page_manager
+dependencies[] = panels
+features[ctools][] = page_manager:pages_default:1
+features[features_api][] = api:2
+features[menu_custom][] = menu-god-s-messenger
+features[page_manager_pages][] = god_s_messenger_meeting_kids_needs

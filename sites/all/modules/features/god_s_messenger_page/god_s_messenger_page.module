@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the God's messenger page feature.
+ */
+
+include_once 'god_s_messenger_page.features.inc';

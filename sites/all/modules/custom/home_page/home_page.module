@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * Implements hook_form_alter().
+ */
+function home_page_form_alter(&$form, &$form_state, $form_id) {
+  //krumo($form_state);
+  //krumo($form);
+}
+
+/**
+ * Implements hook_block_view_alter().
+ */
+function home_page_block_view_alter(&$data, $block) {
+  if ($block->delta=='facebook_pull_default') {
+
+  }
+}
+
+/**
+ * Implements hook_theme_registry_alter().
+ */
+function home_page_theme_registry_alter(&$theme_registry) {
+  if (isset($theme_registry['facebook_pull_feed'])) {
+    $theme_registry['facebook_pull_feed']['template'] = drupal_get_path('module','home_page').'/facebook_pull-feed';
+  }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function home_page_block_info() {
+  $blocks['subscribe_egw'] = array(
+    // info: The name of the block.
+    'info' => t('Ellen G. White Estate Subscriptions'),
+    'cache' => DRUPAL_CACHE_PER_ROLE,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function home_page_block_view($delta = '') {
+  switch ($delta) {
+    case 'subscribe_egw':
+      $block['subject'] = t('Ellen G. White Estate Subscriptions');
+      $block['content'] = home_page_subscribe_block_content();
+      break;
+  }
+  return $block;
+}
+
+function home_page_subscribe_block_content() {
+  $output = theme('home_page_subscribe_block');
+  return $output;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function home_page_theme($existing, $type, $theme, $path) {
+  return array(
+  'home_page_subscribe_block'  => array(
+    'template' => 'home_page_subscribe_block',
+    'variables' => array()
+  ),
+  );
+}

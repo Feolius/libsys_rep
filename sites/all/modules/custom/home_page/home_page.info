@@ -1,0 +1,8 @@
+name = "Home page"
+description = "Provides blocks for home page"
+package = "Custom"
+core = 7.x
+
+dependencies[] = twitter
+
+files[] = home_page.module
