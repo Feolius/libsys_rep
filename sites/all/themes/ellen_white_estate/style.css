@@ -1268,6 +1268,9 @@ Twitter block
 End of Twitter block
 */
 
+/*
+Front page blocks
+*/
 .view-subscriptions-list .views-field-field-image {
   float:left;
   margin:5px;
@@ -1279,4 +1282,23 @@ End of Twitter block
 
 .view-subscriptions-list #viewThoughts, .view-subscriptions-list h2{
   text-align: center;
+}
+
+.pane-tweets-homepage h2 {
+  margin-bottom: 0px;
+}
+/*
+End of front page blocks
+*/
+
+.page-godpassenger #block-system-main {
+  padding: 0 0 80px;
+}
+
+.page-godpassenger #block-system-main .panel-separator {
+  margin:0px;
+}
+
+.page-godpassenger .panels-flexible-region-inside-first {
+  background: none repeat scroll 0 0 #f9f7f4;
 }
